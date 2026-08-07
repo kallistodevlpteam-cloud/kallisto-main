@@ -1,0 +1,127 @@
+.promptContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 90px;
+  padding: 12px 16px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.promptContainer.focused {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+}
+
+.textareaWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 44px;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 6px;
+  flex-wrap: wrap;
+}
+
+.leftActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rightActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 52% used Context / Token Usage Badge */
+.usageBadge {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 3px 8px;
+  border-radius: 7px;
+  user-select: none;
+  letter-spacing: -0.01em;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.usageBadge:hover {
+  color: #0f172a;
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+.submitBtn {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: #cbd5e1;
+  color: #ffffff;
+  cursor: not-allowed;
+  transition: all 0.15s ease;
+}
+
+.submitBtn.voiceBtn {
+  background: #0f172a;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2);
+}
+
+.submitBtn.voiceBtn:hover {
+  background: #1e293b;
+  transform: scale(1.06);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3);
+}
+
+.submitBtn.activeSubmit {
+  background: #0f172a;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
+}
+
+.submitBtn.activeSubmit:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+}
+
+.submitBtn:disabled {
+  background: #f1f5f9;
+  color: #cbd5e1;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}

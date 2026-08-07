@@ -1,0 +1,270 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modalContent {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 32rem;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+  background: #ffffff;
+}
+
+.headerTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.headerIcon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.6rem;
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.modalTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.modalSubtitle {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 0.1rem 0 0;
+}
+
+.modalBody {
+  padding: 1rem 1.25rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+/* Status Banner */
+.statusBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.6rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 0.78rem;
+  color: #475569;
+  line-height: 1.45;
+}
+
+.statusIcon {
+  color: #16a34a;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Existing draft warning badge */
+.existingDraftNotice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.5rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* Project Meta Grid */
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem 0.85rem;
+  padding: 0.75rem 0.9rem;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 0.65rem;
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.metaLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #94a3b8;
+}
+
+.metaValue {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #1e293b;
+  word-break: break-word;
+}
+
+/* Description Box (Read-only Content Review Box) */
+.descriptionBox {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.descriptionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.descriptionLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #94a3b8;
+}
+
+.readOnlyBadge {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.35rem;
+}
+
+.descriptionText {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #334155;
+  margin: 0;
+  background: #f8fafc;
+  padding: 0.75rem 0.9rem;
+  border-left: 3px solid #cbd5e1;
+  border-radius: 0 0.5rem 0.5rem 0;
+  box-sizing: border-box;
+}
+
+/* Footer / Actions */
+.modalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid #f1f5f9;
+  background: #ffffff;
+}
+
+.cancelBtn {
+  height: 2.35rem;
+  padding: 0 1.1rem;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cancelBtn:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.cancelBtn:focus-visible {
+  outline: 2px solid #64748b;
+  outline-offset: 2px;
+}
+
+.continueBtn {
+  height: 2.35rem;
+  padding: 0 1.25rem;
+  border-radius: 0.5rem;
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.15s ease;
+}
+
+.continueBtn:hover {
+  background: #15803d;
+}
+
+.continueBtn:focus-visible {
+  outline: 2px solid #16a34a;
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .metaGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .modalFooter {
+    flex-direction: column-reverse;
+  }
+
+  .cancelBtn,
+  .continueBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}

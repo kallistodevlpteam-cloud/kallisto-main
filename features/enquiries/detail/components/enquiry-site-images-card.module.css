@@ -1,0 +1,128 @@
+/* ─── Enquiry Site Images Card ────────────────────────────── */
+
+.card {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-bottom: 0;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* ── Collapsible header ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0 0 10px 0;
+  cursor: pointer;
+  gap: 6px;
+}
+
+.header:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.headerTitle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.count {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.chevron {
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+/* ── Image grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  width: 100%;
+}
+
+.thumbCard {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #e2e8f0;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.thumbCard:hover {
+  transform: scale(1.04);
+  opacity: 0.9;
+}
+
+.thumbCard:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.thumbImage {
+  object-fit: cover;
+}
+
+/* ── +N more tile ── */
+.moreCard {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  background: #f1f5f9;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.15s ease;
+}
+
+.moreCard:hover {
+  background: #e2e8f0;
+}
+
+.moreCard:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.moreNumber {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.1;
+}
+
+.moreText {
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
+  margin-top: 1px;
+}

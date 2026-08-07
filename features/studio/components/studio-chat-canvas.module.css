@@ -1,0 +1,783 @@
+.activeTaskShell {
+  position: relative;
+  height: calc(100dvh - var(--global-header-height, 60px));
+  min-height: 640px;
+  overflow: hidden;
+  background: var(--surface-primary, #ffffff);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.studioActiveContainer {
+  container-name: studio-active;
+  container-type: inline-size;
+}
+
+/* Top-Left Task Context Header */
+.topLeftHeader {
+  position: absolute;
+  top: 24px;
+  left: 28px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.breadcrumbNav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  line-height: 1.2;
+}
+
+.breadcrumbLink {
+  font-weight: 500;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.breadcrumbChevron {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.breadcrumbCurrent {
+  font-weight: 650;
+  color: #0f172a;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.backBtn {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.backBtn:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+/* Upper-Right User Message Bubble - Aligned with Chatbox Column */
+.upperRightUserPill {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 56px);
+  max-width: 760px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* ChatGPT-Style User Message Entrance Animation */
+.userBubbleContent {
+  max-width: 380px;
+  width: fit-content;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 18px;
+  padding: 10px 18px;
+  font-size: 14px;
+  color: #1f2937;
+  line-height: 1.45;
+  font-weight: 500;
+  box-shadow: none;
+  animation: chatgptUserBubbleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: bottom right;
+}
+
+@keyframes chatgptUserBubbleIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.floatingOutputsPanel {
+  position: absolute;
+  top: 16px;
+  right: 24px;
+  z-index: 20;
+  width: clamp(300px, 24vw, 360px);
+  height: calc(100% - 32px);
+  max-height: calc(100% - 32px);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+  transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s ease;
+}
+
+.floatingOutputsPanelPreview {
+  width: clamp(560px, 40vw, 680px);
+}
+
+@media (min-width: 1180px) and (max-width: 1439px) {
+  .floatingOutputsPanelPreview {
+    width: clamp(480px, 42vw, 560px);
+  }
+}
+
+@media (max-width: 1179px) {
+  .floatingOutputsPanel {
+    position: fixed;
+    top: 72px;
+    right: 16px;
+    bottom: 24px;
+    max-height: calc(100vh - 96px);
+    z-index: 50;
+    box-shadow: -4px 0 24px rgba(15, 23, 42, 0.14);
+  }
+
+  .floatingOutputsPanelPreview {
+    width: min(92vw, 640px);
+    box-shadow: -4px 0 28px rgba(15, 23, 42, 0.18);
+  }
+}
+
+@media (max-width: 767px) {
+  .floatingOutputsPanelPreview {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    z-index: 60;
+  }
+}
+
+.outputsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.outputsToggleTitleBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  color: #0f172a;
+}
+
+.outputsTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.outputsAddBtn {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.outputsAddBtn:hover {
+  border-color: #94a3b8;
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+.outputDropdownMenu {
+  position: absolute;
+  top: 28px;
+  right: 0;
+  z-index: 50;
+  width: 160px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1);
+  padding: 4px;
+  animation: chatgptDropdownIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top right;
+}
+
+@keyframes chatgptDropdownIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.outputMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+
+.outputMenuItem:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.outputsBody {
+  padding: 0 12px 12px;
+}
+
+.noOutputsText {
+  margin: 0;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.outputItemRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.outputItemTitle {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.outputStatusBadge {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+/* Upper-Middle Activity & Assistant Region - Aligned with Chatbox Column */
+.upperMiddleContent {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 56px);
+  max-width: 760px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: calc(100% - 160px);
+  overflow-y: auto;
+  padding-right: 12px;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.upperMiddleContent::-webkit-scrollbar {
+  display: none;
+}
+
+/* ChatGPT-Style Thinking Indicator Animation */
+.thinkingStatus {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: chatgptThinkingFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes chatgptThinkingFade {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ChatGPT-Style Assistant Message Entrance Animation */
+.assistantMessageBlock {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #1e293b;
+  font-weight: 400;
+  animation: chatgptAssistantMessageIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top left;
+}
+
+.assistantMessageBlock p {
+  margin: 0 0 10px 0;
+  animation: chatgptParagraphIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+.assistantMessageBlock p:last-child {
+  margin-bottom: 0;
+}
+
+.assistantMessageBlock p:nth-child(1) { animation-delay: 0.03s; }
+.assistantMessageBlock p:nth-child(2) { animation-delay: 0.12s; }
+.assistantMessageBlock p:nth-child(3) { animation-delay: 0.20s; }
+.assistantMessageBlock p:nth-child(4) { animation-delay: 0.28s; }
+
+@keyframes chatgptAssistantMessageIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes chatgptParagraphIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+    /* No filter: blur here — avoids creating a stacking context that can interact
+       with the tablet backdrop compositing layer in Safari and Chromium. */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ChatGPT-Style Action Chips Animation with Stagger */
+.actionChipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.actionChipBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  background: #ffffff;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  animation: chatgptChipIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+.actionChipBtn:nth-child(1) { animation-delay: 0.05s; }
+.actionChipBtn:nth-child(2) { animation-delay: 0.1s; }
+.actionChipBtn:nth-child(3) { animation-delay: 0.15s; }
+.actionChipBtn:nth-child(4) { animation-delay: 0.2s; }
+.actionChipBtn:nth-child(5) { animation-delay: 0.25s; }
+
+@keyframes chatgptChipIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.actionChipBtn:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.retryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid #ef4444;
+  border-radius: 6px;
+  background: #fff5f5;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+  animation: chatgptChipIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.retryBtn:hover {
+  background: #fee2e2;
+}
+
+/* ── Authoritative State-Based Grid Workspace ── */
+.studioSplitWorkspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(300px, 24vw, 360px);
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: grid-template-columns 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.studioSplitWorkspace[data-panel-mode="collapsed"] {
+  grid-template-columns: minmax(0, 1fr) 56px;
+}
+
+.studioSplitWorkspace[data-panel-mode="outputs"] {
+  grid-template-columns: minmax(0, 1fr) clamp(300px, 24vw, 360px);
+}
+
+.studioSplitWorkspace[data-panel-mode="preview"] {
+  grid-template-columns: minmax(0, 1fr) clamp(520px, 40vw, 680px);
+}
+
+@media (min-width: 1180px) and (max-width: 1439px) {
+  .studioSplitWorkspace[data-panel-mode="preview"] {
+    grid-template-columns: minmax(0, 1fr) clamp(480px, 42vw, 560px);
+  }
+}
+
+/* Below 1180px: Single column workspace; preview becomes floating overlay */
+@media (max-width: 1179px) {
+  .studioSplitWorkspace,
+  .studioSplitWorkspace[data-panel-mode="collapsed"],
+  .studioSplitWorkspace[data-panel-mode="outputs"],
+  .studioSplitWorkspace[data-panel-mode="preview"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ── StudioTaskPane (Positioning Owner for Task Viewport & Floating Composer) ── */
+.studioTaskPane {
+  min-width: 0;
+  height: 100%;
+  max-height: 100%;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ── TaskConversation (Full Height Scroll Owner) ── */
+.taskConversationScrollArea {
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.taskConversationScrollArea::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.conversationContentColumn {
+  width: min(100%, var(--studio-content-max-width, 760px));
+  min-height: 100%;
+  margin-inline: auto;
+  padding: 32px var(--studio-edge-inset, 24px) calc(var(--studio-composer-height, 120px) + var(--studio-edge-inset, 24px) + env(safe-area-inset-bottom, 0px) + 24px);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: max-width 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.conversationContentColumnPreview {
+  width: min(100%, 720px);
+}
+
+/* ── StudioEdgeOverlay (Unpadded Edge Overlay Layer over Studio Workspace) ── */
+.studioEdgeOverlay {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  margin: 0;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* ── ComposerOverlay (Floating Bottom Dock over Conversation Viewport) ── */
+.composerOverlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 24px;
+  padding: 0 24px;
+  margin: 0;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* Subtle backdrop gradient behind composer so scrolling messages fade out gracefully */
+.composerOverlay::before {
+  content: "";
+  position: absolute;
+  inset: -48px 0 -24px 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255, 255, 255, 0.88) 42%,
+    #ffffff 78%
+  );
+  z-index: -1;
+}
+
+.composerInner {
+  width: min(100%, 760px);
+  margin-inline: auto;
+  margin-block: 0;
+  pointer-events: auto;
+  position: relative;
+  transition: max-width 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.composerInnerPreview {
+  width: min(100%, 720px);
+}
+
+/* Floating "Jump to latest" control chip */
+.jumpToLatestBtn {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--studio-composer-height, 120px) + 24px + 16px);
+  transform: translateX(-50%);
+  pointer-events: auto;
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 9999px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+  animation: jumpBtnFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.jumpToLatestBtn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: none;
+}
+
+@keyframes jumpBtnFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ── Right Panel Container ── */
+.rightSidebarPanelWrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.rightSidebarPanelWrapperPreview {
+  padding-bottom: 24px;
+  /* Defensive: ensure the panel and its content are never blurred by an ancestor
+     filter or backdrop-filter stacking context. */
+  filter: none;
+  -webkit-filter: none;
+  opacity: 1;
+}
+
+/* Below 1180px: Overlay Drawer Mode for Preview */
+@media (max-width: 1179px) {
+  .rightSidebarPanelWrapperPreview {
+    position: fixed;
+    top: 72px;
+    right: 16px;
+    bottom: 24px;
+    padding-bottom: 0;
+    width: min(92vw, 640px);
+    max-height: calc(100vh - 96px);
+    /* Stacking: backdrop is z-index 45; preview panel must be above it. */
+    z-index: 50;
+    box-shadow: -4px 0 28px rgba(15, 23, 42, 0.18);
+    /* Defensive filter reset: prevent any ancestor stacking context from blurring
+       this panel in Safari or Chromium. */
+    filter: none;
+    -webkit-filter: none;
+    opacity: 1;
+  }
+}
+
+@media (max-width: 767px) {
+  .rightSidebarPanelWrapperPreview {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    /* Mobile full-screen: no backdrop, above everything. */
+    z-index: 60;
+    filter: none;
+    -webkit-filter: none;
+    opacity: 1;
+  }
+}
+
+/**
+ * ── Preview Backdrop ──
+ *
+ * Tablet-only dim layer rendered behind the overlay preview drawer.
+ * Provides visual context separation between the active conversation and
+ * the preview panel without blurring any content.
+ *
+ * Stacking order (ascending):
+ *   Studio task content  (default / low z)
+ *   .previewBackdrop     (z-index: --studio-preview-backdrop-z = 45)
+ *   .rightSidebarPanelWrapperPreview  (z-index: 50)
+ *   Global dialogs / notifications    (z-index: ≥80)
+ *
+ * Rules:
+ *   - backdrop-filter MUST be none — no blur of any kind.
+ *   - filter MUST be none.
+ *   - Never applied on desktop (split view) or mobile (full-screen).
+ */
+.previewBackdrop {
+  /* Token: define locally so the value is co-located with the element. */
+  --studio-preview-backdrop-z: 45;
+
+  position: fixed;
+  inset: 0;
+  background: rgb(15 23 42 / 0.18);
+
+  /* Explicitly disable all filter effects. backdrop-filter on a fixed inset-0
+     element blurs every composited pixel in the viewport, including fixed
+     siblings at a higher z-index. Do not enable this. */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  filter: none;
+  -webkit-filter: none;
+
+  z-index: var(--studio-preview-backdrop-z);
+
+  /* No pointer events on the element itself; click is handled by the div's
+     onClick which calls handleBackdropClick. Cursor signals dismissibility. */
+  cursor: pointer;
+}
+
+@container studio-active (max-width: 767px) {
+  .activeTaskShell {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+  }
+
+  .topLeftHeader {
+    position: static;
+    padding: 16px 16px 0;
+  }
+
+  .upperRightUserPill {
+    position: static;
+    padding: 8px 16px 0;
+  }
+
+  .floatingOutputsPanel {
+    position: static;
+    width: calc(100% - 32px);
+    margin: 8px 16px;
+  }
+
+  .upperMiddleContent {
+    position: static;
+    max-width: 100%;
+    max-height: none;
+    flex: 1;
+    padding: 16px;
+  }
+
+  .bottomDockedContainer {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    transform: none;
+    width: 100%;
+    padding: 8px 16px 16px;
+  }
+}

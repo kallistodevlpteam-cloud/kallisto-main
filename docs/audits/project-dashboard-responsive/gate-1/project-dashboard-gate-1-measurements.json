@@ -1,0 +1,13 @@
+[
+  {
+    "viewport": "1280x720",
+    "mode": "rail",
+    "sidebarWidth": 56,
+    "dashboardWidth": 1150,
+    "mainWidth": 781,
+    "updatesWidth": 345,
+    "gap": 24,
+    "workspaceScrollTop": 0,
+    "mainScrollTop": 59
+  }
+]

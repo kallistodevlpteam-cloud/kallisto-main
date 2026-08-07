@@ -1,0 +1,249 @@
+.inspectorContainer {
+  display: contents;
+}
+
+.inspectorBackdrop {
+  display: none;
+}
+
+.inspectorPanel {
+  background: #ffffff;
+  border-left: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* Container Queries relative to timeline-workspace container */
+@container timeline-workspace (min-width: 1280px) {
+  .inspectorBackdrop {
+    display: none;
+  }
+  .inspectorPanel {
+    position: relative;
+    width: 380px;
+    flex-shrink: 0;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+  }
+}
+
+@container timeline-workspace (min-width: 900px) and (max-width: 1279px) {
+  .inspectorBackdrop {
+    display: none;
+  }
+  .inspectorPanel {
+    position: sticky;
+    top: var(--project-sticky-header-offset, 64px);
+    right: 0;
+    width: 380px;
+    height: calc(100dvh - var(--project-sticky-header-offset, 120px));
+    z-index: 40;
+    box-shadow: -4px 0 16px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@container timeline-workspace (max-width: 899px) {
+  .inspectorBackdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(2px);
+  }
+  .inspectorPanel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 400px;
+    z-index: 51;
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Header & Content */
+.inspectorHeader {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  background: #fafafa;
+}
+
+.titleBox {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wbsTag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.inspectorTitle {
+  font-size: 16px;
+  font-weight: 650;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  padding: 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.closeBtn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.inspectorBody {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+}
+
+.sectionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+
+.grid2Col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metaValue {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  width: fit-content;
+}
+
+.statusBadgeCompleted {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.statusBadgeInProgress {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+.statusBadgePending {
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.statusBadgeBlocked {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.progressBarTrack {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 3px;
+}
+
+.inspectorFooter {
+  padding: 16px 20px;
+  border-top: 1px solid #e2e8f0;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.primaryBtn {
+  flex: 1;
+  height: 38px;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.primaryBtn:hover {
+  background: #1e293b;
+}
+
+.secondaryBtn {
+  height: 38px;
+  padding: 0 14px;
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.secondaryBtn:hover {
+  background: #f8fafc;
+}

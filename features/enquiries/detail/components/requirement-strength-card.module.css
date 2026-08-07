@@ -1,0 +1,167 @@
+/* ─── Requirement Strength Card (Right Rail) ───────────────── */
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 0;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Header row */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  min-width: 0;
+}
+
+.titleWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.infoIcon {
+  color: #94a3b8;
+  flex-shrink: 0;
+  cursor: help;
+  transition: color 0.15s ease;
+}
+
+.infoIcon:hover {
+  color: #64748b;
+}
+
+.detailsBtn {
+  appearance: none;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.detailsBtn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.detailsBtn:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 1px;
+}
+
+/* Metric row */
+.metricRow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 14px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.scoreValue {
+  font-size: 30px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.trendWrap {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.trendPositive {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.trendNegative {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.trendNeutral {
+  color: #64748b;
+}
+
+/* Segmented bar */
+.segmentBar {
+  display: grid;
+  grid-template-columns: repeat(50, minmax(0, 1fr));
+  gap: 2px;
+  width: 100%;
+  height: 10px;
+  margin-bottom: 12px;
+}
+
+.segment {
+  height: 100%;
+  border-radius: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.segmentUnfilled {
+  background-color: #f1f5f9;
+}
+
+/* Footer row */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #475569;
+  gap: 6px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.footerLeft {
+  font-weight: 500;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.footerCenter {
+  font-weight: 500;
+  color: #64748b;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.footerRight {
+  font-weight: 600;
+  white-space: nowrap;
+}

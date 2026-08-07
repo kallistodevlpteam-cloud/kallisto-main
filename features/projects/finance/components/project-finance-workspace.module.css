@@ -1,0 +1,1659 @@
+.workspace {
+  --finance-accent: oklch(0.51 0.19 295);
+  --finance-accent-strong: oklch(0.44 0.2 295);
+  --finance-accent-soft: oklch(0.96 0.025 295);
+  --finance-success: oklch(0.48 0.13 151);
+  --finance-success-soft: oklch(0.96 0.025 151);
+  --finance-warning: oklch(0.57 0.14 75);
+  --finance-warning-soft: oklch(0.97 0.035 82);
+  --finance-danger: oklch(0.52 0.18 27);
+  --finance-danger-soft: oklch(0.97 0.025 27);
+  --finance-info: oklch(0.5 0.12 245);
+  --finance-info-soft: oklch(0.96 0.02 245);
+
+  container-name: finance-workspace;
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  min-width: 0;
+  padding-bottom: 36px;
+  color: var(--ink);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.headerIdentity {
+  min-width: 0;
+}
+
+.headerIdentity h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.headerIdentity p {
+  margin: 5px 0 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.primaryButton,
+.secondaryButton,
+.textButton,
+.inlineAction,
+.iconButton,
+.periodButton,
+.periodButtonActive {
+  font: inherit;
+}
+
+.primaryButton,
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 13px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.primaryButton {
+  color: oklch(0.99 0.004 295);
+  background: var(--finance-accent);
+  border: 1px solid var(--finance-accent);
+}
+
+.primaryButton:hover {
+  background: var(--finance-accent-strong);
+  border-color: var(--finance-accent-strong);
+}
+
+.secondaryButton {
+  color: oklch(0.31 0.012 72);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+}
+
+.secondaryButton:hover {
+  color: var(--ink);
+  background: var(--surface-subtle);
+  border-color: oklch(0.75 0.012 75);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled,
+.iconButton:disabled {
+  opacity: 0.58;
+  cursor: not-allowed;
+}
+
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible,
+.textButton:focus-visible,
+.inlineAction:focus-visible,
+.iconButton:focus-visible,
+.periodButton:focus-visible,
+.periodButtonActive:focus-visible,
+.subnavTab:focus-visible,
+.subnavTabActive:focus-visible,
+.attentionItem:focus-visible,
+.dateRangeControl:focus-within,
+.searchControl:focus-within,
+.filterControl:focus-within,
+.formField input:focus-visible,
+.formField select:focus-visible,
+.formField textarea:focus-visible,
+.fileControl:focus-within {
+  outline: 2px solid var(--finance-accent);
+  outline-offset: 2px;
+}
+
+.dateRangeControl,
+.filterControl {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+}
+
+.dateRangeControl {
+  gap: 7px;
+  padding-left: 10px;
+}
+
+.dateRangeControl select,
+.filterControl select {
+  height: 34px;
+  padding: 0 30px 0 3px;
+  color: oklch(0.31 0.012 72);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.subnav {
+  margin-top: -7px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+  scrollbar-width: none;
+}
+
+.subnav::-webkit-scrollbar {
+  display: none;
+}
+
+.subnav > div {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: max-content;
+  min-width: 100%;
+}
+
+.subnavTab,
+.subnavTabActive {
+  position: relative;
+  height: 38px;
+  padding: 0 2px;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.subnavTab:hover {
+  color: var(--ink);
+}
+
+.subnavTabActive {
+  color: var(--finance-accent-strong);
+  font-weight: 650;
+}
+
+.subnavTabActive::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--finance-accent);
+  border-radius: 2px 2px 0 0;
+  content: "";
+}
+
+.notice,
+.partialDataNotice {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 42px;
+  margin-top: -8px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  font-size: 13px;
+}
+
+.notice {
+  color: oklch(0.37 0.09 151);
+  background: var(--finance-success-soft);
+  border: 1px solid oklch(0.88 0.05 151);
+}
+
+.notice span {
+  flex: 1;
+}
+
+.notice button {
+  padding: 4px;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.partialDataNotice {
+  color: oklch(0.42 0.09 75);
+  background: var(--finance-warning-soft);
+  border: 1px solid oklch(0.89 0.06 75);
+}
+
+.attentionStrip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 54px;
+  margin-top: -8px;
+  padding: 8px 12px;
+  background: oklch(0.985 0.004 75);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+}
+
+.attentionItems {
+  display: flex;
+  align-items: center;
+  gap: 8px 20px;
+  min-width: 0;
+}
+
+.attentionItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 3px;
+  color: oklch(0.3 0.012 72);
+  background: transparent;
+  border: 0;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.attentionItem:hover {
+  color: var(--ink);
+}
+
+.attentionIndicatorWarning,
+.attentionIndicatorDanger {
+  display: inline-grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.attentionIndicatorWarning {
+  color: var(--finance-warning);
+  background: var(--finance-warning-soft);
+}
+
+.attentionIndicatorDanger {
+  color: var(--finance-danger);
+  background: var(--finance-danger-soft);
+}
+
+.inlineAction,
+.textButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px;
+  color: var(--finance-accent-strong);
+  background: transparent;
+  border: 0;
+  font-size: 12.5px;
+  font-weight: 650;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.inlineAction:hover,
+.textButton:hover {
+  color: var(--finance-accent);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.summaryCard {
+  display: flex;
+  min-height: 126px;
+  flex-direction: column;
+  justify-content: center;
+  padding: 17px 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+}
+
+.summaryLabel {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 550;
+  line-height: 1.35;
+}
+
+.summaryValue {
+  margin: 8px 0 5px;
+  color: var(--ink);
+  font-size: 25px;
+  font-weight: 650;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+.summarySupport {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.primaryGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 8fr) minmax(300px, 4fr);
+  align-items: stretch;
+  gap: 16px;
+  min-width: 0;
+}
+
+.card {
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cardHeader h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.cardHeader p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.budgetCard,
+.collectionCard,
+.cashFlowCard,
+.reportsCard {
+  padding: 18px;
+}
+
+.budgetCard,
+.collectionCard {
+  display: flex;
+  flex-direction: column;
+}
+
+.budgetMetrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 19px 0 17px;
+}
+
+.budgetMetrics div {
+  min-width: 0;
+}
+
+.budgetMetrics dt,
+.collectionMetrics dt,
+.reportSummary dt {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.budgetMetrics dd,
+.collectionMetrics dd,
+.reportSummary dd {
+  margin: 5px 0 0;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.stackedBudgetBar {
+  display: flex;
+  width: 100%;
+  height: 10px;
+  overflow: hidden;
+  background: var(--surface-subtle);
+  border-radius: 999px;
+}
+
+.stackedBudgetBar > span {
+  display: block;
+  height: 100%;
+}
+
+.budgetPaid {
+  background: oklch(0.48 0.11 151);
+}
+
+.budgetCommitted {
+  background: oklch(0.66 0.11 75);
+}
+
+.budgetRemaining {
+  background: oklch(0.89 0.014 75);
+}
+
+.budgetLegend,
+.chartLegend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.budgetLegend {
+  margin-top: 9px;
+}
+
+.budgetLegend span,
+.chartLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.budgetLegend i,
+.chartLegend i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.legendPaid {
+  background: oklch(0.48 0.11 151);
+}
+
+.legendCommitted {
+  background: oklch(0.66 0.11 75);
+}
+
+.legendRemaining {
+  background: oklch(0.89 0.014 75);
+  border: 1px solid var(--line-strong);
+}
+
+.categoryTable {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.categoryHeader,
+.categoryRow {
+  display: grid;
+  grid-template-columns: minmax(170px, 1.6fr) repeat(4, minmax(82px, 0.8fr));
+  align-items: center;
+  column-gap: 10px;
+}
+
+.categoryHeader {
+  min-height: 36px;
+  color: var(--soft);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.categoryHeader span:not(:first-child),
+.categoryRow > span {
+  text-align: right;
+}
+
+.categoryRow {
+  min-height: 51px;
+  color: oklch(0.34 0.012 72);
+  border-top: 1px solid var(--line);
+  font-size: 12.5px;
+}
+
+.categoryNameCell {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.categoryNameCell > span {
+  overflow: hidden;
+  font-weight: 550;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.categoryProgress {
+  width: 100%;
+  height: 4px;
+  overflow: hidden;
+  background: var(--surface-subtle);
+  border-radius: 999px;
+}
+
+.categoryProgress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.categoryProgressNeutral {
+  background: oklch(0.59 0.025 75);
+}
+
+.categoryProgressWarning {
+  background: var(--finance-warning);
+}
+
+.categoryProgressOver {
+  background: var(--finance-danger);
+}
+
+.varianceNeutral,
+.varianceWarning,
+.varianceOver {
+  font-weight: 600;
+}
+
+.varianceNeutral {
+  color: var(--muted);
+}
+
+.varianceWarning {
+  color: var(--finance-warning);
+}
+
+.varianceOver {
+  color: var(--finance-danger);
+}
+
+.collectionOverview {
+  display: grid;
+  grid-template-columns: 116px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  margin: 18px 0;
+}
+
+.collectionRing {
+  position: relative;
+  display: grid;
+  width: 108px;
+  height: 108px;
+  place-items: center;
+}
+
+.collectionRing svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ringTrack,
+.ringValue {
+  fill: none;
+  stroke-width: 8;
+}
+
+.ringTrack {
+  stroke: var(--surface-subtle);
+}
+
+.ringValue {
+  stroke: var(--finance-accent);
+  stroke-linecap: round;
+}
+
+.collectionRing strong {
+  position: absolute;
+  top: 36px;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  color: var(--ink);
+  font-size: 19px;
+  font-weight: 650;
+  text-align: center;
+}
+
+.collectionRing span {
+  position: absolute;
+  top: 59px;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.collectionMetrics {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.collectionMetrics div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--line);
+}
+
+.collectionMetrics div:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.collectionMetrics dd {
+  text-align: right;
+}
+
+.collectionMetrics .overdueValue {
+  color: var(--finance-danger);
+}
+
+.nextMilestone {
+  margin-top: auto;
+  padding-top: 15px;
+  border-top: 1px solid var(--line);
+}
+
+.nextMilestoneLabel {
+  margin: 0 0 9px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.nextMilestoneHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.nextMilestoneHeading h4 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.nextMilestoneHeading strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.dueSoonText {
+  margin: 7px 0 13px;
+  color: var(--finance-warning);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.milestoneActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.statusSuccess,
+.statusWarning,
+.statusDanger,
+.statusNeutral,
+.statusInfo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 8px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.statusSuccess {
+  color: var(--finance-success);
+  background: var(--finance-success-soft);
+  border-color: oklch(0.89 0.04 151);
+}
+
+.statusWarning {
+  color: var(--finance-warning);
+  background: var(--finance-warning-soft);
+  border-color: oklch(0.9 0.05 75);
+}
+
+.statusDanger {
+  color: var(--finance-danger);
+  background: var(--finance-danger-soft);
+  border-color: oklch(0.9 0.04 27);
+}
+
+.statusNeutral {
+  color: var(--muted);
+  background: var(--surface-subtle);
+  border-color: var(--line);
+}
+
+.statusInfo {
+  color: var(--finance-info);
+  background: var(--finance-info-soft);
+  border-color: oklch(0.9 0.035 245);
+}
+
+.cashFlowHeader,
+.tableCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.periodControl {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  background: var(--surface-subtle);
+  border-radius: 9px;
+}
+
+.periodButton,
+.periodButtonActive {
+  min-height: 30px;
+  padding: 0 10px;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.periodButton:hover {
+  color: var(--ink);
+}
+
+.periodButtonActive {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+.chartLegend {
+  margin-top: 16px;
+}
+
+.legendInflow {
+  background: var(--finance-accent);
+}
+
+.legendOutflow {
+  background: oklch(0.67 0.035 75);
+}
+
+.legendNet {
+  background: oklch(0.45 0.055 151);
+  border-radius: 50% !important;
+}
+
+.chartWrap {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  min-height: 280px;
+  margin-top: 7px;
+  overflow: hidden;
+}
+
+.cashFlowChart {
+  display: block;
+  width: 100%;
+  min-width: 660px;
+  height: 280px;
+}
+
+.chartGridLine {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.chartZeroLine {
+  stroke: oklch(0.75 0.01 75);
+  stroke-width: 1;
+}
+
+.chartAxisLabel {
+  fill: var(--muted);
+  font-family: inherit;
+  font-size: 11.5px;
+}
+
+.chartInflowBar {
+  fill: var(--finance-accent);
+}
+
+.chartOutflowBar {
+  fill: oklch(0.7 0.03 75);
+}
+
+.chartNetLine {
+  fill: none;
+  stroke: oklch(0.45 0.055 151);
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chartNetPoint {
+  fill: var(--surface);
+  stroke: oklch(0.45 0.055 151);
+  stroke-width: 2;
+}
+
+.cashFlowChart g:focus {
+  outline: none;
+}
+
+.cashFlowChart g:focus .chartInflowBar,
+.cashFlowChart g:focus .chartOutflowBar {
+  stroke: var(--finance-accent-strong);
+  stroke-width: 2;
+}
+
+.chartTooltip {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 3px 12px;
+  padding: 9px 11px;
+  color: oklch(0.31 0.012 72);
+  background: oklch(0.985 0.004 75);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  box-shadow: var(--shadow-soft);
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.chartTooltip strong {
+  grid-column: 1 / -1;
+  color: var(--ink);
+}
+
+.tableCard {
+  overflow: visible;
+}
+
+.tableCardHeader {
+  padding: 17px 18px 13px;
+}
+
+.tableScroller {
+  width: 100%;
+  overflow-x: auto;
+  border-top: 1px solid var(--line);
+}
+
+.dataTable {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  color: oklch(0.35 0.012 72);
+  font-size: 12.5px;
+}
+
+.dataTable th {
+  height: 38px;
+  padding: 0 12px;
+  color: var(--soft);
+  background: oklch(0.985 0.004 75);
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.dataTable td {
+  height: 49px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.dataTable tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.dataTable tbody tr {
+  transition: background-color 140ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dataTable tbody tr:hover,
+.selectedTableRow {
+  background: oklch(0.98 0.007 295);
+}
+
+.dataTable tbody tr:focus-visible {
+  outline: 2px solid var(--finance-accent);
+  outline-offset: -2px;
+}
+
+.tablePrimaryText {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.amountColumn {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.actionColumn {
+  width: 60px;
+  text-align: center !important;
+}
+
+.referenceCell {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.incomeAmount,
+.expenseAmount {
+  font-weight: 650;
+}
+
+.incomeAmount {
+  color: var(--finance-success);
+}
+
+.expenseAmount {
+  color: oklch(0.34 0.012 72);
+}
+
+.iconButton {
+  display: inline-grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  padding: 0;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.iconButton:hover {
+  color: var(--ink);
+  background: var(--surface-subtle);
+  border-color: var(--line);
+}
+
+.rowMenuAnchor {
+  position: relative;
+  display: inline-block;
+}
+
+.rowMenu {
+  position: absolute;
+  top: 34px;
+  right: 0;
+  z-index: 10;
+  min-width: 150px;
+  padding: 5px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  box-shadow: 0 12px 26px rgba(23, 21, 19, 0.12);
+}
+
+.rowMenu button {
+  display: block;
+  width: 100%;
+  padding: 8px 9px;
+  color: oklch(0.31 0.012 72);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rowMenu button:hover,
+.rowMenu button:focus-visible {
+  background: var(--surface-subtle);
+  outline: none;
+}
+
+.transactionToolbar {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 0 18px 14px;
+}
+
+.searchControl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 10px;
+  color: var(--soft);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+}
+
+.searchControl input {
+  width: 100%;
+  min-width: 0;
+  height: 34px;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  font-size: 13px;
+}
+
+.searchControl input::placeholder {
+  color: var(--soft);
+}
+
+.tableEmptyState,
+.compactEmptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 26px 18px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.tableEmptyState {
+  min-height: 140px;
+  flex-direction: column;
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+
+.tableEmptyState p,
+.compactEmptyState p {
+  margin: 0;
+}
+
+.reportSummary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.reportList {
+  display: grid;
+}
+
+.reportRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  border-bottom: 1px solid var(--line);
+}
+
+.reportRow:last-child {
+  border-bottom: 0;
+}
+
+.reportRow > svg {
+  color: var(--finance-accent);
+}
+
+.reportRow strong,
+.reportRow span {
+  display: block;
+}
+
+.reportRow strong {
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.reportRow span {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.emptyState,
+.statePanel {
+  display: flex;
+  min-height: 270px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px dashed var(--line-strong);
+  border-radius: 13px;
+}
+
+.emptyState > svg,
+.statePanel > svg {
+  color: var(--muted);
+}
+
+.emptyState h3,
+.statePanel h2 {
+  margin: 13px 0 5px;
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 650;
+}
+
+.emptyState p,
+.statePanel p {
+  max-width: 490px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.emptyState > div {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.loadingHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.loadingHeader > div {
+  display: grid;
+  gap: 8px;
+}
+
+.skeletonLineWide,
+.skeletonLine,
+.skeletonAction,
+.loadingSummary span,
+.loadingPanel {
+  display: block;
+  background: var(--surface-subtle);
+  animation: financePulse 1.5s ease-in-out infinite;
+}
+
+.skeletonLineWide {
+  width: 150px;
+  height: 24px;
+  border-radius: 7px;
+}
+
+.skeletonLine {
+  width: 260px;
+  height: 13px;
+  border-radius: 5px;
+}
+
+.skeletonAction {
+  width: 220px;
+  height: 36px;
+  border-radius: 8px;
+}
+
+.loadingSummary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.loadingSummary span {
+  height: 126px;
+  border-radius: 13px;
+}
+
+.loadingPanel {
+  height: 360px;
+  border-radius: 13px;
+}
+
+@keyframes financePulse {
+  0%,
+  100% {
+    opacity: 0.62;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.drawerOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(25, 23, 21, 0.42);
+}
+
+.drawer {
+  display: flex;
+  width: min(560px, 100%);
+  height: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  box-shadow: -16px 0 34px rgba(23, 21, 19, 0.14);
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.drawerHeader p {
+  margin: 0 0 3px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.drawerHeader h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 650;
+}
+
+.drawerForm {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 20px 20px;
+  overflow-y: auto;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.formField {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formField > label:first-child {
+  color: oklch(0.34 0.012 72);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.formField input,
+.formField select,
+.formField textarea {
+  width: 100%;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  outline: 0;
+  font: inherit;
+  font-size: 13px;
+}
+
+.formField input,
+.formField select {
+  height: 38px;
+  padding: 0 10px;
+}
+
+.formField textarea {
+  min-height: 82px;
+  padding: 9px 10px;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.formField input[aria-invalid="true"],
+.formField select[aria-invalid="true"] {
+  border-color: var(--finance-danger);
+}
+
+.fieldError {
+  color: var(--finance-danger);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.fieldHint {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.formErrorBanner {
+  padding: 9px 11px;
+  color: var(--finance-danger);
+  background: var(--finance-danger-soft);
+  border: 1px solid oklch(0.9 0.04 27);
+  border-radius: 8px;
+  font-size: 12.5px;
+}
+
+.fileControl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 11px;
+  overflow: hidden;
+  color: var(--muted);
+  background: oklch(0.985 0.004 75);
+  border: 1px dashed var(--line-strong);
+  border-radius: 8px;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.fileControl span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hiddenFileInput {
+  position: absolute;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0 !important;
+}
+
+.drawerFooter {
+  position: sticky;
+  bottom: -20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 14px 0 20px;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+}
+
+@container finance-workspace (max-width: 1100px) {
+  .summaryGrid,
+  .loadingSummary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .primaryGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .collectionOverview {
+    grid-template-columns: 140px minmax(0, 1fr);
+  }
+
+  .attentionItems {
+    flex-wrap: wrap;
+  }
+}
+
+@container finance-workspace (max-width: 820px) {
+  .header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .headerActions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .attentionStrip {
+    align-items: flex-start;
+  }
+
+  .budgetMetrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .categoryTable {
+    overflow-x: auto;
+  }
+
+  .categoryHeader,
+  .categoryRow {
+    min-width: 680px;
+  }
+
+  .transactionToolbar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .searchControl {
+    grid-column: 1 / -1;
+  }
+
+  .cashFlowHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .periodControl {
+    align-self: flex-start;
+  }
+
+  .chartWrap {
+    overflow-x: auto;
+  }
+}
+
+@container finance-workspace (max-width: 620px) {
+  .workspace {
+    gap: 18px;
+  }
+
+  .headerIdentity h2 {
+    font-size: 22px;
+  }
+
+  .headerActions {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+  }
+
+  .dateRangeControl {
+    min-width: 0;
+  }
+
+  .dateRangeControl select {
+    width: 100%;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    padding-inline: 10px;
+  }
+
+  .attentionStrip {
+    min-height: 0;
+  }
+
+  .attentionItems {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .attentionItem {
+    white-space: normal;
+    text-align: left;
+  }
+
+  .summaryGrid,
+  .loadingSummary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .summaryCard {
+    min-height: 112px;
+  }
+
+  .collectionOverview {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .collectionRing {
+    margin: 0 auto;
+  }
+
+  .milestoneActions,
+  .tableCardHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .transactionToolbar,
+  .formGrid,
+  .reportSummary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .searchControl {
+    grid-column: auto;
+  }
+
+  .tableCardHeader .inlineAction {
+    margin-top: -7px;
+  }
+
+  .reportRow {
+    grid-template-columns: auto minmax(0, 1fr);
+    padding-block: 12px;
+  }
+
+  .reportRow .secondaryButton {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .emptyState > div {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .drawer {
+    border-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryButton,
+  .secondaryButton,
+  .dataTable tbody tr {
+    transition: none;
+  }
+
+  .skeletonLineWide,
+  .skeletonLine,
+  .skeletonAction,
+  .loadingSummary span,
+  .loadingPanel {
+    animation: none;
+  }
+}

@@ -1,0 +1,355 @@
+.profileCardContainer {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+/* Vibrant Banner Section */
+.bannerWrap {
+  height: 210px;
+  position: relative;
+  width: 100%;
+  border-radius: 0 !important;
+  background: linear-gradient(120deg, #facc15 0%, #f97316 25%, #ec4899 50%, #8b5cf6 75%, #06b6d4 100%);
+  background-size: 200% 200%;
+  animation: bannerGradient 12s ease infinite;
+}
+
+@keyframes bannerGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.editBannerBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  z-index: 2;
+}
+
+.editBannerBtn:hover {
+  transform: scale(1.06);
+  background: #f9fafb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+}
+
+.editBannerBtn:active {
+  transform: scale(0.96);
+}
+
+/* Card Body */
+.cardBody {
+  padding: 0 24px 24px 24px;
+}
+
+.topRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: -54px;
+  margin-bottom: 16px;
+}
+
+.avatarWrapper {
+  position: relative;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 4px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatarFallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #111827, #374151);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+/* Right Section in Top Row (Role & Skills summary) */
+.topRightMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  padding-bottom: 4px;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.metaLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4b5563;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.metaIcon {
+  color: #6b7280;
+}
+
+.rolePill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  background: #f3f4f6;
+  color: #111827;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 9999px;
+  border: 1px solid #e5e7eb;
+}
+
+.skillsPillsGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.skillPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Identity Info Block */
+.identityBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profileName {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.profileTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.profileLocation {
+  margin: 2px 0 0 0;
+  font-size: 13.5px;
+  font-weight: 400;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.locationIcon {
+  color: #9ca3af;
+}
+
+/* Metrics Row Section */
+.metricsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.metricCol {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-right: 16px;
+  border-right: 1px solid #e5e7eb;
+}
+
+.metricCol:last-child {
+  border-right: none;
+  padding-right: 0;
+}
+
+.metricLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.metricValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* Edit Modal / Inline Edit Drawer */
+.editFormCard {
+  margin-top: 20px;
+  padding: 20px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.editFormGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldGroupFull {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.fieldInput {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 13.5px;
+  background: #ffffff;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.fieldInput:focus {
+  border-color: #111827;
+}
+
+.formActions {
+  grid-column: span 2;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.cancelBtn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.saveBtn {
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #111827;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .cardBody {
+    padding: 0 16px 20px 16px;
+  }
+  .topRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .topRightMeta {
+    align-items: flex-start;
+    width: 100%;
+  }
+  .skillsPillsGroup {
+    justify-content: flex-start;
+  }
+  .editFormGrid {
+    grid-template-columns: 1fr;
+  }
+  .fieldGroupFull {
+    grid-column: span 1;
+  }
+  .formActions {
+    grid-column: span 1;
+  }
+}

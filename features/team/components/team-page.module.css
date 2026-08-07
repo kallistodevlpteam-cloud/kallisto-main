@@ -1,0 +1,1450 @@
+.teamStack {
+  --team-danger: oklch(0.52 0.16 28);
+  --team-danger-soft: oklch(0.97 0.02 28);
+  --team-success: oklch(0.46 0.11 151);
+  --team-success-soft: oklch(0.96 0.025 151);
+  --team-warning: oklch(0.5 0.105 72);
+  --team-warning-soft: oklch(0.97 0.025 84);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.summaryStrip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  min-height: 84px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+}
+
+.summaryItem {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 18px 22px;
+  border-right: 1px solid var(--line);
+}
+
+.summaryItem:last-child {
+  border-right: 0;
+}
+
+.summaryItem span {
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 550;
+  white-space: nowrap;
+}
+
+.summaryItem strong {
+  color: var(--ink);
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 8fr) minmax(300px, 4fr);
+  align-items: start;
+  gap: 24px;
+}
+
+.utilityColumn {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+}
+
+.membersCard {
+  overflow: visible;
+}
+
+.cardHeader {
+  display: flex;
+  min-height: 76px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px 16px;
+}
+
+.cardHeader h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.cardHeader p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 11.75px;
+  line-height: 1.4;
+}
+
+.headerCount {
+  padding-top: 2px;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.filterToolbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px 16px;
+}
+
+.searchControl {
+  position: relative;
+  display: flex;
+  min-width: 190px;
+  flex: 1;
+  align-items: center;
+}
+
+.searchControl svg {
+  position: absolute;
+  left: 11px;
+  color: var(--soft);
+  pointer-events: none;
+}
+
+.searchControl input,
+.projectMemberSearch input {
+  width: 100%;
+  height: 36px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 12px;
+}
+
+.searchControl input {
+  padding: 0 10px 0 33px;
+}
+
+.searchControl input::placeholder,
+.projectMemberSearch input::placeholder,
+.formField input::placeholder,
+.formField textarea::placeholder {
+  color: var(--soft);
+}
+
+.desktopFilters {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.compactSelect select,
+.projectSelector select {
+  height: 36px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 11.75px;
+  cursor: pointer;
+}
+
+.compactSelect select {
+  width: 112px;
+  padding: 0 24px 0 9px;
+}
+
+.compactSelect:nth-child(2) select {
+  width: 128px;
+}
+
+.filterButton {
+  display: none;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.filterButton strong {
+  display: grid;
+  min-width: 18px;
+  height: 18px;
+  place-items: center;
+  padding: 0 4px;
+  color: var(--surface);
+  background: var(--ink);
+  border-radius: 50%;
+  font-size: 10px;
+}
+
+.mobileFilters {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% - 10px);
+  right: 20px;
+  display: grid;
+  width: min(280px, calc(100% - 40px));
+  gap: 8px;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(24, 27, 32, 0.12);
+}
+
+.mobileFilters .compactSelect select {
+  width: 100%;
+}
+
+.membersTable {
+  --member-columns:
+    minmax(210px, 2.15fr)
+    minmax(126px, 1.25fr)
+    minmax(72px, 0.7fr)
+    minmax(94px, 0.9fr)
+    minmax(86px, 0.8fr)
+    minmax(76px, 0.72fr)
+    36px;
+  width: 100%;
+  border-top: 1px solid var(--line);
+}
+
+.memberTableHeader,
+.memberRow {
+  display: grid;
+  grid-template-columns: var(--member-columns);
+  align-items: center;
+  column-gap: 12px;
+}
+
+.memberTableHeader {
+  min-height: 38px;
+  padding: 0 16px;
+  color: var(--soft);
+  background: oklch(0.98 0.003 75);
+  border-bottom: 1px solid var(--line);
+  font-size: 10.5px;
+  font-weight: 650;
+}
+
+.memberTableBody {
+  display: flex;
+  flex-direction: column;
+}
+
+.memberRow {
+  position: relative;
+  min-height: 70px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--line);
+  transition: background-color 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.memberRow:last-child {
+  border-bottom: 0;
+}
+
+.memberRow:hover {
+  background: oklch(0.985 0.003 75);
+}
+
+.memberIdentity,
+.permissionMember {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 11px;
+}
+
+.avatar {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: oklch(0.3 0.012 72);
+  background: oklch(0.94 0.008 74);
+  border: 1px solid oklch(0.89 0.008 74);
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.memberCopy,
+.permissionMember {
+  min-width: 0;
+}
+
+.memberCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.memberCopy strong,
+.permissionMember strong {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 12.25px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.memberCopy small,
+.permissionMember small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10.75px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roleBadge {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  min-height: 25px;
+  padding: 3px 7px;
+  overflow: hidden;
+  color: oklch(0.34 0.012 72);
+  background: var(--surface-subtle);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.projectsCell,
+.lastActiveCell,
+.projectRoleCell {
+  color: var(--muted);
+  font-size: 11.25px;
+}
+
+.workloadCell {
+  display: flex;
+  max-width: 88px;
+  flex-direction: column;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 10.75px;
+}
+
+.workloadTrack {
+  display: block;
+  width: 100%;
+  height: 4px;
+  overflow: hidden;
+  background: oklch(0.92 0.006 75);
+  border-radius: 999px;
+}
+
+.workloadTrack > span {
+  display: block;
+  height: 100%;
+  background: oklch(0.55 0.012 72);
+  border-radius: inherit;
+}
+
+.statusLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 10.75px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.statusLabel > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.statusActive > span {
+  background: var(--team-success);
+}
+
+.statusInvited > span {
+  background: var(--team-warning);
+}
+
+.statusInactive > span {
+  background: var(--soft);
+}
+
+.actionsCell {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.iconButton {
+  display: inline-grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  padding: 0;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.iconButton:hover,
+.iconButton[aria-expanded="true"] {
+  color: var(--ink);
+  background: var(--surface-subtle);
+  border-color: var(--line);
+}
+
+.memberMenu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 3px);
+  right: 0;
+  display: flex;
+  width: 190px;
+  flex-direction: column;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  box-shadow: 0 12px 28px rgba(24, 27, 32, 0.13);
+}
+
+.memberMenu button {
+  display: flex;
+  min-height: 31px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 9px;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11.5px;
+  text-align: left;
+}
+
+.memberMenu button:hover {
+  background: var(--surface-subtle);
+}
+
+.memberMenu button:disabled {
+  color: var(--soft);
+  cursor: not-allowed;
+}
+
+.memberMenu button:last-child:not(:disabled) {
+  color: var(--team-danger);
+}
+
+.mobileMemberList {
+  display: none;
+}
+
+.invitationList,
+.rolesList {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--line);
+}
+
+.invitationItem {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.invitationHeading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.invitationHeading strong {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 11.75px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.invitationHeading > span {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+.invitationMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+  color: var(--soft);
+  font-size: 10.5px;
+}
+
+.inlineActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 9px;
+}
+
+.inlineActions button,
+.footerAction,
+.textAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10.75px;
+  font-weight: 650;
+}
+
+.inlineActions button:hover,
+.footerAction:hover,
+.textAction:hover {
+  color: var(--ink);
+}
+
+.inlineActions button:last-child:hover {
+  color: var(--team-danger);
+}
+
+.cardFooter {
+  display: flex;
+  min-height: 45px;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.footerAction {
+  color: var(--ink);
+}
+
+.roleRow {
+  display: flex;
+  min-height: 49px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 20px;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.roleRow:hover {
+  background: oklch(0.985 0.003 75);
+}
+
+.roleRow > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.roleRow strong {
+  font-size: 11.5px;
+  font-weight: 650;
+}
+
+.roleRow small {
+  color: var(--muted);
+  font-size: 10.5px;
+}
+
+.emptyState {
+  display: flex;
+  min-height: 170px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.emptyStateIcon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: var(--muted);
+  background: var(--surface-subtle);
+  border-radius: 50%;
+}
+
+.emptyState h3 {
+  margin: 10px 0 0;
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 650;
+}
+
+.emptyState p {
+  max-width: 42ch;
+  margin: 4px 0 12px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.projectAccessCard {
+  scroll-margin-top: 18px;
+}
+
+.projectAccessHeader {
+  align-items: center;
+}
+
+.projectAccessControls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.projectSelector select {
+  width: 150px;
+  padding: 0 25px 0 9px;
+}
+
+.projectMemberSearch {
+  position: relative;
+  display: flex;
+  width: 170px;
+  align-items: center;
+}
+
+.projectMemberSearch svg {
+  position: absolute;
+  left: 10px;
+  color: var(--soft);
+}
+
+.projectMemberSearch input {
+  padding: 0 9px 0 31px;
+}
+
+.primaryButton,
+.secondaryButton {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11.75px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.primaryButton {
+  color: var(--surface);
+  background: oklch(0.2 0.02 255);
+  border: 1px solid oklch(0.2 0.02 255);
+}
+
+.primaryButton:hover {
+  background: oklch(0.25 0.02 255);
+}
+
+.secondaryButton {
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+}
+
+.secondaryButton:hover {
+  background: var(--surface-subtle);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.permissionTable {
+  border-top: 1px solid var(--line);
+}
+
+.permissionHeader,
+.permissionRow {
+  display: grid;
+  grid-template-columns:
+    minmax(220px, 2fr)
+    minmax(130px, 1.15fr)
+    repeat(5, minmax(58px, 0.5fr));
+  align-items: center;
+  column-gap: 10px;
+}
+
+.permissionHeader {
+  min-height: 39px;
+  padding: 0 20px;
+  color: var(--soft);
+  background: oklch(0.98 0.003 75);
+  border-bottom: 1px solid var(--line);
+  font-size: 10.5px;
+  font-weight: 650;
+}
+
+.permissionHeader > div:nth-child(n + 3),
+.permissionRow > div:nth-child(n + 3) {
+  text-align: center;
+}
+
+.permissionRow {
+  min-height: 61px;
+  padding: 8px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.permissionRow:last-child {
+  border-bottom: 0;
+}
+
+.permissionMember {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.permissionControl {
+  position: relative;
+  display: inline-flex;
+  min-width: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.permissionControl input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: oklch(0.25 0.02 255);
+  cursor: pointer;
+}
+
+.permissionControl input:disabled {
+  cursor: not-allowed;
+}
+
+.inheritedIndicator {
+  display: inline-flex;
+  color: var(--soft);
+}
+
+.permissionLegend {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 20px;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  font-size: 10.5px;
+}
+
+.mobilePermissionList {
+  display: none;
+}
+
+.pageState {
+  display: flex;
+  min-height: 280px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 36px 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.pageState > span {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  color: var(--muted);
+  background: var(--surface-subtle);
+  border-radius: 50%;
+}
+
+.pageState h2 {
+  margin: 12px 0 0;
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.pageState p {
+  max-width: 46ch;
+  margin: 5px 0 15px;
+  color: var(--muted);
+  font-size: 11.75px;
+  line-height: 1.5;
+}
+
+.skeleton {
+  background: oklch(0.94 0.005 75);
+  border-radius: var(--radius-md);
+  animation: teamSkeleton 1.35s ease-in-out infinite;
+}
+
+.summarySkeleton {
+  height: 84px;
+}
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 8fr) minmax(300px, 4fr);
+  gap: 24px;
+}
+
+.membersSkeleton {
+  min-height: 560px;
+}
+
+.skeletonRail {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.utilitySkeleton {
+  min-height: 260px;
+}
+
+.inviteDialog {
+  --team-danger: oklch(0.52 0.16 28);
+  width: min(520px, 100vw);
+  max-width: none;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0 0 0 auto;
+  padding: 0;
+  color: var(--ink);
+  background: var(--surface);
+  border: 0;
+  border-left: 1px solid var(--line);
+  box-shadow: -16px 0 36px rgba(24, 27, 32, 0.14);
+  animation: drawerIn 190ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.inviteDialog::backdrop {
+  background: rgba(24, 27, 32, 0.34);
+  animation: backdropIn 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.drawerForm {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 19px 20px 17px;
+  border-bottom: 1px solid var(--line);
+}
+
+.drawerHeader > div > span {
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.drawerHeader h2 {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-size: 19px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.drawerHeader p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 11.75px;
+}
+
+.drawerBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 17px;
+  padding: 19px 20px 24px;
+  overflow-y: auto;
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formField > label,
+.accessFieldset legend,
+.projectChecklist legend {
+  color: oklch(0.34 0.012 72);
+  font-size: 11.75px;
+  font-weight: 650;
+}
+
+.formField > label small {
+  margin-left: 4px;
+  color: var(--soft);
+  font-size: 10.5px;
+  font-weight: 500;
+}
+
+.formField input,
+.formField select,
+.formField textarea {
+  width: 100%;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 12.5px;
+}
+
+.formField input,
+.formField select {
+  height: 39px;
+  padding: 0 10px;
+}
+
+.formField textarea {
+  min-height: 92px;
+  padding: 10px;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.formField input[aria-invalid="true"],
+.formField select[aria-invalid="true"] {
+  border-color: var(--team-danger);
+}
+
+.fieldError {
+  color: var(--team-danger);
+  font-size: 10.75px;
+  line-height: 1.35;
+}
+
+.accessFieldset,
+.projectChecklist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.accessFieldset legend,
+.projectChecklist legend {
+  margin-bottom: 7px;
+}
+
+.accessFieldset label,
+.projectChecklist label {
+  display: flex;
+  min-height: 35px;
+  align-items: center;
+  gap: 9px;
+  padding: 0 10px;
+  color: var(--ink);
+  background: oklch(0.985 0.003 75);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 11.75px;
+}
+
+.accessFieldset input,
+.projectChecklist input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: oklch(0.25 0.02 255);
+}
+
+.projectChecklist {
+  padding: 11px;
+  background: var(--surface-subtle);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+
+.projectChecklist label {
+  background: var(--surface);
+}
+
+.drawerFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+}
+
+.toast {
+  --team-success: oklch(0.46 0.11 151);
+  position: fixed;
+  z-index: 250;
+  right: 22px;
+  bottom: 22px;
+  display: flex;
+  min-width: 280px;
+  max-width: min(420px, calc(100vw - 32px));
+  align-items: center;
+  gap: 9px;
+  padding: 11px 12px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(24, 27, 32, 0.15);
+  font-size: 11.75px;
+}
+
+.toast > svg {
+  flex: 0 0 auto;
+  color: var(--team-success);
+}
+
+.toast > span {
+  flex: 1;
+}
+
+.toast button {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  padding: 0;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.toast button:hover {
+  background: var(--surface-subtle);
+}
+
+.searchControl input:focus-visible,
+.compactSelect select:focus-visible,
+.projectSelector select:focus-visible,
+.projectMemberSearch input:focus-visible,
+.filterButton:focus-visible,
+.iconButton:focus-visible,
+.memberMenu button:focus-visible,
+.inlineActions button:focus-visible,
+.footerAction:focus-visible,
+.roleRow:focus-visible,
+.textAction:focus-visible,
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible,
+.permissionControl input:focus-visible,
+.formField input:focus-visible,
+.formField select:focus-visible,
+.formField textarea:focus-visible,
+.accessFieldset input:focus-visible,
+.projectChecklist input:focus-visible,
+.permissionPanel summary:focus-visible,
+.toast button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+@keyframes drawerIn {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes backdropIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes teamSkeleton {
+  0%,
+  100% {
+    opacity: 0.56;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 1320px) {
+  .membersTable {
+    --member-columns:
+      minmax(205px, 2fr)
+      minmax(120px, 1.15fr)
+      minmax(70px, 0.7fr)
+      minmax(72px, 0.7fr)
+      36px;
+  }
+
+  .memberTableHeader > div:nth-child(4),
+  .memberTableHeader > div:nth-child(5),
+  .workloadCell,
+  .lastActiveCell {
+    display: none;
+  }
+}
+
+@media (max-width: 1180px) {
+  .mainGrid,
+  .skeletonGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .utilityColumn {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 980px) {
+  .projectAccessHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .projectAccessControls {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .projectSelector {
+    flex: 1;
+  }
+
+  .projectSelector select {
+    width: 100%;
+  }
+
+  .projectMemberSearch {
+    flex: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .teamStack {
+    gap: 20px;
+  }
+
+  .summaryStrip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summaryItem:nth-child(2) {
+    border-right: 0;
+  }
+
+  .summaryItem:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .utilityColumn {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .desktopFilters {
+    display: none;
+  }
+
+  .filterButton {
+    display: inline-flex;
+  }
+
+  .membersTable {
+    display: none;
+  }
+
+  .mobileMemberList {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--line);
+  }
+
+  .memberMobileCard {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .memberMobileCard:last-child {
+    border-bottom: 0;
+  }
+
+  .mobileMemberHeader {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+  }
+
+  .mobileMemberHeader .memberCopy {
+    flex: 1;
+  }
+
+  .mobileMemberDetails {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 18px;
+    margin: 13px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+
+  .mobileMemberDetails > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .mobileMemberDetails dt {
+    color: var(--soft);
+    font-size: 10px;
+  }
+
+  .mobileMemberDetails dd {
+    margin: 0;
+    color: var(--ink);
+    font-size: 11.5px;
+    font-weight: 600;
+  }
+
+  .mobileMemberActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .mobileMemberActions button {
+    min-height: 31px;
+    padding: 0 9px;
+    color: var(--ink);
+    background: var(--surface-subtle);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 10.75px;
+    font-weight: 600;
+  }
+
+  .permissionTable {
+    display: none;
+  }
+
+  .mobilePermissionList {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--line);
+  }
+
+  .permissionPanel {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .permissionPanel:last-child {
+    border-bottom: 0;
+  }
+
+  .permissionPanel summary {
+    min-height: 58px;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+
+  .permissionPanel summary > span {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .permissionPanel summary strong {
+    color: var(--ink);
+    font-size: 11.75px;
+  }
+
+  .permissionPanel summary small {
+    color: var(--muted);
+    font-size: 10.5px;
+  }
+
+  .permissionPanelBody {
+    display: grid;
+    gap: 0;
+    padding: 0 20px 12px;
+  }
+
+  .permissionPanelBody > label {
+    display: flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 620px) {
+  .summaryItem {
+    padding: 16px;
+  }
+
+  .cardHeader {
+    min-height: 70px;
+    padding-inline: 16px;
+  }
+
+  .filterToolbar {
+    padding-inline: 16px;
+  }
+
+  .mobileFilters {
+    right: 16px;
+    width: calc(100% - 32px);
+  }
+
+  .projectAccessControls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .projectMemberSearch {
+    width: 100%;
+  }
+
+  .projectAccessControls .primaryButton,
+  .projectAccessControls .secondaryButton {
+    width: 100%;
+  }
+
+  .inviteDialog {
+    width: 100vw;
+    border-left: 0;
+  }
+
+  .drawerHeader,
+  .drawerBody,
+  .drawerFooter {
+    padding-inline: 16px;
+  }
+
+  .drawerFooter .primaryButton,
+  .drawerFooter .secondaryButton {
+    flex: 1;
+  }
+
+  .toast {
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inviteDialog,
+  .inviteDialog::backdrop,
+  .skeleton {
+    animation: none;
+  }
+}

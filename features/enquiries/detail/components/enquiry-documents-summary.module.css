@@ -1,0 +1,204 @@
+/* ─── Enquiry Documents Summary Card ────────────────────────── */
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  min-width: 0;
+}
+
+.titleWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.icon {
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.totalBadge {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #94a3b8;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Summary line */
+.summaryLine {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.uploadedCount {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.missingBadge {
+  color: #d97706;
+  font-weight: 600;
+}
+
+.completeBadge {
+  color: #16a34a;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.bullet {
+  color: #cbd5e1;
+}
+
+/* Missing Section */
+.missingSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+  min-width: 0;
+}
+
+.missingSectionLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.missingList {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.missingRow {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 12px;
+  color: #475569;
+}
+
+.rowIcon {
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.rowIconComplete {
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
+.docLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 400;
+  color: #334155;
+}
+
+.moreMissingRow {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #d97706;
+  padding-left: 24px;
+}
+
+.completeBox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #16a34a;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+/* Footer Action */
+.footer {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 10px;
+  margin-top: 4px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.viewAllBtn {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2563eb;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  transition: color 0.15s ease;
+}
+
+.viewAllBtn:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.viewAllBtn:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.btnChevron {
+  transition: transform 0.15s ease;
+}
+
+.viewAllBtn:hover .btnChevron {
+  transform: translateX(2px);
+}

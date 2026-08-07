@@ -1,0 +1,60 @@
+/* ─── Project Scope Section ────────────────────────────────── */
+
+.sectionContainer {
+  margin-top: 16px;
+  width: 100%;
+}
+
+.sectionDescription {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #64748b;
+  margin: 0 0 12px 0;
+}
+
+.scopeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.scopeCategoryCard {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.categoryTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 10px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.itemList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.itemRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.checkIcon {
+  color: #16a34a;
+  flex-shrink: 0;
+  margin-top: 2px;
+}

@@ -1,0 +1,359 @@
+.sidebarContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  isolation: isolate;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sidebarContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.sidebarContainerCollapsed {
+  width: 100%;
+  height: 100%;
+  padding-top: 14px;
+  padding-right: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* Header & Tab Switcher Bar */
+.sidebarTopBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 10px;
+}
+
+.tabsRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tabBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #64748b;
+  font-size: 12.5px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.viewAllBtn {
+  border: none;
+  background: transparent;
+  color: #3730a3;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.viewAllBtn:hover {
+  color: #1e1b4b;
+  text-decoration: underline;
+}
+
+.tabBtn:hover {
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+.activeTabBtn {
+  background: #f1f5f9;
+  color: #0f172a;
+  border: none;
+  font-weight: 650;
+}
+
+.tabBadge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 9999px;
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.collapseToggleBtn {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #dc2626;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.collapseToggleBtn:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+/* Sections */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.outputCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #f8fafc;
+  transition: background-color 0.15s ease;
+}
+
+.outputCard:hover {
+  background: #f1f5f9;
+}
+
+.outputCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.outputTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.outputIconWrapper {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: #f0fdf4;
+  color: #16a34a;
+  border: none;
+  flex-shrink: 0;
+}
+
+.outputTitleText {
+  font-size: 13px;
+  font-weight: 650;
+  color: #0f172a;
+}
+
+.statusPill {
+  font-size: 10.5px;
+  font-weight: 650;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: #dcfce7;
+  color: #15803d;
+  flex-shrink: 0;
+}
+
+.outputMetaText {
+  font-size: 11.5px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* Version List */
+.versionList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.versionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: none;
+  font-size: 12px;
+  transition: background-color 0.15s ease;
+}
+
+.versionRow:hover {
+  background: #f8fafc;
+}
+
+.versionBadgeCurrent {
+  font-weight: 650;
+  color: #0f172a;
+}
+
+.versionTime {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* Item Lists & Rows */
+.itemList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.itemRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background-color 0.15s ease;
+  user-select: none;
+  outline: none;
+}
+
+.itemRow:hover,
+.itemRow:focus-visible {
+  background-color: #f8fafc;
+}
+
+.chatIconWrapper {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #f3e8ff;
+  color: #581c87;
+  flex-shrink: 0;
+}
+
+.fileIconWrapper {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.file_pdf {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.file_png,
+.file_jpg {
+  background: #f0f9ff;
+  color: #0284c7;
+}
+
+.file_xlsx {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.itemTextCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.itemTitle {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.itemSubtext {
+  font-size: 11px;
+  font-weight: 500;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fileTimestamp {
+  font-size: 11px;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Collapsed Vertical Strip 3D Folded Document Icon Button */
+.glassIconBtn {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.22s ease;
+  outline: none;
+  filter: drop-shadow(0 4px 10px rgba(67, 56, 202, 0.28));
+}
+
+.glassIconBtn:hover {
+  transform: translateY(-2px) scale(1.08);
+  filter: drop-shadow(0 6px 14px rgba(67, 56, 202, 0.38));
+}
+
+.glassIconBtn:active {
+  transform: translateY(0) scale(0.96);
+  filter: drop-shadow(0 2px 6px rgba(67, 56, 202, 0.2));
+}

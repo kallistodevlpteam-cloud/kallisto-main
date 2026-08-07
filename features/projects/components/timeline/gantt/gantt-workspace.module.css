@@ -1,0 +1,1088 @@
+.timelineWorkspaceLayout {
+  container-type: inline-size;
+  container-name: timeline-workspace;
+  position: relative;
+  display: flex;
+  min-width: 0;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  gap: 0;
+  box-sizing: border-box;
+}
+
+/* Fullscreen expanded Gantt planning workspace focus mode */
+.ganttWorkspaceExpanded {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1000 !important;
+  background: #ffffff !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Unified planning surface without outer card borders or rounded corners */
+.planningSurface {
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+  min-height: 0;
+  background: #ffffff;
+  border: none;
+  border-radius: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* Integrated Toolbar */
+.ganttUnifiedToolbar {
+  width: 100%;
+  min-height: 56px;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: 0;
+  border-bottom: 1px solid #e2e8f0;
+  border-radius: 0;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 24;
+  box-sizing: border-box;
+}
+
+.toolbarRow {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto minmax(220px, 1fr);
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 36px;
+  box-sizing: border-box;
+}
+
+.toolbarLeftSection {
+  justify-self: start;
+  display: flex;
+  align-items: center;
+}
+
+.toolbarCenterSection {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.toolbarRightSection {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Search input structure */
+.ganttSearchInputWrap {
+  position: relative;
+  width: 100%;
+  max-width: 240px;
+  min-width: 120px;
+  height: 36px;
+  flex: 1 1 auto;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ganttSearchField {
+  display: block;
+  width: 100%;
+  height: 36px;
+  padding: 0 12px 0 36px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  outline: none;
+  background: #f1f5f9;
+  color: #0f172a;
+  font: inherit;
+  font-size: 13px;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.ganttSearchField::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.ganttSearchField:focus {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Button normalization & focus state */
+.todayBtn,
+.zoomSegmentBtn,
+.addMemberBtn,
+.toolIconBtn {
+  font: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+}
+
+.todayBtn:focus-visible,
+.zoomSegmentBtn:focus-visible,
+.addMemberBtn:focus-visible,
+.toolIconBtn:focus-visible {
+  box-shadow: 0 0 0 2px #bfdbfe;
+}
+
+/* Today button & Date Range Label */
+.todayBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 11px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+}
+
+.todayBtn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.dateRangeTextLabel {
+  color: #475569;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* Zoom Segmented Control */
+.zoomSegmentedGroup {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 3px;
+  border-radius: 9px;
+  background: #f1f5f9;
+  box-sizing: border-box;
+  gap: 2px;
+}
+
+.zoomSegmentBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.zoomSegmentBtn:hover {
+  color: #0f172a;
+}
+
+.zoomSegmentActive {
+  background: #ffffff;
+  color: #2563eb;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+/* Team Avatar Stack */
+.teamAvatarStack {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  box-sizing: border-box;
+}
+
+.addMemberBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.addMemberBtn:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+.avatarCircle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ea580c;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.avatarMoreBadge {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  color: #ea580c;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* Icon Action Buttons */
+.toolIconDivider {
+  width: 1px;
+  height: 18px;
+  background: #e2e8f0;
+  margin: 0 4px;
+}
+
+.toolIconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.toolIconBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.toolIconActive {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+/* Container query responsive behavior */
+@container timeline-workspace (max-width: 1100px) {
+  .dateRangeTextLabel {
+    display: none;
+  }
+}
+
+@container timeline-workspace (max-width: 900px) {
+  .toolbarRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "search actions"
+      "center center";
+    row-gap: 8px;
+  }
+
+  .toolbarLeftSection {
+    grid-area: search;
+  }
+
+  .toolbarCenterSection {
+    grid-area: center;
+    justify-self: center;
+  }
+
+  .toolbarRightSection {
+    grid-area: actions;
+  }
+}
+
+/* Lower Legend Row */
+.toolbarLegendRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 11.5px;
+  color: #64748b;
+  padding-top: 4px;
+}
+
+.legendItemsGroup {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  color: #475569;
+}
+
+.legendPhaseBox {
+  width: 12px;
+  height: 10px;
+  background: #1e293b;
+  border-radius: 2px;
+}
+
+.legendCompleteBox {
+  width: 12px;
+  height: 10px;
+  background: #10b981;
+  border-radius: 2px;
+}
+
+.legendDelayPill {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0 4px;
+  border-radius: 3px;
+}
+
+.legendTentativeBox {
+  width: 12px;
+  height: 10px;
+  border: 1.5px dashed #94a3b8;
+  background: #f1f5f9;
+  border-radius: 2px;
+}
+
+.legendMilestoneDiamond {
+  width: 9px;
+  height: 9px;
+  background: #9333ea;
+  transform: rotate(45deg);
+}
+
+.legendTodayLine {
+  width: 1px;
+  height: 12px;
+  background: #2563eb;
+}
+
+/* Main Layout Viewport */
+.ganttViewportTable {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.ganttMainLayout {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Fixed Task-Tree Column Pane (NAME) */
+.leftTaskColumnPanel {
+  width: 365px;
+  flex: 0 0 365px;
+  border-right: 1px solid #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  z-index: 15;
+  box-sizing: border-box;
+}
+
+.leftPanelHeaderCell {
+  height: 56px;
+  min-height: 56px;
+  background: #ffffff;
+  border-bottom: 1px solid #cbd5e1;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 14px 10px;
+  box-sizing: border-box;
+}
+
+.colHeaderName {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.leftPanelBody {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  box-sizing: border-box;
+}
+
+.leftPanelBody::-webkit-scrollbar {
+  display: none;
+}
+
+/* Phase Row */
+.leftPhaseHeaderRow {
+  height: 38px;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  background: #ffffff;
+  border-bottom: none;
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.leftPhaseHeaderRow:hover {
+  background: #f4f6f8;
+}
+
+.phaseHeaderLeftGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.phaseColourDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.phaseTitleCol {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.phaseTitleText {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: 0.02em;
+}
+
+.phaseWbsCode {
+  font-size: 12px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.phaseCollapseToggle {
+  display: flex;
+  align-items: center;
+  color: #64748b;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+/* Activity Row */
+.leftActivityRow {
+  height: 42px;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px 0 26px;
+  background: #ffffff;
+  border-bottom: none;
+  cursor: pointer;
+  transition: background 0.1s ease;
+  box-sizing: border-box;
+}
+
+.leftActivityRow:hover,
+.timelineRowHovered {
+  background: #f8fafc !important;
+}
+
+.timelineRowSelected {
+  background: #f3f7fc !important;
+  box-shadow: inset 3px 0 0 #2563eb;
+}
+
+.taskIdentity {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.taskTitleText {
+  font-size: 12px;
+  font-weight: 500;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.actWbsCode {
+  font-size: 11.5px;
+  font-weight: 400;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+/* Status Icons (Right-aligned inside task row) */
+.statusIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  flex-shrink: 0;
+}
+
+.statusCompletedIcon {
+  color: #10b981;
+}
+
+.statusInProgressDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2563eb;
+}
+
+.statusBlockedIcon {
+  color: #dc2626;
+}
+
+.statusAtRiskIcon {
+  color: #d97706;
+}
+
+.statusPendingDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #cbd5e1;
+}
+
+/* Right Horizontally Scrollable Timeline Viewport */
+.rightTimelineGridPanel {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: auto;
+  position: relative;
+  background: #ffffff;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  box-sizing: border-box;
+}
+
+.rightTimelineGridPanel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Full Timeline Canvas Container */
+.timelineCanvas {
+  position: relative;
+  min-width: max-content;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+/* Restrained 1px Blue Today Vertical Line */
+.verticalTodayLine {
+  position: absolute;
+  top: 56px;
+  bottom: 0;
+  width: 1px;
+  background: rgba(37, 99, 235, 0.45);
+  z-index: 18;
+  pointer-events: none;
+}
+
+/* 2-Level Timeline Header Container matching Reference */
+.timelineHeaderContainer {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-bottom: 1px solid #cbd5e1;
+  height: 56px;
+  min-height: 56px;
+  box-sizing: border-box;
+}
+
+.timelineMonthHeaderRow {
+  display: flex;
+  height: 24px;
+  min-height: 24px;
+  background: #ffffff;
+  border-bottom: none;
+  box-sizing: border-box;
+}
+
+.timelineMonthHeaderCell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  border-right: none;
+  box-sizing: border-box;
+}
+
+.monthSegmentLabel {
+  position: sticky;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 4px;
+  white-space: nowrap;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #0f172a;
+  box-sizing: border-box;
+  z-index: 22;
+}
+
+.timelineHeaderRowGrid {
+  display: flex;
+  height: 31px;
+  min-height: 31px;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.timelineDateHeaderCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 11px;
+  font-weight: 500;
+  border-right: none;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.weekMarkerText {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #64748b;
+  text-align: center;
+  user-select: none;
+}
+
+.mondaySeparator {
+  border-left: 1px solid #e2e8f0;
+}
+
+.monthBoundarySeparator {
+  border-left: 1px solid #cbd5e1;
+}
+
+.dayCellInner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 2px 4px;
+  box-sizing: border-box;
+}
+
+.weekdayInitial {
+  color: #94a3b8;
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.dateNumber {
+  color: #334155;
+  font-weight: 600;
+  font-size: 11.5px;
+}
+
+/* Today Pill Highlight matching Reference Image */
+.todayPillHighlight {
+  background: #2563eb;
+  color: #ffffff !important;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 11px;
+  font-weight: 700;
+
+  span {
+    color: #ffffff !important;
+  }
+}
+
+/* Grid Body Track Rows */
+.timelineGridBody {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.gridPhaseRowTrack {
+  position: relative;
+  height: 38px;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-bottom: none;
+  box-sizing: border-box;
+}
+
+.gridPhaseRowTrack:hover {
+  background: #f4f6f8;
+}
+
+.gridActivityRowTrack {
+  position: relative;
+  height: 42px;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-bottom: none;
+  transition: background 0.1s ease;
+  box-sizing: border-box;
+}
+
+.gridCellCol {
+  height: 100%;
+  border-right: none;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* Phase Summary Bar (Strong solid color) */
+.ganttPhaseBar {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 24px;
+  border-radius: 4px;
+  border: none;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.phaseBarLabel {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Baseline Bar */
+.approvedBaselineBar {
+  position: absolute;
+  top: 33px;
+  height: 3px;
+  border-radius: 2px;
+  background: #94a3b8;
+  z-index: 10;
+  opacity: 0.8;
+}
+
+.delayExtensionBar {
+  position: absolute;
+  top: 33px;
+  height: 3px;
+  border-radius: 2px;
+  background: #ef4444;
+  z-index: 11;
+}
+
+/* Activity Bar Wrapper & Component matching Reference Screenshot */
+.activityBarWrapper {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 22px;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.activityBar {
+  position: relative;
+  height: 100%;
+  flex: 1;
+  min-width: 0;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+}
+
+.activityBar:hover {
+  filter: brightness(0.97);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.barLeadingEdge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 4px;
+  border-radius: 4px 0 0 4px;
+  z-index: 3;
+}
+
+.barProgressFill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  pointer-events: none;
+  transition: width 0.2s ease;
+}
+
+.barInsideContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px 0 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.barTextLabelInside {
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.barCheckBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.delayVarianceBadge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0 4px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+/* Milestone Diamond marker */
+.milestoneRowContainer {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 14;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.milestoneDiamondShape {
+  width: 14px;
+  height: 14px;
+  background: #9333ea;
+  transform: rotate(45deg);
+  border-radius: 2px;
+  box-shadow: 0 1px 4px rgba(147, 51, 234, 0.4);
+  flex-shrink: 0;
+}
+
+.milestoneLabelInline {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #6b21a8;
+  white-space: nowrap;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Activity Inspector Floating Drawer Panel */
+.activityInspectorDrawer {
+  width: 380px;
+  flex: 0 0 380px;
+  background: #ffffff;
+  border-left: 1px solid #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  z-index: 30;
+  box-sizing: border-box;
+}
+
+.inspectorHeader {
+  height: 56px;
+  min-height: 56px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #cbd5e1;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.inspectorTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.closeDrawerBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.closeDrawerBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.inspectorBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+.metaSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.metaLabel {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.metaVal {
+  color: #0f172a;
+  font-weight: 600;
+}

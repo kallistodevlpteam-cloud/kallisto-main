@@ -1,0 +1,163 @@
+.indicatorWrapper {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: none;
+  font-size: 13px;
+  color: #64748b;
+  box-sizing: border-box;
+  animation: indicatorFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.mainRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon {
+  color: #64748b;
+}
+
+/* Dots Variant */
+.dotsContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #64748b;
+  animation: dotBounce 1.4s ease-in-out infinite both;
+}
+
+.dot:nth-child(1) { animation-delay: 0s; }
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotBounce {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* Pulse Variant */
+.pulseDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3b82f6;
+  animation: pulseGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
+  }
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+/* Shimmer Variant */
+.shimmerIcon {
+  color: #8b5cf6;
+  animation: shimmerSparkle 2s ease-in-out infinite;
+}
+
+@keyframes shimmerSparkle {
+  0%, 100% {
+    opacity: 0.6;
+    transform: rotate(0deg) scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: rotate(180deg) scale(1.1);
+  }
+}
+
+.label {
+  font-weight: 500;
+  color: #334155;
+}
+
+.elapsedBadge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  margin-left: auto;
+}
+
+/* Steps List */
+.stepsList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+  padding-left: 6px;
+  border-left: 2px solid #e2e8f0;
+}
+
+.stepRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.step_active {
+  color: #0f172a;
+  font-weight: 500;
+}
+
+.step_completed {
+  color: #10b981;
+}
+
+.stepStatusIcon {
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+}
+
+.checkIcon {
+  color: #10b981;
+}
+
+.stepLabel {
+  font-size: 12px;
+}
+
+@keyframes indicatorFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
