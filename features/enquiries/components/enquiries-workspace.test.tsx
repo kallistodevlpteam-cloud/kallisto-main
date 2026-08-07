@@ -1,6 +1,7 @@
-import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { EnquiriesWorkspace } from "./enquiries-workspace";
+import type { EnquiryRecord } from "../types/enquiry.types";
 
 const mockPush = vi.fn();
 const mockReplace = vi.fn();
@@ -18,6 +19,51 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("EnquiriesWorkspace Component", () => {
+  let fetchMock: ReturnType<typeof vi.spyOn> | undefined;
+
+  const mockEnqProjects = () => {
+    fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          status: "ok",
+          projects: [
+            {
+              id: 2,
+              projectName: "Sunrise Villa",
+              projectType: "Residential",
+              buildingType: "Villa",
+              projectCharacter: "enq",
+              newConstructionOrRenovation: null,
+              purposeOfProject: null,
+              briefDescription: null,
+              coverImageUrl: null,
+              clientName: "Rahul Menon",
+              place: "Kochi",
+              createdAt: "2026-07-01T00:00:00.000Z",
+              updatedAt: "2026-07-01T00:00:00.000Z",
+            },
+            {
+              id: 3,
+              projectName: "Lakeview Residence",
+              projectType: "Residential",
+              buildingType: "House",
+              projectCharacter: "enq",
+              newConstructionOrRenovation: null,
+              purposeOfProject: null,
+              briefDescription: null,
+              coverImageUrl: null,
+              clientName: "Priya Sharma",
+              place: "Bengaluru",
+              createdAt: "2026-07-02T00:00:00.000Z",
+              updatedAt: "2026-07-02T00:00:00.000Z",
+            },
+          ],
+        }),
+        { headers: { "Content-Type": "application/json" } }
+      )
+    );
+  };
+
   beforeEach(() => {
     mockPush.mockClear();
     mockReplace.mockClear();
@@ -25,10 +71,13 @@ describe("EnquiriesWorkspace Component", () => {
   });
 
   afterEach(() => {
+    fetchMock?.mockRestore();
     cleanup();
+    delete (window as unknown as { __TEST_ENQUIRIES__?: EnquiryRecord[] }).__TEST_ENQUIRIES__;
   });
 
-  it("renders enquiries page header, controls, headers and list rows successfully", () => {
+  it("renders enquiries page header, controls, headers and backend list rows successfully", async () => {
+    mockEnqProjects();
     render(<EnquiriesWorkspace />);
 
     // Page Header elements
@@ -49,13 +98,20 @@ describe("EnquiriesWorkspace Component", () => {
     expect(screen.getAllByText("Budget")[0]).toBeInTheDocument();
     expect(screen.getAllByText("Project Type")[0]).toBeInTheDocument();
 
-    // Check mock items
-    expect(screen.getAllByText("Villa Design Consultation")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("Office Interior Fit-out")[0]).toBeInTheDocument();
+    // Rows are driven by the backend enq projects only
+    await waitFor(() => {
+      expect(screen.getAllByText("Sunrise Villa").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("Lakeview Residence").length).toBeGreaterThan(0);
+    });
   }, 10000);
 
-  it("renders a Sort button for the Received header and handles click toggles", () => {
+  it("renders a Sort button for the Received header and handles click toggles", async () => {
+    mockEnqProjects();
     render(<EnquiriesWorkspace />);
+
+    await waitFor(() => {
+      expect(screen.getAllByLabelText("Sort enquiries by received date").length).toBeGreaterThan(0);
+    });
 
     const sortBtn = screen.getAllByLabelText("Sort enquiries by received date")[0];
     expect(sortBtn).toBeInTheDocument();
@@ -66,12 +122,20 @@ describe("EnquiriesWorkspace Component", () => {
     expect(mockPush).toHaveBeenCalledWith(expect.stringContaining("sort=received_asc"));
   }, 10000);
 
-  it("renders the empty state and clear filters button when search query has no matches", () => {
+  it("renders the empty state and clear filters button when search query has no matches", async () => {
+    fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({ status: "ok", projects: [] }),
+        { headers: { "Content-Type": "application/json" } }
+      )
+    );
     mockSearchParamsVal = new URLSearchParams("q=nonexistent_project");
 
     render(<EnquiriesWorkspace />);
 
-    expect(screen.getByText("No enquiries found")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("No enquiries found")).toBeInTheDocument();
+    });
 
     const clearBtn = screen.getByRole("button", { name: /clear filters/i });
     expect(clearBtn).toBeInTheDocument();
@@ -89,5 +153,43 @@ describe("EnquiriesWorkspace Component", () => {
 
     // Verify view CTAs are NOT rendered during loading
     expect(screen.queryAllByText("Villa Design Consultation")).toHaveLength(0);
+  }, 10000);
+
+  it("drives the enquiry list from the enq projects returned by the backend", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            status: "ok",
+            projects: [
+              {
+                id: 2,
+                projectName: "Sunrise Villa",
+                projectType: "Residential",
+                buildingType: "Villa",
+                projectCharacter: "enq",
+                newConstructionOrRenovation: null,
+                purposeOfProject: null,
+                briefDescription: null,
+                coverImageUrl: null,
+                clientName: "Rahul Menon",
+                place: "Kochi",
+                createdAt: "2026-07-01T00:00:00.000Z",
+                updatedAt: "2026-07-01T00:00:00.000Z",
+              },
+            ],
+          }),
+          { headers: { "Content-Type": "application/json" } }
+        )
+      );
+
+    render(<EnquiriesWorkspace />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText("Sunrise Villa").length).toBeGreaterThan(0);
+    });
+
+    fetchMock.mockRestore();
   }, 10000);
 });

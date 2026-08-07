@@ -14,7 +14,8 @@ import {
 } from "lucide-react";
 import { parseEnquiryQuery, serializeEnquiryQuery } from "../utils/enquiry-query-state";
 import { filterEnquiries, sortEnquiries, paginateEnquiries } from "../utils/filter-enquiries";
-import { MOCK_ENQUIRIES } from "../services/enquiries.mock";
+import { buildEnquiriesFromProjects } from "../utils/enquiries-from-backend-projects";
+import type { BackendProject } from "@/types/domain/backend-project";
 import { EnquiryRecord } from "../types/enquiry.types";
 import { EnquiryFilterToolbar } from "./enquiry-filter-toolbar";
 import { EnquiryTableRow } from "./enquiry-table-row";
@@ -66,11 +67,51 @@ export function EnquiriesWorkspace({ isLoading = false }: EnquiriesWorkspaceProp
   }, [localSearch, queryState.q, pathname, router, searchParams]);
 
 
-  // Tab Filtering (New vs History) - Supports test fixture dependency injection when present
-  const sourceRecords: EnquiryRecord[] =
+  // Test seam: e2e and component tests can inject a fixed record list.
+  const testEnquiries =
     (typeof window !== "undefined" &&
       (window as unknown as { __TEST_ENQUIRIES__?: EnquiryRecord[] }).__TEST_ENQUIRIES__) ||
-    MOCK_ENQUIRIES;
+    null;
+
+  // Projects are sourced from the backend (project_character = 'enq').
+  // The backend URL is used strictly via the API proxy route; the frontend
+  // never talks to the Turso database directly.
+  const [backendProjects, setBackendProjects] = useState<BackendProject[]>([]);
+  const [projectsLoaded, setProjectsLoaded] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch("/api/projects?character=enq")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Projects request failed with status ${response.status}`);
+        }
+        return response.json() as Promise<{ status: string; projects: BackendProject[] }>;
+      })
+      .then((payload) => {
+        if (!isMounted) return;
+        if (payload.status === "ok" && Array.isArray(payload.projects)) {
+          setBackendProjects(payload.projects);
+        }
+        setProjectsLoaded(true);
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setBackendProjects([]);
+        setProjectsLoaded(true);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // The list is driven exclusively by the backend 'enq' projects. When a
+  // test fixture is present it wins, so automated tests stay deterministic.
+  const sourceRecords: EnquiryRecord[] = testEnquiries
+    ? testEnquiries
+    : buildEnquiriesFromProjects(backendProjects);
+
+  const showLoading = isLoading || !projectsLoaded;
 
   const newTabCount = sourceRecords.filter(
     (item: EnquiryRecord) => item.stage !== "won" && item.stage !== "lost"
@@ -220,7 +261,7 @@ export function EnquiriesWorkspace({ isLoading = false }: EnquiriesWorkspaceProp
 
       {/* 4. Dedicated Table/List Scroll Region */}
       <div className={styles.enquiryTableScrollRegion}>
-        {isLoading ? (
+        {showLoading ? (
           <div className={styles.tableWrapper}>
             <div className={styles.tableHeader}>
               <div>Enquiry</div>

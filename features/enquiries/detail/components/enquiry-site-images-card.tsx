@@ -14,6 +14,7 @@ export interface SiteImageItem {
 export interface EnquirySiteImagesCardProps {
   images?: SiteImageItem[];
   totalCount?: number;
+  extraCount?: number;
   title?: string;
   onImageClick?: (index: number) => void;
   onViewAll?: () => void;

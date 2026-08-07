@@ -1,36 +1,40 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ProposalCreationModal } from "@/features/studio/components/proposal-creation-modal";
+import type { EnquiryRecord } from "@/features/enquiries/types/enquiry.types";
 
 describe("ProposalCreationModal Component", () => {
   beforeEach(() => {
     cleanup();
   });
 
-  const mockEnquiry = {
+  const mockEnquiry = (): EnquiryRecord => ({
     id: "enq-1",
     enquiryRef: "ENQ-2026-001",
     title: "Villa Design Consultation",
     clientName: "Greenleaf Spaces",
-    projectType: "Commercial Interior",
+    requirementSummary: "Office Interior Fit-out for Greenleaf Spaces",
+    thumbnailUrl: "/assets/studio/visualisations-flatlay.jpg",
+    projectType: "commercial",
     location: "Bengaluru",
+    source: "website",
+    status: "active",
+    stage: "clarification",
+    budgetMin: 4000000,
+    budgetMax: 6000000,
+    receivedAt: "2026-07-23T16:15:00.000Z",
+    nextAction: { type: "review_enquiry", label: "Review enquiry" },
     budget: "₹40L – ₹60L",
     timeline: "Within 6 Months",
     notes: "Office Interior Fit-out for Greenleaf Spaces",
-    status: "new" as const,
-    receivedAt: "2026-07-23T16:15:00.000Z",
-    siteImagesCount: 4,
-    documentsCount: 2,
-    hasFeasibilityReport: false,
-    priority: "medium" as const,
-    source: "Website",
-  };
+    priority: "medium",
+  });
 
   it("renders compact project summary modal with required fields", () => {
     render(
       <ProposalCreationModal
         isOpen={true}
-        enquiry={mockEnquiry}
+        enquiry={mockEnquiry()}
         existingDraftExists={false}
         onContinueDrafting={vi.fn()}
         onCancel={vi.fn()}
@@ -63,7 +67,7 @@ describe("ProposalCreationModal Component", () => {
     render(
       <ProposalCreationModal
         isOpen={true}
-        enquiry={mockEnquiry}
+        enquiry={mockEnquiry()}
         existingDraftExists={true}
         onContinueDrafting={vi.fn()}
         onCancel={vi.fn()}
@@ -79,7 +83,8 @@ describe("ProposalCreationModal Component", () => {
     render(
       <ProposalCreationModal
         isOpen={true}
-        enquiry={mockEnquiry}
+        enquiry={mockEnquiry()}
+        existingDraftExists={false}
         onContinueDrafting={handleContinue}
         onCancel={vi.fn()}
       />
@@ -94,7 +99,7 @@ describe("ProposalCreationModal Component", () => {
     render(
       <ProposalCreationModal
         isOpen={true}
-        enquiry={mockEnquiry}
+        enquiry={mockEnquiry()}
         onContinueDrafting={vi.fn()}
         onCancel={handleCancel}
       />

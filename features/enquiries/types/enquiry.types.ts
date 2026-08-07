@@ -59,6 +59,10 @@ export interface EnquiryRecord {
   tags?: string[];         // e.g. ["fitout", "bengaluru"]
   enquiryRef?: string;     // e.g. "ENQ-2026-0486"
   lastUpdatedAt?: string;  // ISO 8601 string
+  budget?: string;         // pre-formatted budget summary (overrides min/max when present)
+  timeline?: string;       // desired schedule summary
+  duration?: string;       // expected delivery duration summary
+  notes?: string;          // free-form context notes
 }
 
 export type EnquiryPriority = "high" | "medium" | "low";

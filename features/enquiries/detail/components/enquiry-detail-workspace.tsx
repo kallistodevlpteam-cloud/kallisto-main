@@ -7,9 +7,8 @@ import React, {
   type RefObject,
   type CSSProperties,
 } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, ArrowLeft, Briefcase, Building2, CheckCircle2, Clock, FileText, FolderOpen, HelpCircle, IndianRupee, Layers, Pencil, XCircle, MapPin, Tag, User2 } from "lucide-react";
+import { Briefcase, Building2, CheckCircle2, Clock, FileText, FolderOpen, HelpCircle, IndianRupee, Layers, Pencil, XCircle, MapPin, Tag, User2 } from "lucide-react";
 import { EnquiryOverviewCard } from "./enquiry-overview-card";
 import { useProjectDashboardLayout } from "@/features/documents/hooks/use-project-dashboard-layout";
 import { RoutePageContainer } from "@/components/ui/route-page-container";
@@ -20,6 +19,7 @@ import { EnquiryClarificationComposer } from "./enquiry-clarification-composer";
 import { EnquirySiteImagesCard } from "./enquiry-site-images-card";
 import { EnquiryProjectDocumentsSection } from "./enquiry-project-documents-section";
 import { MOCK_ENQUIRIES } from "../../services/enquiries.mock";
+import { buildEnquiriesFromProjects } from "../../utils/enquiries-from-backend-projects";
 import { SOURCE_LABELS } from "../../types/enquiry.types";
 import type { EnquiryPriority, EnquiryRecord } from "../../types/enquiry.types";
 import styles from "./enquiry-detail-workspace.module.css";
@@ -27,6 +27,26 @@ import styles from "./enquiry-detail-workspace.module.css";
 
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+
+/** Fallback record so the detail page always renders a complete UI. */
+function createDefaultEnquiry(enquiryId: string): EnquiryRecord {
+  return {
+    id: enquiryId,
+    title: "Your Project Enquiry",
+    requirementSummary: "Project details will appear here once provided.",
+    clientName: "—",
+    location: "—",
+    thumbnailUrl: "/assets/projects/greenfield-villa.png",
+    source: "website",
+    status: "active",
+    stage: "new",
+    projectType: "residential",
+    budgetMin: 0,
+    budgetMax: 0,
+    receivedAt: new Date().toISOString(),
+    nextAction: { type: "review_enquiry", label: "Review enquiry" },
+  };
+}
 
 export type EnquiryStage = "idle" | "accepted" | "clarification" | "rejected";
 
@@ -468,30 +488,43 @@ export function EnquiryDetailWorkspace({ enquiryId }: { enquiryId: string }) {
   const { dashboardRef, mode: updatesMode, updatesWidth } =
     useProjectDashboardLayout(true);
 
-  const enquiry: EnquiryRecord | undefined = MOCK_ENQUIRIES.find((e) => e.id === enquiryId);
+  // Enquiry shown by this page. Backend enq projects are the source of
+  // truth; the mock list and a default record are fallbacks so the page
+  // always renders a complete UI while data is absent or loading.
+  const [enquiry, setEnquiry] = useState<EnquiryRecord>(() => {
+    const mock = MOCK_ENQUIRIES.find((e) => e.id === enquiryId);
+    if (mock) return mock;
+    return createDefaultEnquiry(enquiryId);
+  });
 
-  // Not found state
-  if (!enquiry) {
-    return (
-      <div className={styles.workspace}>
-        <div className={styles.errorState} role="alert" aria-live="assertive">
-          <div className={styles.errorIcon} aria-hidden="true">
-            <AlertTriangle size={22} />
-          </div>
-          <h2 className={styles.errorTitle}>Enquiry not found</h2>
-          <p className={styles.errorDesc}>
-            This enquiry doesn&apos;t exist or you don&apos;t have permission to view it.
-          </p>
-          <Link href="/enquiries" className={styles.errorBackBtn}>
-            <ArrowLeft size={14} aria-hidden="true" />
-            Back to Enquiries
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/projects?character=enq", { cache: "no-store" })
+      .then(async (response) => {
+        const payload = (await response.json()) as {
+          status: string;
+          projects: Array<Record<string, unknown>>;
+        };
+        if (!response.ok || payload.status !== "ok") {
+          throw new Error("Backend projects request failed");
+        }
+        const records = buildEnquiriesFromProjects(payload.projects as never[]);
+        const match = records.find((record) => record.id === enquiryId);
+        return match ?? null;
+      })
+      .then((match) => {
+        if (cancelled || !match) return;
+        setEnquiry(match);
+      })
+      .catch(() => {
+        // Keep the fallback record; the UI stays visible.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [enquiryId]);
 
-  const enquiryTitle = enquiry.title || "Villa Design Consultation";
+  const enquiryTitle = enquiry.title || "Project Enquiry";
 
   return (
     <div

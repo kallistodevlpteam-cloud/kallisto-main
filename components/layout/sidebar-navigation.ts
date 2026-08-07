@@ -3,6 +3,7 @@ import {
   BookOpen,
   Calendar,
   CircleEllipsis,
+  Code2,
   CreditCard,
   FolderKanban,
   Handshake,
@@ -51,6 +52,7 @@ export const SIDEBAR_NAVIGATION: ReadonlyArray<SidebarNavigationItem> = [
   { icon: Network, label: "Hub", href: "/hub", section: "connectors" },
   { icon: Handshake, label: "Hands", href: "/hands", section: "connectors" },
   { icon: BookOpen, label: "Basics", href: "/basics", section: "connectors" },
+  { icon: Code2, label: "Developer", href: "/developer", section: "utility" },
   { icon: CircleEllipsis, label: "More tools", href: "/tools", section: "utility" },
 ];
 
