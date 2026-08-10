@@ -84,7 +84,7 @@ export function RequirementStrengthCard({
       className={`${styles.card}${className ? ` ${className}` : ""}`}
       aria-label="Requirement strength analysis"
     >
-      {/* Header */}
+      {/* Card Title */}
       <div className={styles.header}>
         <div className={styles.titleWrap}>
           <h3 className={styles.title}>Requirement Strength</h3>
@@ -96,14 +96,6 @@ export function RequirementStrengthCard({
             />
           </span>
         </div>
-        <button
-          type="button"
-          className={styles.detailsBtn}
-          onClick={onDetailsClick}
-          aria-label="View requirement strength details"
-        >
-          Details
-        </button>
       </div>
 
       {/* Main Metric Row */}

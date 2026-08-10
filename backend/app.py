@@ -21,6 +21,9 @@ def _load_dotenv() -> None:
     env_path = Path(__file__).resolve().parent / ".env"
     if env_path.exists():
         load_dotenv(env_path)
+    alt_env_path = Path(__file__).resolve().parent / "env"
+    if alt_env_path.exists():
+        load_dotenv(alt_env_path)
 
 
 _load_dotenv()
@@ -140,7 +143,7 @@ def list_projects():
         f"SELECT p.id, p.project_name, p.project_type, p.building_type, "
         f"p.project_character, p.new_construction_or_renovation, "
         f"p.purpose_of_project, p.brief_description, p.cover_image_url, "
-        f"p.created_at, p.updated_at, cd.client_name, ps.place "
+        f"NULL as created_at, NULL as updated_at, cd.client_name, ps.place "
         f"FROM projects p "
         f"LEFT JOIN project_clients pc ON pc.project_id = p.id "
         f"LEFT JOIN client_details cd ON cd.client_id = pc.client_id "

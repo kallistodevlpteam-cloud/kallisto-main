@@ -2,10 +2,13 @@ export type EnquiryStatus = "active" | "needs_attention" | "completed" | "archiv
 
 export type EnquiryStage =
   | "new"
+  | "idle"
   | "clarification"
   | "consultation"
   | "qualified"
   | "proposal"
+  | "accepted"
+  | "rejected"
   | "won"
   | "lost";
 
@@ -38,6 +41,100 @@ export interface EnquiryNextAction {
   state?: NextActionState;
 }
 
+export type RequirementCategory =
+  | "project"
+  | "client"
+  | "vision"
+  | "style"
+  | "lifestyle"
+  | "budget"
+  | "site"
+  | "timeline"
+  | "space"
+  | "outdoor"
+  | "technical"
+  | "regulatory"
+  | "decision"
+  | "communication"
+  | "documentation"
+  | "scope";
+
+export type RequirementState =
+  | "confirmed"
+  | "partial"
+  | "not_provided"
+  | "needs_clarification"
+  | "odin_inferred"
+  | "needs_verification"
+  | "not_applicable";
+
+export type EnquiryRequirementDomain =
+  | "project_client"
+  | "vision_style"
+  | "lifestyle"
+  | "room_programme"
+  | "exterior_facade"
+  | "outdoor_landscape"
+  | "site"
+  | "technical"
+  | "budget_commercial"
+  | "timeline"
+  | "regulatory"
+  | "decision_making"
+  | "communication"
+  | "documentation"
+  | "scope";
+
+export interface SpaceRequirementValue {
+  name: string;
+  quantity: number;
+  required: boolean;
+  priority: "essential" | "important" | "optional";
+  approximateArea?: string;
+  preferredFloor?: string;
+  adjacency?: string[];
+  privacy?: "high" | "medium" | "low";
+  naturalLight?: "high" | "medium" | "low";
+  ventilation?: "high" | "medium" | "low";
+  furniture?: string[];
+  storage?: string[];
+  equipment?: string[];
+  accessibility?: string[];
+  specialRequirements?: string[];
+  clientNotes?: string;
+  odinInterpretation?: string;
+}
+
+export type RequirementSource =
+  | "client"
+  | "clarification"
+  | "document"
+  | "odin"
+  | "service_provider";
+
+export type RequirementPriority = "p0" | "p1" | "p2";
+
+export interface EnquiryRequirement {
+  id: string;
+  category: RequirementCategory;
+  domain?: EnquiryRequirementDomain;
+  label: string;
+  value?: unknown;
+  spaceValue?: SpaceRequirementValue;
+  state: RequirementState;
+  source: RequirementSource;
+  priority: RequirementPriority;
+  confidence?: number;
+  updatedAt?: string;
+  evidenceIds?: string[];
+}
+
+export interface ClientPriority {
+  id: string;
+  label: string;
+  type: "confirmed" | "inferred";
+}
+
 export interface EnquiryRecord {
   id: string;
   title: string;
@@ -63,6 +160,13 @@ export interface EnquiryRecord {
   timeline?: string;       // desired schedule summary
   duration?: string;       // expected delivery duration summary
   notes?: string;          // free-form context notes
+  builtUpArea?: string;    // e.g. "2,800 – 3,200 sq ft"
+  budgetCoverageStatus?: string; // e.g. "Coverage partially defined"
+  areaCoverageStatus?: string;   // e.g. "Client supplied"
+  requirements?: EnquiryRequirement[];
+  clientPriorities?: ClientPriority[];
+  unconfirmedScope?: string[];
+  proposalStatus?: "none" | "draft" | "sent" | "viewed" | "accepted" | "rejected" | "revision_requested";
 }
 
 export type EnquiryPriority = "high" | "medium" | "low";
@@ -78,10 +182,13 @@ export const STATUS_LABELS: Record<EnquiryStatus, string> = {
 
 export const STAGE_LABELS: Record<EnquiryStage, string> = {
   new: "New",
+  idle: "Review",
   clarification: "Clarification",
   consultation: "Consultation",
   qualified: "Qualified",
   proposal: "Proposal",
+  accepted: "Accepted",
+  rejected: "Rejected",
   won: "Won",
   lost: "Lost",
 };

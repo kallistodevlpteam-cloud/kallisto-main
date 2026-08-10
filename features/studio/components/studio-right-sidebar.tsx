@@ -135,32 +135,7 @@ export function StudioRightSidebar({
           title="View Outputs"
           aria-label="View Outputs"
         >
-          <svg width="24" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="studioFileBackGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#4338ca" />
-                <stop offset="100%" stopColor="#6366f1" />
-              </linearGradient>
-              <linearGradient id="studioFileFrontGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#38bdf8" />
-                <stop offset="50%" stopColor="#0ea5e9" />
-                <stop offset="100%" stopColor="#2dd4bf" />
-              </linearGradient>
-              <linearGradient id="studioFileFoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#3730a3" />
-                <stop offset="100%" stopColor="#4338ca" />
-              </linearGradient>
-            </defs>
-            <rect x="1" y="5" width="16" height="20" rx="4" fill="url(#studioFileBackGrad)" />
-            <path
-              d="M 6.5 1 H 16 L 22.5 7.5 V 21 C 22.5 23.2 20.7 25 18.5 25 H 8.5 C 6.3 25 4.5 23.2 4.5 21 V 3 C 4.5 1.9 5.4 1 6.5 1 Z"
-              fill="url(#studioFileFrontGrad)"
-            />
-            <path
-              d="M 16 1 L 22.5 7.5 H 18 C 16.9 7.5 16 6.6 16 5.5 V 1 Z"
-              fill="url(#studioFileFoldGrad)"
-            />
-          </svg>
+          <FileText size={18} strokeWidth={1.75} />
         </button>
       </aside>
     );

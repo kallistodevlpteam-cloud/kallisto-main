@@ -31,7 +31,7 @@ export function EnquirySiteImagesCard({
   images = DEFAULT_SITE_IMAGES,
   totalCount = 7,
   extraCount,
-  title = "Site Images Preview",
+  title = "INSPIRATION & SITE IMAGES",
   onImageClick,
   onViewAll,
 }: EnquirySiteImagesCardProps) {

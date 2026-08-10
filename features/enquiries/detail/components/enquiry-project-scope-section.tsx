@@ -15,44 +15,51 @@ const DEFAULT_PROJECT_SCOPE: ScopeCategory[] = [
     id: "cat-1",
     title: "Space Planning & Layout",
     items: [
-      "Open-plan workstation arrangement (50+ capacity)",
-      "2 Executive Cabins & 1 Conference Room",
-      "Reception Area & Visitor Lounge",
-      "Pantry & Breakout Zone",
+      "Formal Living Room & Dining Suite",
+      "Master Bedroom Suite with Walk-in Closet",
+      "Dedicated Home Office & Study Suite",
+      "Courtyard cutout for daylight & cross ventilation",
     ],
   },
   {
     id: "cat-2",
     title: "Civil & Interior Fit-out",
     items: [
-      "Glass acoustic partition walls",
-      "Custom reception desk & credenza storage",
-      "Gypsum & grid false ceiling works",
-      "Commercial grade carpet & vinyl flooring",
+      "Custom teak joinery & fixed wardrobe units",
+      "Microcement wall finishes & natural stone flooring",
+      "Acoustic insulation for master & study suites",
+      "Terrace pergola & outdoor lounge landscaping",
     ],
   },
   {
     id: "cat-3",
     title: "MEP & Infrastructure",
     items: [
-      "Electrical wiring & floor raceways for workstations",
-      "Modular LED ceiling lighting fixture installation",
-      "HVAC duct relocation & diffuser fitting",
-      "Data cabling & server room trunking",
+      "3-Phase electrical distribution & smart scene lighting",
+      "High-efficiency VRF HVAC air conditioning layout",
+      "Plumbing layout for master bath & powder room",
+      "5kW Rooftop solar PV & rainwater harvesting",
     ],
   },
 ];
 
 export interface EnquiryProjectScopeSectionProps {
   categories?: ScopeCategory[];
+  unconfirmedItems?: string[];
   title?: string;
   description?: string;
 }
 
 export function EnquiryProjectScopeSection({
   categories = DEFAULT_PROJECT_SCOPE,
+  unconfirmedItems = [
+    "Loose living room & bedroom furniture package",
+    "Outdoor landscape & garden terrace installation",
+    "Smart home security & scene automation details",
+    "Decorative pendant lighting fixtures & art hardware",
+  ],
   title = "PROJECT SCOPE",
-  description = "Comprehensive architectural, civil fit-out, and MEP scope breakdown for the commercial office space.",
+  description = "Comprehensive spatial, fit-out, and infrastructure scope breakdown derived from client requirements.",
 }: EnquiryProjectScopeSectionProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -94,6 +101,42 @@ export function EnquiryProjectScopeSection({
                 </div>
               </div>
             ))}
+
+            {unconfirmedItems && unconfirmedItems.length > 0 && (
+              <div
+                className={styles.scopeCategoryCard}
+                style={{ background: "#fff7ed", borderColor: "#fed7aa" }}
+              >
+                <h4 className={styles.categoryTitle} style={{ color: "#c2410c" }}>
+                  Unconfirmed / Optional Scope
+                </h4>
+                <div className={styles.itemList}>
+                  {unconfirmedItems.map((item, idx) => (
+                    <div key={idx} className={styles.itemRow}>
+                      <span
+                        style={{
+                          width: "14px",
+                          height: "14px",
+                          borderRadius: "50%",
+                          background: "#ffedd5",
+                          color: "#c2410c",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "10px",
+                          fontWeight: 700,
+                          flexShrink: 0,
+                          marginTop: "2px",
+                        }}
+                      >
+                        ?
+                      </span>
+                      <span style={{ color: "#9a3412" }}>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

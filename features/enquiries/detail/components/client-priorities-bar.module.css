@@ -1,0 +1,137 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted, #64748b);
+}
+
+.chipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.priorityChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.priorityChip:hover {
+  transform: translateY(-1px);
+}
+
+.chipIcon {
+  flex-shrink: 0;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.typeBadge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  text-transform: capitalize;
+  margin-left: 2px;
+}
+
+/* ── Color Themes (Soft Pastel Fills matching reference design) ── */
+
+/* Theme: Blue */
+.theme_blue {
+  background-color: #ebf5ff;
+  color: #0284c7;
+}
+
+.theme_blue .chipIcon {
+  color: #0084ff;
+}
+
+.theme_blue .typeBadge {
+  background: rgba(0, 132, 255, 0.14);
+  color: #0284c7;
+}
+
+/* Theme: Green */
+.theme_green {
+  background-color: #ebf9ee;
+  color: #15803d;
+}
+
+.theme_green .chipIcon {
+  color: #16a34a;
+}
+
+.theme_green .typeBadge {
+  background: rgba(22, 163, 74, 0.15);
+  color: #15803d;
+}
+
+/* Theme: Orange */
+.theme_orange {
+  background-color: #fff4e8;
+  color: #ea580c;
+}
+
+.theme_orange .chipIcon {
+  color: #f97316;
+}
+
+.theme_orange .typeBadge {
+  background: rgba(249, 115, 22, 0.15);
+  color: #c2410c;
+}
+
+/* Theme: Purple */
+.theme_purple {
+  background-color: #f3e8ff;
+  color: #7c3aed;
+}
+
+.theme_purple .chipIcon {
+  color: #9333ea;
+}
+
+.theme_purple .typeBadge {
+  background: rgba(124, 58, 237, 0.15);
+  color: #6d28d9;
+}
+
+/* Theme: Pink */
+.theme_pink {
+  background-color: #fde8e8;
+  color: #e11d48;
+}
+
+.theme_pink .chipIcon {
+  color: #ef4444;
+}
+
+.theme_pink .typeBadge {
+  background: rgba(239, 68, 68, 0.15);
+  color: #be123c;
+}
