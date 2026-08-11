@@ -4840,7 +4840,7 @@
   border-radius: 24px;
   padding: 6px;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
-  border: 2px solid #e2e8f0;
+  border: 2px solid rgba(15, 23, 42, 0.3);
   cursor: pointer;
   transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
   overflow: hidden;
@@ -4848,7 +4848,7 @@
 
 .morigCardShell:hover {
   transform: translateY(-3px);
-  border-color: #cbd5e1;
+  border-color: rgba(15, 23, 42, 0.5);
   box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18);
 }
 
