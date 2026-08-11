@@ -30,6 +30,35 @@ const KNOWN_LOCATIONS = Array.from(
   new Set(SAMPLE_PROJECTS.map((p) => p.location).filter(Boolean))
 ).sort((a, b) => a.localeCompare(b));
 
+function mapListItemToCard(item: ProjectListItem): import("./components/projects-cards-grid").SampleProjectCard {
+  const rawDue = item.nextAction?.dueState;
+  const dueState =
+    rawDue === "overdue"
+      ? "overdue"
+      : rawDue === "due_today" || rawDue === "due_soon"
+      ? "due_soon"
+      : rawDue === "on_track"
+      ? "on_track"
+      : "no_due_date";
+
+  return {
+    id: item.id,
+    name: item.name,
+    code: item.code,
+    type: item.type,
+    location: item.location || "—",
+    clientDisplayName: item.clientDisplayName || "Client",
+    phase: item.phase,
+    status: item.status,
+    health: item.health,
+    phaseProgress: typeof item.phaseProgress === "number" ? item.phaseProgress : undefined,
+    nextActionTitle: item.nextAction?.title ?? null,
+    dueLabel: item.nextAction?.dueLabel ?? null,
+    dueState,
+    image: "/assets/projectbg.webp",
+  };
+}
+
 export function ProjectsWorkspace() {
   const { canImport, securityContext } = useProjectPermissions();
 
@@ -39,11 +68,10 @@ export function ProjectsWorkspace() {
     setSearchInput,
     setStatusTab,
     setFilters,
-    setPageCursor,
     clearAllFilters,
   } = useProjectFilters();
 
-  const { data, loading, error, forbidden, refetch } = useProjectsQuery(
+  const { data, loading, error, refetch } = useProjectsQuery(
     securityContext,
     filters
   );
@@ -123,21 +151,6 @@ export function ProjectsWorkspace() {
     };
   }, [openDropdown]);
 
-  const handleUpdateStatus = async (projectId: string, newStatus: ProjectStatus, reason?: string) => {
-    try {
-      await projectsService.updateProjectLifecycleStatus(
-        securityContext,
-        projectId,
-        newStatus,
-        reason
-      );
-      refetch();
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      alert(`Status update failed: ${msg}`);
-    }
-  };
-
   const handleConfirmReopen = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!reopenTargetProject) return;
@@ -174,13 +187,21 @@ export function ProjectsWorkspace() {
   const normalizedStatus: ProjectStatus | "ALL" | undefined =
     filters.status === "on-hold" ? "ON_HOLD" : filters.status;
 
-  const statusCounts = {
-    active: SAMPLE_PROJECTS.filter((p) => p.status === "ACTIVE").length,
-    upcoming: SAMPLE_PROJECTS.filter((p) => p.status === "UPCOMING").length,
-    onHold: SAMPLE_PROJECTS.filter((p) => p.status === "ON_HOLD").length,
-    completed: SAMPLE_PROJECTS.filter((p) => p.status === "COMPLETED").length,
-    all: SAMPLE_PROJECTS.length,
-  };
+  const statusCounts = data?.statusCounts
+    ? {
+        active: data.statusCounts.active,
+        upcoming: data.statusCounts.upcoming,
+        onHold: data.statusCounts.onHold,
+        completed: data.statusCounts.completed,
+        all: data.statusCounts.all,
+      }
+    : {
+        active: SAMPLE_PROJECTS.filter((p) => p.status === "ACTIVE").length,
+        upcoming: SAMPLE_PROJECTS.filter((p) => p.status === "UPCOMING").length,
+        onHold: SAMPLE_PROJECTS.filter((p) => p.status === "ON_HOLD").length,
+        completed: SAMPLE_PROJECTS.filter((p) => p.status === "COMPLETED").length,
+        all: SAMPLE_PROJECTS.length,
+      };
 
   return (
     <div className="workspace-container">
@@ -578,6 +599,10 @@ export function ProjectsWorkspace() {
               : (filters.status as import("./types/project.types").ProjectStatus | "ALL" | undefined) ?? "ACTIVE"
           }
           locationFilter={filters.location}
+          projects={data?.items ? data.items.map(mapListItemToCard) : undefined}
+          loading={loading}
+          error={error}
+          onRetry={refetch}
         />
 
         {/* Import Project Drawer */}

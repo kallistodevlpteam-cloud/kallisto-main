@@ -29,18 +29,18 @@ const DEFAULT_SITE_IMAGES: SiteImageItem[] = [
 
 export function EnquirySiteImagesCard({
   images = DEFAULT_SITE_IMAGES,
-  totalCount = 8,
+  totalCount = 7,
   extraCount,
-  title = "INSPIRATION IMAGES",
+  title = "Site Images Preview",
   onImageClick,
   onViewAll,
 }: EnquirySiteImagesCardProps) {
   const [expanded, setExpanded] = useState(true);
 
-  // Render 3 normal image cards + 1 overflow "+N" image overlay card
-  const VISIBLE_NORMAL = 3;
+  // Render 4 normal image cards + 1 overflow "+N" tile
+  const VISIBLE_NORMAL = 4;
   const normalThumbs = images.slice(0, VISIBLE_NORMAL);
-  const overflowThumb = images[3] || images[0];
+  const overflowThumb = images[4] || images[0];
   const overflowCount =
     extraCount !== undefined ? extraCount : Math.max(0, totalCount - VISIBLE_NORMAL);
 
@@ -49,6 +49,7 @@ export function EnquirySiteImagesCard({
       {/* ── Collapsible Header Row ── */}
       <button
         type="button"
+        data-testid="site-images-toggle"
         className={styles.headerToggle}
         onClick={() => setExpanded((prev) => !prev)}
         aria-expanded={expanded}
@@ -83,26 +84,25 @@ export function EnquirySiteImagesCard({
             </button>
           ))}
 
-          {/* 4th Card: Image Background with Dark Translucent +N Overlay */}
-          {overflowCount > 0 && (
-            <button
-              type="button"
-              className={styles.overflowCard}
-              onClick={onViewAll}
-              aria-label={`View ${overflowCount} more images`}
-            >
-              <Image
-                src={overflowThumb.src}
-                alt={overflowThumb.alt}
-                fill
-                sizes="(max-width: 768px) 50vw, 25vw"
-                className={styles.cardImage}
-              />
-              <div className={styles.overflowOverlay}>
-                <span className={styles.overflowText}>+{overflowCount}</span>
-              </div>
-            </button>
-          )}
+          {/* Overflow Card: Image Background with Dark Translucent +N Overlay */}
+          <button
+            type="button"
+            className={styles.overflowCard}
+            onClick={onViewAll}
+            aria-label={`View ${overflowCount} more images`}
+          >
+            <Image
+              src={overflowThumb.src}
+              alt={overflowThumb.alt}
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              className={styles.cardImage}
+            />
+            <div className={styles.overflowOverlay}>
+              <span className={styles.overflowText}>+{overflowCount}</span>
+              <span style={{ fontSize: "11px", fontWeight: 500, color: "#94a3b8" }}>more</span>
+            </div>
+          </button>
         </div>
       )}
     </div>
