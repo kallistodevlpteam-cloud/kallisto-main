@@ -47,6 +47,7 @@ import {
 import {
   buildEnquiryDetailViewModel,
   EnquiryDetailViewModel,
+  ClientHouseholdMember,
 } from "../services/enquiry-detail-view-model";
 import { RequirementStrengthCard } from "./requirement-strength-card";
 
@@ -798,100 +799,100 @@ export function EnquiryDetailWorkspace({
             {/* ── TAB 4: CLIENT CONTEXT ───────────────────────────────────────────── */}
             {activeTab === "client" && (
               <div className={styles.tabSectionGroup}>
-                <div className={styles.sectionCard}>
-                  <div className={styles.assignedMemberHeaderRow} style={{ marginBottom: "14px" }}>
-                    <div className={styles.assignedMemberTitleGroup}>
-                      <h4 className={styles.assignedMemberHeading}>Members Assigned</h4>
-                      <span className={styles.countBadge}>{(viewModel.owners || []).length} active</span>
+                {/* ── CLIENT & HOUSEHOLD section ─────────────────────────────────────── */}
+                <div className={styles.householdSectionCard}>
+                  <div className={styles.householdHeaderRow}>
+                    <div className={styles.householdTitleGroup}>
+                      <h4 className={styles.householdHeading}>
+                        {viewModel.isCommercialProject ? "Client & Stakeholders" : "Client & Household"}
+                      </h4>
+                      <span className={styles.householdCountBadge}>
+                        {(viewModel.householdMembers || []).length} members
+                      </span>
                     </div>
-                    <button className={styles.filtersChip} type="button">
-                      <Filter size={13} />
-                      <span>Filters</span>
-                    </button>
                   </div>
 
-                  {/* ── 4 Member Reference ID Cards Grid (Matching Reference Image 1) ── */}
-                  <div className={styles.idCardsGrid}>
-                    {(viewModel.owners || []).map((owner) => (
-                      <div key={owner.id} className={styles.idCardShell}>
-                        <div>
-                          {/* Top Row: Avatar + Expire Date / Status + QR Box */}
-                          <div className={styles.idCardTopRow}>
-                            <div className={styles.idAvatarMetaGroup}>
-                              <div className={styles.idAvatarCircle}>
-                                {owner.avatarInitials}
-                              </div>
-                              <div className={styles.idStatusGroup}>
-                                <div className={styles.idStatusLabelRow}>
-                                  <Clock size={12} className={styles.idClockIcon} />
-                                  <span className={styles.idStatusLabel}>Review Date</span>
-                                </div>
-                                <span className={styles.idStatusValue}>{owner.nextReview}</span>
-                              </div>
+                  <div className={styles.householdGrid}>
+                    {(viewModel.householdMembers || []).map((member: ClientHouseholdMember) => (
+                      <div
+                        key={member.id}
+                        className={`${styles.householdCardShell} ${
+                          member.isPrimaryClient ? styles.primaryHouseholdCard : ""
+                        }`}
+                      >
+                        {/* ── IDENTITY ROW ── */}
+                        <div className={styles.householdCardTopRow}>
+                          <div className={styles.householdAvatarGroup}>
+                            <div
+                              className={`${styles.householdAvatarCircle} ${
+                                member.isPrimaryClient ? styles.primaryAvatarCircle : ""
+                              }`}
+                            >
+                              {member.avatarInitials}
                             </div>
-
-                            <div className={styles.idQrBox} title={`Scan ID: ${owner.idNumber}`}>
-                              <QrCode size={22} />
-                            </div>
-                          </div>
-
-                          {/* 2-Column Key-Value Pairs Grid (Matching Reference Image 1) */}
-                          <div className={styles.idMetaGrid} style={{ marginTop: "14px" }}>
-                            <div className={styles.idMetaField}>
-                              <span className={styles.idMetaLabel}>Client Name</span>
-                              <h5 className={styles.idMetaValue}>{owner.name}</h5>
-                            </div>
-                            <div className={styles.idMetaField}>
-                              <span className={styles.idMetaLabel}>Role & Scope</span>
-                              <span className={styles.idMetaValue}>{owner.meta.roleScope}</span>
-                            </div>
-
-                            <div className={styles.idMetaField}>
-                              <span className={styles.idMetaLabel}>City of Residence</span>
-                              <span className={styles.idMetaValue}>{owner.meta.location}</span>
-                            </div>
-                            <div className={styles.idMetaField}>
-                              <span className={styles.idMetaLabel}>ID Number</span>
-                              <span className={styles.idMetaValue}>
-                                {owner.idNumber}
-                                <button
-                                  type="button"
-                                  className={styles.idCopyBtn}
-                                  title="Copy ID Number"
-                                  aria-label={`Copy ${owner.idNumber}`}
-                                >
-                                  <Copy size={11} />
-                                </button>
-                              </span>
-                            </div>
-
-                            <div className={styles.idMetaField}>
-                              <span className={styles.idMetaLabel}>Experience</span>
-                              <span className={styles.idMetaValue}>{owner.meta.expOrAge}</span>
-                            </div>
-                            <div className={styles.idMetaField}>
-                              <span className={styles.idMetaLabel}>Primary Channel</span>
-                              <span className={styles.idMetaValue}>{owner.meta.channel}</span>
-                            </div>
-
-                            <div className={styles.idMetaField} style={{ gridColumn: "span 2" }}>
-                              <span className={styles.idMetaLabel}>Stakeholder Status</span>
-                              <span className={styles.idMetaValue}>{owner.tag1}</span>
+                            <div className={styles.householdIdentityMeta}>
+                              <h5 className={styles.householdName}>{member.name}</h5>
+                              <p className={styles.householdRelationship}>{member.relationship}</p>
                             </div>
                           </div>
+                          <span
+                            className={
+                              member.isPrimaryClient
+                                ? styles.decisionRoleChip
+                                : styles.secondaryRoleChip
+                            }
+                          >
+                            {member.decisionRole}
+                          </span>
                         </div>
 
-                        {/* Bottom Full-Width Dark Action Button */}
-                        <button className={styles.idDarkActionBtn} type="button">
-                          <span>Schedule Review</span>
-                        </button>
+                        {/* ── AGE / OCCUPATION / RESIDENCE ── */}
+                        <p className={styles.householdSubMeta}>
+                          {[member.age ? `${member.age} yrs` : null, member.occupation, member.residenceStatus]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </p>
+
+                        {/* ── DESIGN-RELEVANT NEEDS ── */}
+                        <div className={styles.householdNeedsBox}>
+                          {member.workPattern && (
+                            <div className={styles.householdNeedRow}>
+                              <span className={styles.needLabel}>Work / Study</span>
+                              <span className={styles.needVal}>{member.workPattern}</span>
+                            </div>
+                          )}
+                          {member.bedroomRequirement && (
+                            <div className={styles.householdNeedRow}>
+                              <span className={styles.needLabel}>Bedroom</span>
+                              <span className={styles.needVal}>{member.bedroomRequirement}</span>
+                            </div>
+                          )}
+                          {member.privacyLevel && (
+                            <div className={styles.householdNeedRow}>
+                              <span className={styles.needLabel}>Privacy</span>
+                              <span className={styles.needVal}>{member.privacyLevel}</span>
+                            </div>
+                          )}
+                          {member.accessibilityNeeds && (
+                            <div className={styles.householdNeedRow}>
+                              <span className={styles.needLabel}>Accessibility</span>
+                              <span className={styles.needVal}>{member.accessibilityNeeds}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* ── SPECIAL NOTES ── */}
+                        {member.specialNotes && (
+                          <p className={styles.specialNotesBox}>{member.specialNotes}</p>
+                        )}
                       </div>
                     ))}
                   </div>
+                </div>
 
-                  <div style={{ marginTop: "20px" }}>
-                    <ClientPrioritiesBar priorities={viewModel.priorities} />
-                  </div>
+                {/* ── CLIENT CONTEXT & PRIORITIES (priority driver cards) ─────────────── */}
+                <div className={styles.sectionCard}>
+                  <ClientPrioritiesBar priorities={viewModel.priorities} />
                 </div>
 
                 {(viewModel.clientContextSections || []).map((sec) => {

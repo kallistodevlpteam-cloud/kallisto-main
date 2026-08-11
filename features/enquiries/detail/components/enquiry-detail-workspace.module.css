@@ -4766,7 +4766,224 @@
   }
 }
 
-/* ─── 4 Member Reference ID Cards Grid (Matching Reference Image 1) ─── */
+/* ─── CLIENT & HOUSEHOLD Section Styling ─── */
+
+.householdSectionCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.householdHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.householdTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.householdHeading {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.householdCountBadge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  background: #f1f5f9;
+  padding: 2px 9px;
+  border-radius: 12px;
+}
+
+/* 4-Cards Grid Layout */
+.householdGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+}
+
+@media (max-width: 1380px) {
+  .householdGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .householdGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Individual Household Member Card */
+.householdCardShell {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.householdCardShell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.07);
+  border-color: #cbd5e1;
+}
+
+.primaryHouseholdCard {
+  border-color: #cbd5e1;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+}
+
+.householdCardTopRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.householdAvatarGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.householdAvatarCircle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #334155 0%, #0f172a 100%);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+}
+
+.primaryAvatarCircle {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  box-shadow: 0 2px 6px rgba(3, 105, 161, 0.25);
+}
+
+.householdIdentityMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.householdName {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.householdRelationship {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+.decisionRoleChip {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #0369a1;
+  background: #e0f2fe;
+  padding: 2.5px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.secondaryRoleChip {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #475569;
+  background: #f1f5f9;
+  padding: 2.5px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.householdSubMeta {
+  font-size: 11.5px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+/* Inner Design-Relevant Attributes Box (#f8fafc) */
+.householdNeedsBox {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.householdNeedRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11.5px;
+}
+
+.needLabel {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.needVal {
+  color: #0f172a;
+  font-weight: 650;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.specialNotesBox {
+  font-size: 11px;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  padding: 6px 10px;
+  border-radius: 6px;
+  line-height: 1.35;
+}
 
 .idCardsGrid {
   display: grid;

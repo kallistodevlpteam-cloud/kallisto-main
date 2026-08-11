@@ -182,6 +182,157 @@ export const DEFAULT_PROJECT_OWNERS: ProjectOwner[] = [
   },
 ];
 
+export interface ClientHouseholdMember {
+  id: string;
+  name: string;
+  relationship: string;
+  avatarInitials: string;
+  age?: number | string;
+  occupation?: string;
+  residenceStatus: string;
+  isPrimaryClient?: boolean;
+  decisionRole: "Primary Decision Maker" | "Co-decision Maker" | "Influencer" | "User Only";
+  workPattern?: string;
+  privacyLevel?: string;
+  bedroomRequirement?: string;
+  accessibilityNeeds?: string;
+  specialNotes?: string;
+}
+
+export const DEFAULT_RESIDENTIAL_HOUSEHOLD: ClientHouseholdMember[] = [
+  {
+    id: "mem-1",
+    name: "Ananya Sharma",
+    relationship: "Primary Client · Mother",
+    avatarInitials: "AS",
+    age: "38",
+    occupation: "Managing Director",
+    residenceStatus: "Kochi, Kerala (Full-time)",
+    isPrimaryClient: true,
+    decisionRole: "Primary Decision Maker",
+    workPattern: "Regular WFH (Dedicated Study)",
+    privacyLevel: "High Privacy",
+    bedroomRequirement: "Master Suite (Garden View)",
+    accessibilityNeeds: "Ground-floor & Courtyard Access",
+    specialNotes: "Final layout sign-off authority",
+  },
+  {
+    id: "mem-2",
+    name: "Rahul Sharma",
+    relationship: "Spouse · Father",
+    avatarInitials: "RS",
+    age: "40",
+    occupation: "Entrepreneur",
+    residenceStatus: "Full-time resident",
+    isPrimaryClient: false,
+    decisionRole: "Co-decision Maker",
+    workPattern: "Occasional WFH (Shared Study)",
+    privacyLevel: "Medium Privacy",
+    bedroomRequirement: "Master Suite (Shared)",
+    accessibilityNeeds: "No special requirement",
+    specialNotes: "Outdoor deck & entertainment space",
+  },
+  {
+    id: "mem-3",
+    name: "Nila Sharma",
+    relationship: "Daughter",
+    avatarInitials: "NS",
+    age: "12",
+    occupation: "Student",
+    residenceStatus: "Full-time resident",
+    isPrimaryClient: false,
+    decisionRole: "User Only",
+    workPattern: "Bedroom Study Desk Required",
+    privacyLevel: "Medium Privacy",
+    bedroomRequirement: "Private Bedroom + Built-in Study",
+    accessibilityNeeds: "No special requirement",
+    specialNotes: "Reading & Art corner nook",
+  },
+  {
+    id: "mem-4",
+    name: "Meera Menon",
+    relationship: "Grandmother",
+    avatarInitials: "MM",
+    age: "68",
+    occupation: "Retired",
+    residenceStatus: "Frequent Visitor",
+    isPrimaryClient: false,
+    decisionRole: "Influencer",
+    workPattern: "No WFH",
+    privacyLevel: "High Privacy",
+    bedroomRequirement: "Ground-Floor Guest Bedroom",
+    accessibilityNeeds: "Avoid stair dependency",
+    specialNotes: "Attached bathroom required",
+  },
+];
+
+export const DEFAULT_COMMERCIAL_STAKEHOLDERS: ClientHouseholdMember[] = [
+  {
+    id: "comm-1",
+    name: "Ananya Sharma",
+    relationship: "Primary Contact · Managing Partner",
+    avatarInitials: "AS",
+    age: "38",
+    occupation: "Managing Director",
+    residenceStatus: "Kochi HQ",
+    isPrimaryClient: true,
+    decisionRole: "Primary Decision Maker",
+    workPattern: "Executive Corner Cabin",
+    privacyLevel: "High Privacy",
+    bedroomRequirement: "Executive Suite / Conference",
+    accessibilityNeeds: "Barrier-free access",
+    specialNotes: "Full lease & fit-out sign-off authority",
+  },
+  {
+    id: "comm-2",
+    name: "David Langston",
+    relationship: "Design & Style Lead",
+    avatarInitials: "DL",
+    age: "34",
+    occupation: "Creative Director",
+    residenceStatus: "Kochi Office",
+    isPrimaryClient: false,
+    decisionRole: "Co-decision Maker",
+    workPattern: "Open-plan Collaborative Zone",
+    privacyLevel: "Medium Privacy",
+    bedroomRequirement: "Breakout & Studio Space",
+    accessibilityNeeds: "Flexible workstations",
+    specialNotes: "Teak finish & acoustic approval",
+  },
+  {
+    id: "comm-3",
+    name: "Siddharth Kumar",
+    relationship: "Operations & Facilities",
+    avatarInitials: "SK",
+    age: "42",
+    occupation: "Facilities Head",
+    residenceStatus: "Kochi Office",
+    isPrimaryClient: false,
+    decisionRole: "Influencer",
+    workPattern: "Site Inspection & Server Room",
+    privacyLevel: "Standard",
+    bedroomRequirement: "Server & Storage Trunking",
+    accessibilityNeeds: "Service entrance access",
+    specialNotes: "MEP & civil setback coordination",
+  },
+  {
+    id: "comm-4",
+    name: "Radhika Kulkarni",
+    relationship: "Finance & Commercial",
+    avatarInitials: "RK",
+    age: "45",
+    occupation: "Finance Director",
+    residenceStatus: "Bengaluru Regional HQ",
+    isPrimaryClient: false,
+    decisionRole: "Co-decision Maker",
+    workPattern: "Financial Governance",
+    privacyLevel: "High Privacy",
+    bedroomRequirement: "Finance Cabin",
+    accessibilityNeeds: "Standard",
+    specialNotes: "Milestone disbursement approval",
+  },
+];
+
 export interface EnquiryDetailViewModel {
   enquiryId: string;
   header: ProjectHeaderViewModel;
@@ -191,6 +342,8 @@ export interface EnquiryDetailViewModel {
   requirements: EnquiryRequirement[];
   clientContextSections: ClientContextSection[];
   owners: ProjectOwner[];
+  householdMembers: ClientHouseholdMember[];
+  isCommercialProject: boolean;
   scopeGroups: ScopeGroupViewModel[];
   unconfirmedScope: string[];
   intelligence: EnquiryIntelligence;
@@ -567,6 +720,9 @@ export function buildEnquiryDetailViewModel({
       ];
 
   const clientContextSections = buildClientContextSections(requirements, enquiry);
+  const householdMembers = isCommercial
+    ? DEFAULT_COMMERCIAL_STAKEHOLDERS
+    : DEFAULT_RESIDENTIAL_HOUSEHOLD;
 
   return {
     enquiryId: enquiry.id,
@@ -577,6 +733,8 @@ export function buildEnquiryDetailViewModel({
     requirements,
     clientContextSections,
     owners: DEFAULT_PROJECT_OWNERS,
+    householdMembers,
+    isCommercialProject: isCommercial,
     scopeGroups,
     unconfirmedScope,
     intelligence,
