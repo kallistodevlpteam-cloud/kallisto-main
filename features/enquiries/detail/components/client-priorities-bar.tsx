@@ -8,6 +8,8 @@ import {
   Zap,
   ShieldCheck,
   Sparkles,
+  CheckCircle2,
+  Tag,
 } from "lucide-react";
 import { ClientPriority } from "../../types/enquiry.types";
 import styles from "./client-priorities-bar.module.css";
@@ -101,7 +103,7 @@ export function ClientPrioritiesBar({ priorities, className }: ClientPrioritiesB
 
           return (
             <div key={prio.id} className={styles.cardShell}>
-              {/* Layer 1: Header Row inside Outer Shell */}
+              {/* Layer 1: Header Row inside Outer Shell (#f8fafc) */}
               <div className={styles.headerRow}>
                 <div className={styles.headerTitleGroup}>
                   <div className={styles.iconBox}>
@@ -109,22 +111,28 @@ export function ClientPrioritiesBar({ priorities, className }: ClientPrioritiesB
                   </div>
                   <h4 className={styles.cardTitle}>{prio.label}</h4>
                 </div>
-                <span
-                  className={
-                    isConfirmed ? styles.confirmedBadge : styles.inferredBadge
-                  }
-                >
-                  {isConfirmed ? "Confirmed" : "Inferred"}
-                </span>
               </div>
 
               {/* Layer 2: Secondary Inner Content Card (#ffffff) */}
               <div className={styles.innerCard}>
                 <p className={styles.cardSnippet}>{desc}</p>
                 <div className={styles.tagsRow}>
+                  <span
+                    className={
+                      isConfirmed ? styles.confirmedBadge : styles.inferredBadge
+                    }
+                  >
+                    {isConfirmed ? (
+                      <CheckCircle2 size={11} className={styles.badgeIcon} />
+                    ) : (
+                      <Sparkles size={11} className={styles.badgeIcon} />
+                    )}
+                    <span>{isConfirmed ? "Confirmed" : "Inferred"}</span>
+                  </span>
                   {tags.map((t, i) => (
                     <span key={i} className={styles.softTag}>
-                      {t}
+                      <Tag size={10} className={styles.tagIcon} />
+                      <span>{t}</span>
                     </span>
                   ))}
                 </div>
