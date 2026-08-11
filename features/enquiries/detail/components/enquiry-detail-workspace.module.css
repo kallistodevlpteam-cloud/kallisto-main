@@ -117,12 +117,11 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 16px;
-  background: #f1f5f9;
-  border-radius: 20px;
+  padding: 0;
+  background: transparent;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 16px;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -4352,13 +4351,14 @@
 
 /* ── Global Enquiry Intelligence Rail Card ───────────────── */
 .globalIntelCard {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 0;
+  background: #f1f5f9;
+  border-radius: 20px;
+  padding: 20px 16px 24px 16px;
   display: flex;
   flex-direction: column;
   gap: 22px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .globalIntelHeader {
