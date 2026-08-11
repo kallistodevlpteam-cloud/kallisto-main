@@ -841,9 +841,6 @@ export function EnquiryDetailWorkspace({
                                   <div className={styles.iconBox}>
                                     <CategoryIcon size={13} className={styles.headerIcon} />
                                   </div>
-                                  <span className={styles.reqCategoryBadge}>
-                                    {req.category.toUpperCase()}
-                                  </span>
                                   <h4 className={styles.cardTitle}>{req.label}</h4>
                                   <span className={`${styles.prioTag} ${styles[`prio_${req.priority}`]}`}>
                                     {req.priority.toUpperCase()}
