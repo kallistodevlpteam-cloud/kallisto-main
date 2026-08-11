@@ -15,10 +15,7 @@ export default async function EnquiryDetailPage({ params }: EnquiryDetailPagePro
   return (
     <AppShell layoutProfile="project-dashboard">
       <Suspense fallback={<EnquiryDetailSkeleton />}>
-        <EnquiryDetailWorkspace
-          key={resolvedParams.enquiryId}
-          enquiryId={resolvedParams.enquiryId}
-        />
+        <EnquiryDetailWorkspace enquiryId={resolvedParams.enquiryId} />
       </Suspense>
     </AppShell>
   );

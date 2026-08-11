@@ -331,29 +331,36 @@
   flex-shrink: 0;
 }
 
-/* Collapsed Vertical Strip 3D Folded Document Icon Button */
+/* Minimal Collapsed Sidebar Icon Button — Blue Theme */
 .glassIconBtn {
   position: relative;
   width: 36px;
   height: 36px;
-  background: transparent;
-  border: none;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
   padding: 0;
   cursor: pointer;
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.22s ease;
+  color: #2563eb;
+  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.12);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   outline: none;
-  filter: drop-shadow(0 4px 10px rgba(67, 56, 202, 0.28));
 }
 
 .glassIconBtn:hover {
-  transform: translateY(-2px) scale(1.08);
-  filter: drop-shadow(0 6px 14px rgba(67, 56, 202, 0.38));
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+  transform: translateY(-1px) scale(1.04);
 }
 
 .glassIconBtn:active {
-  transform: translateY(0) scale(0.96);
-  filter: drop-shadow(0 2px 6px rgba(67, 56, 202, 0.2));
+  background: #1d4ed8;
+  color: #ffffff;
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
 }

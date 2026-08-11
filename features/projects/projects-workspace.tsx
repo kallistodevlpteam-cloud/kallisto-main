@@ -11,12 +11,10 @@ import { ImportProjectDrawer } from "./components/import-project-drawer";
 import { ProjectSortMenu } from "./components/project-sort-menu";
 import { ProjectStatusTabs } from "./components/project-status-tabs";
 import { ProjectsPageHeader } from "./components/projects-page-header";
-import { ProjectsCardsGrid, SampleProjectCard } from "./components/projects-cards-grid";
-import { buildProjectCardsFromBackend } from "./utils/backend-project-cards";
+import { ProjectsCardsGrid, SAMPLE_PROJECTS } from "./components/projects-cards-grid";
 
 import { projectsService } from "./services/projects.service";
 import { ProjectListItem, ProjectStatus } from "./types/project.types";
-import type { BackendProject } from "@/types/domain/backend-project";
 
 import styles from "./projects.module.css";
 
@@ -27,6 +25,10 @@ const MOCK_TEAM_MEMBERS = [
   { id: "tm-4", name: "Anitha Das", role: "Site Engineer" },
   { id: "tm-5", name: "Vikram R", role: "Estimator" },
 ];
+
+const KNOWN_LOCATIONS = Array.from(
+  new Set(SAMPLE_PROJECTS.map((p) => p.location).filter(Boolean))
+).sort((a, b) => a.localeCompare(b));
 
 export function ProjectsWorkspace() {
   const { canImport, securityContext } = useProjectPermissions();
@@ -50,49 +52,6 @@ export function ProjectsWorkspace() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
 
-  // Accepted projects are sourced from the backend (project_character = 'pr').
-  // The backend URL is used strictly via the API proxy route; the frontend
-  // never talks to the Turso database directly.
-  const [backendCards, setBackendCards] = useState<SampleProjectCard[]>([]);
-  const [backendLoading, setBackendLoading] = useState(true);
-  const [backendError, setBackendError] = useState(false);
-  const [backendRetryCount, setBackendRetryCount] = useState(0);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    fetch("/api/projects?character=pr", { cache: "no-store" })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Projects request failed with status ${response.status}`);
-        }
-        return response.json() as Promise<{ status: string; projects: BackendProject[] }>;
-      })
-      .then((payload) => {
-        if (!isMounted) return;
-        if (payload.status === "ok" && Array.isArray(payload.projects)) {
-          setBackendCards(buildProjectCardsFromBackend(payload.projects));
-        } else {
-          setBackendCards([]);
-        }
-        setBackendLoading(false);
-      })
-      .catch(() => {
-        if (!isMounted) return;
-        setBackendCards([]);
-        setBackendError(true);
-        setBackendLoading(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [backendRetryCount]);
-
-  const knownLocations = Array.from(
-    new Set(backendCards.map((p) => p.location).filter(Boolean))
-  ).sort((a, b) => a.localeCompare(b));
-
   const [locationSearchText, setLocationSearchText] = useState("");
   const [selectedLocationList, setSelectedLocationList] = useState<string[]>(
     filters.location ? filters.location.split(",").filter(Boolean) : []
@@ -109,7 +68,7 @@ export function ProjectsWorkspace() {
       m.role.toLowerCase().includes(memberSearch.toLowerCase())
   );
 
-  const filteredKnownLocations = knownLocations.filter((loc) =>
+  const filteredKnownLocations = KNOWN_LOCATIONS.filter((loc) =>
     loc.toLowerCase().includes(locationSearchText.toLowerCase())
   );
 
@@ -213,14 +172,14 @@ export function ProjectsWorkspace() {
   );
 
   const normalizedStatus: ProjectStatus | "ALL" | undefined =
-    filters.status === "on-hold" ? "ON_HOLD" : filters.status ?? "UPCOMING";
+    filters.status === "on-hold" ? "ON_HOLD" : filters.status;
 
   const statusCounts = {
-    active: 0,
-    upcoming: backendCards.filter((p) => p.status === "UPCOMING").length,
-    onHold: 0,
-    completed: 0,
-    all: backendCards.length,
+    active: SAMPLE_PROJECTS.filter((p) => p.status === "ACTIVE").length,
+    upcoming: SAMPLE_PROJECTS.filter((p) => p.status === "UPCOMING").length,
+    onHold: SAMPLE_PROJECTS.filter((p) => p.status === "ON_HOLD").length,
+    completed: SAMPLE_PROJECTS.filter((p) => p.status === "COMPLETED").length,
+    all: SAMPLE_PROJECTS.length,
   };
 
   return (
@@ -611,22 +570,14 @@ export function ProjectsWorkspace() {
           )}
         </div>
 
-        {/* Project Cards Grid – fed by backend 'pr' projects, filtered by active tab & location */}
+        {/* Project Cards Grid – filtered by active tab & location */}
         <ProjectsCardsGrid
-          projects={backendCards}
           activeStatus={
             filters.status === "on-hold"
               ? "ON_HOLD"
-              : (filters.status as import("./types/project.types").ProjectStatus | "ALL" | undefined) ?? "UPCOMING"
+              : (filters.status as import("./types/project.types").ProjectStatus | "ALL" | undefined) ?? "ACTIVE"
           }
           locationFilter={filters.location}
-          loading={backendLoading}
-          error={backendError}
-          onRetry={() => {
-            setBackendError(false);
-            setBackendLoading(true);
-            setBackendRetryCount((count) => count + 1);
-          }}
         />
 
         {/* Import Project Drawer */}

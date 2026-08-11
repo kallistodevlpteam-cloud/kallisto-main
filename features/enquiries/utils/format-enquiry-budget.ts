@@ -11,7 +11,3 @@ function formatRupeeAmount(amount: number): string {
 export function formatEnquiryBudgetRange(min: number, max: number): string {
   return `₹${formatRupeeAmount(min)}–${formatRupeeAmount(max)}`;
 }
-
-export function formatEnquiryBudgetValue(amount: number): string {
-  return `₹${formatRupeeAmount(amount)}`;
-}

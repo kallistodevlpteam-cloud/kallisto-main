@@ -1,0 +1,496 @@
+.railContainer {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: transparent;
+  border: none;
+}
+
+.railHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.railTitle {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted, #64748b);
+}
+
+.railBody {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 2px;
+}
+
+.metricCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid var(--line, #e2e8f0);
+}
+
+.metricHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.metricLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted, #64748b);
+}
+
+.strengthBadge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+.fitBadge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.readinessBadge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.readinessPartial {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+.readinessReady {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.scoreRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.scoreValue {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink, #0f172a);
+  letter-spacing: -0.02em;
+}
+
+.signalsCount {
+  font-size: 11px;
+  color: var(--muted, #64748b);
+}
+
+.confidenceText {
+  font-size: 11px;
+  color: var(--muted, #64748b);
+  text-transform: capitalize;
+}
+
+.progressBarBg {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #f1f5f9;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  border-radius: 3px;
+  background: hsl(215, 85%, 44%);
+}
+
+.explanationText {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--muted, #64748b);
+}
+
+.readinessReason {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--ink, #0f172a);
+}
+
+.factorsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.factorItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.factorDot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.dotMatch {
+  background: #16a34a;
+}
+
+.dotPartial {
+  background: #ea580c;
+}
+
+.dotUnknown {
+  background: #94a3b8;
+}
+
+.factorLabel {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink, #0f172a);
+}
+
+.factorReason {
+  font-size: 11px;
+  color: var(--muted, #64748b);
+  line-height: 1.35;
+}
+
+.gapsCountBadge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.gapsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gapItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ink, #0f172a);
+}
+
+.gapIcon {
+  color: #dc2626;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.textLinkBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4f46e5;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.textLinkBtn:hover {
+  text-decoration: underline;
+}
+
+.evidenceIcon {
+  color: var(--muted, #64748b);
+}
+
+.evidenceGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.evidenceMetric {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+}
+
+.evidenceValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink, #0f172a);
+}
+
+.textPositive {
+  color: #16a34a;
+}
+
+.textWarning {
+  color: #ea580c;
+}
+
+.evidenceLabel {
+  font-size: 10.5px;
+  color: var(--muted, #64748b);
+}
+
+.secondaryLinkBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f8fafc;
+  color: var(--ink, #0f172a);
+  border: 1px solid var(--line, #e2e8f0);
+  cursor: pointer;
+  width: 100%;
+}
+
+.secondaryLinkBtn:hover {
+  background: #f1f5f9;
+}
+
+.actionCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid var(--line, #e2e8f0);
+  margin-top: auto;
+}
+
+.actionTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted, #64748b);
+}
+
+.actionDesc {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--ink, #0f172a);
+}
+
+.actionButtonsGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btnPrimaryClarification {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btnPrimaryClarification:hover {
+  background: #1e293b;
+}
+
+.btnPrimaryAccept {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btnPrimaryAccept:hover {
+  background: #15803d;
+}
+
+.secondaryButtonsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.btnSecondaryAccept {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+  cursor: pointer;
+}
+
+.btnSecondaryReject {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  cursor: pointer;
+}
+
+.btnSecondaryGeneric {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #ffffff;
+  color: var(--ink, #0f172a);
+  border: 1px solid var(--line, #e2e8f0);
+  cursor: pointer;
+}
+
+.dialogOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.dialogBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 14px;
+  background: #ffffff;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.dialogTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink, #0f172a);
+}
+
+.dialogDesc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted, #64748b);
+}
+
+.dialogActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.dialogCancelBtn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  cursor: pointer;
+}
+
+.dialogConfirmBtn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+}

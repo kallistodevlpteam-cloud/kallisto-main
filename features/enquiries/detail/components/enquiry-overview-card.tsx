@@ -13,14 +13,12 @@ import { ProjectOverviewSection, type HighlightItem } from "@/features/documents
 
 import { EnquiryProjectScopeSection } from "./enquiry-project-scope-section";
 
-/** Maps an inspiration_img row to the gallery component contract. */
-function toGalleryImages(images?: Array<{ url: string; alt: string | null }>): GalleryImage[] {
-  return (images ?? []).map((image, index) => ({
-    id: `insp-${index + 1}`,
-    src: image.url,
-    alt: image.alt ?? `Inspiration ${index + 1}`,
-  }));
-}
+const GALLERY_IMAGES: GalleryImage[] = [
+  { id: "img-1", src: "/assets/projectbg.webp", alt: "Modern Architectural Structure" },
+  { id: "img-2", src: "/assets/nila-thumb1.jpg", alt: "Entrance Facade Architecture" },
+  { id: "img-3", src: "/assets/nila-thumb2.jpg", alt: "Living Area Interior Design" },
+  { id: "img-4", src: "/assets/nila-thumb3.jpg", alt: "Pool Deck Elevation View" },
+];
 
 export interface EnquiryStatValues {
   projectType?: string;
@@ -28,17 +26,25 @@ export interface EnquiryStatValues {
   builtUpArea?: string;
   budget?: string;
   client?: string;
+  budgetCoverageStatus?: string;
+  areaCoverageStatus?: string;
 }
 
 const DEFAULT_ENQUIRY_STAT_VALUES: EnquiryStatValues = {
   projectType: "Commercial Interior",
+  duration: "Within 6 Months",
+  builtUpArea: "2,800 – 3,200 sq ft",
+  budget: "₹40L – ₹60L",
   client: "Greenleaf Spaces",
+  budgetCoverageStatus: "Coverage partially defined",
+  areaCoverageStatus: "Client supplied",
 };
 
 interface EnquiryStatCard {
   id: string;
   label: string;
   value: string;
+  subValue?: string;
   icon: React.ElementType;
   iconBg: string;
   iconColor: string;
@@ -47,15 +53,69 @@ interface EnquiryStatCard {
 export function EnquiryStatCardsBar({ values }: { values?: Partial<EnquiryStatValues> }) {
   const resolvedValues = { ...DEFAULT_ENQUIRY_STAT_VALUES, ...values };
   const cards: EnquiryStatCard[] = [
-    { id: "project-type", label: "Project Type", value: resolvedValues.projectType || "Commercial Interior", icon: Building2, iconBg: "#EEF2FF", iconColor: "#4F46E5" },
-    { id: "duration", label: "Duration", value: resolvedValues.duration || "—", icon: Clock, iconBg: "#F0FDF4", iconColor: "#16A34A" },
-    { id: "built-up", label: "Built-up Area", value: resolvedValues.builtUpArea || "—", icon: Layers, iconBg: "#F5F3FF", iconColor: "#7C3AED" },
-    { id: "budget", label: "Budget", value: resolvedValues.budget || "—", icon: IndianRupee, iconBg: "#FEF2F2", iconColor: "#E11D48" },
-    { id: "client", label: "Client", value: resolvedValues.client || "Greenleaf Spaces", icon: User, iconBg: "#ECFEFF", iconColor: "#0891B2" },
+    {
+      id: "project-type",
+      label: "Project Type",
+      value: resolvedValues.projectType || "Commercial Interior",
+      subValue: "Verified offering",
+      icon: Building2,
+      iconBg: "#EEF2FF",
+      iconColor: "#4F46E5",
+    },
+    {
+      id: "duration",
+      label: "Duration",
+      value: resolvedValues.duration || "Within 6 Months",
+      subValue: "Target timeline",
+      icon: Clock,
+      iconBg: "#F0FDF4",
+      iconColor: "#16A34A",
+    },
+    {
+      id: "built-up",
+      label: "Built-up Area",
+      value: resolvedValues.builtUpArea || "2,800 – 3,200 sq ft",
+      subValue: resolvedValues.areaCoverageStatus || "Client supplied",
+      icon: Layers,
+      iconBg: "#F5F3FF",
+      iconColor: "#7C3AED",
+    },
+    {
+      id: "budget",
+      label: "Budget",
+      value: resolvedValues.budget || "₹40L – ₹60L",
+      subValue: resolvedValues.budgetCoverageStatus || "Coverage partially defined",
+      icon: IndianRupee,
+      iconBg: "#FEF2F2",
+      iconColor: "#E11D48",
+    },
+    {
+      id: "client",
+      label: "Client",
+      value: resolvedValues.client || "Greenleaf Spaces",
+      subValue: "Direct enquiry",
+      icon: User,
+      iconBg: "#ECFEFF",
+      iconColor: "#0891B2",
+    },
   ];
 
   return (
-    <div className="project-stat-cards-container">
+    <div className="project-stat-cards-container" aria-label="Project Snapshot">
+      <div style={{ marginBottom: "10px" }}>
+        <h3
+          style={{
+            margin: 0,
+            fontSize: "11px",
+            fontWeight: 700,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase",
+            color: "var(--muted, #64748b)",
+          }}
+        >
+          PROJECT SNAPSHOT
+        </h3>
+      </div>
       <div className="project-stat-cards-bar">
         {cards.map((card) => {
           const Icon = card.icon;
@@ -67,6 +127,18 @@ export function EnquiryStatCardsBar({ values }: { values?: Partial<EnquiryStatVa
               <div className="horiz-stat-info">
                 <span className="horiz-stat-label">{card.label}</span>
                 <span className="horiz-stat-value">{card.value}</span>
+                {card.subValue && (
+                  <span
+                    style={{
+                      fontSize: "10.5px",
+                      color: "var(--muted, #64748b)",
+                      marginTop: "1px",
+                      display: "block",
+                    }}
+                  >
+                    {card.subValue}
+                  </span>
+                )}
               </div>
             </div>
           );
@@ -89,12 +161,6 @@ interface EnquiryOverviewCardProps {
   description?: string;
   highlights?: Array<string | HighlightItem>;
   customRightPanel?: ReactNode;
-  /** Inspiration gallery images from the backend (inspiration_img).
-   * Strictly backend-sourced; no hardcoded fallback images are shown. */
-  inspirationImages?: Array<{ url: string; alt: string | null }>;
-  /** Project scopes with nested sub-lists (project_scope +
-   * project_scope_item). Strictly backend-sourced. */
-  projectScopes?: Array<{ id: number; scope_name: string; items: string[] }>;
 }
 
 export function EnquiryOverviewCard({
@@ -107,8 +173,6 @@ export function EnquiryOverviewCard({
   description,
   highlights,
   customRightPanel,
-  inspirationImages,
-  projectScopes,
 }: EnquiryOverviewCardProps) {
   return (
     <div
@@ -128,9 +192,9 @@ export function EnquiryOverviewCard({
           description={description}
           highlights={highlights}
         />
-        <ProjectGallery images={toGalleryImages(inspirationImages)} />
+        <ProjectGallery images={GALLERY_IMAGES} />
         <EnquiryStatCardsBar values={statValues} />
-        <EnquiryProjectScopeSection scopes={projectScopes ?? []} />
+        <EnquiryProjectScopeSection />
       </main>
 
       {customRightPanel}

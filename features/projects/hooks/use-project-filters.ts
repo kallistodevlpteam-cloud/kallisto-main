@@ -55,7 +55,7 @@ export function useProjectFilters() {
         const activeFilters = filtersRef.current;
         const newParams: ProjectFilterParams = {
           ...activeFilters,
-          status: newStatus === "UPCOMING" ? undefined : newStatus,
+          status: newStatus === "ACTIVE" ? undefined : newStatus,
           cursor: undefined,
         };
         const serialized = serializeProjectQueryParams(newParams);

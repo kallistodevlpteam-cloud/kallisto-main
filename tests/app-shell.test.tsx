@@ -29,6 +29,7 @@ describe("AppShell", () => {
       "Hub",
       "Hands",
       "Basics",
+      "Developer",
       "More tools",
     ]);
   });

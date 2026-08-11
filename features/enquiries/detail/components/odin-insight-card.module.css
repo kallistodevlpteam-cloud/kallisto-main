@@ -1,0 +1,350 @@
+/* ── 1. LAYER 1: OUTER CARD SHELL (#f8fafc) — BORDERLESS ─────────────── */
+
+.cardShell {
+  background: #f8fafc;
+  border: none;
+  border-radius: 14px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+  cursor: pointer;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.25s ease;
+  will-change: transform, box-shadow;
+}
+
+.cardShell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  background: #f8fafc;
+}
+
+.cardShellExpanded {
+  background: #f8fafc;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+}
+
+.cardShellExpanded:hover {
+  transform: translateY(-1px);
+}
+
+/* ── 2. LAYER 2: HEADER ROW ───────────────────────────────────────── */
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 4px;
+}
+
+.headerTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1 1 0;
+}
+
+.iconBox {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: none;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.sparkleIcon {
+  color: #0f172a;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cardShell:hover .sparkleIcon {
+  transform: scale(1.15) rotate(8deg);
+}
+
+.cardTitle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.3;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.chevronBtn {
+  background: transparent;
+  border: none;
+  padding: 2px;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.chevronBtn:hover {
+  color: #475569;
+}
+
+.chevronIcon {
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chevronIconExpanded {
+  transform: rotate(180deg);
+}
+
+/* ── 3. LAYER 3: SECONDARY INNER CONTENT CARD (#ffffff) — BORDERLESS ── */
+
+.innerCard {
+  background: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
+}
+
+.summaryText {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #1e293b;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* ── Fluid CSS Grid Accordion Expansion for Inner Content ──────────── */
+.collapsibleContainer {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              margin-top 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  margin-top: 0;
+}
+
+.collapsibleContainerExpanded {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  margin-top: 2px;
+}
+
+.collapsibleInner {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(-6px);
+}
+
+.collapsibleContainerExpanded .collapsibleInner {
+  transform: translateY(0);
+}
+
+.detailRow {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.labelCol {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 125px;
+  flex-shrink: 0;
+}
+
+.rowIconWrap {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #f8fafc;
+  border: none;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rowIcon {
+  color: #64748b;
+}
+
+.labelText {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+.valueText {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #0f172a;
+  font-weight: 500;
+  margin: 0;
+  flex: 1 1 0;
+  word-break: break-word;
+}
+
+/* Semantic Tags Row inside Inner Card */
+.tagsRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2.5px 7px;
+  border-radius: 5px;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.badgeIcon {
+  flex-shrink: 0;
+}
+
+.badgeBlocker {
+  background: #fef2f2;
+  color: #dc2626;
+  border: none;
+}
+
+.badgeVerification {
+  background: #f1f5f9;
+  color: #0f172a;
+  border: none;
+}
+
+.badgeInferred {
+  background: #f5f3ff;
+  color: #7c3aed;
+  border: none;
+}
+
+.badgeRecommendation {
+  background: #f1f5f9;
+  color: #0f172a;
+  border: none;
+}
+
+.badgeRisk {
+  background: #fff7ed;
+  color: #ea580c;
+  border: none;
+}
+
+.badgeChange {
+  background: #f8fafc;
+  color: #475569;
+  border: none;
+}
+
+.badgeContradiction {
+  background: #f8fafc;
+  color: #475569;
+  border: none;
+}
+
+.badgeStrength {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: none;
+}
+
+.domainTag {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #475569;
+  background: #f8fafc;
+  border: none;
+  padding: 2.5px 7px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tagIcon {
+  color: #64748b;
+}
+
+/* ── 4. LAYER 4: FOOTER CTA BUTTON COLLAPSIBLE (OUTSIDE Inner Card) ── */
+
+.footerCtaCollapsible {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              margin-top 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  margin-top: 0;
+}
+
+.footerCtaCollapsibleExpanded {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  margin-top: 1px;
+}
+
+.footerCtaInner {
+  min-height: 0;
+  width: 100%;
+}
+
+.ctaButton {
+  width: 100%;
+  background: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.ctaButton:hover {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+}

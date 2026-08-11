@@ -1,0 +1,95 @@
+.feedContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.feedHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 2px 2px 2px;
+}
+
+.headerTitleWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iconWrap {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+  flex-shrink: 0;
+}
+
+.sparkleIcon {
+  color: #0f172a;
+}
+
+.feedTitle {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #475569;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.scopeSubtitle {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+  display: block;
+  line-height: 1.2;
+}
+
+.countBadge {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.cardsStack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.viewAllBtn {
+  background: transparent;
+  border: none;
+  padding: 4px 2px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #0f172a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  transition: color 0.15s ease;
+}
+
+.viewAllBtn:hover {
+  color: #334155;
+  text-decoration: underline;
+}
+
+.arrowIcon {
+  transition: transform 0.15s ease;
+}
+
+.arrowUp {
+  transform: rotate(-90deg);
+}

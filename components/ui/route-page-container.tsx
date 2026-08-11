@@ -55,10 +55,14 @@ export function RoutePageContainer({
 }: RoutePageContainerProps) {
   const [viewState, setViewState] = useState<ViewState>("success");
 
+  const headingStateClass = showHeading
+    ? "has-page-heading"
+    : "no-page-heading";
+
   const resolvedContainerClass =
     variant === "studio"
-      ? `workspace-container studio-page-container${containerClassName ? ` ${containerClassName}` : ""}`
-      : `workspace-container${containerClassName ? ` ${containerClassName}` : ""}`;
+      ? `workspace-container studio-page-container ${headingStateClass}${containerClassName ? ` ${containerClassName}` : ""}`
+      : `workspace-container ${headingStateClass}${containerClassName ? ` ${containerClassName}` : ""}`;
 
   return (
     <div className={`${resolvedContainerClass}${className ? ` ${className}` : ""}`}>
