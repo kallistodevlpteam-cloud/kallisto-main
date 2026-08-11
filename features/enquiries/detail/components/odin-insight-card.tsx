@@ -4,7 +4,6 @@ import React from "react";
 import {
   Sparkles,
   PlusCircle,
-  ChevronDown,
   HelpCircle,
   FileText,
   MessageSquare,
@@ -123,7 +122,7 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* ── Top Header Strip: ODIN Icon + Real Insight Title (Left) | Chevron (Right) ── */}
+      {/* ── Top Header Strip: Crisp White Background + Title (No Dropdown Icon) ── */}
       <div className={styles.cardHeaderStrip}>
         <div className={styles.headerLeft}>
           <div className={styles.odinAvatar}>
@@ -131,24 +130,9 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
           </div>
           <span className={styles.headerTitleText}>{insight.title}</span>
         </div>
-
-        <button
-          type="button"
-          className={styles.chevronBtn}
-          aria-label={isExpanded ? "Collapse details" : "Expand details"}
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleExpand();
-          }}
-        >
-          <ChevronDown
-            size={14}
-            className={`${styles.chevronIcon} ${isExpanded ? styles.chevronIconExpanded : ""}`}
-          />
-        </button>
       </div>
 
-      {/* ── Card Body Content ─────────────────────────────────────────────────── */}
+      {/* ── Card Body Content: Grey Background ───────────────────────────────── */}
       <div className={styles.cardBody}>
         {/* Summary Interpretation */}
         <p className={styles.summaryText}>{insight.summary}</p>
