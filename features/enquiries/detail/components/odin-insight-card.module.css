@@ -1,33 +1,37 @@
 .card {
   background: #ffffff;
-  border: none;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
   cursor: pointer;
   transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease,
               background-color 0.2s ease;
   will-change: transform, box-shadow;
 }
 
 .card:hover {
+  border-color: #cbd5e1;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.07), 0 1px 3px rgba(15, 23, 42, 0.04);
   background: #ffffff;
 }
 
 .cardExpanded {
-  background: #fafafa;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  border-color: #cbd5e1;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
 }
 
 .cardExpanded:hover {
+  border-color: #94a3b8;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.09);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
 }
 
 .topRow {
@@ -151,7 +155,7 @@
   margin: 0;
 }
 
-/* ── Expanded Flat Disclosure Section with Slide-Fade Keyframe ──── */
+/* ── Expanded Flat Disclosure Section ── */
 .expandedSection {
   border-top: 1px solid #f1f5f9;
   padding-top: 8px;
