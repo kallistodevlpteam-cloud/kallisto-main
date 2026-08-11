@@ -806,12 +806,12 @@ export function EnquiryDetailWorkspace({
                         </span>
                       </div>
 
-                      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "12px" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "12px" }}>
                         {domainReqs.map((req) => (
                           <div
                             key={req.id}
-                            className={`${styles.reqRow} ${
-                              selectedRequirementId === req.id ? styles.reqRowSelected : ""
+                            className={`${styles.cardShell} ${
+                              selectedRequirementId === req.id ? styles.cardShellSelected : ""
                             }`}
                             onClick={() =>
                               setSelectedRequirementId((prev) => (prev === req.id ? null : req.id))
@@ -820,23 +820,29 @@ export function EnquiryDetailWorkspace({
                             tabIndex={0}
                             aria-selected={selectedRequirementId === req.id}
                           >
-                            <div className={styles.reqCategoryBadge}>
-                              <span style={{ textTransform: "uppercase" }}>{req.category}</span>
-                            </div>
-                            <div className={styles.reqContent}>
-                              <div className={styles.reqTitleRow}>
-                                <span className={styles.reqLabel}>{req.label}</span>
+                            <div className={styles.headerRow}>
+                              <div className={styles.headerTitleGroup}>
+                                <div className={styles.iconBox}>
+                                  <FileText size={13} className={styles.headerIcon} />
+                                </div>
+                                <span className={styles.reqCategoryBadge}>
+                                  {req.category.toUpperCase()}
+                                </span>
+                                <h4 className={styles.cardTitle}>{req.label}</h4>
                                 <span className={`${styles.prioTag} ${styles[`prio_${req.priority}`]}`}>
                                   {req.priority.toUpperCase()}
                                 </span>
                               </div>
-                              {req.value ? <p className={styles.reqValue}>{String(req.value)}</p> : null}
-                            </div>
-                            <div className={styles.reqStateBox}>
                               <span className={`${styles.reqStateBadge} ${styles[`state_${req.state}`]}`}>
                                 {req.state.replace("_", " ")}
                               </span>
                             </div>
+
+                            {req.value ? (
+                              <div className={styles.innerCard}>
+                                <p className={styles.reqValue}>{String(req.value)}</p>
+                              </div>
+                            ) : null}
                           </div>
                         ))}
                       </div>
