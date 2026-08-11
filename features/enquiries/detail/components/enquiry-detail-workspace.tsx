@@ -851,36 +851,6 @@ export function EnquiryDetailWorkspace({
                           <p className={styles.morigDesc}>
                             {member.relationship}{member.age ? ` · ${member.age} yrs` : ""}
                           </p>
-
-                          {/* 3-Column Stat Bar */}
-                          <div className={styles.morigStatBar}>
-                            <div className={styles.morigStatCol}>
-                              <span className={styles.morigStatValue}>
-                                {member.isPrimaryClient ? "Primary" : member.decisionRole.split(" ")[0]}
-                              </span>
-                              <span className={styles.morigStatLabel}>Role</span>
-                            </div>
-                            <div className={styles.morigStatDivider} />
-                            <div className={styles.morigStatCol}>
-                              <span className={styles.morigStatValue}>
-                                {member.occupation ? member.occupation.split(" ")[0] : "Resident"}
-                              </span>
-                              <span className={styles.morigStatLabel}>Occupation</span>
-                            </div>
-                            <div className={styles.morigStatDivider} />
-                            <div className={styles.morigStatCol}>
-                              <span className={styles.morigStatValue}>
-                                {member.residenceStatus ? member.residenceStatus.split(",")[0] : "Resident"}
-                              </span>
-                              <span className={styles.morigStatLabel}>Location</span>
-                            </div>
-                          </div>
-
-                          {/* Full-width White Action Pill Button */}
-                          <div className={styles.morigWhiteBtn}>
-                            <FileText size={13} className={styles.morigBtnIcon} />
-                            <span>View Details</span>
-                          </div>
                         </div>
                       </div>
                     </div>
