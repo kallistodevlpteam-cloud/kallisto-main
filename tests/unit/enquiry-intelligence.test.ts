@@ -237,31 +237,31 @@ describe("Enquiry Intelligence Selectors & Policy Rules", () => {
       const insights = deriveContextualOdinInsights(BASE_ENQUIRY, "requirements");
       expect(insights.length).toBeGreaterThanOrEqual(4);
       expect(insights.some((i) => i.severity === "blocker")).toBe(true);
-      expect(insights.some((i) => i.action?.label === "Add question")).toBe(true);
+      expect(insights.some((i) => i.actionPrimary?.label === "Add question")).toBe(true);
     });
 
     it("returns evidence-focused insights for evidence scope", () => {
       const insights = deriveContextualOdinInsights(BASE_ENQUIRY, "evidence");
       expect(insights.length).toBeGreaterThanOrEqual(4);
-      expect(insights.some((i) => i.text.toLowerCase().includes("dwg") || i.text.toLowerCase().includes("site"))).toBe(true);
+      expect(insights.some((i) => i.summary.toLowerCase().includes("dwg") || i.summary.toLowerCase().includes("site"))).toBe(true);
     });
 
     it("returns client-focused insights for client scope", () => {
       const insights = deriveContextualOdinInsights(BASE_ENQUIRY, "client");
       expect(insights.length).toBeGreaterThanOrEqual(4);
-      expect(insights.some((i) => i.text.toLowerCase().includes("client") || i.text.toLowerCase().includes("budget"))).toBe(true);
+      expect(insights.some((i) => i.summary.toLowerCase().includes("client") || i.summary.toLowerCase().includes("budget"))).toBe(true);
     });
 
     it("returns decision summary insights for intelligence scope", () => {
       const insights = deriveContextualOdinInsights(BASE_ENQUIRY, "intelligence");
       expect(insights.length).toBeGreaterThanOrEqual(4);
-      expect(insights.some((i) => i.text.toLowerCase().includes("proposal") || i.text.toLowerCase().includes("opportunity fit"))).toBe(true);
+      expect(insights.some((i) => i.summary.toLowerCase().includes("proposal") || i.summary.toLowerCase().includes("opportunity fit"))).toBe(true);
     });
 
     it("returns activity and lifecycle insights for activity scope", () => {
       const insights = deriveContextualOdinInsights(BASE_ENQUIRY, "activity");
       expect(insights.length).toBeGreaterThanOrEqual(4);
-      expect(insights.some((i) => i.text.toLowerCase().includes("clarification") || i.text.toLowerCase().includes("requirement strength"))).toBe(true);
+      expect(insights.some((i) => i.summary.toLowerCase().includes("clarification") || i.summary.toLowerCase().includes("requirement strength"))).toBe(true);
     });
   });
 

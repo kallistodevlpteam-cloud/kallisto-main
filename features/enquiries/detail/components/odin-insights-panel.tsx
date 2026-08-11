@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
-import { Sparkles, PlusCircle, FileText, ExternalLink, AlertTriangle, CheckCircle2, Info } from "lucide-react";
-import { OdinContextualInsight, OdinInsightSeverity } from "@/features/enquiries/services/enquiry-intelligence";
+import React, { useState } from "react";
+import { Sparkles, ArrowRight } from "lucide-react";
+import { OdinContextualInsight } from "@/features/enquiries/services/enquiry-intelligence";
+import { OdinInsightCard } from "./odin-insight-card";
 import styles from "./odin-insights-panel.module.css";
 
 export interface OdinInsightsPanelProps {
@@ -29,88 +30,59 @@ function getScopeTitle(scope: string): string {
   }
 }
 
-function getSeverityBadge(severity: OdinInsightSeverity): { label: string; styleClass: string } | null {
-  switch (severity) {
-    case "blocker":
-      return { label: "Critical", styleClass: styles.badgeBlocker };
-    case "verification":
-      return { label: "Needs verification", styleClass: styles.badgeVerification };
-    case "recommendation":
-      return { label: "Recommendation", styleClass: styles.badgeRecommendation };
-    case "risk":
-      return { label: "Risk", styleClass: styles.badgeRisk };
-    case "contradiction":
-      return { label: "Unresolved", styleClass: styles.badgeContradiction };
-    default:
-      return null;
-  }
-}
-
 export const OdinInsightsPanel: React.FC<OdinInsightsPanelProps> = ({
   scope,
   insights,
   onAppendToClarification,
   onNavigateToTab,
 }) => {
+  const [expandedId, setExpandedId] = useState<string | null>(insights[0]?.id ?? null);
+  const [showAll, setShowAll] = useState(false);
+
+  const visibleInsights = showAll ? insights : insights.slice(0, 4);
+  const hasMore = insights.length > 4;
+
   return (
-    <div className={styles.insightsCard}>
-      <div className={styles.cardHeader}>
+    <div className={styles.feedContainer}>
+      {/* ── Feed Header ──────────────────────────────────────────────────────── */}
+      <div className={styles.feedHeader}>
         <div className={styles.headerTitleWrap}>
           <div className={styles.iconWrap}>
-            <Sparkles size={14} className={styles.sparkleIcon} />
+            <Sparkles size={13} className={styles.sparkleIcon} />
           </div>
           <div>
-            <h3 className={styles.mainTitle}>ODIN INSIGHTS</h3>
-            <span className={styles.subTitle}>{getScopeTitle(scope)}</span>
+            <h3 className={styles.feedTitle}>ODIN INSIGHTS</h3>
+            <span className={styles.scopeSubtitle}>{getScopeTitle(scope)}</span>
           </div>
         </div>
+        <span className={styles.countBadge}>{insights.length} active</span>
       </div>
 
-      <div className={styles.insightsList}>
-        {insights.map((item) => {
-          const badge = getSeverityBadge(item.severity);
-
-          return (
-            <div key={item.id} className={styles.insightItem}>
-              <div className={styles.itemHeader}>
-                <span className={styles.bulletDot}>•</span>
-                <p className={styles.insightText}>{item.text}</p>
-              </div>
-
-              <div className={styles.itemMetaRow}>
-                {badge && (
-                  <span className={`${styles.badge} ${badge.styleClass}`}>
-                    {badge.label}
-                  </span>
-                )}
-
-                {item.action && (
-                  <button
-                    type="button"
-                    className={styles.actionBtn}
-                    onClick={() => {
-                      if (item.action?.type === "add_clarification" && item.action.payload) {
-                        onAppendToClarification?.(item.action.payload);
-                      } else if (item.action?.type === "request_document" && item.action.payload) {
-                        onAppendToClarification?.(item.action.payload);
-                      } else if (item.action?.type === "view_evidence") {
-                        onNavigateToTab?.("evidence");
-                      }
-                    }}
-                  >
-                    {item.action.type === "add_clarification" || item.action.type === "request_document" ? (
-                      <PlusCircle size={11} />
-                    ) : (
-                      <ExternalLink size={11} />
-                    )}
-                    <span>{item.action.label}</span>
-                  </button>
-                )}
-              </div>
-            </div>
-          );
-        })}
+      {/* ── Cards Stack Feed ─────────────────────────────────────────────────── */}
+      <div className={styles.cardsStack}>
+        {visibleInsights.map((insight) => (
+          <OdinInsightCard
+            key={insight.id}
+            insight={insight}
+            isExpanded={expandedId === insight.id}
+            onToggleExpand={() => setExpandedId(expandedId === insight.id ? null : insight.id)}
+            onAppendToClarification={onAppendToClarification}
+            onNavigateToTab={onNavigateToTab}
+          />
+        ))}
       </div>
+
+      {/* ── View All Toggle Link ──────────────────────────────────────────────── */}
+      {hasMore && (
+        <button
+          type="button"
+          className={styles.viewAllBtn}
+          onClick={() => setShowAll(!showAll)}
+        >
+          <span>{showAll ? "Show top insights" : `View all ODIN insights (${insights.length})`}</span>
+          <ArrowRight size={12} className={`${styles.arrowIcon} ${showAll ? styles.arrowUp : ""}`} />
+        </button>
+      )}
     </div>
   );
 };
