@@ -501,37 +501,39 @@ export function EnquiryDetailWorkspace({
                 </div>
               </div>
 
-              <div className={styles.chipsMetaRow}>
-                <span className={styles.typeChip}>
-                  <Building2 size={13} />
-                  <span>{header.projectType}</span>
-                </span>
-                <span
-                  className={`${styles.stageChip} ${
-                    stage === "accepted"
-                      ? styles.stageAccepted
-                      : stage === "clarification"
-                      ? styles.stageClarification
-                      : stage === "rejected"
-                      ? styles.stageRejected
-                      : styles.stageNew
-                  }`}
-                >
-                  <span className={styles.stageDot} />
-                  <span style={{ textTransform: "capitalize" }}>{stage}</span>
-                </span>
-              </div>
-
               <div className={styles.subMetaRow}>
-                <span className={styles.metaItem}>
-                  <MapPin size={13} />
-                  <span>{header.location}</span>
-                </span>
-                <span className={styles.metaDot}>•</span>
-                <span className={styles.metaItem}>
-                  <Calendar size={13} />
-                  <span>Received {header.receivedDate}</span>
-                </span>
+                <div className={styles.subMetaLeft}>
+                  <span className={styles.metaItem}>
+                    <MapPin size={13} />
+                    <span>{header.location}</span>
+                  </span>
+                  <span className={styles.metaDot}>•</span>
+                  <span className={styles.metaItem}>
+                    <Calendar size={13} />
+                    <span>Received {header.receivedDate}</span>
+                  </span>
+                </div>
+
+                <div className={styles.chipsMetaRow}>
+                  <span className={styles.typeChip}>
+                    <Building2 size={13} />
+                    <span>{header.projectType}</span>
+                  </span>
+                  <span
+                    className={`${styles.stageChip} ${
+                      stage === "accepted"
+                        ? styles.stageAccepted
+                        : stage === "clarification"
+                        ? styles.stageClarification
+                        : stage === "rejected"
+                        ? styles.stageRejected
+                        : styles.stageNew
+                    }`}
+                  >
+                    <span className={styles.stageDot} />
+                    <span style={{ textTransform: "capitalize" }}>{stage}</span>
+                  </span>
+                </div>
               </div>
             </div>
 

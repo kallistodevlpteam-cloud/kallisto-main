@@ -232,7 +232,15 @@
 
 .subMetaRow {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.subMetaLeft {
+  display: flex;
   align-items: center;
   gap: 8px;
   font-size: 12.5px;
