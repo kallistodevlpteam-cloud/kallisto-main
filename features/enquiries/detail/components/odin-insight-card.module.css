@@ -4,9 +4,12 @@
   background: #f8fafc;
   border: none;
   border-radius: 14px;
-  padding: 8px 10px;
+  padding: 8px 12px;
+  min-height: 52px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 6px;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
   cursor: pointer;

@@ -1,19 +1,21 @@
 .feedContainer {
-  background: #f1f5f9;
-  border-radius: 20px;
-  padding: 20px 16px 24px 16px;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 16px;
   width: 100%;
+  height: auto;
+  min-height: auto;
   box-sizing: border-box;
+  background: transparent;
+  padding: 0;
 }
 
 .feedHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 2px 0 6px 0;
+  padding: 0;
+  margin: 0;
 }
 
 .headerTitleWrap {

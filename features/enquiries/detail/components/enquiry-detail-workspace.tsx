@@ -1175,8 +1175,6 @@ export function GlobalEnquiryIntelligenceCard({
         </div>
       </div>
 
-      <div className={styles.signalDivider} />
-
       {/* 2. ODIN Insights Panel */}
       <OdinInsightsPanel
         scope="overview"

@@ -105,23 +105,25 @@
 }
 
 .enquiryDetails {
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-  min-width: 0;
-  min-height: 0;
-  height: 100%;
-  overflow: hidden;
-}
-
-.enquiryDetailsTop {
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 0;
-  background: transparent;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
+  min-height: auto;
+  height: auto;
+  overflow: visible;
+}
+
+.enquiryDetailsTop {
+  min-height: auto;
+  height: auto;
+  overflow: visible;
+  padding: 16px;
+  background: #f1f5f9;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -4351,13 +4353,16 @@
 
 /* ── Global Enquiry Intelligence Rail Card ───────────────── */
 .globalIntelCard {
-  background: #f1f5f9;
-  border-radius: 20px;
-  padding: 20px 16px 24px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 0;
   width: 100%;
+  height: auto;
+  min-height: auto;
   box-sizing: border-box;
 }
 
@@ -4367,13 +4372,14 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: #64748b;
-  margin: 0;
+  margin: 0 0 20px 0;
 }
 
 .signalBlock {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin-bottom: 28px;
 }
 
 .signalDivider,
@@ -4879,19 +4885,32 @@
   border-radius: 12px;
 }
 
-/* Responsive Household Cards Grid Layout */
+/* Responsive Household Cards Grid & Horizontal Rail Layout */
 .householdGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   gap: 16px;
   width: 100%;
-  align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 8px;
+  padding-right: 4px;
+}
+
+.householdGrid::-webkit-scrollbar {
+  display: none;
 }
 
 /* Monica Geller Reference Card Layout */
 .morigCardShell {
-  width: 100%;
-  max-width: 100%;
+  flex: 0 0 clamp(220px, 26cqw, 280px);
+  min-width: 220px;
+  max-width: 280px;
+  scroll-snap-align: start;
   box-sizing: border-box;
   background: #0f172a;
   border-radius: 24px;
@@ -4901,6 +4920,23 @@
   cursor: default;
   position: relative;
   transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+/* Container-query for main-content width: 4 equal columns when main workspace >= 960px */
+@container (min-width: 960px) {
+  .householdGrid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
+
+  .morigCardShell {
+    flex: 1 1 0;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
 }
 
 .morigCardShell:hover {
