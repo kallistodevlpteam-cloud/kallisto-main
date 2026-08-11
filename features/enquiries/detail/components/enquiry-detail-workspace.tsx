@@ -1167,20 +1167,13 @@ export function EnquiryActionsCard({
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "12px", fontWeight: 600, color: "#334155" }}>
+              <label className={styles.rejectionLabel}>
                 Rejection Reason (Optional):
               </label>
               <select
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
-                style={{
-                  padding: "8px 12px",
-                  borderRadius: "8px",
-                  border: "1px solid #cbd5e1",
-                  fontSize: "12.5px",
-                  color: "#0f172a",
-                  background: "#ffffff",
-                }}
+                className={styles.customSelect}
               >
                 <option value="">Select a reason...</option>
                 <option value="capacity">Studio Capacity Full</option>
