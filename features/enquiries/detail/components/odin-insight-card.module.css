@@ -1,34 +1,33 @@
-/* ── 1. LAYER 1: OUTER CARD SHELL (#f8fafc) ────────────────────────── */
+/* ── 1. LAYER 1: OUTER CARD SHELL (#f8fafc) — BORDERLESS ─────────────── */
 
 .cardShell {
   background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  border: none;
   border-radius: 14px;
-  padding: 8px 10px;
+  padding: 5px 6px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.03), 0 1px 2px rgba(15, 23, 42, 0.02);
+  gap: 5px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
   cursor: pointer;
   transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.2s ease;
+              background-color 0.2s ease;
   will-change: transform, box-shadow;
 }
 
 .cardShell:hover {
-  border-color: #cbd5e1;
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.07), 0 2px 4px rgba(15, 23, 42, 0.03);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  background: #f8fafc;
 }
 
 .cardShellExpanded {
-  border-color: #cbd5e1;
-  box-shadow: 0 5px 16px rgba(15, 23, 42, 0.05);
+  background: #f8fafc;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
 }
 
 .cardShellExpanded:hover {
-  border-color: #94a3b8;
   transform: translateY(-1px);
 }
 
@@ -39,7 +38,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 2px 4px;
+  padding: 4px 6px;
 }
 
 .headerTitleGroup {
@@ -51,11 +50,11 @@
 }
 
 .iconBox {
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: none;
   color: #2563eb;
   display: flex;
   align-items: center;
@@ -110,17 +109,17 @@
   transform: rotate(180deg);
 }
 
-/* ── 3. LAYER 3: SECONDARY INNER CONTENT CARD (#ffffff) ───────────── */
+/* ── 3. LAYER 3: SECONDARY INNER CONTENT CARD (#ffffff) — BORDERLESS ── */
 
 .innerCard {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: none;
   border-radius: 10px;
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
 }
 
 .summaryText {
@@ -171,7 +170,7 @@
   height: 20px;
   border-radius: 50%;
   background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  border: none;
   color: #64748b;
   display: flex;
   align-items: center;
@@ -228,49 +227,49 @@
 .badgeBlocker {
   background: #fef2f2;
   color: #dc2626;
-  border: 1px solid #fecaca;
+  border: none;
 }
 
 .badgeVerification {
   background: #eff6ff;
   color: #2563eb;
-  border: 1px solid #bfdbfe;
+  border: none;
 }
 
 .badgeInferred {
   background: #f5f3ff;
   color: #7c3aed;
-  border: 1px solid #ddd6fe;
+  border: none;
 }
 
 .badgeRecommendation {
   background: #eff6ff;
   color: #2563eb;
-  border: 1px solid #bfdbfe;
+  border: none;
 }
 
 .badgeRisk {
   background: #fff7ed;
   color: #ea580c;
-  border: 1px solid #ffedd5;
+  border: none;
 }
 
 .badgeChange {
   background: #f8fafc;
   color: #475569;
-  border: 1px solid #e2e8f0;
+  border: none;
 }
 
 .badgeContradiction {
   background: #f8fafc;
   color: #475569;
-  border: 1px solid #e2e8f0;
+  border: none;
 }
 
 .badgeStrength {
   background: #f0fdf4;
   color: #16a34a;
-  border: 1px solid #bbf7d0;
+  border: none;
 }
 
 .domainTag {
@@ -278,7 +277,7 @@
   font-weight: 600;
   color: #475569;
   background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  border: none;
   padding: 2.5px 7px;
   border-radius: 5px;
   display: flex;
@@ -302,8 +301,8 @@
 .ctaButton {
   width: 100%;
   background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 9px;
+  border: none;
+  border-radius: 8px;
   padding: 7px 12px;
   font-size: 12.5px;
   font-weight: 600;
@@ -319,7 +318,6 @@
 
 .ctaButton:hover {
   background: #ffffff;
-  border-color: #2563eb;
   color: #2563eb;
   box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);
 }
