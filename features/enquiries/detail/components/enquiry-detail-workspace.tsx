@@ -345,6 +345,7 @@ export function EnquiryDetailWorkspace({
   const [expandedRoomIds, setExpandedRoomIds] = useState<Record<string, boolean>>({});
   const [clarificationText, setClarificationText] = useState<string>("");
   const [selectedOwnerId, setSelectedOwnerId] = useState<string>("owner-1");
+  const [expandedHouseholdId, setExpandedHouseholdId] = useState<string | null>(null);
 
   const activeTab: EnquiryTabKey = resolveValidTabKey(searchParams.get("tab"));
 
@@ -799,7 +800,7 @@ export function EnquiryDetailWorkspace({
             {/* ── TAB 4: CLIENT CONTEXT ───────────────────────────────────────────── */}
             {activeTab === "client" && (
               <div className={styles.tabSectionGroup}>
-                {/* ── CLIENT & HOUSEHOLD section ─────────────────────────────────────── */}
+                {/* ── CLIENT & HOUSEHOLD ── */}
                 <div className={styles.householdSectionCard}>
                   <div className={styles.householdHeaderRow}>
                     <div className={styles.householdTitleGroup}>
@@ -813,84 +814,127 @@ export function EnquiryDetailWorkspace({
                   </div>
 
                   <div className={styles.householdGrid}>
-                    {(viewModel.householdMembers || []).map((member: ClientHouseholdMember) => (
-                      <div
-                        key={member.id}
-                        className={`${styles.householdCardShell} ${
-                          member.isPrimaryClient ? styles.primaryHouseholdCard : ""
-                        }`}
-                      >
-                        {/* ── IDENTITY ROW ── */}
-                        <div className={styles.householdCardTopRow}>
-                          <div className={styles.householdAvatarGroup}>
-                            <div
-                              className={`${styles.householdAvatarCircle} ${
-                                member.isPrimaryClient ? styles.primaryAvatarCircle : ""
-                              }`}
-                            >
-                              {member.avatarInitials}
+                    {(viewModel.householdMembers || []).map((member: ClientHouseholdMember) => {
+                      const isExpanded = expandedHouseholdId === member.id;
+                      return (
+                        <div
+                          key={member.id}
+                          className={`${styles.householdCardShell} ${
+                            member.isPrimaryClient ? styles.primaryHouseholdCard : ""
+                          } ${isExpanded ? styles.householdCardExpanded : ""}`}
+                        >
+                          {/* ── TOP: Identity row ── */}
+                          <div className={styles.householdCardTopRow}>
+                            <div className={styles.householdAvatarGroup}>
+                              <div
+                                className={`${styles.householdAvatarCircle} ${
+                                  member.isPrimaryClient ? styles.primaryAvatarCircle : ""
+                                }`}
+                              >
+                                {member.avatarInitials}
+                              </div>
+                              <div className={styles.householdIdentityMeta}>
+                                <h5 className={styles.householdName}>{member.name}</h5>
+                                <p className={styles.householdRelationship}>
+                                  {member.relationship}
+                                  {member.age ? ` · ${member.age}` : ""}
+                                </p>
+                                {member.occupation && (
+                                  <p className={styles.householdOccupation}>{member.occupation}</p>
+                                )}
+                                {member.residenceStatus && (
+                                  <p className={styles.householdResidence}>{member.residenceStatus}</p>
+                                )}
+                              </div>
                             </div>
-                            <div className={styles.householdIdentityMeta}>
-                              <h5 className={styles.householdName}>{member.name}</h5>
-                              <p className={styles.householdRelationship}>{member.relationship}</p>
+
+                            {/* Role badge + chevron stacked top-right */}
+                            <div className={styles.householdCardActions}>
+                              {member.isPrimaryClient ? (
+                                <span className={styles.primaryClientBadge}>Primary Client</span>
+                              ) : (
+                                <span className={styles.decisionRoleChip}>{member.decisionRole}</span>
+                              )}
+                              <button
+                                type="button"
+                                className={styles.householdChevronBtn}
+                                aria-label={isExpanded ? `Collapse ${member.name}` : `Expand ${member.name}`}
+                                aria-expanded={isExpanded}
+                                onClick={() =>
+                                  setExpandedHouseholdId(isExpanded ? null : member.id)
+                                }
+                              >
+                                <ChevronDown
+                                  size={15}
+                                  className={`${styles.householdChevronIcon} ${
+                                    isExpanded ? styles.householdChevronOpen : ""
+                                  }`}
+                                />
+                              </button>
                             </div>
                           </div>
-                          <span
-                            className={
-                              member.isPrimaryClient
-                                ? styles.decisionRoleChip
-                                : styles.secondaryRoleChip
-                            }
-                          >
-                            {member.decisionRole}
-                          </span>
+
+                          {/* ── COLLAPSED: 2–3 Key Design Needs ── */}
+                          <ul className={styles.keyNeedsList}>
+                            {(member.keyNeeds || []).map((need, idx) => (
+                              <li key={idx} className={styles.keyNeedItem}>
+                                <span className={styles.keyNeedDot} />
+                                {need}
+                              </li>
+                            ))}
+                          </ul>
+
+                          {/* ── EXPANDED: Full detail panel (inline disclosure) ── */}
+                          {isExpanded && (
+                            <div className={styles.householdExpandedPanel}>
+                              <div className={styles.householdExpandedDivider} />
+                              <dl className={styles.householdDetailGrid}>
+                                {member.workPattern && member.workPattern !== "No WFH" && (
+                                  <>
+                                    <dt className={styles.hdLabel}>Work / Study</dt>
+                                    <dd className={styles.hdValue}>{member.workPattern}</dd>
+                                  </>
+                                )}
+                                {member.bedroomRequirement && (
+                                  <>
+                                    <dt className={styles.hdLabel}>Bedroom</dt>
+                                    <dd className={styles.hdValue}>{member.bedroomRequirement}</dd>
+                                  </>
+                                )}
+                                {member.privacyLevel && (
+                                  <>
+                                    <dt className={styles.hdLabel}>Privacy</dt>
+                                    <dd className={styles.hdValue}>{member.privacyLevel}</dd>
+                                  </>
+                                )}
+                                {member.accessibilityNeeds && member.accessibilityNeeds !== "No special requirement" && (
+                                  <>
+                                    <dt className={styles.hdLabel}>Accessibility</dt>
+                                    <dd className={styles.hdValue}>{member.accessibilityNeeds}</dd>
+                                  </>
+                                )}
+                                {member.decisionRole && (
+                                  <>
+                                    <dt className={styles.hdLabel}>Decision Role</dt>
+                                    <dd className={styles.hdValue}>{member.decisionRole}</dd>
+                                  </>
+                                )}
+                                {member.specialNotes && (
+                                  <>
+                                    <dt className={styles.hdLabel}>Notes</dt>
+                                    <dd className={styles.hdValue}>{member.specialNotes}</dd>
+                                  </>
+                                )}
+                              </dl>
+                            </div>
+                          )}
                         </div>
-
-                        {/* ── AGE / OCCUPATION / RESIDENCE ── */}
-                        <p className={styles.householdSubMeta}>
-                          {[member.age ? `${member.age} yrs` : null, member.occupation, member.residenceStatus]
-                            .filter(Boolean)
-                            .join(" · ")}
-                        </p>
-
-                        {/* ── DESIGN-RELEVANT NEEDS ── */}
-                        <div className={styles.householdNeedsBox}>
-                          {member.workPattern && (
-                            <div className={styles.householdNeedRow}>
-                              <span className={styles.needLabel}>Work / Study</span>
-                              <span className={styles.needVal}>{member.workPattern}</span>
-                            </div>
-                          )}
-                          {member.bedroomRequirement && (
-                            <div className={styles.householdNeedRow}>
-                              <span className={styles.needLabel}>Bedroom</span>
-                              <span className={styles.needVal}>{member.bedroomRequirement}</span>
-                            </div>
-                          )}
-                          {member.privacyLevel && (
-                            <div className={styles.householdNeedRow}>
-                              <span className={styles.needLabel}>Privacy</span>
-                              <span className={styles.needVal}>{member.privacyLevel}</span>
-                            </div>
-                          )}
-                          {member.accessibilityNeeds && (
-                            <div className={styles.householdNeedRow}>
-                              <span className={styles.needLabel}>Accessibility</span>
-                              <span className={styles.needVal}>{member.accessibilityNeeds}</span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* ── SPECIAL NOTES ── */}
-                        {member.specialNotes && (
-                          <p className={styles.specialNotesBox}>{member.specialNotes}</p>
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
-                {/* ── CLIENT CONTEXT & PRIORITIES (priority driver cards) ─────────────── */}
+                {/* ── CLIENT CONTEXT & PRIORITIES ── */}
                 <div className={styles.sectionCard}>
                   <ClientPrioritiesBar priorities={viewModel.priorities} />
                 </div>

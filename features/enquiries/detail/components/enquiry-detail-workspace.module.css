@@ -4793,10 +4793,10 @@
 }
 
 .householdHeading {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   color: #0f172a;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   margin: 0;
 }
@@ -4816,6 +4816,7 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
   width: 100%;
+  align-items: start;
 }
 
 @media (max-width: 1380px) {
@@ -4838,151 +4839,214 @@
   padding: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   gap: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .householdCardShell:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.07);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
   border-color: #cbd5e1;
+}
+
+.householdCardExpanded {
+  border-color: #94a3b8;
 }
 
 .primaryHouseholdCard {
-  border-color: #cbd5e1;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+  border-color: #bfdbfe;
+  background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
 }
 
+/* Top Identity Row */
 .householdCardTopRow {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
 }
 
 .householdAvatarGroup {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   min-width: 0;
+  flex: 1;
 }
 
 .householdAvatarCircle {
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: linear-gradient(135deg, #334155 0%, #0f172a 100%);
   color: #ffffff;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+  margin-top: 1px;
 }
 
 .primaryAvatarCircle {
   background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-  box-shadow: 0 2px 6px rgba(3, 105, 161, 0.25);
 }
 
 .householdIdentityMeta {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   min-width: 0;
 }
 
 .householdName {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
   color: #0f172a;
   margin: 0;
-  line-height: 1.25;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.2;
 }
 
 .householdRelationship {
   font-size: 11.5px;
   font-weight: 600;
+  color: #475569;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.householdOccupation {
+  font-size: 11px;
   color: #64748b;
-  line-height: 1.2;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.householdResidence {
+  font-size: 11px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Role badge + chevron column (top-right) */
+.householdCardActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.primaryClientBadge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #0369a1;
+  background: #dbeafe;
+  padding: 2px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
 }
 
 .decisionRoleChip {
-  font-size: 10.5px;
-  font-weight: 600;
-  color: #0369a1;
-  background: #e0f2fe;
-  padding: 2.5px 8px;
-  border-radius: 6px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.secondaryRoleChip {
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 600;
   color: #475569;
   background: #f1f5f9;
-  padding: 2.5px 8px;
-  border-radius: 6px;
+  padding: 2px 8px;
+  border-radius: 5px;
   white-space: nowrap;
+}
+
+.householdChevronBtn {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.householdChevronBtn:hover {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.householdChevronIcon {
+  transition: transform 0.2s ease;
+}
+
+.householdChevronOpen {
+  transform: rotate(180deg);
+}
+
+/* 2–3 Key Design Needs list (collapsed state) */
+.keyNeedsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.keyNeedItem {
+  font-size: 12px;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.35;
+}
+
+.keyNeedDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #94a3b8;
   flex-shrink: 0;
 }
 
-.householdSubMeta {
-  font-size: 11.5px;
-  color: #64748b;
-  margin: 2px 0 0 0;
-}
-
-/* Inner Design-Relevant Attributes Box (#f8fafc) */
-.householdNeedsBox {
-  background: #f8fafc;
-  border-radius: 10px;
-  padding: 10px 12px;
+/* Expanded detail panel (inline disclosure) */
+.householdExpandedPanel {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
 }
 
-.householdNeedRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  font-size: 11.5px;
+.householdExpandedDivider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 0 -2px;
 }
 
-.needLabel {
-  color: #64748b;
-  font-weight: 500;
+.householdDetailGrid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 12px;
+  row-gap: 6px;
+  margin: 0;
 }
 
-.needVal {
-  color: #0f172a;
-  font-weight: 650;
-  text-align: right;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.specialNotesBox {
+.hdLabel {
   font-size: 11px;
-  color: #475569;
-  background: #ffffff;
-  border: 1px solid #f1f5f9;
-  padding: 6px 10px;
-  border-radius: 6px;
-  line-height: 1.35;
+  color: #94a3b8;
+  font-weight: 500;
+  white-space: nowrap;
+  padding-top: 1px;
+}
+
+.hdValue {
+  font-size: 11.5px;
+  color: #1e293b;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.4;
 }
 
 .idCardsGrid {

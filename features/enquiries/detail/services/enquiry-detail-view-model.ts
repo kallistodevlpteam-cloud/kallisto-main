@@ -191,7 +191,9 @@ export interface ClientHouseholdMember {
   occupation?: string;
   residenceStatus: string;
   isPrimaryClient?: boolean;
-  decisionRole: "Primary Decision Maker" | "Co-decision Maker" | "Influencer" | "User Only";
+  decisionRole: "Primary Decision Maker" | "Co-decision Maker" | "Influencer" | "Household Member";
+  /** 2–3 curated design-relevant needs shown in collapsed card state */
+  keyNeeds: string[];
   workPattern?: string;
   privacyLevel?: string;
   bedroomRequirement?: string;
@@ -203,13 +205,14 @@ export const DEFAULT_RESIDENTIAL_HOUSEHOLD: ClientHouseholdMember[] = [
   {
     id: "mem-1",
     name: "Ananya Sharma",
-    relationship: "Primary Client · Mother",
+    relationship: "Mother",
     avatarInitials: "AS",
     age: "38",
     occupation: "Managing Director",
-    residenceStatus: "Kochi, Kerala (Full-time)",
+    residenceStatus: "Kochi, Kerala",
     isPrimaryClient: true,
     decisionRole: "Primary Decision Maker",
+    keyNeeds: ["Regular WFH", "High privacy", "Master suite (garden view)"],
     workPattern: "Regular WFH (Dedicated Study)",
     privacyLevel: "High Privacy",
     bedroomRequirement: "Master Suite (Garden View)",
@@ -226,11 +229,12 @@ export const DEFAULT_RESIDENTIAL_HOUSEHOLD: ClientHouseholdMember[] = [
     residenceStatus: "Full-time resident",
     isPrimaryClient: false,
     decisionRole: "Co-decision Maker",
+    keyNeeds: ["Occasional WFH", "Outdoor entertaining", "Shared master suite"],
     workPattern: "Occasional WFH (Shared Study)",
     privacyLevel: "Medium Privacy",
     bedroomRequirement: "Master Suite (Shared)",
     accessibilityNeeds: "No special requirement",
-    specialNotes: "Outdoor deck & entertainment space",
+    specialNotes: "Outdoor deck & entertainment space priority",
   },
   {
     id: "mem-3",
@@ -241,12 +245,13 @@ export const DEFAULT_RESIDENTIAL_HOUSEHOLD: ClientHouseholdMember[] = [
     occupation: "Student",
     residenceStatus: "Full-time resident",
     isPrimaryClient: false,
-    decisionRole: "User Only",
+    decisionRole: "Household Member",
+    keyNeeds: ["Private bedroom", "Study desk required", "Reading & art"],
     workPattern: "Bedroom Study Desk Required",
     privacyLevel: "Medium Privacy",
     bedroomRequirement: "Private Bedroom + Built-in Study",
     accessibilityNeeds: "No special requirement",
-    specialNotes: "Reading & Art corner nook",
+    specialNotes: "Reading & art corner nook",
   },
   {
     id: "mem-4",
@@ -255,9 +260,10 @@ export const DEFAULT_RESIDENTIAL_HOUSEHOLD: ClientHouseholdMember[] = [
     avatarInitials: "MM",
     age: "68",
     occupation: "Retired",
-    residenceStatus: "Frequent Visitor",
+    residenceStatus: "Frequent visitor",
     isPrimaryClient: false,
     decisionRole: "Influencer",
+    keyNeeds: ["Ground-floor bedroom", "Attached bathroom", "Avoid stair dependency"],
     workPattern: "No WFH",
     privacyLevel: "High Privacy",
     bedroomRequirement: "Ground-Floor Guest Bedroom",
@@ -277,6 +283,7 @@ export const DEFAULT_COMMERCIAL_STAKEHOLDERS: ClientHouseholdMember[] = [
     residenceStatus: "Kochi HQ",
     isPrimaryClient: true,
     decisionRole: "Primary Decision Maker",
+    keyNeeds: ["Executive corner cabin", "High acoustic privacy", "Fit-out sign-off authority"],
     workPattern: "Executive Corner Cabin",
     privacyLevel: "High Privacy",
     bedroomRequirement: "Executive Suite / Conference",
@@ -293,6 +300,7 @@ export const DEFAULT_COMMERCIAL_STAKEHOLDERS: ClientHouseholdMember[] = [
     residenceStatus: "Kochi Office",
     isPrimaryClient: false,
     decisionRole: "Co-decision Maker",
+    keyNeeds: ["Open-plan collaborative zone", "Breakout studio space", "Teak finish approval"],
     workPattern: "Open-plan Collaborative Zone",
     privacyLevel: "Medium Privacy",
     bedroomRequirement: "Breakout & Studio Space",
@@ -309,6 +317,7 @@ export const DEFAULT_COMMERCIAL_STAKEHOLDERS: ClientHouseholdMember[] = [
     residenceStatus: "Kochi Office",
     isPrimaryClient: false,
     decisionRole: "Influencer",
+    keyNeeds: ["Site inspection access", "Server & storage trunking", "MEP coordination"],
     workPattern: "Site Inspection & Server Room",
     privacyLevel: "Standard",
     bedroomRequirement: "Server & Storage Trunking",
@@ -325,6 +334,7 @@ export const DEFAULT_COMMERCIAL_STAKEHOLDERS: ClientHouseholdMember[] = [
     residenceStatus: "Bengaluru Regional HQ",
     isPrimaryClient: false,
     decisionRole: "Co-decision Maker",
+    keyNeeds: ["Finance cabin", "High privacy", "Milestone disbursement approval"],
     workPattern: "Financial Governance",
     privacyLevel: "High Privacy",
     bedroomRequirement: "Finance Cabin",
