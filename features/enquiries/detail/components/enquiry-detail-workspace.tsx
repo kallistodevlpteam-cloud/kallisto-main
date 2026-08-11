@@ -818,67 +818,74 @@ export function EnquiryDetailWorkspace({
                     return (
                       <div
                         key={member.id}
-                        className={`${styles.householdCardShell} ${
-                          member.isPrimaryClient ? styles.primaryHouseholdCard : ""
-                        } ${isExpanded ? styles.householdCardExpanded : ""}`}
+                        className={`${styles.householdReferenceCard} ${
+                          isExpanded ? styles.householdCardExpanded : ""
+                        }`}
                       >
-                        {/* ── TOP: Identity row ── */}
-                        <div className={styles.householdCardTopRow}>
-                          <div className={styles.householdAvatarGroup}>
-                            <div
-                              className={`${styles.householdAvatarCircle} ${
-                                member.isPrimaryClient ? styles.primaryAvatarCircle : ""
-                              }`}
-                            >
-                              {member.avatarInitials}
-                            </div>
-                            <div className={styles.householdIdentityMeta}>
-                              <h5 className={styles.householdName}>{member.name}</h5>
-                              <p className={styles.householdRelationship}>
-                                {member.relationship}
-                                {member.age ? ` · ${member.age}` : ""}
-                              </p>
-                              {member.occupation && (
-                                <p className={styles.householdOccupation}>{member.occupation}</p>
-                              )}
-                              {member.residenceStatus && (
-                                <p className={styles.householdResidence}>{member.residenceStatus}</p>
-                              )}
+                        {/* ── TOP INNER HERO BOX ── */}
+                        <div className={styles.refCardHeroBox}>
+                          {/* Header Title & Subtitle */}
+                          <div className={styles.refCardTitleGroup}>
+                            <h5 className={styles.refCardName}>{member.name}</h5>
+                            <div className={styles.refCardSubhead}>
+                              <Sparkles size={11} className={styles.refCardIcon} />
+                              <span>{member.relationship}{member.age ? ` · ${member.age}` : ""}</span>
                             </div>
                           </div>
 
-                          {/* chevron top-right */}
-                          <div className={styles.householdCardActions}>
-                            <button
-                              type="button"
-                              className={styles.householdChevronBtn}
-                              aria-label={isExpanded ? `Collapse ${member.name}` : `Expand ${member.name}`}
-                              aria-expanded={isExpanded}
-                              onClick={() =>
-                                setExpandedHouseholdId(isExpanded ? null : member.id)
-                              }
-                            >
-                              <ChevronDown
-                                size={15}
-                                className={`${styles.householdChevronIcon} ${
-                                  isExpanded ? styles.householdChevronOpen : ""
-                                }`}
+                          {/* Member Photo Portrait */}
+                          <div className={styles.refCardPhotoFrame}>
+                            {member.photoUrl ? (
+                              <img
+                                src={member.photoUrl}
+                                alt={member.name}
+                                className={styles.refCardPhoto}
                               />
-                            </button>
+                            ) : (
+                              <div className={styles.refCardPhotoFallback}>
+                                {member.avatarInitials}
+                              </div>
+                            )}
                           </div>
                         </div>
 
-                        {/* ── COLLAPSED: 2–3 Key Design Needs ── */}
-                        <ul className={styles.keyNeedsList}>
+                        {/* ── KEY NEEDS TAGS / BULLETS ── */}
+                        <ul className={styles.refCardKeyNeedsList}>
                           {(member.keyNeeds || []).map((need, idx) => (
-                            <li key={idx} className={styles.keyNeedItem}>
-                              <span className={styles.keyNeedDot} />
+                            <li key={idx} className={styles.refCardKeyNeedItem}>
+                              <span className={styles.refCardKeyNeedDot} />
                               {need}
                             </li>
                           ))}
                         </ul>
 
-                        {/* ── EXPANDED: Full detail panel (inline disclosure) ── */}
+                        {/* ── BOTTOM FOOTER ROW (Matching Reference UI) ── */}
+                        <div className={styles.refCardFooterRow}>
+                          <div className={styles.refCardUserMeta}>
+                            <div className={styles.refCardMiniAvatar}>
+                              {member.avatarInitials}
+                            </div>
+                            <div className={styles.refCardMetaText}>
+                              <span className={styles.refCardHandle}>
+                                {member.occupation || `@${member.name.toLowerCase().replace(/\s+/g, '')}`}
+                              </span>
+                              <span className={styles.refCardTimeAgo}>
+                                {member.residenceStatus}
+                              </span>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            className={styles.refCardDarkActionBtn}
+                            onClick={() => setExpandedHouseholdId(isExpanded ? null : member.id)}
+                            aria-expanded={isExpanded}
+                          >
+                            <span>{isExpanded ? "Collapse" : "+ Details"}</span>
+                          </button>
+                        </div>
+
+                        {/* ── EXPANDED DISCLOSURE PANEL ── */}
                         {isExpanded && (
                           <div className={styles.householdExpandedPanel}>
                             <div className={styles.householdExpandedDivider} />

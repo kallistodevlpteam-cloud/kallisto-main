@@ -4831,172 +4831,111 @@
   }
 }
 
-/* Individual Household Member Card */
-.householdCardShell {
+/* Reference Card UI Layout (Matching Reference Image 2) */
+.householdReferenceCard {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 16px;
+  border-radius: 24px;
+  padding: 12px 12px 14px 12px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05), 0 2px 6px rgba(15, 23, 42, 0.03);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
 }
 
-.householdCardShell:hover {
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+.householdReferenceCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08), 0 4px 10px rgba(15, 23, 42, 0.04);
   border-color: #cbd5e1;
 }
 
 .householdCardExpanded {
-  border-color: #94a3b8;
+  border-color: #0284c7;
+  box-shadow: 0 12px 32px rgba(2, 132, 199, 0.1);
 }
 
-.primaryHouseholdCard {
-  border-color: #bfdbfe;
-  background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
-}
-
-/* Top Identity Row */
-.householdCardTopRow {
+.refCardHeroBox {
+  background: #f8fafc;
+  border-radius: 18px;
+  overflow: hidden;
+  padding: 18px 14px 0 14px;
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #f1f5f9;
 }
 
-.householdAvatarGroup {
+.refCardTitleGroup {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  min-width: 0;
-  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  margin-bottom: 12px;
 }
 
-.householdAvatarCircle {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #334155 0%, #0f172a 100%);
-  color: #ffffff;
+.refCardName {
+  font-size: 19px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+
+.refCardSubhead {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.refCardIcon {
+  color: #d97706;
+}
+
+.refCardPhotoFrame {
+  width: 100%;
+  height: 180px;
+  border-radius: 14px 14px 0 0;
+  overflow: hidden;
+  position: relative;
+  background: #e2e8f0;
+}
+
+.refCardPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.refCardPhotoFallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: #ffffff;
+  font-size: 24px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  margin-top: 1px;
 }
 
-.primaryAvatarCircle {
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-}
-
-.householdIdentityMeta {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.householdName {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0;
-  line-height: 1.2;
-}
-
-.householdRelationship {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: #475569;
-  margin: 0;
-  line-height: 1.3;
-}
-
-.householdOccupation {
-  font-size: 11px;
-  color: #64748b;
-  margin: 0;
-  line-height: 1.3;
-}
-
-.householdResidence {
-  font-size: 11px;
-  color: #94a3b8;
-  margin: 0;
-  line-height: 1.3;
-}
-
-/* Role badge + chevron column (top-right) */
-.householdCardActions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.primaryClientBadge {
-  font-size: 10px;
-  font-weight: 700;
-  color: #0369a1;
-  background: #dbeafe;
-  padding: 2px 8px;
-  border-radius: 5px;
-  white-space: nowrap;
-  letter-spacing: 0.2px;
-}
-
-.decisionRoleChip {
-  font-size: 10px;
-  font-weight: 600;
-  color: #475569;
-  background: #f1f5f9;
-  padding: 2px 8px;
-  border-radius: 5px;
-  white-space: nowrap;
-}
-
-.householdChevronBtn {
-  background: none;
-  border: none;
-  padding: 2px;
-  cursor: pointer;
-  color: #94a3b8;
-  display: flex;
-  align-items: center;
-  border-radius: 4px;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.householdChevronBtn:hover {
-  background: #f1f5f9;
-  color: #475569;
-}
-
-.householdChevronIcon {
-  transition: transform 0.2s ease;
-}
-
-.householdChevronOpen {
-  transform: rotate(180deg);
-}
-
-/* 2–3 Key Design Needs list (collapsed state) */
-.keyNeedsList {
+.refCardKeyNeedsList {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 4px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 
-.keyNeedItem {
-  font-size: 12px;
+.refCardKeyNeedItem {
+  font-size: 11.5px;
   color: #334155;
   display: flex;
   align-items: center;
@@ -5004,12 +4943,87 @@
   line-height: 1.35;
 }
 
-.keyNeedDot {
+.refCardKeyNeedDot {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #94a3b8;
+  background: #0284c7;
   flex-shrink: 0;
+}
+
+.refCardFooterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 4px 2px 4px;
+  margin-top: 2px;
+}
+
+.refCardUserMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.refCardMiniAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.refCardMetaText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.refCardHandle {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.refCardTimeAgo {
+  font-size: 11px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.refCardDarkActionBtn {
+  background: #18181b;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.refCardDarkActionBtn:hover {
+  background: #27272a;
+  transform: translateY(-1px);
 }
 
 /* Expanded detail panel (inline disclosure) */

@@ -187,6 +187,7 @@ export interface ClientHouseholdMember {
   name: string;
   relationship: string;
   avatarInitials: string;
+  photoUrl?: string;
   age?: number | string;
   occupation?: string;
   residenceStatus: string;
@@ -207,6 +208,7 @@ export const DEFAULT_RESIDENTIAL_HOUSEHOLD: ClientHouseholdMember[] = [
     name: "Ananya Sharma",
     relationship: "Mother",
     avatarInitials: "AS",
+    photoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80",
     age: "38",
     occupation: "Managing Director",
     residenceStatus: "Kochi, Kerala",
@@ -224,6 +226,7 @@ export const DEFAULT_RESIDENTIAL_HOUSEHOLD: ClientHouseholdMember[] = [
     name: "Rahul Sharma",
     relationship: "Spouse · Father",
     avatarInitials: "RS",
+    photoUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80",
     age: "40",
     occupation: "Entrepreneur",
     residenceStatus: "Full-time resident",
@@ -241,6 +244,7 @@ export const DEFAULT_RESIDENTIAL_HOUSEHOLD: ClientHouseholdMember[] = [
     name: "Nila Sharma",
     relationship: "Daughter",
     avatarInitials: "NS",
+    photoUrl: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80",
     age: "12",
     occupation: "Student",
     residenceStatus: "Full-time resident",
@@ -258,6 +262,7 @@ export const DEFAULT_RESIDENTIAL_HOUSEHOLD: ClientHouseholdMember[] = [
     name: "Meera Menon",
     relationship: "Grandmother",
     avatarInitials: "MM",
+    photoUrl: "https://images.unsplash.com/photo-1566616213894-2d4e1baee5d8?auto=format&fit=crop&w=600&q=80",
     age: "68",
     occupation: "Retired",
     residenceStatus: "Frequent visitor",
@@ -278,6 +283,7 @@ export const DEFAULT_COMMERCIAL_STAKEHOLDERS: ClientHouseholdMember[] = [
     name: "Ananya Sharma",
     relationship: "Primary Contact · Managing Partner",
     avatarInitials: "AS",
+    photoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80",
     age: "38",
     occupation: "Managing Director",
     residenceStatus: "Kochi HQ",
@@ -295,6 +301,7 @@ export const DEFAULT_COMMERCIAL_STAKEHOLDERS: ClientHouseholdMember[] = [
     name: "David Langston",
     relationship: "Design & Style Lead",
     avatarInitials: "DL",
+    photoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
     age: "34",
     occupation: "Creative Director",
     residenceStatus: "Kochi Office",
@@ -312,6 +319,7 @@ export const DEFAULT_COMMERCIAL_STAKEHOLDERS: ClientHouseholdMember[] = [
     name: "Siddharth Kumar",
     relationship: "Operations & Facilities",
     avatarInitials: "SK",
+    photoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
     age: "42",
     occupation: "Facilities Head",
     residenceStatus: "Kochi Office",
@@ -329,6 +337,7 @@ export const DEFAULT_COMMERCIAL_STAKEHOLDERS: ClientHouseholdMember[] = [
     name: "Radhika Kulkarni",
     relationship: "Finance & Commercial",
     avatarInitials: "RK",
+    photoUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=600&q=80",
     age: "45",
     occupation: "Finance Director",
     residenceStatus: "Bengaluru Regional HQ",
