@@ -486,14 +486,19 @@ export function EnquiryDetailWorkspace({
             <div className={styles.headerBlock}>
               <div className={styles.titleRow}>
                 <h1 className={styles.projectTitle}>{header.title}</h1>
-                <button
-                  type="button"
-                  className="title-share-btn"
-                  aria-label={`Share ${header.title}`}
-                  title={`Share ${header.title}`}
-                >
-                  <Share2 size={16} strokeWidth={1.8} />
-                </button>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  {header.enquiryRef && (
+                    <span className={styles.refCode}>{header.enquiryRef}</span>
+                  )}
+                  <button
+                    type="button"
+                    className="title-share-btn"
+                    aria-label={`Share ${header.title}`}
+                    title={`Share ${header.title}`}
+                  >
+                    <Share2 size={16} strokeWidth={1.8} />
+                  </button>
+                </div>
               </div>
 
               <div className={styles.chipsMetaRow}>
@@ -527,17 +532,6 @@ export function EnquiryDetailWorkspace({
                   <Calendar size={13} />
                   <span>Received {header.receivedDate}</span>
                 </span>
-                <span className={styles.metaDot}>•</span>
-                <span className={styles.metaItem}>
-                  <Globe size={13} />
-                  <span style={{ textTransform: "capitalize" }}>Via {header.source}</span>
-                </span>
-                {header.enquiryRef && (
-                  <>
-                    <span className={styles.metaDot}>•</span>
-                    <span className={styles.refCode}>{header.enquiryRef}</span>
-                  </>
-                )}
               </div>
             </div>
 
