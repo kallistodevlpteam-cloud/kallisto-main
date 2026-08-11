@@ -3,17 +3,17 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
 }
 
-/* ── 2. Section Header ───────────────────────────────────────────── */
+/* ── 2. Section Header ─────────────────────────────────────────────── */
 
 .sectionHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  padding: 2px 2px 0 2px;
 }
 
 .titleGroup {
@@ -23,21 +23,23 @@
 }
 
 .sectionTitle {
-  font-size: 13.5px;
+  font-size: 11px;
   font-weight: 700;
-  color: #0f172a;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  color: #475569;
   margin: 0;
+  line-height: 1.2;
 }
 
 .countBadge {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
-  color: #475569;
+  color: #64748b;
   background: #f1f5f9;
+  border: 1px solid #e2e8f0;
   padding: 2px 8px;
-  border-radius: 12px;
+  border-radius: 999px;
 }
 
 .headerMeta {
@@ -59,12 +61,12 @@
   color: #16a34a;
 }
 
-/* ── 3. Cards Grid Layout (3 Columns Desktop) ───────────────────── */
+/* ── 3. Cards Grid Layout ────────────────────────────────────────── */
 
 .cardsGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
   width: 100%;
 }
 
@@ -80,93 +82,86 @@
   }
 }
 
-/* ── 4. HUMAN / CLIENT CONTEXT CARD ARCHITECTURE ─────────────────── */
+/* ── 4. LAYER 1: OUTER CARD SHELL (#f8fafc) — BORDERLESS ─────────── */
 
-.clientCardShell {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 14px 16px;
+.cardShell {
+  background: #f8fafc;
+  border: none;
+  border-radius: 14px;
+  padding: 5px 6px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 12px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.2s ease;
+  gap: 5px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.2s ease;
+  will-change: transform, box-shadow;
 }
 
-.clientCardShell:hover {
+.cardShell:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.07);
-  border-color: #cbd5e1;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  background: #f8fafc;
 }
 
-/* Layer 1: Client Identity Header */
-.clientIdentityHeader {
+/* ── 5. LAYER 2: HEADER ROW ───────────────────────────────────────── */
+
+.headerRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
+  padding: 4px 6px;
 }
 
-.clientAvatarGroup {
+.headerTitleGroup {
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
+  flex: 1 1 0;
 }
 
-.clientAvatarCircle {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 700;
+.iconBox {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: none;
+  color: #0f172a;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  letter-spacing: 0.5px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
 }
 
-.clientIdentityMeta {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-
-.clientMemberName {
-  font-size: 13px;
-  font-weight: 650;
+.headerIcon {
   color: #0f172a;
-  margin: 0;
-  line-height: 1.25;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.clientMemberRole {
-  font-size: 11px;
-  color: #64748b;
-  line-height: 1.2;
-  white-space: nowrap;
+.cardTitle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.3;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .confirmedBadge {
   font-size: 10.5px;
   font-weight: 600;
   color: #16a34a;
-  background: #dcfce7;
-  padding: 2.5px 8px;
-  border-radius: 6px;
+  background: #f0fdf4;
+  border: none;
+  padding: 2.5px 7px;
+  border-radius: 5px;
   white-space: nowrap;
 }
 
@@ -174,63 +169,51 @@
   font-size: 10.5px;
   font-weight: 600;
   color: #7c3aed;
-  background: #f3e8ff;
-  padding: 2.5px 8px;
-  border-radius: 6px;
+  background: #f5f3ff;
+  border: none;
+  padding: 2.5px 7px;
+  border-radius: 5px;
   white-space: nowrap;
 }
 
-.clarificationBadge {
-  font-size: 10.5px;
-  font-weight: 600;
-  color: #c2410c;
-  background: #ffedd5;
-  padding: 2.5px 8px;
-  border-radius: 6px;
-  white-space: nowrap;
-}
+/* ── 6. LAYER 3: SECONDARY INNER CONTENT CARD (#ffffff) — BORDERLESS ── */
 
-/* Layer 2: Context Title & Description */
-.clientContextContent {
+.innerCard {
+  background: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
 }
 
-.clientContextTitle {
-  font-size: 13.5px;
-  font-weight: 650;
-  color: #0f172a;
-  line-height: 1.35;
-  margin: 0;
-}
-
-.clientContextDesc {
+.cardSnippet {
   font-size: 12px;
   line-height: 1.45;
   color: #475569;
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* Layer 3: Contextual Tags */
-.clientTagsRow {
+.tagsRow {
   display: flex;
   align-items: center;
   gap: 6px;
-  flex-wrap: wrap;
   margin-top: 2px;
+  flex-wrap: wrap;
 }
 
-.clientTag {
+.softTag {
   font-size: 10.5px;
   font-weight: 600;
   color: #475569;
   background: #f8fafc;
-  border: 1px solid #f1f5f9;
-  padding: 2.5px 8px;
-  border-radius: 6px;
+  border: none;
+  padding: 2.5px 7px;
+  border-radius: 5px;
 }
