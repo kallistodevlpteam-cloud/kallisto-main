@@ -87,6 +87,19 @@
   object-fit: cover;
 }
 
+/* ── Empty state — shown when the backend reports no site images ── */
+.emptyState {
+  grid-column: 1 / -1;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 16px 12px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #64748b;
+  background: #f8fafc;
+}
+
 /* ── +N more tile ── */
 .moreCard {
   position: relative;

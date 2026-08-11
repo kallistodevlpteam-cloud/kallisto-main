@@ -179,6 +179,36 @@
   flex-shrink: 0;
 }
 
+.missingBadge {
+  color: #d97706;
+  flex-shrink: 0;
+}
+
+/* Doc image preview (backend project_DOC doc_image_url) fills the paper */
+.paperImageWrap {
+  position: absolute;
+  inset: 12px 8px 26px 8px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: #f8fafc;
+}
+
+.paperImage {
+  object-fit: cover;
+}
+
+/* Empty state — shown when the backend reports no documents */
+.emptyState {
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 18px 12px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #64748b;
+  background: #f8fafc;
+}
+
 /* Label under card */
 .docLabelText {
   font-size: 10.5px;

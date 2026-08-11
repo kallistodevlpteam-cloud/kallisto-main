@@ -143,6 +143,14 @@ export function EnquiryMobileCard({ enquiry, now }: MobileCardProps) {
     >
       {/* Thumbnail + title */}
       <div className={styles.mobileHeader}>
+        {enquiry.viewed === false && (
+          <span
+            className={styles.viewDot}
+            role="img"
+            aria-label="Unviewed enquiry"
+            title="Unviewed enquiry"
+          />
+        )}
         <div className={styles.mobileThumbnailWrap}>
           <Image
             src={enquiry.thumbnailUrl}
@@ -206,7 +214,7 @@ export function EnquiryMobileCard({ enquiry, now }: MobileCardProps) {
         <div className={styles.mobileMetaRow}>
           <span className={styles.mobileMetaLabel}>Budget</span>
           <span className={styles.mobileMetaValue}>
-            {formatEnquiryBudgetRange(enquiry.budgetMin, enquiry.budgetMax)}
+            {enquiry.budget ?? formatEnquiryBudgetRange(enquiry.budgetMin, enquiry.budgetMax)}
           </span>
         </div>
       </div>

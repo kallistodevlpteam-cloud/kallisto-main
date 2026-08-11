@@ -39,8 +39,10 @@ describe("EnquiriesWorkspace Component", () => {
               coverImageUrl: null,
               clientName: "Rahul Menon",
               place: "Kochi",
-              createdAt: "2026-07-01T00:00:00.000Z",
-              updatedAt: "2026-07-01T00:00:00.000Z",
+              estimatedOverallBudget: 25_000_000,
+              createdAt: 1782864000,
+              updatedAt: 1782864000,
+              viewed: false,
             },
             {
               id: 3,
@@ -54,8 +56,10 @@ describe("EnquiriesWorkspace Component", () => {
               coverImageUrl: null,
               clientName: "Priya Sharma",
               place: "Bengaluru",
-              createdAt: "2026-07-02T00:00:00.000Z",
-              updatedAt: "2026-07-02T00:00:00.000Z",
+              estimatedOverallBudget: null,
+              createdAt: 1782950400,
+              updatedAt: 1782950400,
+              viewed: true,
             },
           ],
         }),
@@ -103,6 +107,19 @@ describe("EnquiriesWorkspace Component", () => {
       expect(screen.getAllByText("Sunrise Villa").length).toBeGreaterThan(0);
       expect(screen.getAllByText("Lakeview Residence").length).toBeGreaterThan(0);
     });
+  }, 10000);
+
+  it("shows the estimated overall budget from project_budget in the budget cell", async () => {
+    mockEnqProjects();
+    render(<EnquiriesWorkspace />);
+
+    // Sunrise Villa has estimated_overall_budget = 25,000,000 -> ₹2.5Cr
+    await waitFor(() => {
+      expect(screen.getAllByText("₹2.5Cr").length).toBeGreaterThan(0);
+    });
+
+    // Lakeview Residence has no budget row -> falls back to the neutral range
+    expect(screen.getAllByText("₹0L–0L").length).toBeGreaterThan(0);
   }, 10000);
 
   it("renders a Sort button for the Received header and handles click toggles", async () => {
@@ -173,10 +190,12 @@ describe("EnquiriesWorkspace Component", () => {
                 purposeOfProject: null,
                 briefDescription: null,
                 coverImageUrl: null,
-                clientName: "Rahul Menon",
+clientName: "Rahul Menon",
                 place: "Kochi",
-                createdAt: "2026-07-01T00:00:00.000Z",
-                updatedAt: "2026-07-01T00:00:00.000Z",
+                estimatedOverallBudget: 11_000_000,
+                createdAt: 1782864000,
+                updatedAt: 1782864000,
+                viewed: false,
               },
             ],
           }),
@@ -191,5 +210,22 @@ describe("EnquiriesWorkspace Component", () => {
     });
 
     fetchMock.mockRestore();
+  }, 10000);
+
+  it("shows the green viewed bubble only for backend-unviewed enquiries", async () => {
+    mockEnqProjects();
+    render(<EnquiriesWorkspace />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText("Sunrise Villa").length).toBeGreaterThan(0);
+    });
+
+    // Sunrise Villa (viewed=false) shows the green dot; Lakeview
+    // Residence (viewed=true) must not.
+    const unviewedDots = screen.getAllByLabelText("Unviewed enquiry");
+    expect(unviewedDots.length).toBeGreaterThan(0);
+    expect(
+      unviewedDots.every((dot) => dot.closest("[role='row'], [role='listitem']")?.textContent?.includes("Sunrise Villa"))
+    ).toBe(true);
   }, 10000);
 });

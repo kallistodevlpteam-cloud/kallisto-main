@@ -138,6 +138,14 @@ export function EnquiryTableRow({ enquiry, now }: TableRowProps) {
     >
       {/* 1. Enquiry Info */}
       <div className={styles.enquiryCol} role="gridcell">
+        {enquiry.viewed === false && (
+          <span
+            className={styles.viewDot}
+            role="img"
+            aria-label="Unviewed enquiry"
+            title="Unviewed enquiry"
+          />
+        )}
         <div className={styles.thumbnailWrap}>
           <Image
             src={enquiry.thumbnailUrl}
@@ -178,7 +186,7 @@ export function EnquiryTableRow({ enquiry, now }: TableRowProps) {
 
       {/* 4. Budget Range */}
       <div className={`${styles.budgetVal} ${styles.budgetCell}`} role="gridcell">
-        {formatEnquiryBudgetRange(enquiry.budgetMin, enquiry.budgetMax)}
+        {enquiry.budget ?? formatEnquiryBudgetRange(enquiry.budgetMin, enquiry.budgetMax)}
       </div>
 
       {/* 5. Project Type */}

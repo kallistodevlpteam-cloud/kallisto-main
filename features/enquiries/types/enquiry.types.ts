@@ -60,9 +60,30 @@ export interface EnquiryRecord {
   enquiryRef?: string;     // e.g. "ENQ-2026-0486"
   lastUpdatedAt?: string;  // ISO 8601 string
   budget?: string;         // pre-formatted budget summary (overrides min/max when present)
-  timeline?: string;       // desired schedule summary
+  timeline?: string;       // client-expected timeline (projects.client_expected_timeline)
   duration?: string;       // expected delivery duration summary
   notes?: string;          // free-form context notes
+  /** Enquiry viewed flag from the backend enquiry_details.view column. */
+  viewed?: boolean;
+  /** Built-up area formatted from projects.sq_area (INTEGER sq ft).
+   * Strictly backend-sourced. */
+  sqArea?: string;
+  /** Inspiration gallery images from the backend inspiration_img table.
+   * Strictly backend-sourced; empty/absent means no gallery images. */
+  inspirationImages?: Array<{ url: string; alt: string | null }>;
+  /** Project documents from the backend project_DOC table. Strictly
+   * backend-sourced; empty/absent means no documents are available. */
+  documents?: Array<{
+    id: number;
+    name: string | null;
+    docImageUrl: string | null;
+  }>;
+  /** Site images from the backend project_site.site_img_url list.
+   * Strictly backend-sourced; empty/absent means no site images. */
+  siteImages?: string[];
+  /** Project scopes with nested sub-lists (project_scope +
+   * project_scope_item). Strictly backend-sourced. */
+  projectScopes?: Array<{ id: number; scope_name: string; items: string[] }>;
 }
 
 export type EnquiryPriority = "high" | "medium" | "low";

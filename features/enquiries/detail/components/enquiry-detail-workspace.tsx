@@ -18,10 +18,9 @@ import { RequirementStrengthCard } from "./requirement-strength-card";
 import { EnquiryClarificationComposer } from "./enquiry-clarification-composer";
 import { EnquirySiteImagesCard } from "./enquiry-site-images-card";
 import { EnquiryProjectDocumentsSection } from "./enquiry-project-documents-section";
-import { MOCK_ENQUIRIES } from "../../services/enquiries.mock";
 import { buildEnquiriesFromProjects } from "../../utils/enquiries-from-backend-projects";
-import { SOURCE_LABELS } from "../../types/enquiry.types";
-import type { EnquiryPriority, EnquiryRecord } from "../../types/enquiry.types";
+import { PROJECT_TYPE_LABELS } from "../../types/enquiry.types";
+import type { EnquiryRecord } from "../../types/enquiry.types";
 import styles from "./enquiry-detail-workspace.module.css";
 
 
@@ -173,6 +172,41 @@ export function EnquiryActionsCard({
 
   const router = useRouter();
 
+  // Accept action: persists on the backend first (project character
+  // enq -> pr); the UI stage only advances after the backend confirms.
+  const [acceptSubmitting, setAcceptSubmitting] = useState(false);
+  const [acceptError, setAcceptError] = useState<string | null>(null);
+
+  function handleConfirmAccept() {
+    if (acceptSubmitting) return;
+    setShowAcceptConfirm(false);
+    setAcceptError(null);
+    const match = /^prj-(\d+)$/.exec(enquiry?.id ?? "");
+    if (!match) {
+      setAcceptError("Cannot accept: the enquiry has no backend project id.");
+      return;
+    }
+    setAcceptSubmitting(true);
+    fetch(`/api/projects/${match[1]}/accept`, {
+      method: "POST",
+      cache: "no-store",
+    })
+      .then(async (response) => {
+        const payload = (await response.json()) as {
+          status: string;
+          message?: string;
+        };
+        if (!response.ok || payload.status !== "ok") {
+          throw new Error(payload.message ?? `Accept failed with status ${response.status}`);
+        }
+        onStageChange("accepted");
+      })
+      .catch((error: unknown) => {
+        setAcceptError(error instanceof Error ? error.message : "Backend accept failed.");
+      })
+      .finally(() => setAcceptSubmitting(false));
+  }
+
   function handleCreateOrViewProposal() {
     const targetId = enquiry?.id || "enq-1";
     router.push(`/studio?intent=create_proposal&enquiryId=${targetId}`);
@@ -214,11 +248,6 @@ export function EnquiryActionsCard({
     });
   }
 
-  function handleConfirmAccept() {
-    setShowAcceptConfirm(false);
-    onStageChange("accepted");
-  }
-
   return (
     <aside
       className={`poc-right-column ${styles.enquiryRightRail}`}
@@ -237,11 +266,18 @@ export function EnquiryActionsCard({
 
         {/* Site Images Preview Card */}
         <EnquirySiteImagesCard
+          images={enquiry?.siteImages ?? []}
           onViewAll={handleViewAllFiles}
         />
 
         {/* Project Documents Section */}
-        <EnquiryProjectDocumentsSection />
+        <EnquiryProjectDocumentsSection
+          documents={(enquiry?.documents ?? []).map((doc) => ({
+            id: `doc-${doc.id}`,
+            name: doc.name,
+            docImageUrl: doc.docImageUrl,
+          }))}
+        />
       </div>
 
       {/* Bottom Pinned Action Section (Request Clarification + Action Buttons) */}
@@ -255,6 +291,12 @@ export function EnquiryActionsCard({
 
         {/* ── Stage-driven action area ──────────────────────── */}
         <div className={styles.ctaBody}>
+
+          {acceptError && (
+            <p className={styles.confirmAcceptError} role="alert">
+              {acceptError}
+            </p>
+          )}
 
           {/* IDLE → decision row (Reject and Accept buttons) */}
           {stage === "idle" && !showAcceptConfirm && (
@@ -273,7 +315,10 @@ export function EnquiryActionsCard({
               <button
                 type="button"
                 className={styles.acceptBtn}
-                onClick={() => setShowAcceptConfirm(true)}
+                onClick={() => {
+                  setAcceptError(null);
+                  setShowAcceptConfirm(true);
+                }}
                 aria-label="Accept Enquiry"
                 aria-haspopup="dialog"
                 title="Accept Enquiry"
@@ -315,6 +360,7 @@ export function EnquiryActionsCard({
                     type="button"
                     className={styles.confirmCancelBtn}
                     onClick={() => setShowAcceptConfirm(false)}
+                    disabled={acceptSubmitting}
                   >
                     Cancel
                   </button>
@@ -323,9 +369,10 @@ export function EnquiryActionsCard({
                     type="button"
                     className={styles.confirmAcceptBtn}
                     onClick={handleConfirmAccept}
+                    disabled={acceptSubmitting}
                   >
                     <CheckCircle2 size={14} aria-hidden="true" />
-                    Yes, Accept
+                    {acceptSubmitting ? "Accepting…" : "Yes, Accept"}
                   </button>
                 </div>
               </div>
@@ -479,6 +526,19 @@ export function EnquiryDetailSkeleton() {
 
 // ─── Main workspace ───────────────────────────────────────────────────────────
 
+/**
+ * Marks the opened backend enquiry as viewed. Fire-and-forget: the page
+ * never blocks on this call, and failures are deliberately ignored so a
+ * backend hiccup cannot take the detail view down.
+ */
+function markEnquiryViewed(enquiryId: string) {
+  const match = /^prj-(\d+)$/.exec(enquiryId);
+  if (!match) return;
+  fetch(`/api/projects/${match[1]}/view`, { method: "POST", cache: "no-store" }).catch(
+    () => {}
+  );
+}
+
 export function EnquiryDetailWorkspace({ enquiryId }: { enquiryId: string }) {
   /* Stage lifted here so the title-row pill and the actions card stay in sync */
   const [stage, setStage] = useState<EnquiryStage>("idle");
@@ -488,14 +548,16 @@ export function EnquiryDetailWorkspace({ enquiryId }: { enquiryId: string }) {
   const { dashboardRef, mode: updatesMode, updatesWidth } =
     useProjectDashboardLayout(true);
 
-  // Enquiry shown by this page. Backend enq projects are the source of
-  // truth; the mock list and a default record are fallbacks so the page
-  // always renders a complete UI while data is absent or loading.
-  const [enquiry, setEnquiry] = useState<EnquiryRecord>(() => {
-    const mock = MOCK_ENQUIRIES.find((e) => e.id === enquiryId);
-    if (mock) return mock;
-    return createDefaultEnquiry(enquiryId);
-  });
+  // The detail page is driven exclusively by backend enq projects. The
+  // default record is only a typed placeholder; the project type, client,
+  // budget and title are replaced by backend data once loaded. A missing
+  // or failed backend match renders an explicit not-found state.
+  const [enquiry, setEnquiry] = useState<EnquiryRecord>(() =>
+    createDefaultEnquiry(enquiryId)
+  );
+  const [loadState, setLoadState] = useState<
+    "loading" | "ready" | "not_found"
+  >("loading");
 
   useEffect(() => {
     let cancelled = false;
@@ -513,16 +575,38 @@ export function EnquiryDetailWorkspace({ enquiryId }: { enquiryId: string }) {
         return match ?? null;
       })
       .then((match) => {
-        if (cancelled || !match) return;
+        if (cancelled) return;
+        if (!match) {
+          setLoadState("not_found");
+          return;
+        }
         setEnquiry(match);
+        setLoadState("ready");
+        markEnquiryViewed(enquiryId);
       })
       .catch(() => {
-        // Keep the fallback record; the UI stays visible.
+        if (cancelled) return;
+        setLoadState("not_found");
       });
     return () => {
       cancelled = true;
     };
   }, [enquiryId]);
+
+  if (loadState === "not_found") {
+    return (
+      <div className="workspace-container">
+        <div className="route-state-box" role="alert">
+          <h3>Enquiry not found</h3>
+          <p>This enquiry does not exist or is not assigned to your account in the backend.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loadState === "loading") {
+    return <EnquiryDetailSkeleton />;
+  }
 
   const enquiryTitle = enquiry.title || "Project Enquiry";
 
@@ -572,12 +656,14 @@ export function EnquiryDetailWorkspace({ enquiryId }: { enquiryId: string }) {
           projectName={enquiryTitle}
           description="Office Interior Fit-out for Greenleaf Spaces — a commercial workspace design project in Bengaluru targeting collaborative environments, ergonomic layouts, and a complete interior fit-out across an open-plan office floor."
           statValues={{
-            client:      "Greenleaf Spaces",
-            budget:      "₹40L – ₹60L",
-            builtUpArea: "2,800 – 3,200 sq ft",
-            duration:    "Within 6 Months",
-            projectType: "Commercial Interior",
+            client:      enquiry.clientName !== "—" ? enquiry.clientName : "Greenleaf Spaces",
+            budget:      enquiry.budget ? `Up to ${enquiry.budget}` : "—",
+            builtUpArea: enquiry.sqArea ?? "—",
+            duration:    enquiry.timeline ? `Within ${enquiry.timeline}` : "—",
+            projectType: PROJECT_TYPE_LABELS[enquiry.projectType],
           }}
+          inspirationImages={enquiry.inspirationImages}
+          projectScopes={enquiry.projectScopes ?? []}
           highlights={[
             { text: "Service matches our offering", status: "positive" },
             { text: "Location is serviceable",      status: "positive" },

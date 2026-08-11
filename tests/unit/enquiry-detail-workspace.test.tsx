@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { render, screen, waitFor, cleanup } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { EnquiryDetailWorkspace, EnquiryActionsCard } from "@/features/enquiries/detail/components/enquiry-detail-workspace";
 
 vi.mock("next/navigation", () => ({
@@ -12,29 +12,134 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("EnquiryDetailWorkspace Component", () => {
-  it("renders enquiry details with individual project architecture and 3 CTA buttons", () => {
-    render(<EnquiryDetailWorkspace enquiryId="enq-1" />);
+  let fetchMock: ReturnType<typeof vi.spyOn> | undefined;
 
-    // Check main title heading
-    expect(screen.getByRole("heading", { level: 1, name: "Villa Design Consultation" })).toBeInTheDocument();
+  const mockEnqProjects = () => {
+    fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          status: "ok",
+          projects: [
+            {
+              id: 2,
+              projectName: "Sunrise Villa",
+              projectType: "Residential",
+              buildingType: "Villa",
+              projectCharacter: "enq",
+              newConstructionOrRenovation: null,
+              purposeOfProject: null,
+              briefDescription: null,
+              coverImageUrl: null,
+              clientName: "Rahul Menon",
+              place: "Kochi",
+estimatedOverallBudget: 25_000_000,
+    createdAt: 1782864000,
+    updatedAt: 1782864000,
+    viewed: false,
+            },
+          ],
+        }),
+        { headers: { "Content-Type": "application/json" } }
+      )
+    );
+  };
+
+  const mockEmptyProjects = () => {
+    fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({ status: "ok", projects: [] }),
+        { headers: { "Content-Type": "application/json" } }
+      )
+    );
+  };
+
+  beforeEach(() => {
+    fetchMock?.mockRestore();
+  });
+
+  afterEach(() => {
+    cleanup();
+    fetchMock?.mockRestore();
+  });
+
+  it("renders backend enquiry details with project architecture and action buttons", async () => {
+    mockEnqProjects();
+    render(<EnquiryDetailWorkspace enquiryId="prj-2" />);
+
+    // Check main title heading from the backend project name
+    await waitFor(
+      () => {
+        expect(screen.getByRole("heading", { level: 1, name: "Sunrise Villa" })).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
 
     // Check action buttons
     expect(screen.getByRole("button", { name: /Accept/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Reject Enquiry/i })).toBeInTheDocument();
-  });
+  }, 10000);
 
-  it("renders error state when enquiry is not found", () => {
-    render(<EnquiryDetailWorkspace enquiryId="invalid-id" />);
-    expect(screen.getByText("Enquiry not found")).toBeInTheDocument();
-  });
+  it("marks the backend enquiry as viewed when it opens", async () => {
+    mockEnqProjects();
+    render(<EnquiryDetailWorkspace enquiryId="prj-2" />);
 
-  it("handles image file selection for clarification attachments", () => {
-    const { container } = render(<EnquiryDetailWorkspace enquiryId="enq-1" />);
+    await waitFor(
+      () => {
+        expect(screen.getByRole("heading", { level: 1, name: "Sunrise Villa" })).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
 
-    const fileInput = container.querySelector("input[data-testid='clarification-image-input']") as HTMLInputElement;
-    expect(fileInput).toBeInTheDocument();
-    expect(fileInput).toHaveAttribute("accept", "image/*");
-  });
+    // The detail page must tell the backend the enquiry was opened.
+    await waitFor(
+      () => {
+        expect(fetchMock).toHaveBeenCalledWith(
+          "/api/projects/2/view",
+          expect.objectContaining({ method: "POST" })
+        );
+      },
+      { timeout: 5000 }
+    );
+  }, 10000);
+
+  it("renders error state when enquiry is not found in the backend", async () => {
+    mockEmptyProjects();
+    render(<EnquiryDetailWorkspace enquiryId="enq-1" />);
+    await waitFor(
+      () => {
+        expect(screen.getByText("Enquiry not found")).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+  }, 10000);
+
+  it("handles image file selection for clarification attachments", async () => {
+    mockEnqProjects();
+    const { container } = render(<EnquiryDetailWorkspace enquiryId="prj-2" />);
+
+    await waitFor(
+      () => {
+        const fileInput = container.querySelector("input[data-testid='clarification-image-input']") as HTMLInputElement;
+        expect(fileInput).toBeInTheDocument();
+        expect(fileInput).toHaveAttribute("accept", "image/*");
+      },
+      { timeout: 5000 }
+    );
+  }, 10000);
+
+  it("drives the project type stat card from the backend project_type", async () => {
+    mockEnqProjects();
+    render(<EnquiryDetailWorkspace enquiryId="prj-2" />);
+
+    // The detail page fetches backend enq projects; Sunrise Villa is
+    // Residential -> the project type stat card shows "Residential".
+    await waitFor(
+      () => {
+        expect(screen.getByText("Residential")).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+  }, 10000);
 
   it("renders workflow buttons based on proposal status after acceptance", () => {
     // 1. Before proposal creation -> Create Proposal (primary) + Schedule Consultation, NO Convert to Project

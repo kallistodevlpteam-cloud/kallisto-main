@@ -10,49 +10,18 @@ export interface ScopeCategory {
   items: string[];
 }
 
-const DEFAULT_PROJECT_SCOPE: ScopeCategory[] = [
-  {
-    id: "cat-1",
-    title: "Space Planning & Layout",
-    items: [
-      "Open-plan workstation arrangement (50+ capacity)",
-      "2 Executive Cabins & 1 Conference Room",
-      "Reception Area & Visitor Lounge",
-      "Pantry & Breakout Zone",
-    ],
-  },
-  {
-    id: "cat-2",
-    title: "Civil & Interior Fit-out",
-    items: [
-      "Glass acoustic partition walls",
-      "Custom reception desk & credenza storage",
-      "Gypsum & grid false ceiling works",
-      "Commercial grade carpet & vinyl flooring",
-    ],
-  },
-  {
-    id: "cat-3",
-    title: "MEP & Infrastructure",
-    items: [
-      "Electrical wiring & floor raceways for workstations",
-      "Modular LED ceiling lighting fixture installation",
-      "HVAC duct relocation & diffuser fitting",
-      "Data cabling & server room trunking",
-    ],
-  },
-];
-
 export interface EnquiryProjectScopeSectionProps {
-  categories?: ScopeCategory[];
+  /** Project scopes from the backend (project_scope + project_scope_item).
+   * Strictly backend-sourced; empty/absent means no scopes are available. */
+  scopes?: Array<{ id: number; scope_name: string; items: string[] }>;
   title?: string;
   description?: string;
 }
 
 export function EnquiryProjectScopeSection({
-  categories = DEFAULT_PROJECT_SCOPE,
+  scopes = [],
   title = "PROJECT SCOPE",
-  description = "Comprehensive architectural, civil fit-out, and MEP scope breakdown for the commercial office space.",
+  description = "Scope categories with their sub-items, as recorded on the backend.",
 }: EnquiryProjectScopeSectionProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -76,25 +45,31 @@ export function EnquiryProjectScopeSection({
           {description && (
             <p className={styles.sectionDescription}>{description}</p>
           )}
-          <div className={styles.scopeGrid}>
-            {categories.map((cat) => (
-              <div key={cat.id} className={styles.scopeCategoryCard}>
-                <h4 className={styles.categoryTitle}>{cat.title}</h4>
-                <div className={styles.itemList}>
-                  {cat.items.map((item, idx) => (
-                    <div key={idx} className={styles.itemRow}>
-                      <CheckCircle2
-                        size={14}
-                        className={styles.checkIcon}
-                        aria-hidden="true"
-                      />
-                      <span>{item}</span>
-                    </div>
-                  ))}
+          {scopes.length === 0 ? (
+            <p className={styles.emptyState}>
+              No scope categories have been shared yet.
+            </p>
+          ) : (
+            <div className={styles.scopeGrid}>
+              {scopes.map((scope) => (
+                <div key={scope.id} className={styles.scopeCategoryCard}>
+                  <h4 className={styles.categoryTitle}>{scope.scope_name}</h4>
+                  <div className={styles.itemList}>
+                    {scope.items.map((item, idx) => (
+                      <div key={idx} className={styles.itemRow}>
+                        <CheckCircle2
+                          size={14}
+                          className={styles.checkIcon}
+                          aria-hidden="true"
+                        />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
