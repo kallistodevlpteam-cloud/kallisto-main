@@ -899,6 +899,12 @@ export function EnquiryDetailWorkspace({
                   ))}
                 </div>
 
+                {/* ── ALL SITE IMAGES & EVIDENCE (CLIENT INSPIRATION IMAGES) ── */}
+                <EnquirySiteImagesCard
+                  title="ALL SITE IMAGES & EVIDENCE"
+                  totalCount={8}
+                />
+
                 {/* ── CLIENT CONTEXT & PRIORITIES ── */}
                 <ClientPrioritiesBar priorities={viewModel.priorities} />
 
@@ -973,10 +979,6 @@ export function EnquiryDetailWorkspace({
                   );
                 })}
 
-                <EnquirySiteImagesCard
-                  title="ALL SITE IMAGES & EVIDENCE"
-                  totalCount={8}
-                />
                 <EnquiryProjectDocumentsSection />
               </div>
             )}
