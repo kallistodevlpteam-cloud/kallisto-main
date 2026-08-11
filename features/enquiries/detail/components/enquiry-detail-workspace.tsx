@@ -575,7 +575,6 @@ export function EnquiryDetailWorkspace({
                   title="CLIENT INSPIRATION IMAGES"
                   totalCount={8}
                 />
-                <EnquiryProjectDocumentsSection />
               </div>
             )}
 
