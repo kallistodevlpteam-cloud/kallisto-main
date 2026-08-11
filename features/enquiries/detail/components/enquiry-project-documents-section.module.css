@@ -1,4 +1,4 @@
-/* ─── Project Documents List View ───────────────────────────── */
+/* ─── Project Documents Data Table ───────────────────────────── */
 
 .container {
   width: 100%;
@@ -30,43 +30,66 @@
   border-radius: 999px;
 }
 
-.documentList {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-}
-
-.listItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 14px;
+.tableCard {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
-  transition: all 0.15s ease;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
 }
 
-.listItem:hover {
-  border-color: #cbd5e1;
+.tableResponsiveContainer {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.docTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.docTable th {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  padding: 11px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+  white-space: nowrap;
+}
+
+.docTable td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.docTable tr:last-child td {
+  border-bottom: none;
+}
+
+.docTable tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.docTable tbody tr:hover {
   background: #f8fafc;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
 }
 
-.itemLeft {
+/* File Column */
+.fileCell {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-width: 0;
-  flex: 1 1 0;
+  min-width: 220px;
 }
 
 .fileIconWrap {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -92,69 +115,167 @@
   border: 1px solid #bbf7d0;
 }
 
-.iconMissing {
+.iconZip {
   background: #fff7ed;
-  color: #d97706;
+  color: #ea580c;
   border: 1px solid #ffedd5;
 }
 
-.fileDetails {
+.iconMissing {
+  background: #f8fafc;
+  color: #94a3b8;
+  border: 1px solid #e2e8f0;
+}
+
+.fileInfo {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-width: 0;
+}
+
+.fileNameRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .fileName {
   font-size: 13px;
   font-weight: 600;
   color: #0f172a;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.2;
 }
 
-.fileMeta {
+.newBadge {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #7c3aed;
+  background: #f3e8ff;
+  border: 1px solid #ddd6fe;
+  padding: 1px 6px;
+  border-radius: 999px;
+  line-height: 1;
+}
+
+.fileSize {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* Discipline Column */
+.disciplineText {
+  font-size: 12.5px;
+  color: #475569;
+  font-weight: 500;
+}
+
+/* Status Column */
+.statusBadge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.statusApproved {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.statusInReview {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+.statusDraft {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.statusMissing {
+  background: #fff7ed;
+  color: #d97706;
+  border: 1px solid #ffedd5;
+}
+
+/* Revision Column */
+.revisionText {
   font-size: 11.5px;
+  font-weight: 500;
   color: #64748b;
 }
 
-.itemRight {
+/* Updated Column */
+.updatedDate {
+  font-size: 12px;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+/* Updated By Column */
+.updatedByCell {
   display: flex;
   align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.userAvatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  font-size: 10px;
+  font-weight: 700;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
-.downloadBtn {
+.userName {
+  font-size: 12px;
+  font-weight: 500;
+  color: #334155;
+}
+
+/* Actions Column */
+.alignRight {
+  text-align: right;
+}
+
+.actionCell {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: #2563eb;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  padding: 5px 11px;
-  border-radius: 6px;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.actionIconBtn {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  border-radius: 4px;
+  color: #94a3b8;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.15s ease;
 }
 
-.downloadBtn:hover {
-  background: #2563eb;
-  color: #ffffff;
-  border-color: #2563eb;
+.actionIconBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
 }
 
-.missingStatus {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  font-weight: 600;
+.missingAlertIcon {
   color: #d97706;
-  background: #fff7ed;
-  border: 1px solid #ffedd5;
-  padding: 4px 9px;
-  border-radius: 6px;
 }
