@@ -132,7 +132,13 @@ export interface EnquiryRequirement {
 export interface ClientPriority {
   id: string;
   label: string;
-  type: "confirmed" | "inferred";
+  type: "confirmed" | "inferred" | "needs_clarification";
+  memberId?: string;
+  memberName?: string;
+  memberRole?: string;
+  memberInitials?: string;
+  description?: string;
+  tags?: string[];
 }
 
 export interface EnquiryRecord {
