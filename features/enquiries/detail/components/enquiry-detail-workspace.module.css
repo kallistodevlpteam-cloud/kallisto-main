@@ -118,7 +118,7 @@
   min-height: auto;
   height: auto;
   overflow: visible;
-  padding: 16px;
+  padding: 2px;
   background: #f1f5f9;
   border-radius: 20px;
   display: flex;
@@ -547,7 +547,7 @@
   min-height: auto;
   height: auto;
   overflow: visible;
-  padding: 16px;
+  padding: 2px;
   background: #f1f5f9;
   border-radius: 20px;
   display: flex;
