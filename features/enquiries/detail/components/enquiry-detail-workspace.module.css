@@ -107,17 +107,21 @@
 .enquiryDetails {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   min-width: 0;
-  min-height: auto;
-  height: auto;
-  overflow: visible;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 .enquiryDetailsTop {
-  min-height: auto;
+  flex: 1 1 0%;
+  min-height: 0;
   height: auto;
-  overflow: visible;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 5px;
   background: #f1f5f9;
   border-radius: 20px;
@@ -134,8 +138,16 @@
 
 .enquiryDetailsBottom {
   flex-shrink: 0;
-  overflow: visible;
-  padding-top: 12px;
+  position: sticky;
+  bottom: 0;
+  background: #ffffff;
+  z-index: 2;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding-top: 8px;
   border-top: none;
 }
 
@@ -544,9 +556,12 @@
 }
 
 .enquiryDetailsTop {
-  min-height: auto;
+  flex: 1 1 0%;
+  min-height: 0;
   height: auto;
-  overflow: visible;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 5px;
   background: #f1f5f9;
   border-radius: 20px;
@@ -562,13 +577,17 @@
 }
 
 .enquiryDetailsBottom {
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  background: #ffffff;
+  z-index: 2;
   margin-top: auto;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   width: 100%;
-  flex-shrink: 0;
-  padding-top: 14px;
+  padding-top: 8px;
   border-top: none;
 }
 
