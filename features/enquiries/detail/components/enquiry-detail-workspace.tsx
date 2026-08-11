@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   Share2,
@@ -1019,6 +1020,11 @@ export function EnquiryActionsCard({
   const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleCreateProposalClick = () => {
     setShowWarningModal(true);
@@ -1058,7 +1064,7 @@ export function EnquiryActionsCard({
           </button>
         </div>
 
-        {showWarningModal && (
+        {showWarningModal && mounted && createPortal(
           <div className={styles.modalBackdrop} onClick={() => setShowWarningModal(false)}>
             <div className={styles.warningModalCard} onClick={(e) => e.stopPropagation()}>
               <div className={styles.warningModalHeaderRow}>
@@ -1093,7 +1099,8 @@ export function EnquiryActionsCard({
                 </button>
               </div>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </>
     );
@@ -1111,7 +1118,7 @@ export function EnquiryActionsCard({
       </div>
 
       {/* Accept Confirmation Modal */}
-      {showAcceptModal && (
+      {showAcceptModal && mounted && createPortal(
         <div className={styles.modalBackdrop} onClick={() => setShowAcceptModal(false)}>
           <div className={styles.warningModalCard} onClick={(e) => e.stopPropagation()}>
             <div className={styles.warningModalHeaderRow}>
@@ -1146,11 +1153,12 @@ export function EnquiryActionsCard({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Reject Confirmation Modal */}
-      {showRejectModal && (
+      {showRejectModal && mounted && createPortal(
         <div className={styles.modalBackdrop} onClick={() => setShowRejectModal(false)}>
           <div className={styles.warningModalCard} onClick={(e) => e.stopPropagation()}>
             <div className={styles.warningModalHeaderRow}>
@@ -1204,7 +1212,8 @@ export function EnquiryActionsCard({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
