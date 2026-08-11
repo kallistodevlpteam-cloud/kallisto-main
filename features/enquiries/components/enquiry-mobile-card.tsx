@@ -206,7 +206,7 @@ export function EnquiryMobileCard({ enquiry, now }: MobileCardProps) {
         <div className={styles.mobileMetaRow}>
           <span className={styles.mobileMetaLabel}>Budget</span>
           <span className={styles.mobileMetaValue}>
-            {formatEnquiryBudgetRange(enquiry.budgetMin, enquiry.budgetMax)}
+            {enquiry.budget ? enquiry.budget : formatEnquiryBudgetRange(enquiry.budgetMin, enquiry.budgetMax)}
           </span>
         </div>
       </div>

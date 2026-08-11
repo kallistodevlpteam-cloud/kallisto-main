@@ -127,35 +127,52 @@ function getClientContextSectionIcon(iconName: string) {
   }
 }
 
+function formatBudgetValue(raw: unknown): string | undefined {
+  if (raw == null || raw === "") return undefined;
+  const num = typeof raw === "number" ? raw : Number(raw);
+  if (!Number.isFinite(num) || num === 0) return undefined;
+  const l = num / 100_000;
+  return l >= 100 ? `₹${num / 10_000_000}Cr` : `₹${l}L`;
+}
+
 export function buildEnquiriesFromProjects(projects: Array<Record<string, unknown>>): EnquiryRecord[] {
   if (!projects || projects.length === 0) return [DEFAULT_ENQUIRY_RECORD];
   return projects.map((proj, idx) => {
     const id = String(proj.id || proj.enquiryRef || `enq-${idx + 1}`);
-    const title = String(proj.name || proj.title || "Villa Design Consultation");
-    const clientName = String(proj.client || proj.clientName || "Ananya Builders");
-    const location = String(proj.location || "Kochi");
-    const projectType = String(proj.type || proj.projectType || "residential").toLowerCase();
+    const title = String(proj.projectName || proj.name || proj.title || "Villa Design Consultation");
+    const clientName = String(proj.clientName || proj.client || "Ananya Builders");
+    const location = String(proj.place || proj.location || "Kochi");
+    const projectType = String(proj.projectType || proj.type || "residential").toLowerCase();
     const normalizedType = projectType.includes("comm") ? "commercial" : "residential";
+    const budgetRaw = proj.estimatedOverallBudget ?? proj.estimated_overall_budget ?? proj.budget;
+    const budgetVal = formatBudgetValue(budgetRaw) ?? (typeof proj.budget === "string" ? proj.budget : undefined);
+    const areaRaw = proj.sqArea ?? proj.sq_area ?? proj.area;
+    const builtUpArea = areaRaw ? (typeof areaRaw === "number" ? `${areaRaw.toLocaleString("en-IN")} sq ft` : String(areaRaw)) : undefined;
+    const timelineVal = (proj.clientExpectedTimeline ?? proj.client_expected_timeline ?? proj.timeline ?? undefined) as string | undefined;
 
     return {
-      id,
+      id: id.startsWith("prj-") ? id : `prj-${id}`,
       title,
-      requirementSummary: String(proj.summary || proj.description || DEFAULT_ENQUIRY_RECORD.requirementSummary),
+      requirementSummary: String(proj.briefDescription || proj.summary || proj.description || DEFAULT_ENQUIRY_RECORD.requirementSummary),
       clientName,
       location,
-      thumbnailUrl: String(proj.thumbnailUrl || DEFAULT_ENQUIRY_RECORD.thumbnailUrl),
+      thumbnailUrl: String(proj.coverImageUrl || proj.thumbnailUrl || DEFAULT_ENQUIRY_RECORD.thumbnailUrl),
       source: "website",
       status: "active",
       stage: "new",
       projectType: normalizedType as any,
-      budgetMin: 4000000,
-      budgetMax: 6000000,
+      budgetMin: typeof budgetRaw === "number" ? budgetRaw : 0,
+      budgetMax: typeof budgetRaw === "number" ? budgetRaw : 0,
       receivedAt: String(proj.createdAt || proj.receivedAt || DEFAULT_ENQUIRY_RECORD.receivedAt),
       nextAction: { type: "review_enquiry", label: "Review Requirements" },
       enquiryRef: String(proj.enquiryRef || proj.code || `ENQ-2026-${String(idx + 486).padStart(4, "0")}`),
-      budget: String(proj.budget || "₹40L – ₹60L"),
-      timeline: String(proj.timeline || "Within 6 Months"),
-      builtUpArea: String(proj.area || "2,800 – 3,200 sq ft"),
+      budget: budgetVal,
+      timeline: timelineVal,
+      builtUpArea,
+      inspirationImages: (proj.inspirationImages ?? proj.inspiration_images ?? []) as any,
+      projectDocuments: (proj.projectDocuments ?? proj.project_docs ?? []) as any,
+      siteImages: (proj.siteImages ?? proj.site_images ?? []) as any,
+      projectScopes: (proj.projectScopes ?? proj.project_scopes ?? []) as any,
     };
   });
 }
@@ -385,7 +402,12 @@ export function EnquiryDetailWorkspace({
           throw new Error("Backend projects request failed");
         }
         const records = buildEnquiriesFromProjects(payload.projects as never[]);
-        const match = records.find((record) => record.id === enquiryId);
+        const match = records.find(
+          (record) =>
+            record.id === enquiryId ||
+            record.id === `prj-${enquiryId}` ||
+            record.id.replace("prj-", "") === enquiryId
+        );
         return match ?? null;
       })
       .then((match) => {
