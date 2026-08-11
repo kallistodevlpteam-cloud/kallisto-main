@@ -62,14 +62,14 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(238, 242, 255, 0.9);
-  color: #3b82f6;
+  background: #f1f5f9;
+  color: #0f172a;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
 }
 
 .sparkleIcon {
-  color: #3b82f6;
+  color: #0f172a;
 }
 
 .title {
@@ -99,66 +99,23 @@
 .chipRow {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  margin-top: 2px;
+  gap: 8px;
   position: relative;
   z-index: 2;
 }
 
 .chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 6px 13px;
-  border-radius: 14px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  line-height: 1.3;
-  border: none;
-  transition: transform 0.15s ease;
+  color: #334155;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 3px 9px;
+  border-radius: 6px;
 }
 
-.chip:hover {
-  transform: translateY(-1px);
-}
-
-.chipIcon {
-  flex-shrink: 0;
-}
-
-.chipPositive {
-  background: rgba(235, 249, 238, 0.92);
-  color: #15803d;
-}
-
-.chipPositive .chipIcon {
-  color: #16a34a;
-}
-
-.chipWarning {
-  background: rgba(255, 244, 232, 0.92);
-  color: #ea580c;
-}
-
-.chipWarning .chipIcon {
-  color: #f97316;
-}
-
-.chipPurple {
-  background: rgba(243, 232, 255, 0.92);
-  color: #7c3aed;
-}
-
-.chipPurple .chipIcon {
-  color: #9333ea;
-}
-
-.chipNeutral {
-  background: rgba(235, 245, 255, 0.92);
-  color: #0284c7;
-}
-
-.chipNeutral .chipIcon {
-  color: #0084ff;
+.primaryChip {
+  color: #0f172a;
+  background: #f1f5f9;
+  border-color: #cbd5e1;
 }

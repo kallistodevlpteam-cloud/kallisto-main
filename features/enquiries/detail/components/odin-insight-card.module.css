@@ -55,7 +55,7 @@
   border-radius: 6px;
   background: #ffffff;
   border: none;
-  color: #2563eb;
+  color: #0f172a;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -64,7 +64,7 @@
 }
 
 .sparkleIcon {
-  color: #2563eb;
+  color: #0f172a;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -243,8 +243,8 @@
 }
 
 .badgeVerification {
-  background: #eff6ff;
-  color: #2563eb;
+  background: #f1f5f9;
+  color: #0f172a;
   border: none;
 }
 
@@ -255,8 +255,8 @@
 }
 
 .badgeRecommendation {
-  background: #eff6ff;
-  color: #2563eb;
+  background: #f1f5f9;
+  color: #0f172a;
   border: none;
 }
 
@@ -345,6 +345,6 @@
 
 .ctaButton:hover {
   background: #ffffff;
-  color: #2563eb;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);
+  color: #0f172a;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
 }
