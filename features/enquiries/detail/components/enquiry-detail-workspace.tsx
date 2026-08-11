@@ -915,177 +915,197 @@ export function EnquiryDetailWorkspace({
                 <div className={styles.sectionCard}>
                   <h3 className={styles.cardHeading}>ACTIVITY TIMELINE</h3>
 
-                  <div className={styles.timelineGlanceWrapper}>
-                    {/* Dynamic current stage activity row */}
-                    {stage === "accepted" && (
-                      <div className={styles.glanceRow}>
-                        <div className={styles.glanceTimeColumn}>
-                          <span className={styles.glanceTimeLabel}>Just now</span>
-                          <span className={styles.glanceTimeSub}>Today</span>
+                  <div className={styles.atGlanceTimeline}>
+                    {/* Red current time indicator line */}
+                    <div className={styles.currentTimeMarker}>
+                      <span className={styles.timeTag}>15:30</span>
+                      <div className={styles.timeLine} />
+                    </div>
+
+                    <div className={styles.glanceStack}>
+                      {/* Dynamic current stage activity row */}
+                      {stage === "accepted" && (
+                        <div className={styles.glanceItem}>
+                          <span className={styles.hourNumber}>15</span>
+                          <div className={`${styles.capsuleNode} ${styles.capsuleBlue}`}>
+                            <div className={styles.capsuleIconBox}>
+                              <FileCheck2 size={16} color="#ffffff" />
+                            </div>
+                          </div>
+                          <div className={styles.glanceCard}>
+                            <div className={styles.glanceCardHeader}>
+                              <div>
+                                <h4 className={styles.glanceCardTitle}>Enquiry Accepted & Proposal Workspace Created</h4>
+                                <span className={styles.glanceCardTime}>Just now (Today)</span>
+                              </div>
+                              <div className={`${styles.statusCheckbox} ${styles.checkBlue}`}>
+                                <CheckCircle2 size={13} />
+                              </div>
+                            </div>
+                            <p className={styles.glanceCardDesc}>
+                              Enquiry accepted by Arjun Architects. Transitioned from evaluation to active proposal workspace.
+                            </p>
+                            <div className={styles.glanceActorRow}>
+                              <span className={styles.glanceActorBadge}>
+                                <UserCheck size={12} />
+                                <span>Arjun Mehta (Lead Architect)</span>
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <div className={`${styles.glancePillNode} ${styles.pillGreen}`}>
-                          <FileCheck2 size={16} />
+                      )}
+
+                      {stage === "clarification" && (
+                        <div className={styles.glanceItem}>
+                          <span className={styles.hourNumber}>14</span>
+                          <div className={`${styles.capsuleNode} ${styles.capsuleBlue}`}>
+                            <div className={styles.capsuleIconBox}>
+                              <HelpCircle size={16} color="#ffffff" />
+                            </div>
+                          </div>
+                          <div className={styles.glanceCard}>
+                            <div className={styles.glanceCardHeader}>
+                              <div>
+                                <h4 className={styles.glanceCardTitle}>Clarification Request Sent to Client</h4>
+                                <span className={styles.glanceCardTime}>14:30 (Today)</span>
+                              </div>
+                              <div className={`${styles.statusCheckbox} ${styles.checkBlue}`}>
+                                <HelpCircle size={13} />
+                              </div>
+                            </div>
+                            <p className={styles.glanceCardDesc}>
+                              Clarification requested regarding ground floor accessibility preferences and exact boundary setback constraints.
+                            </p>
+                            <div className={styles.glanceExtraBox}>
+                              &ldquo;Client response pending. Follow-up automated reminder scheduled in 24 hours.&rdquo;
+                            </div>
+                            <div className={styles.glanceActorRow}>
+                              <span className={styles.glanceActorBadge}>
+                                <UserCheck size={12} />
+                                <span>Arjun Mehta (Lead Architect)</span>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* ODIN Intelligence Assessment */}
+                      <div className={styles.glanceItem}>
+                        <span className={styles.hourNumber}>16</span>
+                        <div className={`${styles.capsuleNode} ${styles.capsulePurple}`}>
+                          <div className={styles.capsuleIconBox}>
+                            <Sparkles size={16} color="#ffffff" />
+                          </div>
                         </div>
                         <div className={styles.glanceCard}>
-                          <div className={styles.glanceHeader}>
-                            <h4 className={styles.glanceTitle}>Enquiry Accepted & Proposal Workspace Created</h4>
-                            <div className={`${styles.glanceStatusBox} ${styles.boxGreen}`}>
+                          <div className={styles.glanceCardHeader}>
+                            <div>
+                              <h4 className={styles.glanceCardTitle}>ODIN Intelligence Assessment Completed</h4>
+                              <span className={styles.glanceCardTime}>16:15 (10 Aug 2026)</span>
+                            </div>
+                            <div className={`${styles.statusCheckbox} ${styles.checkPurple}`}>
+                              <Sparkles size={13} />
+                            </div>
+                          </div>
+                          <p className={styles.glanceCardDesc}>
+                            Requirement Strength score evaluated at 88% (High Confidence). 17 critical requirement drivers acknowledged.
+                          </p>
+                          <div className={styles.glanceActorRow}>
+                            <span className={styles.glanceActorBadge}>
+                              <Sparkles size={12} />
+                              <span>ODIN AI Engine</span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Site Assets & DWG Onboarded */}
+                      <div className={styles.glanceItem}>
+                        <span className={styles.hourNumber}>11</span>
+                        <div className={`${styles.capsuleNode} ${styles.capsuleBlue}`}>
+                          <div className={styles.capsuleIconBox}>
+                            <FileText size={16} color="#ffffff" />
+                          </div>
+                        </div>
+                        <div className={styles.glanceCard}>
+                          <div className={styles.glanceCardHeader}>
+                            <div>
+                              <h4 className={styles.glanceCardTitle}>7 Site Assets & DWG Files Onboarded</h4>
+                              <span className={styles.glanceCardTime}>11:20 (09 Aug 2026)</span>
+                            </div>
+                            <div className={`${styles.statusCheckbox} ${styles.checkBlue}`}>
                               <CheckCircle2 size={13} />
                             </div>
                           </div>
-                          <p className={styles.glanceDesc}>
-                            Enquiry accepted by Arjun Architects. Transitioned from evaluation to active proposal workspace.
+                          <p className={styles.glanceCardDesc}>
+                            Ground Floor Plan.pdf, Structural Layout.dwg, and 5 site inspection photos attached to workspace evidence.
                           </p>
                           <div className={styles.glanceActorRow}>
                             <span className={styles.glanceActorBadge}>
                               <UserCheck size={12} />
-                              <span>Arjun Mehta (Lead Architect)</span>
+                              <span>Neha Rao (Structural Engineer)</span>
                             </span>
                           </div>
                         </div>
                       </div>
-                    )}
 
-                    {stage === "clarification" && (
-                      <div className={styles.glanceRow}>
-                        <div className={styles.glanceTimeColumn}>
-                          <span className={styles.glanceTimeLabel}>02:30 PM</span>
-                          <span className={styles.glanceTimeSub}>Today</span>
-                        </div>
-                        <div className={`${styles.glancePillNode} ${styles.pillBlue}`}>
-                          <HelpCircle size={16} />
+                      {/* Client & Household Confirmed */}
+                      <div className={styles.glanceItem}>
+                        <span className={styles.hourNumber}>15</span>
+                        <div className={`${styles.capsuleNode} ${styles.capsuleAmber}`}>
+                          <div className={styles.capsuleIconBox}>
+                            <UserCheck size={16} color="#ffffff" />
+                          </div>
                         </div>
                         <div className={styles.glanceCard}>
-                          <div className={styles.glanceHeader}>
-                            <h4 className={styles.glanceTitle}>Clarification Request Sent to Client</h4>
-                            <div className={`${styles.glanceStatusBox} ${styles.boxBlue}`}>
-                              <HelpCircle size={13} />
+                          <div className={styles.glanceCardHeader}>
+                            <div>
+                              <h4 className={styles.glanceCardTitle}>Client & Household Profile Confirmed</h4>
+                              <span className={styles.glanceCardTime}>15:45 (25 Jul 2026)</span>
+                            </div>
+                            <div className={`${styles.statusCheckbox} ${styles.checkAmber}`}>
+                              <UserCheck size={13} />
                             </div>
                           </div>
-                          <p className={styles.glanceDesc}>
-                            Clarification requested regarding ground floor accessibility preferences and exact boundary setback constraints.
+                          <p className={styles.glanceCardDesc}>
+                            Ananya Builders confirmed as primary sign-off decision maker along with 4 household occupant requirements.
                           </p>
-                          <div className={styles.glanceExtraBox}>
-                            &ldquo;Client response pending. Follow-up automated reminder scheduled in 24 hours.&rdquo;
-                          </div>
                           <div className={styles.glanceActorRow}>
                             <span className={styles.glanceActorBadge}>
                               <UserCheck size={12} />
-                              <span>Arjun Mehta (Lead Architect)</span>
+                              <span>Priya Nair (Client Manager)</span>
                             </span>
                           </div>
                         </div>
                       </div>
-                    )}
 
-                    {/* ODIN Intelligence Assessment */}
-                    <div className={styles.glanceRow}>
-                      <div className={styles.glanceTimeColumn}>
-                        <span className={styles.glanceTimeLabel}>04:15 PM</span>
-                        <span className={styles.glanceTimeSub}>10 Aug 2026</span>
-                      </div>
-                      <div className={`${styles.glancePillNode} ${styles.pillPurple}`}>
-                        <Sparkles size={16} />
-                      </div>
-                      <div className={styles.glanceCard}>
-                        <div className={styles.glanceHeader}>
-                          <h4 className={styles.glanceTitle}>ODIN Intelligence Assessment Completed</h4>
-                          <div className={`${styles.glanceStatusBox} ${styles.boxPurple}`}>
-                            <Sparkles size={13} />
+                      {/* Enquiry Received */}
+                      <div className={styles.glanceItem}>
+                        <span className={styles.hourNumber}>10</span>
+                        <div className={`${styles.capsuleNode} ${styles.capsulePink}`}>
+                          <div className={styles.capsuleIconBox}>
+                            <Clock size={16} color="#ffffff" />
                           </div>
                         </div>
-                        <p className={styles.glanceDesc}>
-                          Requirement Strength score evaluated at 88% (High Confidence). 17 critical requirement drivers acknowledged.
-                        </p>
-                        <div className={styles.glanceActorRow}>
-                          <span className={styles.glanceActorBadge}>
-                            <Sparkles size={12} />
-                            <span>ODIN AI Engine</span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Site Assets & DWG Onboarded */}
-                    <div className={styles.glanceRow}>
-                      <div className={styles.glanceTimeColumn}>
-                        <span className={styles.glanceTimeLabel}>11:20 AM</span>
-                        <span className={styles.glanceTimeSub}>09 Aug 2026</span>
-                      </div>
-                      <div className={`${styles.glancePillNode} ${styles.pillGreen}`}>
-                        <FileText size={16} />
-                      </div>
-                      <div className={styles.glanceCard}>
-                        <div className={styles.glanceHeader}>
-                          <h4 className={styles.glanceTitle}>7 Site Assets & DWG Files Onboarded</h4>
-                          <div className={`${styles.glanceStatusBox} ${styles.boxGreen}`}>
-                            <CheckCircle2 size={13} />
+                        <div className={styles.glanceCard}>
+                          <div className={styles.glanceCardHeader}>
+                            <div>
+                              <h4 className={styles.glanceCardTitle}>Enquiry Received</h4>
+                              <span className={styles.glanceCardTime}>10:14 ({header.receivedDate})</span>
+                            </div>
+                            <div className={`${styles.statusCheckbox} ${styles.checkPink}`}>
+                              <Clock size={13} />
+                            </div>
                           </div>
-                        </div>
-                        <p className={styles.glanceDesc}>
-                          Ground Floor Plan.pdf, Structural Layout.dwg, and 5 site inspection photos attached to workspace evidence.
-                        </p>
-                        <div className={styles.glanceActorRow}>
-                          <span className={styles.glanceActorBadge}>
-                            <UserCheck size={12} />
-                            <span>Neha Rao (Structural Engineer)</span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Client & Household Confirmed */}
-                    <div className={styles.glanceRow}>
-                      <div className={styles.glanceTimeColumn}>
-                        <span className={styles.glanceTimeLabel}>03:45 PM</span>
-                        <span className={styles.glanceTimeSub}>25 Jul 2026</span>
-                      </div>
-                      <div className={`${styles.glancePillNode} ${styles.pillAmber}`}>
-                        <UserCheck size={16} />
-                      </div>
-                      <div className={styles.glanceCard}>
-                        <div className={styles.glanceHeader}>
-                          <h4 className={styles.glanceTitle}>Client & Household Profile Confirmed</h4>
-                          <div className={`${styles.glanceStatusBox} ${styles.boxAmber}`}>
-                            <UserCheck size={13} />
+                          <p className={styles.glanceCardDesc}>
+                            Received via {header.source} portal for {header.projectType} ({header.title}) in {header.location}. Reference code: {header.enquiryRef}.
+                          </p>
+                          <div className={styles.glanceActorRow}>
+                            <span className={styles.glanceActorBadge}>
+                              <Globe size={12} />
+                              <span>Kallisto Ecosystem Portal</span>
+                            </span>
                           </div>
-                        </div>
-                        <p className={styles.glanceDesc}>
-                          Ananya Builders confirmed as primary sign-off decision maker along with 4 household occupant requirements.
-                        </p>
-                        <div className={styles.glanceActorRow}>
-                          <span className={styles.glanceActorBadge}>
-                            <UserCheck size={12} />
-                            <span>Priya Nair (Client Manager)</span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Enquiry Received */}
-                    <div className={styles.glanceRow}>
-                      <div className={styles.glanceTimeColumn}>
-                        <span className={styles.glanceTimeLabel}>10:14 AM</span>
-                        <span className={styles.glanceTimeSub}>23 Jul 2026</span>
-                      </div>
-                      <div className={`${styles.glancePillNode} ${styles.pillSlate}`}>
-                        <Clock size={16} />
-                      </div>
-                      <div className={styles.glanceCard}>
-                        <div className={styles.glanceHeader}>
-                          <h4 className={styles.glanceTitle}>Enquiry Received</h4>
-                          <div className={`${styles.glanceStatusBox} ${styles.boxSlate}`}>
-                            <Clock size={13} />
-                          </div>
-                        </div>
-                        <p className={styles.glanceDesc}>
-                          Received via {header.source} portal for {header.projectType} ({header.title}) in {header.location}. Reference code: {header.enquiryRef}.
-                        </p>
-                        <div className={styles.glanceActorRow}>
-                          <span className={styles.glanceActorBadge}>
-                            <Globe size={12} />
-                            <span>Kallisto Ecosystem Portal</span>
-                          </span>
                         </div>
                       </div>
                     </div>
