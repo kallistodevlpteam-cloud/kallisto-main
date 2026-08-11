@@ -8,8 +8,6 @@ import {
   Zap,
   ShieldCheck,
   Sparkles,
-  CheckCircle2,
-  Bookmark,
 } from "lucide-react";
 import { ClientPriority } from "../../types/enquiry.types";
 import styles from "./client-priorities-bar.module.css";
@@ -33,11 +31,11 @@ function getPriorityMeta(label: string, index: number, type: "confirmed" | "infe
       tags: ["Space Planning", "Fit-out"],
     };
   }
-  if (lower.includes("comfort") || lower.includes("employee") || lower.includes("living")) {
+  if (lower.includes("comfort") || lower.includes("employee") || lower.includes("living") || lower.includes("ventilation")) {
     return {
       theme: "green" as ColorTheme,
       Icon: Heart,
-      desc: "High priority placed on natural light, ergonomic joinery, and direct outdoor courtyard views.",
+      desc: "High priority placed on natural light, cross ventilation, and direct garden view access.",
       tags: ["Ergonomics", "HVAC"],
     };
   }
@@ -80,13 +78,13 @@ export function ClientPrioritiesBar({ priorities, className }: ClientPrioritiesB
 
   return (
     <div
-      className={`${styles.outerContainer}${className ? ` ${className}` : ""}`}
+      className={`${styles.container}${className ? ` ${className}` : ""}`}
       aria-label="Client context and priorities"
     >
-      {/* ── Group Header Row ───────────────────────────────────────────── */}
-      <div className={styles.headerRow}>
+      {/* ── Section Header ───────────────────────────────────────────── */}
+      <div className={styles.sectionHeader}>
         <div className={styles.titleGroup}>
-          <h3 className={styles.title}>CLIENT CONTEXT & PRIORITIES</h3>
+          <h3 className={styles.sectionTitle}>CLIENT CONTEXT & PRIORITIES</h3>
           <span className={styles.countBadge}>{priorities.length} key drivers</span>
         </div>
         <div className={styles.headerMeta}>
@@ -95,21 +93,21 @@ export function ClientPrioritiesBar({ priorities, className }: ClientPrioritiesB
         </div>
       </div>
 
-      {/* ── Cards Grid (Matching Reference Screenshot) ───────────────────── */}
+      {/* ── Cards Grid (Matching ODIN Insight Cards Architecture) ───── */}
       <div className={styles.cardsGrid}>
         {priorities.map((prio, idx) => {
           const isConfirmed = prio.type === "confirmed";
-          const { theme, Icon, desc, tags } = getPriorityMeta(prio.label, idx, prio.type);
+          const { Icon, desc, tags } = getPriorityMeta(prio.label, idx, prio.type);
 
           return (
-            <div key={prio.id} className={styles.innerCard}>
-              {/* Card Header Row: Icon Badge + Priority Index + Type Tag */}
-              <div className={styles.cardHeaderRow}>
-                <div className={styles.badgeGroup}>
-                  <div className={`${styles.iconBadge} ${styles[`theme_${theme}`]}`}>
-                    <Icon size={13} />
+            <div key={prio.id} className={styles.cardShell}>
+              {/* Layer 1: Header Row inside Outer Shell */}
+              <div className={styles.headerRow}>
+                <div className={styles.headerTitleGroup}>
+                  <div className={styles.iconBox}>
+                    <Icon size={13} className={styles.headerIcon} />
                   </div>
-                  <span className={styles.priorityIndex}>P0{idx + 1}</span>
+                  <h4 className={styles.cardTitle}>{prio.label}</h4>
                 </div>
                 <span
                   className={
@@ -120,27 +118,15 @@ export function ClientPrioritiesBar({ priorities, className }: ClientPrioritiesB
                 </span>
               </div>
 
-              {/* Card Title */}
-              <h4 className={styles.cardTitle}>{prio.label}</h4>
-
-              {/* Context Description Snippet */}
-              <p className={styles.cardSnippet}>{desc}</p>
-
-              {/* Card Footer: Soft Tags + Evidence Icon */}
-              <div className={styles.cardFooter}>
-                <div className={styles.tagGroup}>
+              {/* Layer 2: Secondary Inner Content Card (#ffffff) */}
+              <div className={styles.innerCard}>
+                <p className={styles.cardSnippet}>{desc}</p>
+                <div className={styles.tagsRow}>
                   {tags.map((t, i) => (
                     <span key={i} className={styles.softTag}>
                       {t}
                     </span>
                   ))}
-                </div>
-                <div className={styles.footerIconWrap} title="Verified requirement">
-                  {isConfirmed ? (
-                    <CheckCircle2 size={13} className={styles.checkIcon} />
-                  ) : (
-                    <Bookmark size={13} className={styles.bookmarkIcon} />
-                  )}
                 </div>
               </div>
             </div>

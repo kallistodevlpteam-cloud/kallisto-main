@@ -1,26 +1,19 @@
-/* ── 1. Outer Group Container (#f8fafc) ─────────────────────────── */
+/* ── 1. Container ─────────────────────────────────────────────────── */
 
-.outerContainer {
-  width: 100%;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 18px;
-  padding: 16px 18px;
+.container {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.03);
-  box-sizing: border-box;
+  gap: 10px;
+  width: 100%;
 }
 
-/* ── 2. Group Header Row ─────────────────────────────────────────── */
+/* ── 2. Section Header ─────────────────────────────────────────────── */
 
-.headerRow {
+.sectionHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 0 2px;
+  padding: 2px 2px 0 2px;
 }
 
 .titleGroup {
@@ -29,7 +22,7 @@
   gap: 8px;
 }
 
-.title {
+.sectionTitle {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -43,7 +36,7 @@
   font-size: 10.5px;
   font-weight: 600;
   color: #64748b;
-  background: #ffffff;
+  background: #f1f5f9;
   border: 1px solid #e2e8f0;
   padding: 2px 8px;
   border-radius: 999px;
@@ -73,89 +66,80 @@
 .cardsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 12px;
+  gap: 10px;
   width: 100%;
 }
 
-/* ── 4. Inner White Content Card (#ffffff) ───────────────────────── */
+/* ── 4. LAYER 1: OUTER CARD SHELL (#f8fafc) — BORDERLESS ─────────── */
 
-.innerCard {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+.cardShell {
+  background: #f8fafc;
+  border: none;
   border-radius: 14px;
-  padding: 14px 16px;
+  padding: 5px 6px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  gap: 5px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.2s ease;
+  will-change: transform, box-shadow;
 }
 
-.innerCard:hover {
+.cardShell:hover {
   transform: translateY(-2px);
-  border-color: #cbd5e1;
   box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  background: #f8fafc;
 }
 
-/* Card Header Row */
-.cardHeaderRow {
+/* ── 5. LAYER 2: HEADER ROW ───────────────────────────────────────── */
+
+.headerRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  padding: 4px 6px;
 }
 
-.badgeGroup {
+.headerTitleGroup {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+  flex: 1 1 0;
 }
 
-.iconBadge {
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
+.iconBox {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: none;
+  color: #0f172a;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
 }
 
-.theme_blue {
-  background: #eff6ff;
-  color: #2563eb;
-  border: 1px solid #bfdbfe;
+.headerIcon {
+  color: #0f172a;
 }
 
-.theme_green {
-  background: #f0fdf4;
-  color: #16a34a;
-  border: 1px solid #bbf7d0;
-}
-
-.theme_purple {
-  background: #f5f3ff;
-  color: #7c3aed;
-  border: 1px solid #ddd6fe;
-}
-
-.theme_orange {
-  background: #fff7ed;
-  color: #ea580c;
-  border: 1px solid #ffedd5;
-}
-
-.theme_pink {
-  background: #fdf2f8;
-  color: #db2777;
-  border: 1px solid #fbcfe8;
-}
-
-.priorityIndex {
-  font-size: 11px;
-  font-weight: 700;
-  color: #94a3b8;
-  letter-spacing: 0.04em;
+.cardTitle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.3;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .confirmedBadge {
@@ -163,9 +147,10 @@
   font-weight: 600;
   color: #16a34a;
   background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  padding: 2px 7px;
-  border-radius: 6px;
+  border: none;
+  padding: 2.5px 7px;
+  border-radius: 5px;
+  white-space: nowrap;
 }
 
 .inferredBadge {
@@ -173,21 +158,25 @@
   font-weight: 600;
   color: #7c3aed;
   background: #f5f3ff;
-  border: 1px solid #ddd6fe;
-  padding: 2px 7px;
-  border-radius: 6px;
+  border: none;
+  padding: 2.5px 7px;
+  border-radius: 5px;
+  white-space: nowrap;
 }
 
-/* Card Title */
-.cardTitle {
-  font-size: 13.5px;
-  font-weight: 600;
-  color: #0f172a;
-  line-height: 1.3;
-  margin: 0;
+/* ── 6. LAYER 3: SECONDARY INNER CONTENT CARD (#ffffff) — BORDERLESS ── */
+
+.innerCard {
+  background: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
 }
 
-/* Context Description Snippet */
 .cardSnippet {
   font-size: 12px;
   line-height: 1.45;
@@ -199,50 +188,20 @@
   overflow: hidden;
 }
 
-/* Card Footer Row */
-.cardFooter {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 4px;
-  padding-top: 8px;
-  border-top: 1px solid #f1f5f9;
-}
-
-.tagGroup {
+.tagsRow {
   display: flex;
   align-items: center;
   gap: 6px;
+  margin-top: 2px;
   flex-wrap: wrap;
 }
 
 .softTag {
   font-size: 10.5px;
   font-weight: 600;
-  color: #64748b;
+  color: #475569;
   background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 2px 7px;
+  border: none;
+  padding: 2.5px 7px;
   border-radius: 5px;
-}
-
-.footerIconWrap {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.checkIcon {
-  color: #16a34a;
-}
-
-.bookmarkIcon {
-  color: #94a3b8;
 }
