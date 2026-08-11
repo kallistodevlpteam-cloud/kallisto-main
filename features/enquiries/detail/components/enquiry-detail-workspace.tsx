@@ -909,49 +909,7 @@ export function EnquiryDetailWorkspace({
               </div>
             )}
 
-            {/* ── TAB 6: ODIN INTELLIGENCE ───────────────────────────────────────── */}
-            {activeTab === "intelligence" && (
-              <div className={styles.tabSectionGroup}>
-                <div className={styles.sectionCard}>
-                  <h3 className={styles.cardHeading}>FULL ODIN INTELLIGENCE SCORE BREAKDOWN</h3>
-                  <div className={styles.intelligenceDetailsGrid}>
-                    <div className={styles.detailBox}>
-                      <span className={styles.detailTitle}>Requirement Strength</span>
-                      <span className={styles.detailValue}>
-                        {viewModel.intelligence.requirementStrength.score}% (
-                        {viewModel.intelligence.requirementStrength.label})
-                      </span>
-                      <p className={styles.detailSub}>
-                        {viewModel.intelligence.requirementStrength.explanation}
-                      </p>
-                    </div>
-
-                    <div className={styles.detailBox}>
-                      <span className={styles.detailTitle}>Opportunity Fit</span>
-                      <span className={styles.detailValue}>
-                        {viewModel.intelligence.opportunityFit.score}% (
-                        {viewModel.intelligence.opportunityFit.label})
-                      </span>
-                      <p className={styles.detailSub}>
-                        Confidence: {viewModel.intelligence.opportunityFit.confidence}
-                      </p>
-                    </div>
-
-                    <div className={styles.detailBox}>
-                      <span className={styles.detailTitle}>Proposal Readiness</span>
-                      <span className={styles.detailValue}>
-                        {viewModel.intelligence.proposalReadiness.state}
-                      </span>
-                      <p className={styles.detailSub}>
-                        {viewModel.intelligence.proposalReadiness.reason}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* ── TAB 7: ACTIVITY ─────────────────────────────────────────────────── */}
+            {/* ── TAB 6: ACTIVITY ─────────────────────────────────────────────────── */}
             {activeTab === "activity" && (
               <div className={styles.tabSectionGroup}>
                 <div className={styles.sectionCard}>
