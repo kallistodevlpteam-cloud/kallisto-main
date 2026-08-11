@@ -951,24 +951,16 @@ export function EnquiryDetailWorkspace({
           {/* Right Fixed Context & Intelligence Area */}
           <aside className={styles.enquiryDetails} aria-label="Context & Intelligence">
             <div className={styles.enquiryDetailsTop}>
-              {activeTab === "overview" ? (
-                <GlobalEnquiryIntelligenceCard
-                  viewModel={viewModel}
-                  onAppendToClarification={handleAppendToClarification}
-                  onNavigateToIntelligence={handleViewAllFiles}
-                />
-              ) : (
-                <OdinInsightsPanel
-                  scope={activeTab as "requirements" | "evidence" | "client" | "intelligence" | "activity"}
-                  insights={deriveContextualOdinInsights(enquiry, activeTab)}
-                  onAppendToClarification={handleAppendToClarification}
-                  onNavigateToTab={(tab) => {
-                    const params = new URLSearchParams(searchParams.toString());
-                    params.set("tab", tab);
-                    router.push(`${pathname}?${params.toString()}`, { scroll: false });
-                  }}
-                />
-              )}
+              <OdinInsightsPanel
+                scope={activeTab as "overview" | "requirements" | "evidence" | "client" | "intelligence" | "activity"}
+                insights={deriveContextualOdinInsights(enquiry, activeTab)}
+                onAppendToClarification={handleAppendToClarification}
+                onNavigateToTab={(tab) => {
+                  const params = new URLSearchParams(searchParams.toString());
+                  params.set("tab", tab);
+                  router.push(`${pathname}?${params.toString()}`, { scroll: false });
+                }}
+              />
             </div>
 
             <div className={styles.enquiryDetailsBottom}>

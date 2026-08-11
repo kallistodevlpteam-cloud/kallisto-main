@@ -7,7 +7,7 @@ import { OdinInsightCard } from "./odin-insight-card";
 import styles from "./odin-insights-panel.module.css";
 
 export interface OdinInsightsPanelProps {
-  scope: "requirements" | "evidence" | "client" | "intelligence" | "activity";
+  scope: "overview" | "requirements" | "evidence" | "client" | "intelligence" | "activity";
   insights: OdinContextualInsight[];
   onAppendToClarification?: (text: string) => void;
   onNavigateToTab?: (tab: string) => void;
@@ -15,6 +15,8 @@ export interface OdinInsightsPanelProps {
 
 function getScopeTitle(scope: string): string {
   switch (scope) {
+    case "overview":
+      return "Overview";
     case "requirements":
       return "Requirements";
     case "evidence":
