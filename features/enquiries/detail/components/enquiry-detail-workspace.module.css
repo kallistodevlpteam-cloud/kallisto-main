@@ -117,7 +117,9 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 4px;
+  padding: 16px;
+  background: #f1f5f9;
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -132,7 +134,8 @@
 .enquiryDetailsBottom {
   flex-shrink: 0;
   overflow: visible;
-  padding-top: 8px;
+  padding-top: 12px;
+  border-top: none;
 }
 
 /* ─── Top Header Block ────────────────────────────────────── */
