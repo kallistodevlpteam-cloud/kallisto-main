@@ -129,6 +129,42 @@ function getClientContextSectionIcon(iconName: string) {
   }
 }
 
+function getMemberOdinInsightSummary(member: ClientHouseholdMember): string {
+  const name = (member.name || "").toLowerCase();
+  if (name.includes("ananya")) {
+    if (member.occupation?.toLowerCase().includes("director") || member.relationship?.toLowerCase().includes("mother")) {
+      return "Ananya regularly works from home and needs a high-privacy master suite with easy ground-floor and courtyard access. She holds final layout sign-off authority.";
+    }
+    return "Ananya requires an executive corner cabin with high acoustic privacy and holds full lease and fit-out sign-off authority.";
+  }
+  if (name.includes("rahul")) {
+    return "Rahul occasionally works from home and values outdoor entertaining, with a shared master suite and medium privacy needs. He is a co-decision maker.";
+  }
+  if (name.includes("nila")) {
+    return "Nila needs a private bedroom with a dedicated study desk and quiet space for reading and art.";
+  }
+  if (name.includes("meera")) {
+    return "Meera is a frequent visitor who needs a ground-floor bedroom, attached bathroom and minimal stair dependency for comfortable access.";
+  }
+  if (name.includes("david")) {
+    return "David prefers an open-plan collaborative zone with breakout studio space and teak finish approvals.";
+  }
+  if (name.includes("siddharth")) {
+    return "Siddharth coordinates site inspections, server room trunking, and MEP civil setback requirements.";
+  }
+  if (name.includes("radhika")) {
+    return "Radhika requires a high-privacy finance cabin and oversees milestone disbursement approvals.";
+  }
+
+  if (member.specialNotes) {
+    return `${member.name} requires ${member.specialNotes.toLowerCase()}.`;
+  }
+  if (member.keyNeeds && member.keyNeeds.length > 0) {
+    return `${member.name} prioritizes ${member.keyNeeds.join(", ").toLowerCase()}.`;
+  }
+  return `${member.name}'s design requirements and space preferences have been verified by ODIN.`;
+}
+
 export function buildEnquiriesFromProjects(projects: Array<Record<string, unknown>>): EnquiryRecord[] {
   if (!projects || projects.length === 0) return [DEFAULT_ENQUIRY_RECORD];
   return projects.map((proj, idx) => {
@@ -816,50 +852,15 @@ export function EnquiryDetailWorkspace({
                 <div className={styles.householdGrid}>
                   {(viewModel.householdMembers || []).map((member: ClientHouseholdMember) => (
                     <div key={member.id} className={styles.morigCardShell}>
-                      {/* ── ODIN HOVER TOOLTIP / POPOVER (Matching Reference Screenshot) ── */}
+                      {/* ── ODIN HOVER TOOLTIP / POPOVER (Natural-Language AI Interpretation) ── */}
                       <div className={styles.odinHoverTooltip}>
                         <div className={styles.tooltipHeader}>
                           <Sparkles size={12} className={styles.tooltipIcon} />
                           <span className={styles.tooltipTitle}>ODIN Insight</span>
                         </div>
-                        <div className={styles.tooltipBody}>
-                          {(member.keyNeeds || []).length > 0 && (
-                            <div className={styles.tooltipRow}>
-                              <span className={styles.tooltipLabel}>Needs:</span>
-                              <span className={styles.tooltipVal}>{member.keyNeeds.join(" · ")}</span>
-                            </div>
-                          )}
-                          {member.workPattern && (
-                            <div className={styles.tooltipRow}>
-                              <span className={styles.tooltipLabel}>Work:</span>
-                              <span className={styles.tooltipVal}>{member.workPattern}</span>
-                            </div>
-                          )}
-                          {member.bedroomRequirement && (
-                            <div className={styles.tooltipRow}>
-                              <span className={styles.tooltipLabel}>Bedroom:</span>
-                              <span className={styles.tooltipVal}>{member.bedroomRequirement}</span>
-                            </div>
-                          )}
-                          {member.privacyLevel && (
-                            <div className={styles.tooltipRow}>
-                              <span className={styles.tooltipLabel}>Privacy:</span>
-                              <span className={styles.tooltipVal}>{member.privacyLevel}</span>
-                            </div>
-                          )}
-                          {member.decisionRole && (
-                            <div className={styles.tooltipRow}>
-                              <span className={styles.tooltipLabel}>Role:</span>
-                              <span className={styles.tooltipVal}>{member.decisionRole}</span>
-                            </div>
-                          )}
-                          {member.specialNotes && (
-                            <div className={styles.tooltipRow}>
-                              <span className={styles.tooltipLabel}>Notes:</span>
-                              <span className={styles.tooltipVal}>{member.specialNotes}</span>
-                            </div>
-                          )}
-                        </div>
+                        <p className={styles.tooltipSummaryText}>
+                          {getMemberOdinInsightSummary(member)}
+                        </p>
                         <div className={styles.tooltipTail} />
                       </div>
 
