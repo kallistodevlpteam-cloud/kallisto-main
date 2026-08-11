@@ -9,6 +9,8 @@ export interface OdinInsightCardProps {
   insight: OdinContextualInsight;
   isExpanded: boolean;
   onToggleExpand: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   onAppendToClarification?: (text: string) => void;
   onNavigateToTab?: (tab: string) => void;
 }
@@ -39,6 +41,8 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
   insight,
   isExpanded,
   onToggleExpand,
+  onMouseEnter,
+  onMouseLeave,
   onAppendToClarification,
   onNavigateToTab,
 }) => {
@@ -51,6 +55,8 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
     <div
       className={`${styles.card} ${isExpanded ? styles.cardExpanded : ""}`}
       onClick={onToggleExpand}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       {/* ── Top Row: ODIN avatar + Title + Scope + Quick Action + Chevron ──── */}
       <div className={styles.topRow}>
@@ -109,7 +115,7 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
       {/* ── Body: Concise 1-2 line summary ──────────────────────────────────── */}
       <p className={styles.summaryText}>{insight.summary}</p>
 
-      {/* ── Expanded Content (Flat Disclosure, No Inner Container Card) ──── */}
+      {/* ── Expanded Content (Flat Disclosure) ─────────────────────────────── */}
       {isExpanded && hasExpandedDetails && (
         <div
           className={styles.expandedSection}
