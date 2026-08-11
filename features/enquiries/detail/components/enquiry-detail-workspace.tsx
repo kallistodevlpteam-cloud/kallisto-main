@@ -827,30 +827,34 @@ export function EnquiryDetailWorkspace({
                         }
                       }}
                     >
-                      {/* ── 1. TOP IDENTITY ── */}
-                      <div className={styles.profileCardHeader}>
-                        <h5 className={styles.profileCardName}>{member.name}</h5>
-                        <p className={styles.profileCardSubhead}>
-                          {member.relationship}{member.age ? ` · ${member.age}` : ""}
-                        </p>
+                      {/* ── INNER GREY HERO CONTAINER (Matching Reference Image) ── */}
+                      <div className={styles.refCardHeroBox}>
+                        {/* Username & Status Header inside grey box */}
+                        <div className={styles.profileCardHeader}>
+                          <h5 className={styles.profileCardName}>{member.name}</h5>
+                          <p className={styles.profileCardSubhead}>
+                            <Sparkles size={10} className={styles.refCardStatusIcon} />
+                            <span>{member.relationship}{member.age ? ` · ${member.age}` : ""}</span>
+                          </p>
+                        </div>
+
+                        {/* Portrait Image Frame inside grey box */}
+                        <div className={styles.profileCardPhotoFrame}>
+                          {member.photoUrl ? (
+                            <img
+                              src={member.photoUrl}
+                              alt={member.name}
+                              className={styles.profileCardPhoto}
+                            />
+                          ) : (
+                            <div className={styles.profileCardPhotoFallback}>
+                              {member.avatarInitials}
+                            </div>
+                          )}
+                        </div>
                       </div>
 
-                      {/* ── 2. DOMINANT PORTRAIT (65% Height, 10px White Inset) ── */}
-                      <div className={styles.profileCardPhotoFrame}>
-                        {member.photoUrl ? (
-                          <img
-                            src={member.photoUrl}
-                            alt={member.name}
-                            className={styles.profileCardPhoto}
-                          />
-                        ) : (
-                          <div className={styles.profileCardPhotoFallback}>
-                            {member.avatarInitials}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* ── 3. COMPACT FOOTER ── */}
+                      {/* ── FOOTER ROW ── */}
                       <div className={styles.profileCardFooterRow}>
                         <div className={styles.profileCardUserMeta}>
                           <div className={styles.profileCardMiniAvatar}>
