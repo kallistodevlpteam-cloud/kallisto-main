@@ -23,39 +23,39 @@ type ColorTheme = (typeof COLOR_THEMES)[number];
 function getPriorityMeta(label: string, index: number, type: "confirmed" | "inferred") {
   const lower = label.toLowerCase();
 
-  if (lower.includes("collaborative") || lower.includes("workspace") || lower.includes("open")) {
+  if (lower.includes("office") || lower.includes("study") || lower.includes("work")) {
     return {
       theme: "blue" as ColorTheme,
       Icon: Users,
-      desc: "Client emphasizes flexible collaborative zones and double-height open workspace planning.",
-      tags: ["Space Planning", "Fit-out"],
+      desc: "Regular work-from-home use requires a quiet, private workspace.",
+      tags: ["Workspace", "Acoustics"],
     };
   }
-  if (lower.includes("comfort") || lower.includes("employee") || lower.includes("living") || lower.includes("ventilation")) {
+  if (lower.includes("energy") || lower.includes("sustainability") || lower.includes("solar")) {
+    return {
+      theme: "orange" as ColorTheme,
+      Icon: Sparkles,
+      desc: "Client shows a strong preference for energy-efficient design and reduced long-term operating costs.",
+      tags: ["Sustainability", "Energy"],
+    };
+  }
+  if (lower.includes("budget") || lower.includes("cost") || lower.includes("financial") || lower.includes("sensitivity")) {
+    return {
+      theme: "purple" as ColorTheme,
+      Icon: Wallet,
+      desc: "Client prioritizes staying within the target ₹40L–₹60L range.",
+      tags: ["Budget", "Cost Control"],
+    };
+  }
+  if (lower.includes("comfort") || lower.includes("employee") || lower.includes("living") || lower.includes("ventilation") || lower.includes("light")) {
     return {
       theme: "green" as ColorTheme,
       Icon: Heart,
       desc: "High priority placed on natural light, cross ventilation, and direct garden view access.",
-      tags: ["Ergonomics", "HVAC"],
+      tags: ["Ergonomics", "Daylight"],
     };
   }
-  if (lower.includes("budget") || lower.includes("cost") || lower.includes("financial")) {
-    return {
-      theme: "purple" as ColorTheme,
-      Icon: Wallet,
-      desc: "Target commercial budget range ₹40L–₹60L requiring early stage BOQ cost estimation.",
-      tags: ["BOQ Cost", "Commercial"],
-    };
-  }
-  if (lower.includes("delivery") || lower.includes("fast") || lower.includes("timeline")) {
-    return {
-      theme: "orange" as ColorTheme,
-      Icon: Zap,
-      desc: "Target 6-month delivery timeline; structured phase execution required for site handover.",
-      tags: ["Schedule", "6 Months"],
-    };
-  }
-  if (lower.includes("material") || lower.includes("maintenance") || lower.includes("teak")) {
+  if (lower.includes("material") || lower.includes("maintenance") || lower.includes("teak") || lower.includes("finishes")) {
     return {
       theme: "pink" as ColorTheme,
       Icon: ShieldCheck,

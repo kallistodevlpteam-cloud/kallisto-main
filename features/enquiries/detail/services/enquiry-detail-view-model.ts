@@ -49,6 +49,25 @@ export interface ScopeGroupViewModel {
   items: Array<{ label: string; confirmed: boolean }>;
 }
 
+export interface ClientContextItem {
+  id: string;
+  category: string;
+  label: string;
+  value: string;
+  state: "confirmed" | "partial" | "needs_clarification" | "needs_verification" | "odin_inferred";
+  priority: "p1" | "p2";
+  source?: "client" | "odin" | "field";
+}
+
+export interface ClientContextSection {
+  key: string;
+  title: string;
+  subtitle: string;
+  iconName: "Users" | "Smile" | "UserCheck" | "MessageSquare";
+  iconColor: string;
+  items: ClientContextItem[];
+}
+
 export interface EnquiryDetailViewModel {
   enquiryId: string;
   header: ProjectHeaderViewModel;
@@ -56,9 +75,260 @@ export interface EnquiryDetailViewModel {
   snapshot: ProjectSnapshotViewModel;
   priorities: ClientPriority[];
   requirements: EnquiryRequirement[];
+  clientContextSections: ClientContextSection[];
   scopeGroups: ScopeGroupViewModel[];
   unconfirmedScope: string[];
   intelligence: EnquiryIntelligence;
+}
+
+export function buildClientContextSections(
+  requirements: EnquiryRequirement[],
+  enquiry: EnquiryRecord
+): ClientContextSection[] {
+  const userProfileItems: ClientContextItem[] = [
+    {
+      id: "cc-prof-users",
+      category: "client",
+      label: "Client / User Profile",
+      value: "Family of 4 (Parents + 2 School-age Children) + Elderly Grandparents visiting",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+    {
+      id: "cc-prof-decision-maker",
+      category: "client",
+      label: "Primary Decision Maker",
+      value: "Ananya Builders (Managing Partner / Key Stakeholder)",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+    {
+      id: "cc-prof-children",
+      category: "client",
+      label: "Children",
+      value: "2 school-age children (require bedroom study desks)",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+    {
+      id: "cc-prof-elderly",
+      category: "client",
+      label: "Elderly Usage",
+      value: "Grandparents visiting regularly (prefer ground floor access)",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+    {
+      id: "cc-prof-access",
+      category: "client",
+      label: "Accessibility Needs",
+      value: "Level entry & wide doorways preferred for ground floor",
+      state: "needs_clarification",
+      priority: "p2",
+      source: "odin",
+    },
+    {
+      id: "cc-prof-wfh-users",
+      category: "client",
+      label: "Work-from-home Users",
+      value: "1 dedicated primary user + occasional study user",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+  ];
+
+  const lifestyleItems: ClientContextItem[] = [
+    {
+      id: "cc-life-wfh",
+      category: "lifestyle",
+      label: "Work From Home",
+      value: "Regular work-from-home use required (quiet acoustic workspace)",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+    {
+      id: "cc-life-entertaining",
+      category: "lifestyle",
+      label: "Entertaining Frequency",
+      value: "Occasional family gatherings & weekend dinners for 8–12 guests",
+      state: "confirmed",
+      priority: "p2",
+      source: "client",
+    },
+    {
+      id: "cc-life-outdoor",
+      category: "lifestyle",
+      label: "Outdoor Usage",
+      value: "Garden & courtyard frequently used for morning tea and sit-out relaxation",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+    {
+      id: "cc-life-privacy",
+      category: "lifestyle",
+      label: "Privacy Needs",
+      value: "High street-facing privacy towards front road via vertical louvers",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+    {
+      id: "cc-life-cooking",
+      category: "lifestyle",
+      label: "Cooking & Kitchen Pattern",
+      value: "Open kitchen with breakfast island & tall pantry preferred",
+      state: "confirmed",
+      priority: "p2",
+      source: "client",
+    },
+    {
+      id: "cc-life-maintenance",
+      category: "lifestyle",
+      label: "Maintenance Preference",
+      value: "Low-maintenance finishes & durable floor materials",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+  ];
+
+  const decisionItems: ClientContextItem[] = [
+    {
+      id: "cc-dec-maker",
+      category: "decision",
+      label: "Primary Decision Maker",
+      value: "Ananya Builders (Single point of contact)",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+    {
+      id: "cc-dec-signoff",
+      category: "decision",
+      label: "Final Sign-off Authority",
+      value: "Single decision-maker approval required for phase transitions",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+    {
+      id: "cc-dec-budget-auth",
+      category: "decision",
+      label: "Budget Approval Authority",
+      value: "Budget approval aligned with primary decision maker",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+    {
+      id: "cc-dec-revisions",
+      category: "decision",
+      label: "Revision Expectations",
+      value: "2–3 major design review rounds expected before GFC release",
+      state: "odin_inferred",
+      priority: "p2",
+      source: "odin",
+    },
+    {
+      id: "cc-dec-turnaround",
+      category: "decision",
+      label: "Decision Turnaround",
+      value: "2–3 business days per milestone review",
+      state: "needs_clarification",
+      priority: "p2",
+      source: "odin",
+    },
+  ];
+
+  const communicationItems: ClientContextItem[] = [
+    {
+      id: "cc-comm-channel",
+      category: "communication",
+      label: "Primary Channel",
+      value: "Kallisto Ecosystem Platform & WhatsApp summary updates",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+    {
+      id: "cc-comm-reviews",
+      category: "communication",
+      label: "Design Reviews",
+      value: "Weekly milestone-based review meetings",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+    {
+      id: "cc-comm-format",
+      category: "communication",
+      label: "Review Format",
+      value: "2D Drawings + 3D Visual Walkthrough previews",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+    {
+      id: "cc-comm-site",
+      category: "communication",
+      label: "Site Meetings",
+      value: "Bi-weekly site inspection meetings during construction",
+      state: "needs_clarification",
+      priority: "p2",
+      source: "odin",
+    },
+    {
+      id: "cc-comm-response",
+      category: "communication",
+      label: "Response Turnaround",
+      value: "24-hour response expected for urgent queries",
+      state: "confirmed",
+      priority: "p2",
+      source: "client",
+    },
+  ];
+
+  return [
+    {
+      key: "client_user_profile",
+      title: "CLIENT & USER PROFILE",
+      subtitle: "Household, occupants, accessibility, stakeholder roles & usage context.",
+      iconName: "Users",
+      iconColor: "#2563eb",
+      items: userProfileItems,
+    },
+    {
+      key: "lifestyle_usage",
+      title: "LIFESTYLE & USAGE",
+      subtitle: "Occupancy patterns, daily routine, entertaining & privacy behavior.",
+      iconName: "Smile",
+      iconColor: "#059669",
+      items: lifestyleItems,
+    },
+    {
+      key: "decision_making",
+      title: "DECISION MAKING",
+      subtitle: "Stakeholder approval hierarchy, revision expectations & budget authority.",
+      iconName: "UserCheck",
+      iconColor: "#7c3aed",
+      items: decisionItems,
+    },
+    {
+      key: "communication_reviews",
+      title: "COMMUNICATION & REVIEWS",
+      subtitle: "Preferred communication channels, review formats & meeting frequency.",
+      iconName: "MessageSquare",
+      iconColor: "#d97706",
+      items: communicationItems,
+    },
+  ];
 }
 
 export function buildEnquiryDetailViewModel({
@@ -181,6 +451,8 @@ export function buildEnquiryDetailViewModel({
         },
       ];
 
+  const clientContextSections = buildClientContextSections(requirements, enquiry);
+
   return {
     enquiryId: enquiry.id,
     header,
@@ -188,6 +460,7 @@ export function buildEnquiryDetailViewModel({
     snapshot,
     priorities,
     requirements,
+    clientContextSections,
     scopeGroups,
     unconfirmedScope,
     intelligence,

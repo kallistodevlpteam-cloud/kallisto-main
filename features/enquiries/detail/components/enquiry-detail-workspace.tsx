@@ -108,6 +108,21 @@ function getReqCategoryIcon(category: string) {
   return FileText;
 }
 
+function getClientContextSectionIcon(iconName: string) {
+  switch (iconName) {
+    case "Users":
+      return Users;
+    case "Smile":
+      return Smile;
+    case "UserCheck":
+      return UserCheck;
+    case "MessageSquare":
+      return MessageSquare;
+    default:
+      return Users;
+  }
+}
+
 export function buildEnquiriesFromProjects(projects: Array<Record<string, unknown>>): EnquiryRecord[] {
   if (!projects || projects.length === 0) return [DEFAULT_ENQUIRY_RECORD];
   return projects.map((proj, idx) => {
@@ -787,73 +802,67 @@ export function EnquiryDetailWorkspace({
                   <ClientPrioritiesBar priorities={viewModel.priorities} />
                 </div>
 
-                {CLIENT_DOMAIN_ORDER.map((d) => {
-                  const domainReqs = viewModel.requirements.filter(
-                    (r) =>
-                      (r.domain || r.category) === d.key ||
-                      (d.key === "project_client" && (r.category === "project" || r.category === "client"))
-                  );
-                  if (domainReqs.length === 0) return null;
-
-                  const clearCount = domainReqs.filter(
-                    (r) => r.state === "confirmed" || r.state === "odin_inferred"
+                {(viewModel.clientContextSections || []).map((sec) => {
+                  const IconComp = getClientContextSectionIcon(sec.iconName);
+                  const clearCount = sec.items.filter(
+                    (item) => item.state === "confirmed" || item.state === "odin_inferred"
                   ).length;
 
                   return (
-                    <div key={d.key} className={styles.sectionCard}>
+                    <div key={sec.key} className={styles.sectionCard}>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                           <span
                             className={`${styles.reqDomainNavIconBadge} ${styles.reqDomainNavHeaderIconBadge}`}
-                            style={{ color: d.iconColor }}
+                            style={{ color: sec.iconColor }}
                           >
-                            {React.cloneElement(d.icon as React.ReactElement<{ size?: number }>, { size: 16 })}
+                            <IconComp size={16} />
                           </span>
                           <div>
-                            <h3 className={styles.cardHeading}>{d.title}</h3>
-                            <p className={styles.cardDesc}>{d.desc}</p>
+                            <h3 className={styles.cardHeading}>{sec.title}</h3>
+                            <p className={styles.cardDesc}>{sec.subtitle}</p>
                           </div>
                         </div>
                         <span className={styles.activeDomainCompletenessPill}>
-                          {clearCount}/{domainReqs.length} clear
+                          {clearCount}/{sec.items.length} clear
                         </span>
                       </div>
 
                       <div className={styles.reqCardsGrid}>
-                        {domainReqs.map((req) => {
-                          const CategoryIcon = getReqCategoryIcon(req.category);
+                        {sec.items.map((item) => {
+                          const CategoryIcon = getReqCategoryIcon(item.category);
 
                           return (
                             <div
-                              key={req.id}
+                              key={item.id}
                               className={`${styles.cardShell} ${
-                                selectedRequirementId === req.id ? styles.cardShellSelected : ""
+                                selectedRequirementId === item.id ? styles.cardShellSelected : ""
                               }`}
                               onClick={() =>
-                                setSelectedRequirementId((prev) => (prev === req.id ? null : req.id))
+                                setSelectedRequirementId((prev) => (prev === item.id ? null : item.id))
                               }
                               role="button"
                               tabIndex={0}
-                              aria-selected={selectedRequirementId === req.id}
+                              aria-selected={selectedRequirementId === item.id}
                             >
                               <div className={styles.headerRow}>
                                 <div className={styles.headerTitleGroup}>
                                   <div className={styles.iconBox}>
                                     <CategoryIcon size={13} className={styles.headerIcon} />
                                   </div>
-                                  <h4 className={styles.cardTitle}>{req.label}</h4>
-                                  <span className={`${styles.prioTag} ${styles[`prio_${req.priority}`]}`}>
-                                    {req.priority.toUpperCase()}
+                                  <h4 className={styles.cardTitle}>{item.label}</h4>
+                                  <span className={`${styles.prioTag} ${styles[`prio_${item.priority}`]}`}>
+                                    {item.priority.toUpperCase()}
                                   </span>
                                 </div>
-                                <span className={`${styles.reqStateBadge} ${styles[`state_${req.state}`]}`}>
-                                  {req.state.replace("_", " ")}
+                                <span className={`${styles.reqStateBadge} ${styles[`state_${item.state}`]}`}>
+                                  {item.state.replace("_", " ")}
                                 </span>
                               </div>
 
-                              {req.value ? (
+                              {item.value ? (
                                 <div className={styles.innerCard}>
-                                  <p className={styles.reqValue}>{String(req.value)}</p>
+                                  <p className={styles.reqValue}>{String(item.value)}</p>
                                 </div>
                               ) : null}
                             </div>

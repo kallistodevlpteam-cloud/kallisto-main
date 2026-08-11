@@ -824,8 +824,8 @@ export function getClientPriorities(enquiry?: EnquiryRecord): ClientPriority[] {
     { id: "prio-1", label: "Natural light & cross ventilation", type: "confirmed" },
     { id: "prio-2", label: "Teak joinery & premium finishes", type: "confirmed" },
     { id: "prio-3", label: "Dedicated home office & study", type: "confirmed" },
-    { id: "prio-4", label: "Budget control & stage milestones", type: "inferred" },
-    { id: "prio-5", label: "Energy efficiency & solar PV integration", type: "inferred" },
+    { id: "prio-4", label: "Budget sensitivity & control", type: "confirmed" },
+    { id: "prio-5", label: "Energy efficiency & sustainability", type: "inferred" },
   ];
 }
 
