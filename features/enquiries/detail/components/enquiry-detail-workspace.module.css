@@ -4766,23 +4766,183 @@
   }
 }
 
-/* ─── Client / Owner Profile Cards (4 Cards in a Row Grid) ─── */
+/* ─── 4 Member Reference ID Cards Grid (Matching Reference Image 1) ─── */
 
-.clientOwnersGrid {
+.idCardsGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 14px;
+  gap: 14px;
   width: 100%;
 }
 
-/* ─── Members Assigned Layout (Recent Members List + Active Member Card) ─── */
+@media (max-width: 1380px) {
+  .idCardsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 
-.membersAssignedContainer {
+@media (max-width: 640px) {
+  .idCardsGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.idCardShell {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 16px 18px;
   display: flex;
-  gap: 24px;
-  margin-top: 14px;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.idCardShell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.07);
+  border-color: #cbd5e1;
+}
+
+.idCardTopRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.idAvatarMetaGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.idAvatarCircle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+}
+
+.idStatusGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.idStatusLabelRow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.idClockIcon {
+  color: #0284c7;
+}
+
+.idStatusLabel {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.idStatusValue {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+.idQrBox {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #334155;
+  flex-shrink: 0;
+}
+
+.idMetaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+}
+
+.idMetaField {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.idMetaLabel {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+  margin: 0;
+}
+
+.idMetaValue {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.idCopyBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #94a3b8;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.idCopyBtn:hover {
+  color: #475569;
+}
+
+.idDarkActionBtn {
   width: 100%;
+  height: 36px;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  margin-top: 2px;
+}
+
+.idDarkActionBtn:hover {
+  background: #1e293b;
 }
 
 @media (max-width: 960px) {

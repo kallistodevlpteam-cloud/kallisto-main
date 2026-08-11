@@ -33,6 +33,8 @@ import {
   Palette,
   MoreVertical,
   MoreHorizontal,
+  QrCode,
+  Copy,
 } from "lucide-react";
 
 import { RoutePageContainer } from "@/components/ui/route-page-container";
@@ -797,154 +799,97 @@ export function EnquiryDetailWorkspace({
             {activeTab === "client" && (
               <div className={styles.tabSectionGroup}>
                 <div className={styles.sectionCard}>
-                  <h3 className={styles.cardHeading}>CLIENT BACKGROUND & PRIORITIES</h3>
-                  <p className={styles.cardDesc}>
-                    Client background, preferences, behavioral patterns, and decision processes for{" "}
-                    <strong>{header.clientName}</strong> in <strong>{header.location}</strong>.
-                  </p>
-
-                  {/* ── Members Assigned Section (Recent Members + Active Member Detail Card) ── */}
-                  <div className={styles.membersAssignedContainer}>
-                    {/* Left Column: Recent Members List */}
-                    <div className={styles.recentMembersCol}>
-                      <h4 className={styles.recentMembersHeading}>Recent Members</h4>
-                      <div className={styles.recentMemberList}>
-                        {(viewModel.owners || []).map((owner) => {
-                          const isSelected = (selectedOwnerId || "owner-1") === owner.id;
-                          return (
-                            <button
-                              key={owner.id}
-                              type="button"
-                              className={`${styles.recentMemberItem} ${
-                                isSelected ? styles.recentMemberItemActive : ""
-                              }`}
-                              onClick={() => setSelectedOwnerId(owner.id)}
-                            >
-                              <div className={styles.recentMemberAvatar}>
-                                {owner.avatarInitials}
-                              </div>
-                              <div className={styles.recentMemberInfo}>
-                                <h5 className={styles.recentMemberName}>{owner.name}</h5>
-                                <p className={styles.recentMemberEmail}>{owner.email}</p>
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
+                  <div className={styles.assignedMemberHeaderRow} style={{ marginBottom: "14px" }}>
+                    <div className={styles.assignedMemberTitleGroup}>
+                      <h4 className={styles.assignedMemberHeading}>Members Assigned</h4>
+                      <span className={styles.countBadge}>{(viewModel.owners || []).length} active</span>
                     </div>
-
-                    {/* Right Column: Selected Member Assigned Card */}
-                    <div className={styles.assignedMemberMainCol}>
-                      <div className={styles.assignedMemberHeaderRow}>
-                        <div className={styles.assignedMemberTitleGroup}>
-                          <h4 className={styles.assignedMemberHeading}>Members Assigned</h4>
-                        </div>
-                        <button className={styles.filtersChip} type="button">
-                          <Filter size={13} />
-                          <span>Filters</span>
-                        </button>
-                      </div>
-
-                      {(() => {
-                        const activeOwner =
-                          (viewModel.owners || []).find((o) => o.id === (selectedOwnerId || "owner-1")) ||
-                          (viewModel.owners || [])[0];
-
-                        if (!activeOwner) return null;
-
-                        return (
-                          <div className={styles.assignedCardShell}>
-                            {/* Layer 1: Top Header Row */}
-                            <div className={styles.assignedCardTopRow}>
-                              <div className={styles.assignedAvatarGroup}>
-                                <div className={styles.assignedAvatarWrapper}>
-                                  <div className={styles.assignedAvatarCircle}>
-                                    {activeOwner.avatarInitials}
-                                  </div>
-                                  <span className={styles.onlineDot} />
-                                </div>
-                                <div>
-                                  <div className={styles.assignedNameGroup}>
-                                    <h4 className={styles.assignedName}>{activeOwner.name}</h4>
-                                  </div>
-                                  <p className={styles.assignedEmail}>{activeOwner.email}</p>
-                                </div>
-                              </div>
-
-                              <div className={styles.assignedCardStatusMeta}>
-                                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                  <span className={styles.activeChipBadge}>
-                                    <CheckCircle2 size={13} />
-                                    <span>{activeOwner.status || "Active"}</span>
-                                  </span>
-                                  <button
-                                    className={styles.ownerMoreBtn}
-                                    type="button"
-                                    aria-label={`More options for ${activeOwner.name}`}
-                                  >
-                                    <MoreHorizontal size={16} />
-                                  </button>
-                                </div>
-                                <span className={styles.assignedMetaDate}>
-                                  Next: {activeOwner.nextReview || "Jun 25, 2026"}
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Layer 2: Category Soft Tags Row */}
-                            <div className={styles.assignedTagsRow}>
-                              <span className={styles.purplePillTag}>{activeOwner.tag1}</span>
-                              <span className={styles.yellowPillTag}>{activeOwner.tag2}</span>
-                            </div>
-
-                            {/* Layer 3: Secondary Inner Metadata Grid Card (#f8fafc) */}
-                            <div className={styles.innerMetadataGridCard}>
-                              <div className={styles.metaColItem}>
-                                <span className={styles.metaLabel}>Role / Scope</span>
-                                <span className={styles.metaVal}>{activeOwner.meta.roleScope}</span>
-                              </div>
-                              <div className={styles.metaColItem}>
-                                <span className={styles.metaLabel}>Experience</span>
-                                <span className={styles.metaVal}>{activeOwner.meta.expOrAge}</span>
-                              </div>
-                              <div className={styles.metaColItem}>
-                                <span className={styles.metaLabel}>Location</span>
-                                <span className={styles.metaVal}>{activeOwner.meta.location}</span>
-                              </div>
-                              <div className={styles.metaColItem}>
-                                <span className={styles.metaLabel}>Channel</span>
-                                <span className={styles.metaVal}>{activeOwner.meta.channel}</span>
-                              </div>
-                              <div className={styles.metaColItem}>
-                                <span className={styles.metaLabel}>Status</span>
-                                <span className={styles.metaVal}>{activeOwner.meta.status}</span>
-                              </div>
-                            </div>
-
-                            {/* Layer 4: Quick Actions Bottom Row */}
-                            <div className={styles.quickActionsRow}>
-                              <span className={styles.quickActionsLabel}>Quick Actions</span>
-                              <div className={styles.actionBtnsGroup}>
-                                <button className={styles.outlineActionBtn} type="button">
-                                  <Calendar size={13} />
-                                  <span>Review Schedule</span>
-                                </button>
-                                <button className={styles.outlineActionBtn} type="button">
-                                  <MessageSquare size={13} />
-                                  <span>Chat</span>
-                                  {activeOwner.unreadCount ? (
-                                    <span className={styles.unreadBadge}>{activeOwner.unreadCount}</span>
-                                  ) : null}
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })()}
-                    </div>
+                    <button className={styles.filtersChip} type="button">
+                      <Filter size={13} />
+                      <span>Filters</span>
+                    </button>
                   </div>
 
-                  <div style={{ marginTop: "16px" }}>
+                  {/* ── 4 Member Reference ID Cards Grid (Matching Reference Image 1) ── */}
+                  <div className={styles.idCardsGrid}>
+                    {(viewModel.owners || []).map((owner) => (
+                      <div key={owner.id} className={styles.idCardShell}>
+                        <div>
+                          {/* Top Row: Avatar + Expire Date / Status + QR Box */}
+                          <div className={styles.idCardTopRow}>
+                            <div className={styles.idAvatarMetaGroup}>
+                              <div className={styles.idAvatarCircle}>
+                                {owner.avatarInitials}
+                              </div>
+                              <div className={styles.idStatusGroup}>
+                                <div className={styles.idStatusLabelRow}>
+                                  <Clock size={12} className={styles.idClockIcon} />
+                                  <span className={styles.idStatusLabel}>Review Date</span>
+                                </div>
+                                <span className={styles.idStatusValue}>{owner.nextReview}</span>
+                              </div>
+                            </div>
+
+                            <div className={styles.idQrBox} title={`Scan ID: ${owner.idNumber}`}>
+                              <QrCode size={22} />
+                            </div>
+                          </div>
+
+                          {/* 2-Column Key-Value Pairs Grid (Matching Reference Image 1) */}
+                          <div className={styles.idMetaGrid} style={{ marginTop: "14px" }}>
+                            <div className={styles.idMetaField}>
+                              <span className={styles.idMetaLabel}>Client Name</span>
+                              <h5 className={styles.idMetaValue}>{owner.name}</h5>
+                            </div>
+                            <div className={styles.idMetaField}>
+                              <span className={styles.idMetaLabel}>Role & Scope</span>
+                              <span className={styles.idMetaValue}>{owner.meta.roleScope}</span>
+                            </div>
+
+                            <div className={styles.idMetaField}>
+                              <span className={styles.idMetaLabel}>City of Residence</span>
+                              <span className={styles.idMetaValue}>{owner.meta.location}</span>
+                            </div>
+                            <div className={styles.idMetaField}>
+                              <span className={styles.idMetaLabel}>ID Number</span>
+                              <span className={styles.idMetaValue}>
+                                {owner.idNumber}
+                                <button
+                                  type="button"
+                                  className={styles.idCopyBtn}
+                                  title="Copy ID Number"
+                                  aria-label={`Copy ${owner.idNumber}`}
+                                >
+                                  <Copy size={11} />
+                                </button>
+                              </span>
+                            </div>
+
+                            <div className={styles.idMetaField}>
+                              <span className={styles.idMetaLabel}>Experience</span>
+                              <span className={styles.idMetaValue}>{owner.meta.expOrAge}</span>
+                            </div>
+                            <div className={styles.idMetaField}>
+                              <span className={styles.idMetaLabel}>Primary Channel</span>
+                              <span className={styles.idMetaValue}>{owner.meta.channel}</span>
+                            </div>
+
+                            <div className={styles.idMetaField} style={{ gridColumn: "span 2" }}>
+                              <span className={styles.idMetaLabel}>Stakeholder Status</span>
+                              <span className={styles.idMetaValue}>{owner.tag1}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Bottom Full-Width Dark Action Button */}
+                        <button className={styles.idDarkActionBtn} type="button">
+                          <span>Schedule Review</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ marginTop: "20px" }}>
                     <ClientPrioritiesBar priorities={viewModel.priorities} />
                   </div>
                 </div>

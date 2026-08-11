@@ -70,6 +70,7 @@ export interface ClientContextSection {
 
 export interface ProjectOwner {
   id: string;
+  idNumber: string;
   name: string;
   email: string;
   role: string;
@@ -94,12 +95,13 @@ export interface ProjectOwner {
 export const DEFAULT_PROJECT_OWNERS: ProjectOwner[] = [
   {
     id: "owner-1",
+    idNumber: "KLS-756872004",
     name: "Ananya Sharma",
     email: "ananyasharma@ananyabuilders.com",
     role: "Primary Owner & Client Lead",
     avatarInitials: "AS",
     status: "Active",
-    nextReview: "Jul 28, 2026",
+    nextReview: "21 Sep 2026 (2 yrs)",
     tag1: "Primary Decision Maker",
     tag2: "Ananya Group",
     timeOrOrg: "Ananya Builders • Primary Lead",
@@ -116,32 +118,34 @@ export const DEFAULT_PROJECT_OWNERS: ProjectOwner[] = [
   },
   {
     id: "owner-2",
+    idNumber: "KLS-756872005",
     name: "David Langston",
     email: "davidlangston@ananyabuilders.com",
     role: "Co-Owner & Design Lead",
     avatarInitials: "DL",
     status: "Active",
-    nextReview: "Aug 02, 2026",
+    nextReview: "15 Oct 2026 (2 yrs)",
     tag1: "Design Lead",
     tag2: "Aesthetic Preference",
     timeOrOrg: "Author • Updated Friday 3:12 PM",
     bio: "Focuses on interior aesthetic preferences, custom teak joinery selections, lighting scenes, and residential lifestyle requirements.",
     meta: {
       expOrAge: "8+ yrs",
-      roleScope: "Interior & Style Lead",
-      location: "Bengaluru",
+      roleScope: "Interior Lead",
+      location: "Bengaluru, KA",
       channel: "WhatsApp / Email",
       status: "Confirmed",
     },
   },
   {
     id: "owner-3",
+    idNumber: "KLS-756872006",
     name: "Siddharth Kumar",
     email: "siddharth.k@siteops.com",
     role: "Technical & Site Operations",
     avatarInitials: "SK",
     status: "Active",
-    nextReview: "Aug 05, 2026",
+    nextReview: "05 Nov 2026 (2 yrs)",
     tag1: "Site Operations",
     tag2: "Civil Coordination",
     timeOrOrg: "Client Representative • Site Lead",
@@ -149,7 +153,7 @@ export const DEFAULT_PROJECT_OWNERS: ProjectOwner[] = [
     meta: {
       expOrAge: "10+ yrs",
       roleScope: "Site Representative",
-      location: "Kochi",
+      location: "Kochi, Kerala",
       channel: "Site Inspections",
       status: "Confirmed",
     },
@@ -157,12 +161,13 @@ export const DEFAULT_PROJECT_OWNERS: ProjectOwner[] = [
   },
   {
     id: "owner-4",
+    idNumber: "KLS-756872007",
     name: "Radhika Kulkarni",
     email: "radhikakulkarni@ananyabuilders.com",
     role: "Commercial & Budget Director",
     avatarInitials: "RK",
     status: "Active",
-    nextReview: "Aug 10, 2026",
+    nextReview: "12 Dec 2026 (2 yrs)",
     tag1: "Commercial Director",
     tag2: "Financial Approver",
     timeOrOrg: "Financial Stakeholder • Ananya Group",
@@ -170,7 +175,7 @@ export const DEFAULT_PROJECT_OWNERS: ProjectOwner[] = [
     meta: {
       expOrAge: "15+ yrs",
       roleScope: "Finance Director",
-      location: "Bengaluru",
+      location: "Bengaluru, KA",
       channel: "Kallisto Portal",
       status: "Confirmed",
     },
