@@ -58,16 +58,13 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* ── Top Row: ODIN avatar + Title + Scope + Quick Action + Chevron ──── */}
+      {/* ── Top Row: ODIN AI Avatar + Title (No Subtitle) + Quick Action + Chevron ──── */}
       <div className={styles.topRow}>
         <div className={styles.titleWrap}>
           <div className={styles.odinAvatar}>
-            <Sparkles size={11} className={styles.sparkleIcon} />
+            <Sparkles size={12} className={styles.sparkleIcon} />
           </div>
-          <div className={styles.titleTextWrap}>
-            <h4 className={styles.insightTitle}>{insight.title}</h4>
-            <span className={styles.scopeLabel}>{insight.scopeLabel}</span>
-          </div>
+          <h4 className={styles.insightTitle}>{insight.title}</h4>
         </div>
 
         <div className={styles.topRightActions}>
