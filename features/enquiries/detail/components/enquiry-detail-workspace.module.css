@@ -4834,32 +4834,20 @@
   border-radius: 12px;
 }
 
-/* 4-Cards Grid Layout (Fixed 240px Portrait Tiles) */
+/* Responsive Household Cards Grid Layout */
 .householdGrid {
   display: grid;
-  grid-template-columns: repeat(4, 240px);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
   width: 100%;
-  align-items: start;
-  justify-content: start;
-}
-
-@media (max-width: 1100px) {
-  .householdGrid {
-    grid-template-columns: repeat(2, 240px);
-  }
-}
-
-@media (max-width: 600px) {
-  .householdGrid {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  align-items: stretch;
 }
 
 /* Monica Geller Reference Card Layout */
 .morigCardShell {
-  width: 245px;
-  flex: 0 0 245px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   background: #0f172a;
   border-radius: 24px;
   padding: 6px;
