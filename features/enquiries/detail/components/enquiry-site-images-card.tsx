@@ -21,78 +21,86 @@ export interface EnquirySiteImagesCardProps {
 }
 
 const DEFAULT_SITE_IMAGES: SiteImageItem[] = [
-  { id: "site-1", src: "/assets/nila-thumb1.jpg", alt: "Site Inspection Ground Work" },
-  { id: "site-2", src: "/assets/nila-thumb2.jpg", alt: "Site Structure Construction" },
-  { id: "site-3", src: "/assets/nila-thumb3.jpg", alt: "Site Boundary & Masonry" },
-  { id: "site-4", src: "/assets/nila-thumb4.jpg", alt: "Site Interior Progress" },
+  { id: "site-1", src: "/assets/project-banner.jpg", alt: "Architectural Concept Presentation" },
+  { id: "site-2", src: "/assets/nila-thumb1.jpg", alt: "Exterior Stone & Glass Facade" },
+  { id: "site-3", src: "/assets/nila-thumb2.jpg", alt: "Double-Height Interior Living Room" },
+  { id: "site-4", src: "/assets/nila-thumb3.jpg", alt: "Aerial Construction Site & Boundary" },
 ];
 
 export function EnquirySiteImagesCard({
   images = DEFAULT_SITE_IMAGES,
-  totalCount = 7,
+  totalCount = 8,
   extraCount,
-  title = "INSPIRATION & SITE IMAGES",
+  title = "INSPIRATION IMAGES",
   onImageClick,
   onViewAll,
 }: EnquirySiteImagesCardProps) {
   const [expanded, setExpanded] = useState(true);
 
-  // Show up to 4 thumbnails on the row, 5th container is +N more tile
-  const VISIBLE = 4;
-  const visibleThumbs = images.slice(0, VISIBLE);
-  const overflow = extraCount !== undefined ? extraCount : Math.max(0, totalCount - visibleThumbs.length);
-  const calculatedTotal = extraCount !== undefined ? visibleThumbs.length + extraCount : totalCount;
+  // Render 3 normal image cards + 1 overflow "+N" image overlay card
+  const VISIBLE_NORMAL = 3;
+  const normalThumbs = images.slice(0, VISIBLE_NORMAL);
+  const overflowThumb = images[3] || images[0];
+  const overflowCount =
+    extraCount !== undefined ? extraCount : Math.max(0, totalCount - VISIBLE_NORMAL);
 
   return (
-    <div className={styles.card}>
-      {/* ── Header row ── */}
+    <div className={styles.container}>
+      {/* ── Collapsible Header Row ── */}
       <button
         type="button"
-        className={styles.header}
+        className={styles.headerToggle}
         onClick={() => setExpanded((prev) => !prev)}
         aria-expanded={expanded}
-        aria-controls="site-images-body"
-        data-testid="site-images-toggle"
+        aria-controls="site-images-gallery"
       >
-        <span className={styles.headerTitle}>
-          {title}
-          <span className={styles.count}>({calculatedTotal})</span>
-        </span>
-        {expanded
-          ? <ChevronUp size={15} className={styles.chevron} aria-hidden="true" />
-          : <ChevronDown size={15} className={styles.chevron} aria-hidden="true" />
-        }
+        <span className={styles.headerTitle}>{title}</span>
+        {expanded ? (
+          <ChevronUp size={15} className={styles.chevron} />
+        ) : (
+          <ChevronDown size={15} className={styles.chevron} />
+        )}
       </button>
 
-      {/* ── Image grid ── */}
+      {/* ── 4-Column Image Gallery Grid ── */}
       {expanded && (
-        <div id="site-images-body" className={styles.grid}>
-          {visibleThumbs.map((img, index) => (
+        <div id="site-images-gallery" className={styles.galleryGrid}>
+          {normalThumbs.map((img, index) => (
             <button
               key={img.id}
               type="button"
-              className={styles.thumbCard}
+              className={styles.imageCard}
               onClick={() => onImageClick?.(index)}
+              aria-label={img.alt}
             >
               <Image
                 src={img.src}
                 alt={img.alt}
                 fill
-                sizes="(max-width: 768px) 20vw, 80px"
-                className={styles.thumbImage}
+                sizes="(max-width: 768px) 50vw, 25vw"
+                className={styles.cardImage}
               />
             </button>
           ))}
 
-          {overflow > 0 && (
+          {/* 4th Card: Image Background with Dark Translucent +N Overlay */}
+          {overflowCount > 0 && (
             <button
               type="button"
-              className={styles.moreCard}
+              className={styles.overflowCard}
               onClick={onViewAll}
-              aria-label={`View ${overflow} more site images`}
+              aria-label={`View ${overflowCount} more images`}
             >
-              <span className={styles.moreNumber}>+{overflow}</span>
-              <span className={styles.moreText}>more</span>
+              <Image
+                src={overflowThumb.src}
+                alt={overflowThumb.alt}
+                fill
+                sizes="(max-width: 768px) 50vw, 25vw"
+                className={styles.cardImage}
+              />
+              <div className={styles.overflowOverlay}>
+                <span className={styles.overflowText}>+{overflowCount}</span>
+              </div>
             </button>
           )}
         </div>

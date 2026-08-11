@@ -62,10 +62,12 @@ export const OdinInsightsPanel: React.FC<OdinInsightsPanelProps> = ({
 
       {/* ── Cards Stack Feed ─────────────────────────────────────────────────── */}
       <div className={styles.cardsStack} onMouseLeave={() => setHoveredId(null)}>
-        {visibleInsights.map((insight) => (
+        {visibleInsights.map((insight, index) => (
           <OdinInsightCard
             key={insight.id}
             insight={insight}
+            index={index}
+            totalCount={insights.length}
             isExpanded={activeExpandedId === insight.id}
             onMouseEnter={() => setHoveredId(insight.id)}
             onMouseLeave={() => {
