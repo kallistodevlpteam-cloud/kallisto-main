@@ -4832,23 +4832,24 @@
   }
 }
 
-/* Premium Household Floating Profile Tile (Matching Reference Layout) */
+/* Premium Household Profile Tile (Matching Reference Layout) */
 .householdProfileCard {
   width: 240px;
   flex: 0 0 240px;
   background: #ffffff;
-  border: 1px solid rgba(15, 23, 42, 0.04);
+  border: 1px solid #e2e8f0;
   border-radius: 23px;
   padding: 8px 10px 10px 10px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.08);
-  transition: box-shadow 0.22s ease, transform 0.22s ease;
+  box-shadow: none;
+  transition: border-color 0.22s ease, transform 0.22s ease;
 }
 
 .householdProfileCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.11);
+  border-color: #cbd5e1;
+  box-shadow: none;
 }
 
 .profileCardHeader {
