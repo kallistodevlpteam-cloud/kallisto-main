@@ -247,6 +247,18 @@
   color: var(--muted, #64748b);
 }
 
+.metaChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #475569;
+}
+
 .metaItem {
   display: inline-flex;
   align-items: center;

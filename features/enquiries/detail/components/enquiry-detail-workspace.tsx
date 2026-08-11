@@ -503,12 +503,11 @@ export function EnquiryDetailWorkspace({
 
               <div className={styles.subMetaRow}>
                 <div className={styles.subMetaLeft}>
-                  <span className={styles.metaItem}>
+                  <span className={styles.metaChip}>
                     <MapPin size={13} />
                     <span>{header.location}</span>
                   </span>
-                  <span className={styles.metaDot}>•</span>
-                  <span className={styles.metaItem}>
+                  <span className={styles.metaChip}>
                     <Calendar size={13} />
                     <span>Received {header.receivedDate}</span>
                   </span>
