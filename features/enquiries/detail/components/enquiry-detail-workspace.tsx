@@ -815,7 +815,18 @@ export function EnquiryDetailWorkspace({
 
                 <div className={styles.householdGrid}>
                   {(viewModel.householdMembers || []).map((member: ClientHouseholdMember) => (
-                    <div key={member.id} className={styles.householdProfileCard}>
+                    <div
+                      key={member.id}
+                      className={styles.householdProfileCard}
+                      onClick={() => setDetailHouseholdMember(member)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          setDetailHouseholdMember(member);
+                        }
+                      }}
+                    >
                       {/* ── 1. TOP IDENTITY ── */}
                       <div className={styles.profileCardHeader}>
                         <h5 className={styles.profileCardName}>{member.name}</h5>
@@ -854,14 +865,6 @@ export function EnquiryDetailWorkspace({
                             </span>
                           </div>
                         </div>
-
-                        <button
-                          type="button"
-                          className={styles.profileCardDarkBtn}
-                          onClick={() => setDetailHouseholdMember(member)}
-                        >
-                          + Details
-                        </button>
                       </div>
                     </div>
                   ))}
