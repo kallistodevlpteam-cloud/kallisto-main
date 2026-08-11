@@ -29,6 +29,8 @@ import {
   GitPullRequest,
   MessageSquare,
   Info,
+  Palette,
+  Users,
 } from "lucide-react";
 
 import { RoutePageContainer } from "@/components/ui/route-page-container";
@@ -94,6 +96,17 @@ const DEFAULT_ENQUIRY_RECORD: EnquiryRecord = {
   timeline: "Within 6 Months",
   builtUpArea: "2,800 – 3,200 sq ft",
 };
+
+function getReqCategoryIcon(category: string) {
+  const cat = (category || "").toLowerCase();
+  if (cat.includes("project")) return Building2;
+  if (cat.includes("client")) return Users;
+  if (cat.includes("style") || cat.includes("vision")) return Palette;
+  if (cat.includes("budget") || cat.includes("commercial")) return Wallet;
+  if (cat.includes("site") || cat.includes("outdoor")) return MapPin;
+  if (cat.includes("timeline")) return Calendar;
+  return FileText;
+}
 
 export function buildEnquiriesFromProjects(projects: Array<Record<string, unknown>>): EnquiryRecord[] {
   if (!projects || projects.length === 0) return [DEFAULT_ENQUIRY_RECORD];
@@ -807,44 +820,48 @@ export function EnquiryDetailWorkspace({
                       </div>
 
                       <div className={styles.reqCardsGrid}>
-                        {domainReqs.map((req) => (
-                          <div
-                            key={req.id}
-                            className={`${styles.cardShell} ${
-                              selectedRequirementId === req.id ? styles.cardShellSelected : ""
-                            }`}
-                            onClick={() =>
-                              setSelectedRequirementId((prev) => (prev === req.id ? null : req.id))
-                            }
-                            role="button"
-                            tabIndex={0}
-                            aria-selected={selectedRequirementId === req.id}
-                          >
-                            <div className={styles.headerRow}>
-                              <div className={styles.headerTitleGroup}>
-                                <div className={styles.iconBox}>
-                                  <FileText size={13} className={styles.headerIcon} />
-                                </div>
-                                <span className={styles.reqCategoryBadge}>
-                                  {req.category.toUpperCase()}
-                                </span>
-                                <h4 className={styles.cardTitle}>{req.label}</h4>
-                                <span className={`${styles.prioTag} ${styles[`prio_${req.priority}`]}`}>
-                                  {req.priority.toUpperCase()}
-                                </span>
-                              </div>
-                              <span className={`${styles.reqStateBadge} ${styles[`state_${req.state}`]}`}>
-                                {req.state.replace("_", " ")}
-                              </span>
-                            </div>
+                        {domainReqs.map((req) => {
+                          const isSelected = selectedRequirementId === req.id;
+                          const CategoryIcon = getReqCategoryIcon(req.category);
 
-                            {req.value ? (
-                              <div className={styles.innerCard}>
-                                <p className={styles.reqValue}>{String(req.value)}</p>
+                          return (
+                            <div
+                              key={req.id}
+                              className={`${styles.singleReqCard} ${
+                                isSelected ? styles.singleReqCardSelected : ""
+                              }`}
+                              onClick={() =>
+                                setSelectedRequirementId((prev) => (prev === req.id ? null : req.id))
+                              }
+                              role="button"
+                              tabIndex={0}
+                              aria-selected={isSelected}
+                            >
+                              <div className={styles.reqCardHeader}>
+                                <div className={styles.reqMetaLeft}>
+                                  <CategoryIcon size={14} className={styles.categoryIcon} />
+                                  <span className={styles.reqCategoryChip}>
+                                    {req.category.toUpperCase()}
+                                  </span>
+                                </div>
+                                <div className={styles.reqChipsRight}>
+                                  <span className={`${styles.prioChip} ${styles[`prio_${req.priority}`]}`}>
+                                    {req.priority.toUpperCase()}
+                                  </span>
+                                  <span className={`${styles.reqStatusChip} ${styles[`state_${req.state}`]}`}>
+                                    {req.state.replace("_", " ")}
+                                  </span>
+                                </div>
                               </div>
-                            ) : null}
-                          </div>
-                        ))}
+
+                              <h4 className={styles.reqCardTitle}>{req.label}</h4>
+
+                              {req.value ? (
+                                <p className={styles.reqCardValue}>{String(req.value)}</p>
+                              ) : null}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   );
