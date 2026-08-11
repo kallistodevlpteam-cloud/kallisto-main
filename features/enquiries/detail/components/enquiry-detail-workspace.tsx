@@ -571,6 +571,11 @@ export function EnquiryDetailWorkspace({
                   }))}
                   unconfirmedItems={viewModel.unconfirmedScope}
                 />
+                <EnquirySiteImagesCard
+                  title="ALL SITE IMAGES & EVIDENCE"
+                  totalCount={8}
+                />
+                <EnquiryProjectDocumentsSection />
               </div>
             )}
 
@@ -967,6 +972,12 @@ export function EnquiryDetailWorkspace({
                     </div>
                   );
                 })}
+
+                <EnquirySiteImagesCard
+                  title="ALL SITE IMAGES & EVIDENCE"
+                  totalCount={8}
+                />
+                <EnquiryProjectDocumentsSection />
               </div>
             )}
 
