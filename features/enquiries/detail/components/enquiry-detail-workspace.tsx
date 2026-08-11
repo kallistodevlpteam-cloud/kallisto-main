@@ -806,7 +806,7 @@ export function EnquiryDetailWorkspace({
                         </span>
                       </div>
 
-                      <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "12px" }}>
+                      <div className={styles.reqCardsGrid}>
                         {domainReqs.map((req) => (
                           <div
                             key={req.id}
