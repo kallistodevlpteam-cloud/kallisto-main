@@ -814,47 +814,78 @@ export function EnquiryDetailWorkspace({
                 </div>
 
                 <div className={styles.householdGrid}>
-                  {(viewModel.householdMembers || []).map((member: ClientHouseholdMember) => (
-                    <div
-                      key={member.id}
-                      className={styles.morigCardShell}
-                      onClick={() => setDetailHouseholdMember(member)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          setDetailHouseholdMember(member);
-                        }
-                      }}
-                    >
-                      {/* ── PHOTO CONTAINER WITH DARK GRADIENT OVERLAY ── */}
+                  {(viewModel.householdMembers || []).map((member: ClientHouseholdMember) => {
+                    const summaryText =
+                      member.specialNotes ||
+                      (member.keyNeeds && member.keyNeeds.length > 0
+                        ? member.keyNeeds.join(" · ")
+                        : member.workPattern || "Key requirements confirmed.");
+
+                    const tags = (
+                      member.keyNeeds && member.keyNeeds.length > 0
+                        ? member.keyNeeds.slice(0, 3)
+                        : [member.workPattern, member.privacyLevel].filter(Boolean)
+                    ) as string[];
+
+                    return (
                       <div
-                        className={styles.morigPhotoBox}
-                        style={{
-                          backgroundImage: member.photoUrl
-                            ? `linear-gradient(180deg, rgba(0,0,0,0) 25%, rgba(15,23,42,0.82) 62%, rgba(15,23,42,0.98) 100%), url(${member.photoUrl})`
-                            : undefined,
+                        key={member.id}
+                        className={styles.odinInsightCardShell}
+                        onClick={() => setDetailHouseholdMember(member)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            setDetailHouseholdMember(member);
+                          }
                         }}
                       >
-                        {!member.photoUrl && (
-                          <div className={styles.morigFallbackAvatar}>
-                            {member.avatarInitials}
+                        {/* Header Row */}
+                        <div className={styles.odinInsightHeaderRow}>
+                          <div className={styles.odinInsightTitleGroup}>
+                            {member.photoUrl ? (
+                              <img
+                                src={member.photoUrl}
+                                alt={member.name}
+                                className={styles.odinInsightAvatarPhoto}
+                              />
+                            ) : (
+                              <div className={styles.odinInsightAvatarFallback}>
+                                {member.avatarInitials}
+                              </div>
+                            )}
+                            <div className={styles.odinInsightNameBlock}>
+                              <h4 className={styles.odinInsightCardTitle}>{member.name}</h4>
+                              <span className={styles.odinInsightSubhead}>
+                                {member.relationship}{member.age ? ` · ${member.age}` : ""}
+                              </span>
+                            </div>
+                          </div>
+                          <span
+                            className={
+                              member.isPrimaryClient ? styles.confirmedBadge : styles.inferredBadge
+                            }
+                          >
+                            {member.isPrimaryClient ? "Primary" : (member.decisionRole ? member.decisionRole.split(" ")[0] : "Member")}
+                          </span>
+                        </div>
+
+                        {/* Description Snippet */}
+                        <p className={styles.odinInsightSnippet}>{summaryText}</p>
+
+                        {/* Tags Row */}
+                        {tags.length > 0 && (
+                          <div className={styles.odinInsightTagsRow}>
+                            {tags.map((tag, idx) => (
+                              <span key={idx} className={styles.odinInsightSoftTag}>
+                                {tag}
+                              </span>
+                            ))}
                           </div>
                         )}
-
-                        {/* ── BOTTOM OVERLAY CONTENT ── */}
-                        <div className={styles.morigOverlayContent}>
-                          {/* Member Name */}
-                          <h5 className={styles.morigName}>{member.name}</h5>
-
-                          {/* Description line */}
-                          <p className={styles.morigDesc}>
-                            {member.relationship}{member.age ? ` · ${member.age} yrs` : ""}
-                          </p>
-                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* ── HOUSEHOLD MEMBER DETAILS INSPECTOR MODAL ── */}
