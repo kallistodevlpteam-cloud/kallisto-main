@@ -928,9 +928,7 @@ export function EnquiryDetailWorkspace({
                 </div>
 
                 {/* ── CLIENT CONTEXT & PRIORITIES ── */}
-                <div className={styles.sectionCard}>
-                  <ClientPrioritiesBar priorities={viewModel.priorities} />
-                </div>
+                <ClientPrioritiesBar priorities={viewModel.priorities} />
 
                 {(viewModel.clientContextSections || []).map((sec) => {
                   const IconComp = getClientContextSectionIcon(sec.iconName);
