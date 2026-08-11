@@ -39,6 +39,7 @@ export function EnquirySiteImagesCard({
 
   // Render 4 normal image cards + 1 overflow "+N" tile
   const VISIBLE_NORMAL = 4;
+  const hasImages = images.length > 0;
   const normalThumbs = images.slice(0, VISIBLE_NORMAL);
   const overflowThumb = images[4] || images[0];
   const overflowCount =
@@ -64,7 +65,12 @@ export function EnquirySiteImagesCard({
       </button>
 
       {/* ── 4-Column Image Gallery Grid ── */}
-      {expanded && (
+      {expanded && !hasImages && (
+        <p className={styles.emptyState} aria-label="No site images available">
+          No site images have been shared yet.
+        </p>
+      )}
+      {expanded && hasImages && (
         <div id="site-images-gallery" className={styles.galleryGrid}>
           {normalThumbs.map((img, index) => (
             <button

@@ -77,6 +77,35 @@ describe("buildEnquiriesFromProjects", () => {
     expect(missing[0].clientName).toBe("—");
     expect(missing[0].location).toBe("—");
   });
+
+  it("passes through the backend site image URL list untouched", () => {
+    const withImages = buildEnquiriesFromProjects([
+      project({
+        siteImages: ["/assets/nila-thumb1.jpg", "/assets/scattered.webp"],
+      }),
+    ]);
+    expect(withImages[0].siteImages).toEqual(["/assets/nila-thumb1.jpg", "/assets/scattered.webp"]);
+  });
+
+  it("keeps site images empty when the backend provides none", () => {
+    const withoutImages = buildEnquiriesFromProjects([project({ siteImages: [] })]);
+    expect(withoutImages[0].siteImages).toEqual([]);
+  });
+
+  it("passes through backend project documents with name and doc_img_url", () => {
+    const withDocs = buildEnquiriesFromProjects([
+      project({
+        projectDocuments: [
+          { id: 306, name: "Feasibility Study.pdf", docImageUrl: "/assets/nila-thumb1.jpg" },
+          { id: 307, name: "Concept Proposal.pdf", docImageUrl: null },
+        ],
+      }),
+    ]);
+    expect(withDocs[0].projectDocuments).toEqual([
+      { id: 306, name: "Feasibility Study.pdf", docImageUrl: "/assets/nila-thumb1.jpg" },
+      { id: 307, name: "Concept Proposal.pdf", docImageUrl: null },
+    ]);
+  });
 });
 
 describe("mapBackendProjectType", () => {

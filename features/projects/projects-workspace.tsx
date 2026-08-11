@@ -1,20 +1,21 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Filter, Search, X, Check, ChevronDown } from "lucide-react";
 
 import { useProjectFilters } from "./hooks/use-project-filters";
 import { useProjectPermissions } from "./hooks/use-project-permissions";
-import { useProjectsQuery } from "./hooks/use-projects-query";
 
 import { ImportProjectDrawer } from "./components/import-project-drawer";
 import { ProjectSortMenu } from "./components/project-sort-menu";
 import { ProjectStatusTabs } from "./components/project-status-tabs";
 import { ProjectsPageHeader } from "./components/projects-page-header";
-import { ProjectsCardsGrid, SAMPLE_PROJECTS } from "./components/projects-cards-grid";
+import { ProjectsCardsGrid } from "./components/projects-cards-grid";
 
 import { projectsService } from "./services/projects.service";
 import { ProjectListItem, ProjectStatus } from "./types/project.types";
+import type { BackendProject } from "@/types/domain/backend-project";
+import { buildProjectCardsFromBackend } from "./utils/backend-project-cards";
 
 import styles from "./projects.module.css";
 
@@ -26,37 +27,18 @@ const MOCK_TEAM_MEMBERS = [
   { id: "tm-5", name: "Vikram R", role: "Estimator" },
 ];
 
-const KNOWN_LOCATIONS = Array.from(
-  new Set(SAMPLE_PROJECTS.map((p) => p.location).filter(Boolean))
-).sort((a, b) => a.localeCompare(b));
-
-function mapListItemToCard(item: ProjectListItem): import("./components/projects-cards-grid").SampleProjectCard {
-  const rawDue = item.nextAction?.dueState;
-  const dueState =
-    rawDue === "overdue"
-      ? "overdue"
-      : rawDue === "due_today" || rawDue === "due_soon"
-      ? "due_soon"
-      : rawDue === "on_track"
-      ? "on_track"
-      : "no_due_date";
-
-  return {
-    id: item.id,
-    name: item.name,
-    code: item.code,
-    type: item.type,
-    location: item.location || "—",
-    clientDisplayName: item.clientDisplayName || "Client",
-    phase: item.phase,
-    status: item.status,
-    health: item.health,
-    phaseProgress: typeof item.phaseProgress === "number" ? item.phaseProgress : undefined,
-    nextActionTitle: item.nextAction?.title ?? null,
-    dueLabel: item.nextAction?.dueLabel ?? null,
-    dueState,
-    image: "/assets/projectbg.webp",
+/** Server projects (project_character = 'pr') fetched through the API proxy
+ * route; the frontend never talks to the database directly. */
+async function fetchProjectsFromBackend(): Promise<BackendProject[]> {
+  const response = await fetch("/api/projects?character=pr");
+  if (!response.ok) {
+    throw new Error(`Projects request failed with status ${response.status}`);
+  }
+  const payload = (await response.json()) as {
+    status: string;
+    projects: BackendProject[];
   };
+  return payload.status === "ok" && Array.isArray(payload.projects) ? payload.projects : [];
 }
 
 export function ProjectsWorkspace() {
@@ -71,10 +53,54 @@ export function ProjectsWorkspace() {
     clearAllFilters,
   } = useProjectFilters();
 
-  const { data, loading, error, refetch } = useProjectsQuery(
-    securityContext,
-    filters
-  );
+  const [backendProjects, setBackendProjects] = useState<BackendProject[]>([]);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+  const [projectsError, setProjectsError] = useState(false);
+
+  const loadProjects = useCallback(async () => {
+    setProjectsLoading(true);
+    try {
+      const projects = await fetchProjectsFromBackend();
+      setBackendProjects(projects);
+      setProjectsError(false);
+    } catch {
+      setBackendProjects([]);
+      setProjectsError(true);
+    } finally {
+      setProjectsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadData() {
+      setProjectsLoading(true);
+      try {
+        const projects = await fetchProjectsFromBackend();
+        if (!cancelled) {
+          setBackendProjects(projects);
+          setProjectsError(false);
+        }
+      } catch {
+        if (!cancelled) {
+          setBackendProjects([]);
+          setProjectsError(true);
+        }
+      } finally {
+        if (!cancelled) setProjectsLoading(false);
+      }
+    }
+    void loadData();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const projectCards = buildProjectCardsFromBackend(backendProjects);
+
+  const knownLocations = Array.from(
+    new Set(projectCards.map((p) => p.location).filter((loc) => Boolean(loc) && loc !== "—"))
+  ).sort((a, b) => a.localeCompare(b));
 
   const [showImportDrawer, setShowImportDrawer] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -96,7 +122,7 @@ export function ProjectsWorkspace() {
       m.role.toLowerCase().includes(memberSearch.toLowerCase())
   );
 
-  const filteredKnownLocations = KNOWN_LOCATIONS.filter((loc) =>
+  const filteredKnownLocations = knownLocations.filter((loc) =>
     loc.toLowerCase().includes(locationSearchText.toLowerCase())
   );
 
@@ -169,7 +195,7 @@ export function ProjectsWorkspace() {
       setReopenTargetProject(null);
       setReopenReason("");
       setReopenError(null);
-      refetch();
+      void loadProjects();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       setReopenError(msg || "Failed to reopen project.");
@@ -187,21 +213,13 @@ export function ProjectsWorkspace() {
   const normalizedStatus: ProjectStatus | "ALL" | undefined =
     filters.status === "on-hold" ? "ON_HOLD" : filters.status;
 
-  const statusCounts = data?.statusCounts
-    ? {
-        active: data.statusCounts.active,
-        upcoming: data.statusCounts.upcoming,
-        onHold: data.statusCounts.onHold,
-        completed: data.statusCounts.completed,
-        all: data.statusCounts.all,
-      }
-    : {
-        active: SAMPLE_PROJECTS.filter((p) => p.status === "ACTIVE").length,
-        upcoming: SAMPLE_PROJECTS.filter((p) => p.status === "UPCOMING").length,
-        onHold: SAMPLE_PROJECTS.filter((p) => p.status === "ON_HOLD").length,
-        completed: SAMPLE_PROJECTS.filter((p) => p.status === "COMPLETED").length,
-        all: SAMPLE_PROJECTS.length,
-      };
+  const statusCounts = {
+    active: 0,
+    upcoming: projectCards.length,
+    onHold: 0,
+    completed: 0,
+    all: projectCards.length,
+  };
 
   return (
     <div className="workspace-container">
@@ -596,13 +614,13 @@ export function ProjectsWorkspace() {
           activeStatus={
             filters.status === "on-hold"
               ? "ON_HOLD"
-              : (filters.status as import("./types/project.types").ProjectStatus | "ALL" | undefined) ?? "ACTIVE"
+              : (filters.status as import("./types/project.types").ProjectStatus | "ALL" | undefined) ?? "UPCOMING"
           }
           locationFilter={filters.location}
-          projects={data?.items ? data.items.map(mapListItemToCard) : undefined}
-          loading={loading}
-          error={error}
-          onRetry={refetch}
+          projects={projectCards}
+          loading={projectsLoading}
+          error={projectsError}
+          onRetry={loadProjects}
         />
 
         {/* Import Project Drawer */}
@@ -610,7 +628,7 @@ export function ProjectsWorkspace() {
           isOpen={showImportDrawer}
           securityContext={securityContext}
           onClose={() => setShowImportDrawer(false)}
-          onImportSuccess={() => refetch()}
+          onImportSuccess={() => void loadProjects()}
         />
 
         {/* Reopen Completed Project Confirmation Dialog */}

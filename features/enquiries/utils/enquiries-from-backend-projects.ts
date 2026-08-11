@@ -76,6 +76,7 @@ export function buildEnquiriesFromProjects(projects: BackendProject[]): EnquiryR
       status: "active",
       stage: "new",
       projectType: mapBackendProjectType(project),
+      backendProjectType: project.projectType,
       budgetMin: budgetAmount ?? 0,
       budgetMax: budgetAmount ?? 0,
       budget: budgetAmount != null ? formatEnquiryBudgetValue(budgetAmount) : undefined,
@@ -87,11 +88,10 @@ export function buildEnquiriesFromProjects(projects: BackendProject[]): EnquiryR
         url: image.url,
         alt: image.alt,
       })),
-      projectDocuments: (project.projectDocuments ?? []).map((doc) => ({
-        id: doc.id,
-        name: doc.name,
-        docImageUrl: doc.docImageUrl,
-      })),
+      projectDocuments: (project.projectDocuments ?? []).flatMap((doc) => {
+        if (!doc.name) return [];
+        return [{ id: doc.id, name: doc.name, docImageUrl: doc.docImageUrl }];
+      }),
       siteImages: project.siteImages ?? [],
       projectScopes: (project.projectScopes ?? []).map((scope) => ({
         id: scope.id,

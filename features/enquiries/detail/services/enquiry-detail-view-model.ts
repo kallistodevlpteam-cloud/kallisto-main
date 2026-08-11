@@ -47,6 +47,8 @@ export interface ProjectSnapshotViewModel {
 export interface ScopeGroupViewModel {
   title: string;
   items: Array<{ label: string; confirmed: boolean }>;
+  scopeId?: number;
+  sortOrder?: number;
 }
 
 export interface ClientContextItem {
@@ -464,7 +466,8 @@ export function buildEnquiryDetailViewModel({
     : "Recently";
 
   const projectTypeLabel =
-    enquiry.projectType === "commercial"
+    enquiry.backendProjectType ||
+    (enquiry.projectType === "commercial"
       ? "Commercial Interior"
       : enquiry.projectType === "residential"
       ? "Residential Design"
@@ -476,7 +479,7 @@ export function buildEnquiryDetailViewModel({
       ? "Landscape Architecture"
       : enquiry.projectType === "retail"
       ? "Retail Store Design"
-      : "Interior Project";
+      : "Interior Project");
 
   const header: ProjectHeaderViewModel = {
     title: enquiry.title || "Villa Design Consultation",
@@ -495,7 +498,7 @@ export function buildEnquiryDetailViewModel({
     duration: enquiry.duration || enquiry.timeline || "Within 6 Months",
     builtUpArea: enquiry.builtUpArea || "2,800 – 3,200 sq ft",
     budget: enquiry.budget || "₹40L – ₹60L",
-    client: enquiry.clientName || "Ananya Builders",
+    client: enquiry.clientName || "—",
     budgetCoverageStatus: enquiry.budgetCoverageStatus || "Coverage partially defined",
     areaCoverageStatus: enquiry.areaCoverageStatus || "Client supplied",
   };
@@ -506,7 +509,21 @@ export function buildEnquiryDetailViewModel({
 
   const isCommercial = enquiry.projectType === "commercial";
 
-  const scopeGroups: ScopeGroupViewModel[] = isCommercial
+  // Strictly backend-sourced scope categories (project_scope + children).
+  // Backend data wins whenever the record carries project_scope rows.
+  const backendScopeGroups: ScopeGroupViewModel[] =
+    enquiry.projectScopes && enquiry.projectScopes.length > 0
+      ? enquiry.projectScopes.map((scope, idx) => ({
+          title: scope.scope_name,
+          items: (scope.items ?? []).map((item) => ({ label: item, confirmed: true })),
+          scopeId: scope.id,
+          sortOrder: idx + 1,
+        }))
+      : [];
+
+  // Last-resort default groups for records that have NO backend scope
+  // rows (e.g. legacy/mock records). Never used when backend data exists.
+  const fallbackScopeGroups: ScopeGroupViewModel[] = isCommercial
     ? [
         {
           title: "Space Planning & Layout",
@@ -567,6 +584,9 @@ export function buildEnquiryDetailViewModel({
       ];
 
   const clientContextSections = buildClientContextSections(requirements, enquiry);
+
+  const scopeGroups: ScopeGroupViewModel[] =
+    backendScopeGroups.length > 0 ? backendScopeGroups : fallbackScopeGroups;
 
   return {
     enquiryId: enquiry.id,

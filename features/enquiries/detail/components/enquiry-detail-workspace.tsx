@@ -84,7 +84,7 @@ const DEFAULT_ENQUIRY_RECORD: EnquiryRecord = {
   title: "Villa Design Consultation",
   requirementSummary:
     "Ananya Builders is seeking a residential fit-out for approximately 2,800–3,200 sq ft in Kochi. The current requirement covers space planning, interior fit-out and MEP coordination with a ₹40L–₹60L budget and a six-month target. The project is suitable for review, but budget coverage and expected deliverables should be clarified before proposal preparation.",
-  clientName: "Ananya Builders",
+  clientName: "—",
   location: "Kochi",
   thumbnailUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
   source: "website",
@@ -135,15 +135,72 @@ function formatBudgetValue(raw: unknown): string | undefined {
   return l >= 100 ? `₹${num / 10_000_000}Cr` : `₹${l}L`;
 }
 
+interface BackendScopeRow {
+  id?: number | string | null;
+  scope_name?: string | null;
+  items?: Array<string | { item_name?: string }> | null;
+}
+
+function mapBackendSiteImages(raw: unknown): string[] {
+  const values = Array.isArray(raw) ? raw : [];
+  return values.flatMap((entry) => {
+    if (typeof entry !== "string") return [];
+    return entry.trim() ? [entry] : [];
+  });
+}
+
+interface BackendProjectDocumentRow {
+  id?: number | string | null;
+  name?: string | null;
+  doc_name?: string | null;
+  docImageUrl?: string | null;
+  doc_img_url?: string | null;
+}
+
+function mapBackendProjectDocuments(
+  raw: unknown
+): EnquiryRecord["projectDocuments"] {
+  const rowsList = Array.isArray(raw) ? raw : [];
+  return rowsList.flatMap((entry) => {
+    const doc = (entry ?? {}) as BackendProjectDocumentRow;
+    const name = String(doc.name ?? doc.doc_name ?? "").trim();
+    if (!name) return [];
+    const docImageUrl = String(doc.docImageUrl ?? doc.doc_img_url ?? "").trim();
+    return [{ id: Number(doc.id), name, docImageUrl: docImageUrl || null }];
+  });
+}
+
+function mapBackendScopes(raw: unknown): EnquiryRecord["projectScopes"] {
+  const rows = Array.isArray(raw) ? raw : [];
+  return rows.flatMap((entry) => {
+    const scope = (entry ?? {}) as BackendScopeRow;
+    const scopeName = String(scope.scope_name ?? "").trim();
+    if (!scopeName) return [];
+    const items = Array.isArray(scope.items)
+      ? scope.items.map((item) => {
+          if (typeof item === "string") return item;
+          return String(item?.item_name ?? "");
+        })
+      : [];
+    return [{ id: Number(scope.id), scope_name: scopeName, items }];
+  });
+}
+
 export function buildEnquiriesFromProjects(projects: Array<Record<string, unknown>>): EnquiryRecord[] {
   if (!projects || projects.length === 0) return [DEFAULT_ENQUIRY_RECORD];
   return projects.map((proj, idx) => {
     const id = String(proj.id || proj.enquiryRef || `enq-${idx + 1}`);
     const title = String(proj.projectName || proj.name || proj.title || "Villa Design Consultation");
-    const clientName = String(proj.clientName || proj.client || "Ananya Builders");
+    const clientName = String(proj.clientName || proj.client || proj.client_name || "—");
     const location = String(proj.place || proj.location || "Kochi");
     const projectType = String(proj.projectType || proj.type || "residential").toLowerCase();
     const normalizedType = projectType.includes("comm") ? "commercial" : "residential";
+    const backendProjectType =
+      typeof proj.projectType === "string" && proj.projectType.trim()
+        ? proj.projectType.trim()
+        : typeof proj.project_type === "string" && proj.project_type.trim()
+        ? proj.project_type.trim()
+        : null;
     const budgetRaw = proj.estimatedOverallBudget ?? proj.estimated_overall_budget ?? proj.budget;
     const budgetVal = formatBudgetValue(budgetRaw) ?? (typeof proj.budget === "string" ? proj.budget : undefined);
     const areaRaw = proj.sqArea ?? proj.sq_area ?? proj.area;
@@ -161,6 +218,7 @@ export function buildEnquiriesFromProjects(projects: Array<Record<string, unknow
       status: "active",
       stage: "new",
       projectType: normalizedType as any,
+      backendProjectType,
       budgetMin: typeof budgetRaw === "number" ? budgetRaw : 0,
       budgetMax: typeof budgetRaw === "number" ? budgetRaw : 0,
       receivedAt: String(proj.createdAt || proj.receivedAt || DEFAULT_ENQUIRY_RECORD.receivedAt),
@@ -170,9 +228,9 @@ export function buildEnquiriesFromProjects(projects: Array<Record<string, unknow
       timeline: timelineVal,
       builtUpArea,
       inspirationImages: (proj.inspirationImages ?? proj.inspiration_images ?? []) as any,
-      projectDocuments: (proj.projectDocuments ?? proj.project_docs ?? []) as any,
-      siteImages: (proj.siteImages ?? proj.site_images ?? []) as any,
-      projectScopes: (proj.projectScopes ?? proj.project_scopes ?? []) as any,
+      projectDocuments: mapBackendProjectDocuments(proj.projectDocuments ?? proj.project_docs),
+      siteImages: mapBackendSiteImages(proj.siteImages ?? proj.site_images),
+      projectScopes: mapBackendScopes(proj.projectScopes ?? proj.project_scopes),
     };
   });
 }
@@ -808,11 +866,28 @@ export function EnquiryDetailWorkspace({
               <div className={styles.tabSectionGroup}>
                 <div className={styles.sectionCard}>
                   <h3 className={styles.cardHeading}>SITE IMAGES & EVIDENCE</h3>
-                  <EnquirySiteImagesCard title="All Site Images" totalCount={7} />
+                  <EnquirySiteImagesCard
+                    title="All Site Images"
+                    totalCount={enquiry.siteImages?.length ?? 0}
+                    images={(enquiry.siteImages ?? []).map((src, index) => ({
+                      id: `site-${index + 1}`,
+                      src,
+                      alt: `Site image ${index + 1}`,
+                    }))}
+                  />
                 </div>
                 <div className={styles.sectionCard} id="enquiry-files">
                   <h3 className={styles.cardHeading}>PROJECT DOCUMENTS</h3>
-                  <EnquiryProjectDocumentsSection />
+                  <EnquiryProjectDocumentsSection
+                    documents={(enquiry.projectDocuments ?? []).map((doc, index) => ({
+                      id: String(doc.id || `doc-${index + 1}`),
+                      name: doc.name,
+                      docImageUrl: doc.docImageUrl ?? undefined,
+                      discipline: "Drawings",
+                      uploaded: true,
+                      isNew: index === 0,
+                    }))}
+                  />
                 </div>
               </div>
             )}

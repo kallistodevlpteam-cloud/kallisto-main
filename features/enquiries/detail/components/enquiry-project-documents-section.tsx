@@ -7,6 +7,8 @@ import styles from "./enquiry-project-documents-section.module.css";
 export interface ProjectDocumentItem {
   id: string;
   name: string;
+  /** Preview image URL straight from backend project_DOC.doc_img_url. */
+  docImageUrl?: string;
   size?: string;
   discipline?: string;
   status?: "Approved" | "In Review" | "Draft" | "Missing";
@@ -156,13 +158,32 @@ export function EnquiryProjectDocumentsSection({
               </tr>
             </thead>
             <tbody>
-              {documents.map((doc) => (
-                <tr key={doc.id}>
+              {documents.length === 0 ? (
+                <tr>
+                  <td colSpan={7}>
+                    <p className={styles.emptyState} aria-label="No documents available">
+                      No documents have been shared yet.
+                    </p>
+                  </td>
+                </tr>
+              ) : (
+                documents.map((doc) => (
+                  <tr key={doc.id}>
                   {/* FILE Column */}
                   <td>
                     <div className={styles.fileCell}>
                       <div className={`${styles.fileIconWrap} ${getFileIconStyleClass(doc)}`}>
-                        {getFileIcon(doc)}
+                        {doc.docImageUrl ? (
+                          <img
+                            src={doc.docImageUrl}
+                            alt=""
+                            className={styles.filePreviewImg}
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ) : (
+                          getFileIcon(doc)
+                        )}
                       </div>
                       <div className={styles.fileInfo}>
                         <div className={styles.fileNameRow}>
@@ -235,7 +256,7 @@ export function EnquiryProjectDocumentsSection({
                     </div>
                   </td>
                 </tr>
-              ))}
+                )))}
             </tbody>
           </table>
         </div>

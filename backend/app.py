@@ -151,7 +151,7 @@ def list_projects():
     """Return projects, optionally filtered by character (read-only).
 
     Each project row is enriched with its linked client name
-    (client_details via project_clients) and site place (project_site).
+    (client_details via the project_id link) and site place (project_site).
     """
     character = request.args.get("character", type=str)
     clause = " WHERE p.project_character = ?" if character else ""
@@ -164,8 +164,7 @@ def list_projects():
         f"cd.client_name, ps.place, ps.site_img_url, "
         f"pb.estimated_overall_budget, ed.view "
         f"FROM projects p "
-        f"LEFT JOIN project_clients pc ON pc.project_id = p.id "
-        f"LEFT JOIN client_details cd ON cd.client_id = pc.client_id "
+        f"LEFT JOIN client_details cd ON cd.project_id = p.id "
         f"LEFT JOIN project_site ps ON ps.project_id = p.id "
         f"LEFT JOIN project_budget pb ON pb.project_id = p.id "
         f"LEFT JOIN enquiry_details ed ON ed.project_id = p.id "

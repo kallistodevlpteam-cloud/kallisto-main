@@ -146,6 +146,10 @@ export interface EnquiryRecord {
   status: EnquiryStatus;
   stage: EnquiryStage;
   projectType: ProjectType;
+  /** Raw projects.project_type value (TEXT, e.g. "Residential") straight
+   * from the backend projects table. Strictly backend-sourced; null when
+   * the record has no backend project behind it. */
+  backendProjectType?: string | null;
   budgetMin: number; // in whole rupees
   budgetMax: number; // in whole rupees
   receivedAt: string | number | null; // ISO 8601 string or Unix timestamp
@@ -166,6 +170,18 @@ export interface EnquiryRecord {
   requirements?: EnquiryRequirement[];
   clientPriorities?: ClientPriority[];
   unconfirmedScope?: string[];
+  /** Scope categories straight from backend project_scope rows, each with
+   * its project_scope_item children (scope_name + item list). Strictly
+   * backend-sourced; empty/absent when the backend has no scope rows. */
+  projectScopes?: Array<{ id: number; scope_name: string; items: string[] }>;
+  /** Site image URLs straight from backend project_site.site_img_url
+   * (JSON list). Strictly backend-sourced; empty when the backend has no
+   * site images. */
+  siteImages?: string[];
+  /** Project documents straight from backend project_DOC rows (name +
+   * doc_img_url preview). Strictly backend-sourced; empty when the backend
+   * has no document rows. */
+  projectDocuments?: Array<{ id: number; name: string; docImageUrl: string | null }>;
   proposalStatus?: "none" | "draft" | "sent" | "viewed" | "accepted" | "rejected" | "revision_requested";
 }
 
