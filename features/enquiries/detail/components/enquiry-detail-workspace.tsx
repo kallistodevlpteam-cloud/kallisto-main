@@ -815,18 +815,62 @@ export function EnquiryDetailWorkspace({
 
                 <div className={styles.householdGrid}>
                   {(viewModel.householdMembers || []).map((member: ClientHouseholdMember) => (
-                    <div
-                      key={member.id}
-                      className={styles.morigCardShell}
-                      onClick={() => setDetailHouseholdMember(member)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          setDetailHouseholdMember(member);
-                        }
-                      }}
-                    >
+                    <div key={member.id} className={styles.morigCardShell}>
+                      {/* ── ODIN HOVER TOOLTIP / POPOVER (Matching Reference Image 2) ── */}
+                      <div className={styles.odinHoverTooltip}>
+                        <div className={styles.tooltipHeader}>
+                          <Sparkles size={13} className={styles.tooltipIcon} />
+                          <span className={styles.tooltipTitle}>
+                            ODIN Requirement Insight · {member.name}
+                          </span>
+                        </div>
+                        <div className={styles.tooltipBody}>
+                          {(member.keyNeeds || []).length > 0 && (
+                            <div className={styles.tooltipRow}>
+                              <span className={styles.tooltipLabel}>Design Needs</span>
+                              <span className={styles.tooltipVal}>{member.keyNeeds.join(" · ")}</span>
+                            </div>
+                          )}
+                          {member.workPattern && (
+                            <div className={styles.tooltipRow}>
+                              <span className={styles.tooltipLabel}>Work / Study</span>
+                              <span className={styles.tooltipVal}>{member.workPattern}</span>
+                            </div>
+                          )}
+                          {member.bedroomRequirement && (
+                            <div className={styles.tooltipRow}>
+                              <span className={styles.tooltipLabel}>Bedroom</span>
+                              <span className={styles.tooltipVal}>{member.bedroomRequirement}</span>
+                            </div>
+                          )}
+                          {member.privacyLevel && (
+                            <div className={styles.tooltipRow}>
+                              <span className={styles.tooltipLabel}>Privacy</span>
+                              <span className={styles.tooltipVal}>{member.privacyLevel}</span>
+                            </div>
+                          )}
+                          {member.accessibilityNeeds && (
+                            <div className={styles.tooltipRow}>
+                              <span className={styles.tooltipLabel}>Accessibility</span>
+                              <span className={styles.tooltipVal}>{member.accessibilityNeeds}</span>
+                            </div>
+                          )}
+                          {member.decisionRole && (
+                            <div className={styles.tooltipRow}>
+                              <span className={styles.tooltipLabel}>Decision Role</span>
+                              <span className={styles.tooltipVal}>{member.decisionRole}</span>
+                            </div>
+                          )}
+                          {member.specialNotes && (
+                            <div className={styles.tooltipRow}>
+                              <span className={styles.tooltipLabel}>Special Notes</span>
+                              <span className={styles.tooltipVal}>{member.specialNotes}</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className={styles.tooltipTail} />
+                      </div>
+
                       {/* ── PHOTO CONTAINER WITH DARK GRADIENT OVERLAY ── */}
                       <div
                         className={styles.morigPhotoBox}
@@ -856,92 +900,6 @@ export function EnquiryDetailWorkspace({
                     </div>
                   ))}
                 </div>
-
-                {/* ── HOUSEHOLD MEMBER DETAILS INSPECTOR MODAL ── */}
-                {detailHouseholdMember && (
-                  <div
-                    className={styles.householdModalOverlay}
-                    onClick={() => setDetailHouseholdMember(null)}
-                  >
-                    <div
-                      className={styles.householdModalCard}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div className={styles.modalHeader}>
-                        <div className={styles.modalHeaderMeta}>
-                          <div className={styles.modalAvatar}>
-                            {detailHouseholdMember.avatarInitials}
-                          </div>
-                          <div>
-                            <h4 className={styles.modalName}>{detailHouseholdMember.name}</h4>
-                            <p className={styles.modalSubhead}>
-                              {detailHouseholdMember.relationship}
-                              {detailHouseholdMember.age ? ` · ${detailHouseholdMember.age}` : ""}
-                              {detailHouseholdMember.occupation ? ` · ${detailHouseholdMember.occupation}` : ""}
-                            </p>
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          className={styles.modalCloseBtn}
-                          onClick={() => setDetailHouseholdMember(null)}
-                          aria-label="Close details"
-                        >
-                          <X size={18} />
-                        </button>
-                      </div>
-
-                      <div className={styles.modalBody}>
-                        <dl className={styles.householdDetailGrid}>
-                          {(detailHouseholdMember.keyNeeds || []).length > 0 && (
-                            <>
-                              <dt className={styles.hdLabel}>Design Needs</dt>
-                              <dd className={styles.hdValue}>
-                                {detailHouseholdMember.keyNeeds.join(" · ")}
-                              </dd>
-                            </>
-                          )}
-                          {detailHouseholdMember.workPattern && (
-                            <>
-                              <dt className={styles.hdLabel}>Work / Study</dt>
-                              <dd className={styles.hdValue}>{detailHouseholdMember.workPattern}</dd>
-                            </>
-                          )}
-                          {detailHouseholdMember.bedroomRequirement && (
-                            <>
-                              <dt className={styles.hdLabel}>Bedroom</dt>
-                              <dd className={styles.hdValue}>{detailHouseholdMember.bedroomRequirement}</dd>
-                            </>
-                          )}
-                          {detailHouseholdMember.privacyLevel && (
-                            <>
-                              <dt className={styles.hdLabel}>Privacy</dt>
-                              <dd className={styles.hdValue}>{detailHouseholdMember.privacyLevel}</dd>
-                            </>
-                          )}
-                          {detailHouseholdMember.accessibilityNeeds && (
-                            <>
-                              <dt className={styles.hdLabel}>Accessibility</dt>
-                              <dd className={styles.hdValue}>{detailHouseholdMember.accessibilityNeeds}</dd>
-                            </>
-                          )}
-                          {detailHouseholdMember.decisionRole && (
-                            <>
-                              <dt className={styles.hdLabel}>Decision Role</dt>
-                              <dd className={styles.hdValue}>{detailHouseholdMember.decisionRole}</dd>
-                            </>
-                          )}
-                          {detailHouseholdMember.specialNotes && (
-                            <>
-                              <dt className={styles.hdLabel}>Special Notes</dt>
-                              <dd className={styles.hdValue}>{detailHouseholdMember.specialNotes}</dd>
-                            </>
-                          )}
-                        </dl>
-                      </div>
-                    </div>
-                  </div>
-                )}
 
                 {/* ── CLIENT CONTEXT & PRIORITIES ── */}
                 <ClientPrioritiesBar priorities={viewModel.priorities} />

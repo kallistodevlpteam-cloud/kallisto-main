@@ -4841,15 +4841,101 @@
   padding: 6px;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
   border: 1px solid rgba(15, 23, 42, 0.3);
-  cursor: pointer;
+  cursor: default;
+  position: relative;
   transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
-  overflow: hidden;
 }
 
 .morigCardShell:hover {
   transform: translateY(-3px);
   border-color: rgba(15, 23, 42, 0.5);
   box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18);
+}
+
+/* ODIN Requirement Insight Hover Tooltip (Matching Speech Bubble Reference Image 2) */
+.odinHoverTooltip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  width: 310px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 14px 16px;
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(15, 23, 42, 0.06);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
+  z-index: 100;
+}
+
+/* Reveal speech-bubble tooltip on card hover */
+.morigCardShell:hover .odinHoverTooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.tooltipHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.tooltipIcon {
+  color: #0f172a;
+}
+
+.tooltipTitle {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.2px;
+}
+
+.tooltipBody {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tooltipRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+
+.tooltipLabel {
+  color: #94a3b8;
+  font-weight: 500;
+  width: 85px;
+  flex-shrink: 0;
+}
+
+.tooltipVal {
+  color: #0f172a;
+  font-weight: 600;
+  flex: 1;
+}
+
+/* Triangular Speech Bubble Tail (Image 2 style) */
+.tooltipTail {
+  position: absolute;
+  top: 100%;
+  left: 24px;
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 10px solid #ffffff;
+  filter: drop-shadow(0 2px 2px rgba(15, 23, 42, 0.05));
 }
 
 .morigPhotoBox {
