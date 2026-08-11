@@ -29,8 +29,8 @@ import {
   GitPullRequest,
   MessageSquare,
   Info,
-  Palette,
   Users,
+  Palette,
 } from "lucide-react";
 
 import { RoutePageContainer } from "@/components/ui/route-page-container";
@@ -821,43 +821,43 @@ export function EnquiryDetailWorkspace({
 
                       <div className={styles.reqCardsGrid}>
                         {domainReqs.map((req) => {
-                          const isSelected = selectedRequirementId === req.id;
                           const CategoryIcon = getReqCategoryIcon(req.category);
 
                           return (
                             <div
                               key={req.id}
-                              className={`${styles.singleReqCard} ${
-                                isSelected ? styles.singleReqCardSelected : ""
+                              className={`${styles.cardShell} ${
+                                selectedRequirementId === req.id ? styles.cardShellSelected : ""
                               }`}
                               onClick={() =>
                                 setSelectedRequirementId((prev) => (prev === req.id ? null : req.id))
                               }
                               role="button"
                               tabIndex={0}
-                              aria-selected={isSelected}
+                              aria-selected={selectedRequirementId === req.id}
                             >
-                              <div className={styles.reqCardHeader}>
-                                <div className={styles.reqMetaLeft}>
-                                  <CategoryIcon size={14} className={styles.categoryIcon} />
-                                  <span className={styles.reqCategoryChip}>
+                              <div className={styles.headerRow}>
+                                <div className={styles.headerTitleGroup}>
+                                  <div className={styles.iconBox}>
+                                    <CategoryIcon size={13} className={styles.headerIcon} />
+                                  </div>
+                                  <span className={styles.reqCategoryBadge}>
                                     {req.category.toUpperCase()}
                                   </span>
-                                </div>
-                                <div className={styles.reqChipsRight}>
-                                  <span className={`${styles.prioChip} ${styles[`prio_${req.priority}`]}`}>
+                                  <h4 className={styles.cardTitle}>{req.label}</h4>
+                                  <span className={`${styles.prioTag} ${styles[`prio_${req.priority}`]}`}>
                                     {req.priority.toUpperCase()}
                                   </span>
-                                  <span className={`${styles.reqStatusChip} ${styles[`state_${req.state}`]}`}>
-                                    {req.state.replace("_", " ")}
-                                  </span>
                                 </div>
+                                <span className={`${styles.reqStateBadge} ${styles[`state_${req.state}`]}`}>
+                                  {req.state.replace("_", " ")}
+                                </span>
                               </div>
 
-                              <h4 className={styles.reqCardTitle}>{req.label}</h4>
-
                               {req.value ? (
-                                <p className={styles.reqCardValue}>{String(req.value)}</p>
+                                <div className={styles.innerCard}>
+                                  <p className={styles.reqValue}>{String(req.value)}</p>
+                                </div>
                               ) : null}
                             </div>
                           );

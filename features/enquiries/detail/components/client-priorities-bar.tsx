@@ -93,35 +93,34 @@ export function ClientPrioritiesBar({ priorities, className }: ClientPrioritiesB
         </div>
       </div>
 
-      {/* ── Cards Grid (Single-Surface Layout) ───── */}
+      {/* ── Cards Grid (Matching ODIN Insight Cards Architecture) ───── */}
       <div className={styles.cardsGrid}>
         {priorities.map((prio, idx) => {
           const isConfirmed = prio.type === "confirmed";
           const { Icon, desc, tags } = getPriorityMeta(prio.label, idx, prio.type);
 
           return (
-            <div key={prio.id} className={styles.singleCard}>
-              <div className={styles.cardHeader}>
-                <div className={styles.metaLeft}>
-                  <Icon size={14} className={styles.categoryIcon} />
-                  <span className={styles.categoryChip}>PRIORITY</span>
+            <div key={prio.id} className={styles.cardShell}>
+              {/* Layer 1: Header Row inside Outer Shell */}
+              <div className={styles.headerRow}>
+                <div className={styles.headerTitleGroup}>
+                  <div className={styles.iconBox}>
+                    <Icon size={13} className={styles.headerIcon} />
+                  </div>
+                  <h4 className={styles.cardTitle}>{prio.label}</h4>
                 </div>
-                <div className={styles.chipsRight}>
-                  <span
-                    className={
-                      isConfirmed ? styles.confirmedBadge : styles.inferredBadge
-                    }
-                  >
-                    {isConfirmed ? "Confirmed" : "Inferred"}
-                  </span>
-                </div>
+                <span
+                  className={
+                    isConfirmed ? styles.confirmedBadge : styles.inferredBadge
+                  }
+                >
+                  {isConfirmed ? "Confirmed" : "Inferred"}
+                </span>
               </div>
 
-              <h4 className={styles.cardTitle}>{prio.label}</h4>
-
-              <p className={styles.cardSnippet}>{desc}</p>
-
-              {tags && tags.length > 0 && (
+              {/* Layer 2: Secondary Inner Content Card (#ffffff) */}
+              <div className={styles.innerCard}>
+                <p className={styles.cardSnippet}>{desc}</p>
                 <div className={styles.tagsRow}>
                   {tags.map((t, i) => (
                     <span key={i} className={styles.softTag}>
@@ -129,7 +128,7 @@ export function ClientPrioritiesBar({ priorities, className }: ClientPrioritiesB
                     </span>
                   ))}
                 </div>
-              )}
+              </div>
             </div>
           );
         })}
