@@ -818,58 +818,44 @@ export function EnquiryDetailWorkspace({
                     return (
                       <div
                         key={member.id}
-                        className={`${styles.householdReferenceCard} ${
+                        className={`${styles.householdProfileCard} ${
                           isExpanded ? styles.householdCardExpanded : ""
                         }`}
                       >
-                        {/* ── TOP INNER HERO BOX ── */}
-                        <div className={styles.refCardHeroBox}>
-                          {/* Header Title & Subtitle */}
-                          <div className={styles.refCardTitleGroup}>
-                            <h5 className={styles.refCardName}>{member.name}</h5>
-                            <div className={styles.refCardSubhead}>
-                              <Sparkles size={11} className={styles.refCardIcon} />
-                              <span>{member.relationship}{member.age ? ` · ${member.age}` : ""}</span>
-                            </div>
-                          </div>
-
-                          {/* Member Photo Portrait */}
-                          <div className={styles.refCardPhotoFrame}>
-                            {member.photoUrl ? (
-                              <img
-                                src={member.photoUrl}
-                                alt={member.name}
-                                className={styles.refCardPhoto}
-                              />
-                            ) : (
-                              <div className={styles.refCardPhotoFallback}>
-                                {member.avatarInitials}
-                              </div>
-                            )}
-                          </div>
+                        {/* ── 1. TOP IDENTITY ── */}
+                        <div className={styles.profileCardHeader}>
+                          <h5 className={styles.profileCardName}>{member.name}</h5>
+                          <p className={styles.profileCardSubhead}>
+                            {member.relationship}{member.age ? ` · ${member.age}` : ""}
+                          </p>
                         </div>
 
-                        {/* ── KEY NEEDS TAGS / BULLETS ── */}
-                        <ul className={styles.refCardKeyNeedsList}>
-                          {(member.keyNeeds || []).map((need, idx) => (
-                            <li key={idx} className={styles.refCardKeyNeedItem}>
-                              <span className={styles.refCardKeyNeedDot} />
-                              {need}
-                            </li>
-                          ))}
-                        </ul>
-
-                        {/* ── BOTTOM FOOTER ROW (Matching Reference UI) ── */}
-                        <div className={styles.refCardFooterRow}>
-                          <div className={styles.refCardUserMeta}>
-                            <div className={styles.refCardMiniAvatar}>
+                        {/* ── 2. LARGE DOMINANT PORTRAIT (60–70% Visual Height) ── */}
+                        <div className={styles.profileCardPhotoFrame}>
+                          {member.photoUrl ? (
+                            <img
+                              src={member.photoUrl}
+                              alt={member.name}
+                              className={styles.profileCardPhoto}
+                            />
+                          ) : (
+                            <div className={styles.profileCardPhotoFallback}>
                               {member.avatarInitials}
                             </div>
-                            <div className={styles.refCardMetaText}>
-                              <span className={styles.refCardHandle}>
-                                {member.occupation || `@${member.name.toLowerCase().replace(/\s+/g, '')}`}
+                          )}
+                        </div>
+
+                        {/* ── 3. COMPACT IDENTITY FOOTER ── */}
+                        <div className={styles.profileCardFooterRow}>
+                          <div className={styles.profileCardUserMeta}>
+                            <div className={styles.profileCardMiniAvatar}>
+                              {member.avatarInitials}
+                            </div>
+                            <div className={styles.profileCardMetaText}>
+                              <span className={styles.profileCardOccupation}>
+                                {member.occupation || member.name}
                               </span>
-                              <span className={styles.refCardTimeAgo}>
+                              <span className={styles.profileCardResidence}>
                                 {member.residenceStatus}
                               </span>
                             </div>
@@ -877,7 +863,7 @@ export function EnquiryDetailWorkspace({
 
                           <button
                             type="button"
-                            className={styles.refCardDarkActionBtn}
+                            className={styles.profileCardDarkBtn}
                             onClick={() => setExpandedHouseholdId(isExpanded ? null : member.id)}
                             aria-expanded={isExpanded}
                           >
@@ -885,11 +871,19 @@ export function EnquiryDetailWorkspace({
                           </button>
                         </div>
 
-                        {/* ── EXPANDED DISCLOSURE PANEL ── */}
+                        {/* ── 4. EXPANDED DISCLOSURE PANEL (+ Details) ── */}
                         {isExpanded && (
                           <div className={styles.householdExpandedPanel}>
                             <div className={styles.householdExpandedDivider} />
                             <dl className={styles.householdDetailGrid}>
+                              {(member.keyNeeds || []).length > 0 && (
+                                <>
+                                  <dt className={styles.hdLabel}>Design Needs</dt>
+                                  <dd className={styles.hdValue}>
+                                    {member.keyNeeds.join(" · ")}
+                                  </dd>
+                                </>
+                              )}
                               {member.workPattern && member.workPattern !== "No WFH" && (
                                 <>
                                   <dt className={styles.hdLabel}>Work / Study</dt>
