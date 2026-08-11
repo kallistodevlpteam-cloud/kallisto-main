@@ -5,28 +5,26 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+  box-shadow: none;
   cursor: pointer;
   transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
               background-color 0.2s ease;
-  will-change: transform, box-shadow;
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.07);
+  transform: translateY(-1px);
+  box-shadow: none;
   background: #f1f5f9;
 }
 
 .cardExpanded {
   background: #f1f5f9;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  box-shadow: none;
 }
 
 .cardExpanded:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  box-shadow: none;
 }
 
 /* ── Top Header Strip: Crisp White Background Card with 16px Padding ── */
