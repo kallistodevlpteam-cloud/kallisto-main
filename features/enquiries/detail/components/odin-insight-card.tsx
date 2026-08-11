@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Sparkles, PlusCircle, ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
+import { Sparkles, PlusCircle, ExternalLink, ChevronDown } from "lucide-react";
 import { OdinContextualInsight, OdinInsightSeverity } from "@/features/enquiries/services/enquiry-intelligence";
 import styles from "./odin-insight-card.module.css";
 
@@ -107,7 +107,10 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
             className={styles.chevronBtn}
             aria-label={isExpanded ? "Collapse details" : "Expand details"}
           >
-            {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            <ChevronDown
+              size={14}
+              className={`${styles.chevronIcon} ${isExpanded ? styles.chevronIconExpanded : ""}`}
+            />
           </button>
         </div>
       </div>

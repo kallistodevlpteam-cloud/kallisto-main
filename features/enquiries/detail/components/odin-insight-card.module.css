@@ -8,16 +8,26 @@
   gap: 8px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
   cursor: pointer;
-  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.2s ease;
+  will-change: transform, box-shadow;
 }
 
 .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04);
   background: #ffffff;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.07);
 }
 
 .cardExpanded {
-  background: #f8fafc;
+  background: #fafafa;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.cardExpanded:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.09);
 }
 
 .topRow {
@@ -45,10 +55,16 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sparkleIcon {
   color: #2563eb;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card:hover .sparkleIcon {
+  transform: scale(1.15) rotate(8deg);
 }
 
 .titleTextWrap {
@@ -91,7 +107,9 @@
   align-items: center;
   gap: 3.5px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.15s ease,
+              border-color 0.15s ease;
   white-space: nowrap;
 }
 
@@ -99,6 +117,7 @@
   background: #dbeafe;
   border-color: #93c5fd;
   color: #1e40af;
+  transform: translateY(-1px);
 }
 
 .chevronBtn {
@@ -117,6 +136,14 @@
   color: #475569;
 }
 
+.chevronIcon {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chevronIconExpanded {
+  transform: rotate(180deg);
+}
+
 .summaryText {
   font-size: 12px;
   line-height: 1.4;
@@ -124,7 +151,7 @@
   margin: 0;
 }
 
-/* ── Expanded Flat Disclosure Section (No Inner Nested Container) ──── */
+/* ── Expanded Flat Disclosure Section with Slide-Fade Keyframe ──── */
 .expandedSection {
   border-top: 1px solid #f1f5f9;
   padding-top: 8px;
@@ -132,6 +159,19 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  animation: expandSlideFade 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top center;
+}
+
+@keyframes expandSlideFade {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .detailGroup {
