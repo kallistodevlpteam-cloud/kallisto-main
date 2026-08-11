@@ -342,7 +342,11 @@ export function ProjectCard({ project }: { project: SampleProjectCard }) {
           <h3 className={styles.pcName} title={project.name}>
             {project.name}
           </h3>
-          <span className={styles.pcPercent}>{project.phaseProgress}%</span>
+          <span className={styles.pcPercent}>
+            {project.phaseProgress !== undefined && project.phaseProgress !== null
+              ? `${project.phaseProgress}%`
+              : "—"}
+          </span>
         </div>
 
         {/* Row 2: Location (left) & Due Date Chip (right, above divider) */}
@@ -470,7 +474,7 @@ export function ProjectsCardsGrid({
   if (error) {
     return (
       <div className={styles.pcEmptyState}>
-        <h4 className={styles.pcEmptyTitle}>Failed to load projects</h4>
+        <h4 className={styles.pcEmptyTitle}>Could not load projects</h4>
         <p className={styles.pcEmptySubtitle}>
           An error occurred while fetching project data from the server.
         </p>

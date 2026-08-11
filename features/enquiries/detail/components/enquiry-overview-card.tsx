@@ -178,6 +178,22 @@ export function EnquiryOverviewCard({
   inspirationImages,
   projectScopes,
 }: EnquiryOverviewCardProps) {
+  const galleryImages: GalleryImage[] = inspirationImages
+    ? inspirationImages.map((img, idx) => ({
+        id: `img-${idx + 1}`,
+        src: img.url,
+        alt: img.alt || `Inspiration image ${idx + 1}`,
+      }))
+    : [];
+
+  const scopeCategories = projectScopes
+    ? projectScopes.map((s) => ({
+        id: `cat-${s.id}`,
+        title: s.scope_name,
+        items: s.items,
+      }))
+    : undefined;
+
   return (
     <div
       ref={dashboardRef}
@@ -196,9 +212,15 @@ export function EnquiryOverviewCard({
           description={description}
           highlights={highlights}
         />
-        <ProjectGallery images={GALLERY_IMAGES} />
+        {galleryImages.length > 0 && <ProjectGallery images={galleryImages} />}
         <EnquiryStatCardsBar values={statValues} />
-        <EnquiryProjectScopeSection />
+        {projectScopes && projectScopes.length === 0 ? (
+          <div className="po-section-inner">
+            <p className="po-section-description">No scope categories have been shared yet.</p>
+          </div>
+        ) : (
+          <EnquiryProjectScopeSection categories={scopeCategories} />
+        )}
       </main>
 
       {customRightPanel}
