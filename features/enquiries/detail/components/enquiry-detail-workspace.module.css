@@ -4376,10 +4376,16 @@
 }
 
 .signalBlock {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin-bottom: 28px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .signalDivider,
