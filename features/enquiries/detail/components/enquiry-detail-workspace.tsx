@@ -951,16 +951,25 @@ export function EnquiryDetailWorkspace({
           {/* Right Fixed Context & Intelligence Area */}
           <aside className={styles.enquiryDetails} aria-label="Context & Intelligence">
             <div className={styles.enquiryDetailsTop}>
-              <OdinInsightsPanel
-                scope={activeTab as "overview" | "requirements" | "evidence" | "client" | "intelligence" | "activity"}
-                insights={deriveContextualOdinInsights(enquiry, activeTab)}
-                onAppendToClarification={handleAppendToClarification}
-                onNavigateToTab={(tab) => {
-                  const params = new URLSearchParams(searchParams.toString());
-                  params.set("tab", tab);
-                  router.push(`${pathname}?${params.toString()}`, { scroll: false });
-                }}
-              />
+              {activeTab === "overview" ? (
+                <GlobalEnquiryIntelligenceCard
+                  viewModel={viewModel}
+                  enquiry={enquiry}
+                  onAppendToClarification={handleAppendToClarification}
+                  onNavigateToIntelligence={handleViewAllFiles}
+                />
+              ) : (
+                <OdinInsightsPanel
+                  scope={activeTab as "requirements" | "evidence" | "client" | "intelligence" | "activity"}
+                  insights={deriveContextualOdinInsights(enquiry, activeTab)}
+                  onAppendToClarification={handleAppendToClarification}
+                  onNavigateToTab={(tab) => {
+                    const params = new URLSearchParams(searchParams.toString());
+                    params.set("tab", tab);
+                    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+                  }}
+                />
+              )}
             </div>
 
             <div className={styles.enquiryDetailsBottom}>
@@ -1100,29 +1109,15 @@ export function EnquiryActionsCard({
 
 export function GlobalEnquiryIntelligenceCard({
   viewModel,
-  selectedRequirement,
-  onDeselectRequirement,
+  enquiry,
   onAppendToClarification,
-  onNavigateToIntelligence,
 }: {
   viewModel: EnquiryDetailViewModel;
-  selectedRequirement?: EnquiryRequirement | null;
-  onDeselectRequirement?: () => void;
+  enquiry: EnquiryRecord;
   onAppendToClarification: (text: string) => void;
   onNavigateToIntelligence: () => void;
 }) {
   const { intelligence } = viewModel;
-
-  const unconfirmedCount = (viewModel.requirements || []).filter(
-    (r: EnquiryRequirement) => r.state === "needs_clarification" || r.state === "needs_verification" || r.state === "partial"
-  ).length;
-
-  const insights: string[] = [
-    "Budget coverage is still unclear.",
-    "Site information is largely unverified.",
-    "Timeline contains a possible schedule conflict.",
-    "Professional scope requires clarification before proposal.",
-  ];
 
   return (
     <div className={styles.globalIntelCard}>
@@ -1182,117 +1177,12 @@ export function GlobalEnquiryIntelligenceCard({
 
       <div className={styles.signalDivider} />
 
-      {/* 2. Opportunity Fit */}
-      <div className={styles.signalBlock}>
-        <div className={styles.signalLabelRow}>
-          <span className={styles.signalTitle}>Opportunity Fit</span>
-        </div>
-        <div className={styles.signalValueRow}>
-          <span className={styles.signalScore}>{intelligence.opportunityFit.score}%</span>
-          <span className={styles.signalDot}>·</span>
-          <span className={styles.signalBand}>{intelligence.opportunityFit.label}</span>
-        </div>
-        <p className={styles.signalSubtext}>
-          Confidence: <strong>{intelligence.opportunityFit.confidence}</strong>
-        </p>
-      </div>
-
-      <div className={styles.signalDivider} />
-
-      {/* 3. Proposal Readiness */}
-      <div className={styles.signalBlock}>
-        <div className={styles.signalLabelRow}>
-          <span className={styles.signalTitle}>Proposal Readiness</span>
-        </div>
-        <div className={styles.signalValueRow}>
-          <span className={`${styles.signalReadinessState} ${intelligence.proposalReadiness.state === "READY" ? styles.stateReady : styles.statePartial}`}>
-            {intelligence.proposalReadiness.state}
-          </span>
-        </div>
-        <p className={styles.signalSubtext}>
-          {unconfirmedCount > 0
-            ? `${unconfirmedCount} critical gaps must be clarified before proposal creation.`
-            : intelligence.proposalReadiness.reason}
-        </p>
-      </div>
-
-      <div className={styles.sectionDivider} />
-
-      {/* ODIN INSIGHTS */}
-      <div className={styles.odinInsightsSection}>
-        <h4 className={styles.odinInsightsTitle}>ODIN INSIGHTS</h4>
-        <ul className={styles.odinInsightsList}>
-          {insights.map((insight, idx) => (
-            <li key={idx} className={styles.odinInsightItem}>
-              <span className={styles.bulletDot}>•</span>
-              <span>{insight}</span>
-            </li>
-          ))}
-        </ul>
-
-        {selectedRequirement && (
-          <div className={styles.selectedContextBlock}>
-            <div className={styles.selectedContextHeader}>
-              <span className={styles.selectedContextLabel}>SELECTED</span>
-              {onDeselectRequirement && (
-                <button
-                  type="button"
-                  className={styles.selectedContextCloseBtn}
-                  onClick={onDeselectRequirement}
-                >
-                  ×
-                </button>
-              )}
-            </div>
-            <div className={styles.selectedContextName}>{selectedRequirement.label}</div>
-            <div className={styles.selectedContextMeta}>
-              <span className={`${styles.reqStateBadge} ${styles[`state_${selectedRequirement.state}`]}`}>
-                {selectedRequirement.state.replace("_", " ")}
-              </span>
-              <span className={`${styles.prioTag} ${styles[`prio_${selectedRequirement.priority}`]}`}>
-                {selectedRequirement.priority.toUpperCase()}
-              </span>
-            </div>
-            <p className={styles.selectedContextOdinText}>
-              ODIN: &ldquo;{selectedRequirement.id.includes("budget")
-                ? "This blocks reliable commercial pricing."
-                : selectedRequirement.id.includes("drawings")
-                ? "Existing floor plan DWG file must be verified against physical site dimensions."
-                : selectedRequirement.id.includes("mep")
-                ? "Floor raceways and HVAC duct relocation scope requires contractor confirmation."
-                : "Requires verification before finalizing proposal."}&rdquo;
-            </p>
-            {(selectedRequirement.state === "needs_clarification" ||
-              selectedRequirement.state === "needs_verification" ||
-              selectedRequirement.state === "partial") && (
-              <button
-                type="button"
-                className={styles.addClarificationSmallBtn}
-                onClick={() => {
-                  const text = selectedRequirement.id.includes("budget")
-                    ? "Please confirm whether the ₹40L–₹60L budget includes furniture, lighting, MEP works and execution."
-                    : selectedRequirement.id.includes("drawings")
-                    ? "Please confirm whether the uploaded DWG is the latest verified drawing and reflects current site dimensions."
-                    : selectedRequirement.id.includes("mep")
-                    ? "Please confirm electrical load capacity, floor raceways, and HVAC duct relocation scope."
-                    : `Please clarify details regarding ${selectedRequirement.label}.`;
-                  onAppendToClarification(text);
-                }}
-              >
-                + Add to clarification
-              </button>
-            )}
-          </div>
-        )}
-
-        <button
-          type="button"
-          className={styles.viewFullOdinBtn}
-          onClick={onNavigateToIntelligence}
-        >
-          View full ODIN Intelligence →
-        </button>
-      </div>
+      {/* 2. ODIN Insights Panel */}
+      <OdinInsightsPanel
+        scope="overview"
+        insights={deriveContextualOdinInsights(enquiry, "overview")}
+        onAppendToClarification={onAppendToClarification}
+      />
     </div>
   );
 }

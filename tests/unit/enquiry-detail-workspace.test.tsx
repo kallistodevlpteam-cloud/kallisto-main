@@ -41,7 +41,7 @@ describe("EnquiryDetailWorkspace Component Architecture & Regression Checks", ()
     expect(mainElement?.nextElementSibling).toBe(asideElement);
 
     // Verify right rail content
-    expect(asideElement).toHaveTextContent("ODIN INSIGHTS");
+    expect(asideElement).toHaveTextContent("Requirement Strength");
   });
 
   it("resolves invalid and missing tab query parameters cleanly to overview", () => {
