@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Sparkles,
   PlusCircle,
-  ExternalLink,
   ChevronDown,
   HelpCircle,
   FileText,
@@ -14,16 +13,14 @@ import {
   CheckCircle2,
   Info,
   Tag,
-  Copy,
-  Check,
 } from "lucide-react";
 import { OdinContextualInsight, OdinInsightSeverity } from "@/features/enquiries/services/enquiry-intelligence";
 import styles from "./odin-insight-card.module.css";
 
 export interface OdinInsightCardProps {
   insight: OdinContextualInsight;
-  index: number;
-  totalCount: number;
+  index?: number;
+  totalCount?: number;
   isExpanded: boolean;
   onToggleExpand: () => void;
   onMouseEnter?: () => void;
@@ -94,8 +91,6 @@ function getSeverityConfig(severity: OdinInsightSeverity): SeverityConfig {
 
 export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
   insight,
-  index,
-  totalCount,
   isExpanded,
   onToggleExpand,
   onMouseEnter,
@@ -103,20 +98,7 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
   onAppendToClarification,
   onNavigateToTab,
 }) => {
-  const [copied, setCopied] = useState(false);
   const badgeConfig = getSeverityConfig(insight.severity);
-
-  const handleCopyInsight = () => {
-    const textToCopy = `[ODIN Insight] ${insight.title}
-Summary: ${insight.summary}
-Why flagged: ${insight.whyFlagged || "N/A"}
-Affected area: ${insight.affectedArea || "N/A"}
-Suggested question: ${insight.suggestedQuestion || "N/A"}`;
-
-    navigator.clipboard.writeText(textToCopy);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const handlePrimaryAction = () => {
     if (!insight.actionPrimary) return;
@@ -141,101 +123,100 @@ Suggested question: ${insight.suggestedQuestion || "N/A"}`;
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* ── Header Row: ODIN Icon + Label (Left) | Counter + Chevron (Right) ──── */}
-      <div className={styles.cardHeader}>
+      {/* ── Top Header Strip: ODIN Icon + Real Insight Title (Left) | Chevron (Right) ── */}
+      <div className={styles.cardHeaderStrip}>
         <div className={styles.headerLeft}>
           <div className={styles.odinAvatar}>
             <Sparkles size={11} className={styles.sparkleIcon} />
           </div>
-          <span className={styles.headerLabelText}>ODIN Insight</span>
+          <span className={styles.headerTitleText}>{insight.title}</span>
         </div>
 
-        <div className={styles.headerRight}>
-          <span className={styles.counterBadge}>
-            {index + 1} of {totalCount}
-          </span>
-          <button
-            type="button"
-            className={styles.chevronBtn}
-            aria-label={isExpanded ? "Collapse details" : "Expand details"}
+        <button
+          type="button"
+          className={styles.chevronBtn}
+          aria-label={isExpanded ? "Collapse details" : "Expand details"}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleExpand();
+          }}
+        >
+          <ChevronDown
+            size={14}
+            className={`${styles.chevronIcon} ${isExpanded ? styles.chevronIconExpanded : ""}`}
+          />
+        </button>
+      </div>
+
+      {/* ── Card Body Content ─────────────────────────────────────────────────── */}
+      <div className={styles.cardBody}>
+        {/* Summary Interpretation */}
+        <p className={styles.summaryText}>{insight.summary}</p>
+
+        {/* Expanded State: Hairline Dividers + Structured Detail Rows */}
+        {isExpanded && (
+          <div
+            className={styles.expandedSection}
+            onClick={(e) => e.stopPropagation()}
           >
-            <ChevronDown
-              size={14}
-              className={`${styles.chevronIcon} ${isExpanded ? styles.chevronIconExpanded : ""}`}
-            />
-          </button>
-        </div>
-      </div>
-
-      {/* ── Title & Summary ──────────────────────────────────────────────────── */}
-      <h4 className={styles.insightTitle}>{insight.title}</h4>
-      <p className={styles.summaryText}>{insight.summary}</p>
-
-      {/* ── Expanded State: Hairline Dividers + Structured Detail Rows ─────── */}
-      {isExpanded && (
-        <div
-          className={styles.expandedSection}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {insight.whyFlagged && (
-            <div className={styles.detailRow}>
-              <div className={styles.rowLabelGroup}>
-                <div className={styles.rowIconWrap}>
-                  <HelpCircle size={12} className={styles.rowIcon} />
+            {insight.whyFlagged && (
+              <div className={styles.detailRow}>
+                <div className={styles.rowLabelGroup}>
+                  <div className={styles.rowIconWrap}>
+                    <HelpCircle size={12} className={styles.rowIcon} />
+                  </div>
+                  <span className={styles.rowLabelText}>Why flagged</span>
                 </div>
-                <span className={styles.rowLabelText}>Why flagged</span>
+                <p className={styles.rowValueText}>{insight.whyFlagged}</p>
               </div>
-              <p className={styles.rowValueText}>{insight.whyFlagged}</p>
-            </div>
-          )}
+            )}
 
-          {insight.affectedArea && (
-            <div className={styles.detailRow}>
-              <div className={styles.rowLabelGroup}>
-                <div className={styles.rowIconWrap}>
-                  <FileText size={12} className={styles.rowIcon} />
+            {insight.affectedArea && (
+              <div className={styles.detailRow}>
+                <div className={styles.rowLabelGroup}>
+                  <div className={styles.rowIconWrap}>
+                    <FileText size={12} className={styles.rowIcon} />
+                  </div>
+                  <span className={styles.rowLabelText}>Affected area</span>
                 </div>
-                <span className={styles.rowLabelText}>Affected area</span>
+                <p className={styles.rowValueText}>{insight.affectedArea}</p>
               </div>
-              <p className={styles.rowValueText}>{insight.affectedArea}</p>
-            </div>
-          )}
+            )}
 
-          {insight.suggestedQuestion && (
-            <div className={styles.detailRow}>
-              <div className={styles.rowLabelGroup}>
-                <div className={styles.rowIconWrap}>
-                  <MessageSquare size={12} className={styles.rowIcon} />
+            {insight.suggestedQuestion && (
+              <div className={styles.detailRow}>
+                <div className={styles.rowLabelGroup}>
+                  <div className={styles.rowIconWrap}>
+                    <MessageSquare size={12} className={styles.rowIcon} />
+                  </div>
+                  <span className={styles.rowLabelText}>Suggested question</span>
                 </div>
-                <span className={styles.rowLabelText}>Suggested question</span>
+                <p className={styles.rowValueText}>{insight.suggestedQuestion}</p>
               </div>
-              <p className={styles.rowValueText}>{insight.suggestedQuestion}</p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ── Semantic Tags Row ────────────────────────────────────────────────── */}
-      <div className={styles.tagsRow}>
-        <span className={`${styles.badge} ${badgeConfig.styleClass}`}>
-          {badgeConfig.icon}
-          <span>{badgeConfig.label}</span>
-        </span>
-        {insight.domainTag && (
-          <span className={styles.domainTag}>
-            <Tag size={11} className={styles.tagIcon} />
-            <span>{insight.domainTag}</span>
-          </span>
+            )}
+          </div>
         )}
-      </div>
 
-      {/* ── Expanded Action Footer Buttons ───────────────────────────────────── */}
-      {isExpanded && (
-        <div
-          className={styles.actionFooter}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {insight.actionPrimary && (
+        {/* Semantic Tags Row */}
+        <div className={styles.tagsRow}>
+          <span className={`${styles.badge} ${badgeConfig.styleClass}`}>
+            {badgeConfig.icon}
+            <span>{badgeConfig.label}</span>
+          </span>
+          {insight.domainTag && (
+            <span className={styles.domainTag}>
+              <Tag size={11} className={styles.tagIcon} />
+              <span>{insight.domainTag}</span>
+            </span>
+          )}
+        </div>
+
+        {/* Expanded Action Footer */}
+        {isExpanded && insight.actionPrimary && (
+          <div
+            className={styles.actionFooter}
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               type="button"
               className={styles.actionPrimaryBtn}
@@ -244,22 +225,9 @@ Suggested question: ${insight.suggestedQuestion || "N/A"}`;
               <PlusCircle size={12} />
               <span>{insight.actionPrimary.label}</span>
             </button>
-          )}
-
-          <button
-            type="button"
-            className={styles.actionSecondaryBtn}
-            onClick={handleCopyInsight}
-          >
-            {copied ? (
-              <Check size={12} className={styles.copiedCheckIcon} />
-            ) : (
-              <Copy size={12} />
-            )}
-            <span>{copied ? "Copied!" : "Copy insight"}</span>
-          </button>
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
