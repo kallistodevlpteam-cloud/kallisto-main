@@ -1,11 +1,14 @@
-.card {
-  background: #ffffff;
+/* ── 1. LAYER 1: OUTER CARD SHELL (#f8fafc) ────────────────────────── */
+
+.cardShell {
+  background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  overflow: hidden;
+  border-radius: 14px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+  gap: 6px;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.03), 0 1px 2px rgba(15, 23, 42, 0.02);
   cursor: pointer;
   transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
@@ -13,37 +16,33 @@
   will-change: transform, box-shadow;
 }
 
-.card:hover {
+.cardShell:hover {
   border-color: #cbd5e1;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.03);
-  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.07), 0 2px 4px rgba(15, 23, 42, 0.03);
 }
 
-.cardExpanded {
+.cardShellExpanded {
   border-color: #cbd5e1;
-  background: #ffffff;
-  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 5px 16px rgba(15, 23, 42, 0.05);
 }
 
-.cardExpanded:hover {
+.cardShellExpanded:hover {
   border-color: #94a3b8;
   transform: translateY(-1px);
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.09);
 }
 
-/* ── Top Header Strip: Tinted Light Grey Surface (#f8fafc) ── */
-.cardHeaderStrip {
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
-  padding: 10px 14px;
+/* ── 2. LAYER 2: HEADER ROW ───────────────────────────────────────── */
+
+.headerRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  padding: 2px 4px;
 }
 
-.headerLeft {
+.headerTitleGroup {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -51,16 +50,18 @@
   flex: 1 1 0;
 }
 
-.odinAvatar {
-  width: 20px;
-  height: 20px;
-  border-radius: 5px;
-  background: #eff6ff;
+.iconBox {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   color: #2563eb;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
 }
 
 .sparkleIcon {
@@ -68,15 +69,15 @@
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.card:hover .sparkleIcon {
+.cardShell:hover .sparkleIcon {
   transform: scale(1.15) rotate(8deg);
 }
 
-.headerTitleText {
+.cardTitle {
   font-size: 13.5px;
   font-weight: 600;
   color: #0f172a;
-  line-height: 1.35;
+  line-height: 1.3;
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -109,27 +110,31 @@
   transform: rotate(180deg);
 }
 
-/* ── Main Card Body: Crisp White Background (#ffffff) ── */
-.cardBody {
-  padding: 14px 16px;
+/* ── 3. LAYER 3: SECONDARY INNER CONTENT CARD (#ffffff) ───────────── */
+
+.innerCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  background: #ffffff;
+  gap: 8px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
 }
 
 .summaryText {
   font-size: 12.5px;
   line-height: 1.45;
-  color: #475569;
+  color: #1e293b;
+  font-weight: 500;
   margin: 0;
 }
 
-/* ── Expanded Detail Rows with Dividers ── */
-.expandedSection {
+.expandedContent {
   display: flex;
   flex-direction: column;
-  margin-top: 2px;
+  gap: 8px;
   animation: expandSlideFade 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   transform-origin: top center;
 }
@@ -147,18 +152,17 @@
 
 .detailRow {
   border-top: 1px solid #f1f5f9;
-  padding: 10px 0;
+  padding-top: 8px;
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
 }
 
-.rowLabelGroup {
+.labelCol {
   display: flex;
   align-items: center;
-  gap: 6px;
-  width: 124px;
+  gap: 5px;
+  width: 125px;
   flex-shrink: 0;
 }
 
@@ -179,36 +183,37 @@
   color: #64748b;
 }
 
-.rowLabelText {
-  font-size: 12px;
-  font-weight: 600;
-  color: #0f172a;
+.labelText {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #64748b;
   line-height: 1.2;
 }
 
-.rowValueText {
+.valueText {
   font-size: 12px;
   line-height: 1.4;
-  color: #334155;
+  color: #0f172a;
+  font-weight: 500;
   margin: 0;
   flex: 1 1 0;
   word-break: break-word;
 }
 
-/* ── Tags Row ── */
+/* Semantic Tags Row inside Inner Card */
 .tagsRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   margin-top: 2px;
   flex-wrap: wrap;
 }
 
 .badge {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 6px;
+  padding: 2.5px 7px;
+  border-radius: 5px;
   line-height: 1.2;
   display: flex;
   align-items: center;
@@ -269,13 +274,13 @@
 }
 
 .domainTag {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
   color: #475569;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  padding: 3px 8px;
-  border-radius: 6px;
+  padding: 2.5px 7px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -285,46 +290,36 @@
   color: #64748b;
 }
 
-/* ── Action Footer: Soft Outlined Pill Controls ── */
-.actionFooter {
+/* ── 4. LAYER 4: FOOTER CTA BUTTON (OUTSIDE Inner Card, INSIDE Outer Shell) ── */
+
+.footerCtaRow {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  padding-top: 12px;
-  border-top: 1px solid #f1f5f9;
+  margin-top: 1px;
 }
 
-.actionPrimaryBtn,
-.actionSecondaryBtn {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  color: #334155;
-  font-size: 11.5px;
+.ctaButton {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  padding: 7px 12px;
+  font-size: 12.5px;
   font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 8px;
+  color: #0f172a;
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 5px;
   cursor: pointer;
   transition: all 0.15s ease;
-  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
 }
 
-.actionPrimaryBtn:hover,
-.actionSecondaryBtn:hover {
+.ctaButton:hover {
   background: #ffffff;
-  border-color: #cbd5e1;
-  color: #0f172a;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-}
-
-.actionPrimaryBtn:hover {
-  border-color: #93c5fd;
+  border-color: #2563eb;
   color: #2563eb;
-}
-
-.copiedCheckIcon {
-  color: #16a34a;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);
 }

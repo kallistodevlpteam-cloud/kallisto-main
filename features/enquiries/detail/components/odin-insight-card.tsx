@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Sparkles,
   PlusCircle,
@@ -13,8 +13,7 @@ import {
   CheckCircle2,
   Info,
   Tag,
-  Copy,
-  Check,
+  Plus,
 } from "lucide-react";
 import { OdinContextualInsight, OdinInsightSeverity } from "@/features/enquiries/services/enquiry-intelligence";
 import styles from "./odin-insight-card.module.css";
@@ -100,20 +99,7 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
   onAppendToClarification,
   onNavigateToTab,
 }) => {
-  const [copied, setCopied] = useState(false);
   const badgeConfig = getSeverityConfig(insight.severity);
-
-  const handleCopyInsight = () => {
-    const textToCopy = `[ODIN Insight] ${insight.title}
-Summary: ${insight.summary}
-Why flagged: ${insight.whyFlagged || "N/A"}
-Affected area: ${insight.affectedArea || "N/A"}
-Suggested question: ${insight.suggestedQuestion || "N/A"}`;
-
-    navigator.clipboard.writeText(textToCopy);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const handlePrimaryAction = () => {
     if (!insight.actionPrimary) return;
@@ -133,18 +119,18 @@ Suggested question: ${insight.suggestedQuestion || "N/A"}`;
 
   return (
     <div
-      className={`${styles.card} ${isExpanded ? styles.cardExpanded : ""}`}
+      className={`${styles.cardShell} ${isExpanded ? styles.cardShellExpanded : ""}`}
       onClick={onToggleExpand}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* ── Top Header Strip: Tinted Light Grey Surface (#f8fafc) ── */}
-      <div className={styles.cardHeaderStrip}>
-        <div className={styles.headerLeft}>
-          <div className={styles.odinAvatar}>
-            <Sparkles size={11} className={styles.sparkleIcon} />
+      {/* ── 1. HEADER ROW: Icon Box + Title Text + Chevron ────────────────────── */}
+      <div className={styles.headerRow}>
+        <div className={styles.headerTitleGroup}>
+          <div className={styles.iconBox}>
+            <Sparkles size={13} className={styles.sparkleIcon} />
           </div>
-          <span className={styles.headerTitleText}>{insight.title}</span>
+          <h4 className={styles.cardTitle}>{insight.title}</h4>
         </div>
 
         <button
@@ -163,50 +149,47 @@ Suggested question: ${insight.suggestedQuestion || "N/A"}`;
         </button>
       </div>
 
-      {/* ── Main Card Body: Crisp White Background (#ffffff) ─────────────────── */}
-      <div className={styles.cardBody}>
-        {/* Summary Interpretation Paragraph */}
+      {/* ── 2. SECONDARY INNER CONTENT CARD (Crisp White Surface) ─────────────── */}
+      <div className={styles.innerCard}>
+        {/* Summary Paragraph */}
         <p className={styles.summaryText}>{insight.summary}</p>
 
-        {/* Expanded State: Hairline Dividers + Flat Detail Rows */}
+        {/* Expanded State: Hairline Dividers + Detail Rows */}
         {isExpanded && (
-          <div
-            className={styles.expandedSection}
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className={styles.expandedContent} onClick={(e) => e.stopPropagation()}>
             {insight.whyFlagged && (
               <div className={styles.detailRow}>
-                <div className={styles.rowLabelGroup}>
+                <div className={styles.labelCol}>
                   <div className={styles.rowIconWrap}>
                     <HelpCircle size={12} className={styles.rowIcon} />
                   </div>
-                  <span className={styles.rowLabelText}>Why flagged</span>
+                  <span className={styles.labelText}>Why flagged:</span>
                 </div>
-                <p className={styles.rowValueText}>{insight.whyFlagged}</p>
+                <p className={styles.valueText}>{insight.whyFlagged}</p>
               </div>
             )}
 
             {insight.affectedArea && (
               <div className={styles.detailRow}>
-                <div className={styles.rowLabelGroup}>
+                <div className={styles.labelCol}>
                   <div className={styles.rowIconWrap}>
                     <FileText size={12} className={styles.rowIcon} />
                   </div>
-                  <span className={styles.rowLabelText}>Affected area</span>
+                  <span className={styles.labelText}>Affected area:</span>
                 </div>
-                <p className={styles.rowValueText}>{insight.affectedArea}</p>
+                <p className={styles.valueText}>{insight.affectedArea}</p>
               </div>
             )}
 
             {insight.suggestedQuestion && (
               <div className={styles.detailRow}>
-                <div className={styles.rowLabelGroup}>
+                <div className={styles.labelCol}>
                   <div className={styles.rowIconWrap}>
                     <MessageSquare size={12} className={styles.rowIcon} />
                   </div>
-                  <span className={styles.rowLabelText}>Suggested question</span>
+                  <span className={styles.labelText}>Suggested question:</span>
                 </div>
-                <p className={styles.rowValueText}>{insight.suggestedQuestion}</p>
+                <p className={styles.valueText}>{insight.suggestedQuestion}</p>
               </div>
             )}
           </div>
@@ -225,39 +208,21 @@ Suggested question: ${insight.suggestedQuestion || "N/A"}`;
             </span>
           )}
         </div>
-
-        {/* Expanded Action Footer Buttons (Soft Outlined Controls) */}
-        {isExpanded && (
-          <div
-            className={styles.actionFooter}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {insight.actionPrimary && (
-              <button
-                type="button"
-                className={styles.actionPrimaryBtn}
-                onClick={handlePrimaryAction}
-              >
-                <PlusCircle size={12} />
-                <span>{insight.actionPrimary.label}</span>
-              </button>
-            )}
-
-            <button
-              type="button"
-              className={styles.actionSecondaryBtn}
-              onClick={handleCopyInsight}
-            >
-              {copied ? (
-                <Check size={12} className={styles.copiedCheckIcon} />
-              ) : (
-                <Copy size={12} />
-              )}
-              <span>{copied ? "Copied!" : "Copy insight"}</span>
-            </button>
-          </div>
-        )}
       </div>
+
+      {/* ── 3. CTA BUTTON (OUTSIDE inner card, INSIDE outer shell) ────────────── */}
+      {isExpanded && insight.actionPrimary && (
+        <div className={styles.footerCtaRow} onClick={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            className={styles.ctaButton}
+            onClick={handlePrimaryAction}
+          >
+            <Plus size={13} />
+            <span>{insight.actionPrimary.label}</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };
