@@ -53,6 +53,8 @@ import { EnquirySiteImagesCard } from "./enquiry-site-images-card";
 import { EnquiryProjectDocumentsSection } from "./enquiry-project-documents-section";
 import { EnquiryClarificationComposer } from "./enquiry-clarification-composer";
 import { EnquiryDetailTabs, EnquiryTabKey, resolveValidTabKey } from "./enquiry-detail-tabs";
+import { OdinInsightsPanel } from "./odin-insights-panel";
+import { deriveContextualOdinInsights } from "@/features/enquiries/services/enquiry-intelligence";
 
 export function EnquiryDetailSkeleton() {
   return (
@@ -933,62 +935,23 @@ export function EnquiryDetailWorkspace({
           {/* Right Fixed Context & Intelligence Area */}
           <aside className={styles.enquiryDetails} aria-label="Context & Intelligence">
             <div className={styles.enquiryDetailsTop}>
-              {activeTab === "overview" && (
+              {activeTab === "overview" ? (
                 <GlobalEnquiryIntelligenceCard
                   viewModel={viewModel}
                   onAppendToClarification={handleAppendToClarification}
                   onNavigateToIntelligence={handleViewAllFiles}
                 />
-              )}
-
-              {activeTab === "requirements" && (
-                <GlobalEnquiryIntelligenceCard
-                  viewModel={viewModel}
-                  selectedRequirement={
-                    selectedRequirementId
-                      ? viewModel.requirements.find((r) => r.id === selectedRequirementId) ?? null
-                      : null
-                  }
-                  onDeselectRequirement={() => setSelectedRequirementId(null)}
+              ) : (
+                <OdinInsightsPanel
+                  scope={activeTab as "requirements" | "evidence" | "client" | "intelligence" | "activity"}
+                  insights={deriveContextualOdinInsights(enquiry, activeTab)}
                   onAppendToClarification={handleAppendToClarification}
-                  onNavigateToIntelligence={handleViewAllFiles}
+                  onNavigateToTab={(tab) => {
+                    const params = new URLSearchParams(searchParams.toString());
+                    params.set("tab", tab);
+                    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+                  }}
                 />
-              )}
-
-              {activeTab === "evidence" && (
-                <div className={styles.card}>
-                  <h3 className={styles.cardHeading}>EVIDENCE SUMMARY</h3>
-                  <p className={styles.cardDesc}>
-                    7 total evidence assets attached to this enquiry.
-                  </p>
-                </div>
-              )}
-
-              {activeTab === "client" && (
-                <div className={styles.card}>
-                  <h3 className={styles.cardHeading}>CLIENT PROFILE SUMMARY</h3>
-                  <p className={styles.cardDesc}>
-                    Decision maker: Ananya Builders · Timeline: 6 Months · High quality expectation.
-                  </p>
-                </div>
-              )}
-
-              {activeTab === "intelligence" && (
-                <div className={styles.card}>
-                  <h3 className={styles.cardHeading}>ODIN ADVISORY SUMMARY</h3>
-                  <p className={styles.cardDesc}>
-                    Project is suitable for provider review, but budget and scope require confirmation.
-                  </p>
-                </div>
-              )}
-
-              {activeTab === "activity" && (
-                <div className={styles.card}>
-                  <h3 className={styles.cardHeading}>TIMELINE SUMMARY</h3>
-                  <p className={styles.cardDesc}>
-                    Enquiry lifecycle tracking and communication audit trail.
-                  </p>
-                </div>
               )}
             </div>
 

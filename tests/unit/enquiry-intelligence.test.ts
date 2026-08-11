@@ -7,6 +7,7 @@ import {
   deriveProposalReadiness,
   deriveRecommendedAction,
   deriveEnquiryIntelligence,
+  deriveContextualOdinInsights,
 } from "../../features/enquiries/services/enquiry-intelligence";
 import { buildEnquiryDetailViewModel } from "../../features/enquiries/detail/services/enquiry-detail-view-model";
 
@@ -228,6 +229,39 @@ describe("Enquiry Intelligence Selectors & Policy Rules", () => {
       };
       const action = deriveRecommendedAction(acceptedWithProposal, "READY");
       expect(action.primaryAction.type).toBe("open_proposal");
+    });
+  });
+
+  describe("deriveContextualOdinInsights (Tab-specific contextual synthesis)", () => {
+    it("returns requirements-focused insights for requirements scope", () => {
+      const insights = deriveContextualOdinInsights(BASE_ENQUIRY, "requirements");
+      expect(insights.length).toBeGreaterThanOrEqual(4);
+      expect(insights.some((i) => i.severity === "blocker")).toBe(true);
+      expect(insights.some((i) => i.action?.label === "Add question")).toBe(true);
+    });
+
+    it("returns evidence-focused insights for evidence scope", () => {
+      const insights = deriveContextualOdinInsights(BASE_ENQUIRY, "evidence");
+      expect(insights.length).toBeGreaterThanOrEqual(4);
+      expect(insights.some((i) => i.text.toLowerCase().includes("dwg") || i.text.toLowerCase().includes("site"))).toBe(true);
+    });
+
+    it("returns client-focused insights for client scope", () => {
+      const insights = deriveContextualOdinInsights(BASE_ENQUIRY, "client");
+      expect(insights.length).toBeGreaterThanOrEqual(4);
+      expect(insights.some((i) => i.text.toLowerCase().includes("client") || i.text.toLowerCase().includes("budget"))).toBe(true);
+    });
+
+    it("returns decision summary insights for intelligence scope", () => {
+      const insights = deriveContextualOdinInsights(BASE_ENQUIRY, "intelligence");
+      expect(insights.length).toBeGreaterThanOrEqual(4);
+      expect(insights.some((i) => i.text.toLowerCase().includes("proposal") || i.text.toLowerCase().includes("opportunity fit"))).toBe(true);
+    });
+
+    it("returns activity and lifecycle insights for activity scope", () => {
+      const insights = deriveContextualOdinInsights(BASE_ENQUIRY, "activity");
+      expect(insights.length).toBeGreaterThanOrEqual(4);
+      expect(insights.some((i) => i.text.toLowerCase().includes("clarification") || i.text.toLowerCase().includes("requirement strength"))).toBe(true);
     });
   });
 

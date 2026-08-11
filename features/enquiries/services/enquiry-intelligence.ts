@@ -1198,3 +1198,239 @@ export function deriveEnquiryIntelligence(
     recommendedAction,
   };
 }
+
+// ─── 9. Contextual ODIN Insights Selector ──────────────────────────────────────
+
+export type OdinInsightSeverity =
+  | "blocker"
+  | "verification"
+  | "contradiction"
+  | "missing_information"
+  | "risk"
+  | "strength"
+  | "recommendation"
+  | "change";
+
+export interface OdinInsightAction {
+  label: string;
+  type: "add_clarification" | "request_document" | "view_evidence";
+  payload?: string;
+}
+
+export interface OdinContextualInsight {
+  id: string;
+  severity: OdinInsightSeverity;
+  type?: string;
+  text: string;
+  relatedRequirementIds?: string[];
+  relatedEvidenceIds?: string[];
+  action?: OdinInsightAction;
+}
+
+export function deriveContextualOdinInsights(
+  enquiry: EnquiryRecord,
+  scope: string
+): OdinContextualInsight[] {
+  const isResidential = enquiry.projectType !== "commercial";
+  const budgetStr = enquiry.budget || "₹40L–₹60L";
+
+  if (scope === "requirements") {
+    return [
+      {
+        id: "req-insight-1",
+        severity: "blocker",
+        text: `Budget coverage is unresolved and affects reliable commercial pricing against the target ${budgetStr} range.`,
+        action: {
+          label: "Add question",
+          type: "add_clarification",
+          payload: `Please clarify if the budget range (${budgetStr}) covers loose furniture and MEP infrastructure items.`,
+        },
+      },
+      {
+        id: "req-insight-2",
+        severity: "verification",
+        text: "Site orientation and municipal setbacks are client-supplied and require independent surveyor verification.",
+        action: {
+          label: "Add question",
+          type: "add_clarification",
+          payload: "Could you confirm plot orientation and official municipal setback boundaries?",
+        },
+      },
+      {
+        id: "req-insight-3",
+        severity: "missing_information",
+        text: isResidential
+          ? "Technical requirements contain an ODIN-inferred 5kW rooftop solar PV system requiring client sign-off."
+          : "Data cabling and server room trunking requirements contain ODIN-inferred specs needing confirmation.",
+      },
+      {
+        id: "req-insight-4",
+        severity: "risk",
+        text: "Civil construction scope allocation (structural alterations vs fit-out) has unresolved provider responsibilities.",
+        action: {
+          label: "Add question",
+          type: "add_clarification",
+          payload: "Please specify structural alteration responsibilities for the civil scope.",
+        },
+      },
+      {
+        id: "req-insight-5",
+        severity: "strength",
+        text: isResidential
+          ? "Room programme is 80% confirmed; courtyard daylight cutout and study suite acoustic specs are clear."
+          : "Workstation layout (50+ capacity) and executive cabins scope are fully confirmed.",
+      },
+    ];
+  }
+
+  if (scope === "evidence") {
+    return [
+      {
+        id: "evi-insight-1",
+        severity: "verification",
+        text: "Site orientation and road access are client-supplied and not yet independently verified on site.",
+      },
+      {
+        id: "evi-insight-2",
+        severity: "verification",
+        text: "Existing floor-plan DWG requires CAD dimension audit before final space planning.",
+        action: {
+          label: "Request document",
+          type: "request_document",
+          payload: "Please provide dimensioned DWG floor plans with site boundary measurements.",
+        },
+      },
+      {
+        id: "evi-insight-3",
+        severity: "missing_information",
+        text: "7 site photos received; rear boundary wall and service shaft details lack sufficient visual coverage.",
+        action: {
+          label: "Add question",
+          type: "add_clarification",
+          payload: "Could you share additional site photos covering the rear boundary and service shaft?",
+        },
+      },
+      {
+        id: "evi-insight-4",
+        severity: "risk",
+        text: "No official soil test report or topographical survey document is currently attached to this enquiry.",
+      },
+      {
+        id: "evi-insight-5",
+        severity: "recommendation",
+        text: "Municipal permit setback calculations should not be finalized until legal title deed & survey plan are verified.",
+      },
+    ];
+  }
+
+  if (scope === "client") {
+    return [
+      {
+        id: "cli-insight-1",
+        severity: "strength",
+        text: isResidential
+          ? "Natural light and courtyard cross-ventilation are consistently high-priority confirmed preferences."
+          : "Collaborative workspace layout and ergonomic seating are confirmed priority preferences.",
+      },
+      {
+        id: "cli-insight-2",
+        severity: "contradiction",
+        text: `Budget control is important, but willingness to trade scope for budget within the ${budgetStr} range is not yet defined.`,
+        action: {
+          label: "Add question",
+          type: "add_clarification",
+          payload: "Are there specific material finish trade-offs preferred if budget optimization is required?",
+        },
+      },
+      {
+        id: "cli-insight-3",
+        severity: "strength",
+        text: isResidential
+          ? "The client family prioritizes a dedicated acoustic home office suite with dual monitor workstation layout."
+          : "Client prioritizes fast delivery timeline with minimum interruption to operations.",
+      },
+      {
+        id: "cli-insight-4",
+        severity: "strength",
+        text: `Primary decision maker (${enquiry.clientName || "Client"}) has single sign-off authority for stage approvals.`,
+      },
+      {
+        id: "cli-insight-5",
+        severity: "missing_information",
+        text: "Material aesthetic preferences are clear (teak joinery, microcement), while long-term maintenance expectations need confirmation.",
+      },
+    ];
+  }
+
+  if (scope === "intelligence") {
+    return [
+      {
+        id: "intel-insight-1",
+        severity: "blocker",
+        text: "Proposal creation is currently blocked by 4 high-impact requirement gaps in civil scope and budget coverage.",
+      },
+      {
+        id: "intel-insight-2",
+        severity: "risk",
+        text: "Budget scope boundary (loose furniture vs fixed joinery) represents the largest commercial pricing risk.",
+        action: {
+          label: "Add question",
+          type: "add_clarification",
+          payload: "Please confirm whether loose furniture items are to be included in the formal BOQ proposal.",
+        },
+      },
+      {
+        id: "intel-insight-3",
+        severity: "verification",
+        text: "Site survey verification is the primary technical pre-construction dependency.",
+      },
+      {
+        id: "intel-insight-4",
+        severity: "strength",
+        text: `Opportunity Fit remains strong (89% · Strong Fit) due to exact alignment with core ${isResidential ? "residential villa" : "commercial fit-out"} portfolio offerings.`,
+      },
+      {
+        id: "intel-insight-5",
+        severity: "recommendation",
+        text: "Recommended next action: Consolidate unresolved P1 questions into one single clarification request before accepting.",
+      },
+    ];
+  }
+
+  if (scope === "activity") {
+    return [
+      {
+        id: "act-insight-1",
+        severity: "risk",
+        text: "The client has not responded to the latest clarification request sent today.",
+        action: {
+          label: "Add question",
+          type: "add_clarification",
+          payload: "Following up on our earlier clarification request regarding budget and site survey details.",
+        },
+      },
+      {
+        id: "act-insight-2",
+        severity: "change",
+        text: "Requirement Strength adjusted to 72% after site access notes were flagged for verification.",
+      },
+      {
+        id: "act-insight-3",
+        severity: "change",
+        text: "7 site photos and DWG floor plans were received and logged during initial onboarding.",
+      },
+      {
+        id: "act-insight-4",
+        severity: "blocker",
+        text: "Budget coverage remains unresolved despite two related interaction log updates.",
+      },
+      {
+        id: "act-insight-5",
+        severity: "recommendation",
+        text: "Recommended next action: Follow up on the pending clarification before moving to proposal drafting.",
+      },
+    ];
+  }
+
+  return [];
+}
