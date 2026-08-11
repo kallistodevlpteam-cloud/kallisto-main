@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Filter,
   CheckCircle2,
+  XCircle,
   AlertTriangle,
   LayoutGrid,
   Trees,
@@ -1015,6 +1016,9 @@ export function EnquiryActionsCard({
 }: EnquiryActionsCardProps) {
   const [proposalStatus] = useState<ProposalStatus>(initialProposalStatus);
   const [showWarningModal, setShowWarningModal] = useState(false);
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
 
   const handleCreateProposalClick = () => {
     setShowWarningModal(true);
@@ -1096,14 +1100,120 @@ export function EnquiryActionsCard({
   }
 
   return (
-    <div className={styles.actionBtnRow}>
-      <button type="button" className={styles.acceptBtn} onClick={() => onStageChange("accepted")}>
-        Accept Enquiry
-      </button>
-      <button type="button" className={styles.rejectBtn} onClick={() => onStageChange("rejected")}>
-        Reject Enquiry
-      </button>
-    </div>
+    <>
+      <div className={styles.actionBtnRow}>
+        <button type="button" className={styles.acceptBtn} onClick={() => setShowAcceptModal(true)}>
+          Accept Enquiry
+        </button>
+        <button type="button" className={styles.rejectBtn} onClick={() => setShowRejectModal(true)}>
+          Reject Enquiry
+        </button>
+      </div>
+
+      {/* Accept Confirmation Modal */}
+      {showAcceptModal && (
+        <div className={styles.modalBackdrop} onClick={() => setShowAcceptModal(false)}>
+          <div className={styles.warningModalCard} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.warningModalHeaderRow}>
+              <div className={styles.acceptModalIconWrap}>
+                <CheckCircle2 size={22} />
+              </div>
+              <div>
+                <h3 className={styles.warningModalTitle}>Accept Enquiry</h3>
+                <span style={{ fontSize: "11.5px", color: "#64748b" }}>Confirm project acceptance</span>
+              </div>
+            </div>
+            <p className={styles.warningModalText}>
+              Are you sure you want to accept this enquiry? Accepting will move the project into active proposal preparation and notify the client lead.
+            </p>
+            <div className={styles.warningModalBtnRow}>
+              <button
+                type="button"
+                className={styles.modalCancelBtn}
+                onClick={() => setShowAcceptModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={styles.acceptConfirmBtn}
+                onClick={() => {
+                  setShowAcceptModal(false);
+                  onStageChange("accepted");
+                }}
+              >
+                Confirm Acceptance
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Confirmation Modal */}
+      {showRejectModal && (
+        <div className={styles.modalBackdrop} onClick={() => setShowRejectModal(false)}>
+          <div className={styles.warningModalCard} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.warningModalHeaderRow}>
+              <div className={styles.rejectModalIconWrap}>
+                <XCircle size={22} />
+              </div>
+              <div>
+                <h3 className={styles.warningModalTitle}>Reject Enquiry</h3>
+                <span style={{ fontSize: "11.5px", color: "#64748b" }}>Confirm project rejection</span>
+              </div>
+            </div>
+            <p className={styles.warningModalText}>
+              Are you sure you want to reject this enquiry? This action will mark the enquiry as rejected and update the project record.
+            </p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <label style={{ fontSize: "12px", fontWeight: 600, color: "#334155" }}>
+                Rejection Reason (Optional):
+              </label>
+              <select
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: "8px",
+                  border: "1px solid #cbd5e1",
+                  fontSize: "12.5px",
+                  color: "#0f172a",
+                  background: "#ffffff",
+                }}
+              >
+                <option value="">Select a reason...</option>
+                <option value="capacity">Studio Capacity Full</option>
+                <option value="location">Outside Primary Service Area</option>
+                <option value="budget">Budget Mismatch</option>
+                <option value="scope">Scope Mismatch</option>
+                <option value="other">Other Reason</option>
+              </select>
+            </div>
+
+            <div className={styles.warningModalBtnRow}>
+              <button
+                type="button"
+                className={styles.modalCancelBtn}
+                onClick={() => setShowRejectModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={styles.rejectConfirmBtn}
+                onClick={() => {
+                  setShowRejectModal(false);
+                  onStageChange("rejected");
+                }}
+              >
+                Confirm Rejection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

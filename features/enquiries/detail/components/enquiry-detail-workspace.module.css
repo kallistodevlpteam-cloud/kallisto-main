@@ -4575,6 +4575,30 @@
   flex-shrink: 0;
 }
 
+.acceptModalIconWrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #dcfce7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #15803d;
+  flex-shrink: 0;
+}
+
+.rejectModalIconWrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #fef2f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #dc2626;
+  flex-shrink: 0;
+}
+
 .warningModalTitle {
   font-size: 16px;
   font-weight: 700;
@@ -4630,6 +4654,40 @@
 
 .modalProceedBtn:hover {
   background: #b45309;
+}
+
+.acceptConfirmBtn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 8px;
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.acceptConfirmBtn:hover {
+  background: #15803d;
+}
+
+.rejectConfirmBtn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 8px;
+  background: #dc2626;
+  color: #ffffff;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.rejectConfirmBtn:hover {
+  background: #b91c1c;
 }
 
 .signalTrack {
