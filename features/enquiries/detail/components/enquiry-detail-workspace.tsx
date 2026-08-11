@@ -817,7 +817,7 @@ export function EnquiryDetailWorkspace({
                   {(viewModel.householdMembers || []).map((member: ClientHouseholdMember) => (
                     <div
                       key={member.id}
-                      className={styles.householdProfileCard}
+                      className={styles.morigCardShell}
                       onClick={() => setDetailHouseholdMember(member)}
                       role="button"
                       tabIndex={0}
@@ -827,46 +827,59 @@ export function EnquiryDetailWorkspace({
                         }
                       }}
                     >
-                      {/* ── INNER GREY HERO CONTAINER (Matching Reference Image) ── */}
-                      <div className={styles.refCardHeroBox}>
-                        {/* Username & Status Header inside grey box */}
-                        <div className={styles.profileCardHeader}>
-                          <h5 className={styles.profileCardName}>{member.name}</h5>
-                          <p className={styles.profileCardSubhead}>
-                            <Sparkles size={10} className={styles.refCardStatusIcon} />
-                            <span>{member.relationship}{member.age ? ` · ${member.age}` : ""}</span>
-                          </p>
-                        </div>
-
-                        {/* Portrait Image Frame inside grey box */}
-                        <div className={styles.profileCardPhotoFrame}>
-                          {member.photoUrl ? (
-                            <img
-                              src={member.photoUrl}
-                              alt={member.name}
-                              className={styles.profileCardPhoto}
-                            />
-                          ) : (
-                            <div className={styles.profileCardPhotoFallback}>
-                              {member.avatarInitials}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* ── FOOTER ROW ── */}
-                      <div className={styles.profileCardFooterRow}>
-                        <div className={styles.profileCardUserMeta}>
-                          <div className={styles.profileCardMiniAvatar}>
+                      {/* ── PHOTO CONTAINER WITH DARK GRADIENT OVERLAY ── */}
+                      <div
+                        className={styles.morigPhotoBox}
+                        style={{
+                          backgroundImage: member.photoUrl
+                            ? `linear-gradient(180deg, rgba(0,0,0,0) 25%, rgba(15,23,42,0.82) 62%, rgba(15,23,42,0.98) 100%), url(${member.photoUrl})`
+                            : undefined,
+                        }}
+                      >
+                        {!member.photoUrl && (
+                          <div className={styles.morigFallbackAvatar}>
                             {member.avatarInitials}
                           </div>
-                          <div className={styles.profileCardMetaText}>
-                            <span className={styles.profileCardOccupation}>
-                              {member.occupation || member.name}
-                            </span>
-                            <span className={styles.profileCardResidence}>
-                              {member.residenceStatus}
-                            </span>
+                        )}
+
+                        {/* ── BOTTOM OVERLAY CONTENT ── */}
+                        <div className={styles.morigOverlayContent}>
+                          {/* Member Name */}
+                          <h5 className={styles.morigName}>{member.name}</h5>
+
+                          {/* Description line */}
+                          <p className={styles.morigDesc}>
+                            {member.relationship}{member.age ? ` · ${member.age} yrs` : ""}
+                          </p>
+
+                          {/* 3-Column Stat Bar */}
+                          <div className={styles.morigStatBar}>
+                            <div className={styles.morigStatCol}>
+                              <span className={styles.morigStatValue}>
+                                {member.isPrimaryClient ? "Primary" : member.decisionRole.split(" ")[0]}
+                              </span>
+                              <span className={styles.morigStatLabel}>Role</span>
+                            </div>
+                            <div className={styles.morigStatDivider} />
+                            <div className={styles.morigStatCol}>
+                              <span className={styles.morigStatValue}>
+                                {member.occupation ? member.occupation.split(" ")[0] : "Resident"}
+                              </span>
+                              <span className={styles.morigStatLabel}>Occupation</span>
+                            </div>
+                            <div className={styles.morigStatDivider} />
+                            <div className={styles.morigStatCol}>
+                              <span className={styles.morigStatValue}>
+                                {member.residenceStatus ? member.residenceStatus.split(",")[0] : "Resident"}
+                              </span>
+                              <span className={styles.morigStatLabel}>Location</span>
+                            </div>
+                          </div>
+
+                          {/* Full-width White Action Pill Button */}
+                          <div className={styles.morigWhiteBtn}>
+                            <FileText size={13} className={styles.morigBtnIcon} />
+                            <span>View Details</span>
                           </div>
                         </div>
                       </div>
