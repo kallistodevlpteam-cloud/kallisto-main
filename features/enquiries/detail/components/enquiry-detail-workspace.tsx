@@ -35,6 +35,7 @@ import {
   MoreHorizontal,
   QrCode,
   Copy,
+  X,
 } from "lucide-react";
 
 import { RoutePageContainer } from "@/components/ui/route-page-container";
@@ -345,7 +346,7 @@ export function EnquiryDetailWorkspace({
   const [expandedRoomIds, setExpandedRoomIds] = useState<Record<string, boolean>>({});
   const [clarificationText, setClarificationText] = useState<string>("");
   const [selectedOwnerId, setSelectedOwnerId] = useState<string>("owner-1");
-  const [expandedHouseholdId, setExpandedHouseholdId] = useState<string | null>(null);
+  const [detailHouseholdMember, setDetailHouseholdMember] = useState<ClientHouseholdMember | null>(null);
 
   const activeTab: EnquiryTabKey = resolveValidTabKey(searchParams.get("tab"));
 
@@ -813,120 +814,144 @@ export function EnquiryDetailWorkspace({
                 </div>
 
                 <div className={styles.householdGrid}>
-                  {(viewModel.householdMembers || []).map((member: ClientHouseholdMember) => {
-                    const isExpanded = expandedHouseholdId === member.id;
-                    return (
-                      <div
-                        key={member.id}
-                        className={`${styles.householdProfileCard} ${
-                          isExpanded ? styles.householdCardExpanded : ""
-                        }`}
-                      >
-                        {/* ── 1. TOP IDENTITY ── */}
-                        <div className={styles.profileCardHeader}>
-                          <h5 className={styles.profileCardName}>{member.name}</h5>
-                          <p className={styles.profileCardSubhead}>
-                            {member.relationship}{member.age ? ` · ${member.age}` : ""}
-                          </p>
-                        </div>
+                  {(viewModel.householdMembers || []).map((member: ClientHouseholdMember) => (
+                    <div key={member.id} className={styles.householdProfileCard}>
+                      {/* ── 1. TOP IDENTITY ── */}
+                      <div className={styles.profileCardHeader}>
+                        <h5 className={styles.profileCardName}>{member.name}</h5>
+                        <p className={styles.profileCardSubhead}>
+                          {member.relationship}{member.age ? ` · ${member.age}` : ""}
+                        </p>
+                      </div>
 
-                        {/* ── 2. LARGE DOMINANT PORTRAIT (60–70% Visual Height) ── */}
-                        <div className={styles.profileCardPhotoFrame}>
-                          {member.photoUrl ? (
-                            <img
-                              src={member.photoUrl}
-                              alt={member.name}
-                              className={styles.profileCardPhoto}
-                            />
-                          ) : (
-                            <div className={styles.profileCardPhotoFallback}>
-                              {member.avatarInitials}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* ── 3. COMPACT IDENTITY FOOTER ── */}
-                        <div className={styles.profileCardFooterRow}>
-                          <div className={styles.profileCardUserMeta}>
-                            <div className={styles.profileCardMiniAvatar}>
-                              {member.avatarInitials}
-                            </div>
-                            <div className={styles.profileCardMetaText}>
-                              <span className={styles.profileCardOccupation}>
-                                {member.occupation || member.name}
-                              </span>
-                              <span className={styles.profileCardResidence}>
-                                {member.residenceStatus}
-                              </span>
-                            </div>
-                          </div>
-
-                          <button
-                            type="button"
-                            className={styles.profileCardDarkBtn}
-                            onClick={() => setExpandedHouseholdId(isExpanded ? null : member.id)}
-                            aria-expanded={isExpanded}
-                          >
-                            <span>{isExpanded ? "Collapse" : "+ Details"}</span>
-                          </button>
-                        </div>
-
-                        {/* ── 4. EXPANDED DISCLOSURE PANEL (+ Details) ── */}
-                        {isExpanded && (
-                          <div className={styles.householdExpandedPanel}>
-                            <div className={styles.householdExpandedDivider} />
-                            <dl className={styles.householdDetailGrid}>
-                              {(member.keyNeeds || []).length > 0 && (
-                                <>
-                                  <dt className={styles.hdLabel}>Design Needs</dt>
-                                  <dd className={styles.hdValue}>
-                                    {member.keyNeeds.join(" · ")}
-                                  </dd>
-                                </>
-                              )}
-                              {member.workPattern && member.workPattern !== "No WFH" && (
-                                <>
-                                  <dt className={styles.hdLabel}>Work / Study</dt>
-                                  <dd className={styles.hdValue}>{member.workPattern}</dd>
-                                </>
-                              )}
-                              {member.bedroomRequirement && (
-                                <>
-                                  <dt className={styles.hdLabel}>Bedroom</dt>
-                                  <dd className={styles.hdValue}>{member.bedroomRequirement}</dd>
-                                </>
-                              )}
-                              {member.privacyLevel && (
-                                <>
-                                  <dt className={styles.hdLabel}>Privacy</dt>
-                                  <dd className={styles.hdValue}>{member.privacyLevel}</dd>
-                                </>
-                              )}
-                              {member.accessibilityNeeds && member.accessibilityNeeds !== "No special requirement" && (
-                                <>
-                                  <dt className={styles.hdLabel}>Accessibility</dt>
-                                  <dd className={styles.hdValue}>{member.accessibilityNeeds}</dd>
-                                </>
-                              )}
-                              {member.decisionRole && (
-                                <>
-                                  <dt className={styles.hdLabel}>Decision Role</dt>
-                                  <dd className={styles.hdValue}>{member.decisionRole}</dd>
-                                </>
-                              )}
-                              {member.specialNotes && (
-                                <>
-                                  <dt className={styles.hdLabel}>Notes</dt>
-                                  <dd className={styles.hdValue}>{member.specialNotes}</dd>
-                                </>
-                              )}
-                            </dl>
+                      {/* ── 2. DOMINANT PORTRAIT (65% Height, 10px White Inset) ── */}
+                      <div className={styles.profileCardPhotoFrame}>
+                        {member.photoUrl ? (
+                          <img
+                            src={member.photoUrl}
+                            alt={member.name}
+                            className={styles.profileCardPhoto}
+                          />
+                        ) : (
+                          <div className={styles.profileCardPhotoFallback}>
+                            {member.avatarInitials}
                           </div>
                         )}
                       </div>
-                    );
-                  })}
+
+                      {/* ── 3. COMPACT FOOTER ── */}
+                      <div className={styles.profileCardFooterRow}>
+                        <div className={styles.profileCardUserMeta}>
+                          <div className={styles.profileCardMiniAvatar}>
+                            {member.avatarInitials}
+                          </div>
+                          <div className={styles.profileCardMetaText}>
+                            <span className={styles.profileCardOccupation}>
+                              {member.occupation || member.name}
+                            </span>
+                            <span className={styles.profileCardResidence}>
+                              {member.residenceStatus}
+                            </span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          className={styles.profileCardDarkBtn}
+                          onClick={() => setDetailHouseholdMember(member)}
+                        >
+                          + Details
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
+
+                {/* ── HOUSEHOLD MEMBER DETAILS INSPECTOR MODAL ── */}
+                {detailHouseholdMember && (
+                  <div
+                    className={styles.householdModalOverlay}
+                    onClick={() => setDetailHouseholdMember(null)}
+                  >
+                    <div
+                      className={styles.householdModalCard}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className={styles.modalHeader}>
+                        <div className={styles.modalHeaderMeta}>
+                          <div className={styles.modalAvatar}>
+                            {detailHouseholdMember.avatarInitials}
+                          </div>
+                          <div>
+                            <h4 className={styles.modalName}>{detailHouseholdMember.name}</h4>
+                            <p className={styles.modalSubhead}>
+                              {detailHouseholdMember.relationship}
+                              {detailHouseholdMember.age ? ` · ${detailHouseholdMember.age}` : ""}
+                              {detailHouseholdMember.occupation ? ` · ${detailHouseholdMember.occupation}` : ""}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          className={styles.modalCloseBtn}
+                          onClick={() => setDetailHouseholdMember(null)}
+                          aria-label="Close details"
+                        >
+                          <X size={18} />
+                        </button>
+                      </div>
+
+                      <div className={styles.modalBody}>
+                        <dl className={styles.householdDetailGrid}>
+                          {(detailHouseholdMember.keyNeeds || []).length > 0 && (
+                            <>
+                              <dt className={styles.hdLabel}>Design Needs</dt>
+                              <dd className={styles.hdValue}>
+                                {detailHouseholdMember.keyNeeds.join(" · ")}
+                              </dd>
+                            </>
+                          )}
+                          {detailHouseholdMember.workPattern && (
+                            <>
+                              <dt className={styles.hdLabel}>Work / Study</dt>
+                              <dd className={styles.hdValue}>{detailHouseholdMember.workPattern}</dd>
+                            </>
+                          )}
+                          {detailHouseholdMember.bedroomRequirement && (
+                            <>
+                              <dt className={styles.hdLabel}>Bedroom</dt>
+                              <dd className={styles.hdValue}>{detailHouseholdMember.bedroomRequirement}</dd>
+                            </>
+                          )}
+                          {detailHouseholdMember.privacyLevel && (
+                            <>
+                              <dt className={styles.hdLabel}>Privacy</dt>
+                              <dd className={styles.hdValue}>{detailHouseholdMember.privacyLevel}</dd>
+                            </>
+                          )}
+                          {detailHouseholdMember.accessibilityNeeds && (
+                            <>
+                              <dt className={styles.hdLabel}>Accessibility</dt>
+                              <dd className={styles.hdValue}>{detailHouseholdMember.accessibilityNeeds}</dd>
+                            </>
+                          )}
+                          {detailHouseholdMember.decisionRole && (
+                            <>
+                              <dt className={styles.hdLabel}>Decision Role</dt>
+                              <dd className={styles.hdValue}>{detailHouseholdMember.decisionRole}</dd>
+                            </>
+                          )}
+                          {detailHouseholdMember.specialNotes && (
+                            <>
+                              <dt className={styles.hdLabel}>Special Notes</dt>
+                              <dd className={styles.hdValue}>{detailHouseholdMember.specialNotes}</dd>
+                            </>
+                          )}
+                        </dl>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* ── CLIENT CONTEXT & PRIORITIES ── */}
                 <ClientPrioritiesBar priorities={viewModel.priorities} />

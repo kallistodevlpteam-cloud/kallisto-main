@@ -4810,18 +4810,19 @@
   border-radius: 12px;
 }
 
-/* 4-Cards Grid Layout */
+/* 4-Cards Grid Layout (Narrower, Fixed Portrait Sizing) */
 .householdGrid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(4, minmax(220px, 245px));
+  gap: 16px;
   width: 100%;
   align-items: start;
+  justify-content: start;
 }
 
-@media (max-width: 1380px) {
+@media (max-width: 1200px) {
   .householdGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(220px, 250px));
   }
 }
 
@@ -4833,25 +4834,23 @@
 
 /* Premium Household Profile Card (Matching Reference Layout) */
 .householdProfileCard {
+  width: 100%;
+  max-width: 245px;
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  padding: 12px 10px 10px 10px;
+  border: 1px solid rgba(15, 23, 42, 0.05);
+  border-radius: 24px;
+  padding: 10px 10px 10px 10px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.03);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
 }
 
 .householdProfileCard:hover {
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
-  border-color: #cbd5e1;
-}
-
-.householdCardExpanded {
-  border-color: #0284c7;
-  box-shadow: 0 8px 24px rgba(2, 132, 199, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.1);
+  border-color: rgba(15, 23, 42, 0.08);
 }
 
 .profileCardHeader {
@@ -4860,12 +4859,12 @@
   align-items: center;
   gap: 2px;
   text-align: center;
-  padding: 2px 4px 4px 4px;
+  padding: 4px 4px 2px 4px;
 }
 
 .profileCardName {
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 16.5px;
+  font-weight: 650;
   color: #0f172a;
   margin: 0;
   letter-spacing: -0.2px;
@@ -4873,7 +4872,7 @@
 }
 
 .profileCardSubhead {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 500;
   color: #64748b;
   margin: 0;
@@ -4882,7 +4881,7 @@
 
 .profileCardPhotoFrame {
   width: 100%;
-  height: 220px;
+  aspect-ratio: 4 / 4.8;
   border-radius: 16px;
   overflow: hidden;
   position: relative;
@@ -4893,6 +4892,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
 }
 
@@ -4912,7 +4912,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
+  height: 38px;
   padding: 2px 2px 0 2px;
   margin-top: 2px;
 }
@@ -4920,18 +4921,18 @@
 .profileCardUserMeta {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   min-width: 0;
   flex: 1;
 }
 
 .profileCardMiniAvatar {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
   color: #ffffff;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -4947,17 +4948,17 @@
 }
 
 .profileCardOccupation {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 11.5px;
+  font-weight: 650;
   color: #0f172a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 
 .profileCardResidence {
-  font-size: 11px;
+  font-size: 10.5px;
   color: #64748b;
   white-space: nowrap;
   overflow: hidden;
@@ -4966,14 +4967,14 @@
 }
 
 .profileCardDarkBtn {
-  background: #18181b;
+  background: #10131b;
   color: #ffffff;
   border: none;
-  border-radius: 12px;
-  padding: 0 14px;
-  height: 36px;
-  font-size: 12.5px;
-  font-weight: 600;
+  border-radius: 10px;
+  padding: 0 13px;
+  height: 34px;
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
   display: inline-flex;
@@ -4984,15 +4985,104 @@
 }
 
 .profileCardDarkBtn:hover {
-  background: #27272a;
+  background: #1e2433;
   transform: translateY(-1px);
 }
 
-/* Expanded detail panel (inline disclosure) */
-.householdExpandedPanel {
+/* Household Member Detail Inspector Modal Overlay */
+.householdModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.householdModalCard {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #f8fafc;
+}
+
+.modalHeaderMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modalAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalName {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.modalSubhead {
+  font-size: 12px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+.modalCloseBtn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.modalCloseBtn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.modalBody {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .householdExpandedDivider {
