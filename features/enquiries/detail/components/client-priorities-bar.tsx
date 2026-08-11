@@ -99,11 +99,16 @@ export function ClientPrioritiesBar({ priorities, className }: ClientPrioritiesB
       <div className={styles.cardsGrid}>
         {priorities.map((prio, idx) => {
           const isConfirmed = prio.type === "confirmed";
-          const { Icon, desc, tags } = getPriorityMeta(prio.label, idx, prio.type);
+          const { theme, Icon, desc, tags } = getPriorityMeta(prio.label, idx, prio.type);
 
           return (
-            <div key={prio.id} className={styles.cardShell}>
-              {/* Layer 1: Header Row inside Outer Shell (#f8fafc) */}
+            <div
+              key={prio.id}
+              className={`${styles.cardShell} ${styles[`theme_${theme}`]} ${
+                isConfirmed ? styles.shellConfirmed : styles.shellInferred
+              }`}
+            >
+              {/* Layer 1: Header Row inside Accent Outer Shell */}
               <div className={styles.headerRow}>
                 <div className={styles.headerTitleGroup}>
                   <div className={styles.iconBox}>
