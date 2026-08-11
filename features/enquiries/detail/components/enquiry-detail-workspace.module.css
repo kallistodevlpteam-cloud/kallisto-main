@@ -544,14 +544,15 @@
 }
 
 .enquiryDetailsTop {
-  flex: 1 1 auto;
-  min-height: 0;
+  min-height: auto;
+  height: auto;
+  overflow: visible;
+  padding: 16px;
+  background: #f1f5f9;
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 10px 4px 0 0;
+  gap: 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
