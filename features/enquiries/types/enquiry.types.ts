@@ -148,7 +148,7 @@ export interface EnquiryRecord {
   projectType: ProjectType;
   budgetMin: number; // in whole rupees
   budgetMax: number; // in whole rupees
-  receivedAt: string; // ISO 8601 string
+  receivedAt: string | number | null; // ISO 8601 string or Unix timestamp
   nextAction: EnquiryNextAction;
   isNew?: boolean;
   priority?: EnquiryPriority;

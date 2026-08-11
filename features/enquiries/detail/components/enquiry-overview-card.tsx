@@ -161,6 +161,8 @@ interface EnquiryOverviewCardProps {
   description?: string;
   highlights?: Array<string | HighlightItem>;
   customRightPanel?: ReactNode;
+  inspirationImages?: Array<{ url: string; alt: string | null }>;
+  projectScopes?: Array<{ id: number; scope_name: string; items: string[] }>;
 }
 
 export function EnquiryOverviewCard({
@@ -173,6 +175,8 @@ export function EnquiryOverviewCard({
   description,
   highlights,
   customRightPanel,
+  inspirationImages,
+  projectScopes,
 }: EnquiryOverviewCardProps) {
   return (
     <div

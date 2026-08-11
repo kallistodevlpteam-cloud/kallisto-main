@@ -37,10 +37,10 @@ export interface BackendProject {
   clientName: string | null;
   place: string | null;
   estimatedOverallBudget: number | null;
-  /** Unix epoch seconds (projects.created_at INTEGER column). */
-  createdAt: number | null;
-  /** Unix epoch seconds (projects.updated_at INTEGER column). */
-  updatedAt: number | null;
+  /** Unix epoch seconds or ISO string (projects.created_at column). */
+  createdAt: number | string | null;
+  /** Unix epoch seconds or ISO string (projects.updated_at column). */
+  updatedAt: number | string | null;
   /** Enquiry viewed flag (enquiry_details.view INTEGER 0/1). Strictly
    * backend-sourced; null/0 mean the enquiry has not been opened. */
   viewed: boolean;

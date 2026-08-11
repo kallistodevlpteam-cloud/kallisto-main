@@ -12,10 +12,18 @@ const project = (partial: Partial<BackendProject>): BackendProject => ({
   purposeOfProject: null,
   briefDescription: null,
   coverImageUrl: null,
+  sqArea: null,
+  clientExpectedTimeline: null,
   clientName: null,
   place: null,
+  estimatedOverallBudget: null,
   createdAt: "2026-07-01T00:00:00.000Z",
   updatedAt: "2026-07-01T00:00:00.000Z",
+  viewed: false,
+  inspirationImages: [],
+  projectDocuments: [],
+  siteImages: [],
+  projectScopes: [],
   ...partial,
 });
 

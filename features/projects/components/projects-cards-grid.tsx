@@ -17,12 +17,12 @@ export interface SampleProjectCard {
   type: string;
   location: string;
   clientDisplayName: string;
-  phase: ProjectPhase;
+  phase: ProjectPhase | "In progress" | string | null;
   status: ProjectStatus;
-  health: ProjectHealth;
-  phaseProgress: number; // 0–100
-  nextActionTitle: string | null;
-  dueLabel: string | null;
+  health?: ProjectHealth;
+  phaseProgress?: number; // 0–100
+  nextActionTitle?: string | null;
+  dueLabel?: string | null;
   dueState?: "overdue" | "due_soon" | "on_track" | "no_due_date";
   image: string;
   images?: string[];
@@ -287,10 +287,12 @@ function ProjectCardMedia({ project }: { project: SampleProjectCard }) {
 
       {/* Bottom badges overlay (matching reference SVG) */}
       <div className={styles.pcBottomRow}>
-        <span className={styles.pcPhasePill}>{project.phase}</span>
-        <span className={`${styles.pcHealthBadge} ${healthBadgeClass(project.health)}`}>
-          {healthBadgeLabel(project.health)}
-        </span>
+        {project.phase && <span className={styles.pcPhasePill}>{project.phase}</span>}
+        {project.health && (
+          <span className={`${styles.pcHealthBadge} ${healthBadgeClass(project.health)}`}>
+            {healthBadgeLabel(project.health)}
+          </span>
+        )}
       </div>
 
       {/* Single Media Photo */}
@@ -441,10 +443,59 @@ function matchesLocation(project: SampleProjectCard, locationFilter?: string): b
 interface ProjectsCardsGridProps {
   activeStatus: ProjectStatus | "ALL" | undefined;
   locationFilter?: string;
+  projects?: SampleProjectCard[];
+  loading?: boolean;
+  error?: boolean;
+  onRetry?: () => void;
 }
 
-export function ProjectsCardsGrid({ activeStatus, locationFilter }: ProjectsCardsGridProps) {
-  const filtered = SAMPLE_PROJECTS.filter(
+export function ProjectsCardsGrid({
+  activeStatus,
+  locationFilter,
+  projects,
+  loading = false,
+  error = false,
+  onRetry,
+}: ProjectsCardsGridProps) {
+  if (loading) {
+    return (
+      <div className={styles.pcGrid} aria-label="Loading projects">
+        <div className={styles.pcEmptyState}>
+          <div className={styles.pcEmptySubtitle}>Loading projects...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.pcEmptyState}>
+        <h4 className={styles.pcEmptyTitle}>Failed to load projects</h4>
+        <p className={styles.pcEmptySubtitle}>
+          An error occurred while fetching project data from the server.
+        </p>
+        {onRetry && (
+          <button
+            type="button"
+            onClick={onRetry}
+            style={{
+              marginTop: "12px",
+              padding: "6px 16px",
+              borderRadius: "6px",
+              border: "1px solid var(--border-color, #cbd5e1)",
+              background: "#ffffff",
+              cursor: "pointer",
+            }}
+          >
+            Retry
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  const projectList = projects ?? SAMPLE_PROJECTS;
+  const filtered = projectList.filter(
     (p) => matchesTab(p, activeStatus) && matchesLocation(p, locationFilter)
   );
 
