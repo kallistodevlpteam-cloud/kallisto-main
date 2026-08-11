@@ -1121,8 +1121,6 @@ export function GlobalEnquiryIntelligenceCard({
 
   return (
     <div className={styles.globalIntelCard}>
-      <h3 className={styles.globalIntelHeader}>ENQUIRY INTELLIGENCE</h3>
-
       {/* 1. Requirement Strength */}
       <div className={styles.signalBlock}>
         <div className={styles.signalLabelRow}>
