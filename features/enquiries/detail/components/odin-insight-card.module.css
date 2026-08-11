@@ -1,37 +1,42 @@
 .card {
-  background: #f1f5f9;
-  border: none;
-  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: none;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
   cursor: pointer;
   transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 0.2s ease;
+              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease;
+  will-change: transform, box-shadow;
 }
 
 .card:hover {
-  transform: translateY(-1px);
-  box-shadow: none;
-  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.03);
+  background: #ffffff;
 }
 
 .cardExpanded {
-  background: #f1f5f9;
-  box-shadow: none;
+  border-color: #cbd5e1;
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
 }
 
 .cardExpanded:hover {
+  border-color: #94a3b8;
   transform: translateY(-1px);
-  box-shadow: none;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.09);
 }
 
-/* ── Top Header Strip: Crisp White Background Card with 16px Padding ── */
+/* ── Top Header Strip: Tinted Light Grey Surface (#f8fafc) ── */
 .cardHeaderStrip {
-  background: #ffffff;
+  background: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
-  padding: 12px 16px;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -47,9 +52,9 @@
 }
 
 .odinAvatar {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
   background: #eff6ff;
   color: #2563eb;
   display: flex;
@@ -69,7 +74,7 @@
 
 .headerTitleText {
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: 600;
   color: #0f172a;
   line-height: 1.35;
   margin: 0;
@@ -79,13 +84,38 @@
   overflow: hidden;
 }
 
-/* ── Card Body Container: Grey Background with Uniform 16px Padding ── */
+.chevronBtn {
+  background: transparent;
+  border: none;
+  padding: 2px;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.chevronBtn:hover {
+  color: #475569;
+}
+
+.chevronIcon {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chevronIconExpanded {
+  transform: rotate(180deg);
+}
+
+/* ── Main Card Body: Crisp White Background (#ffffff) ── */
 .cardBody {
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: #f1f5f9;
+  background: #ffffff;
 }
 
 .summaryText {
@@ -95,7 +125,7 @@
   margin: 0;
 }
 
-/* ── Expanded Detail Rows with Hairline Dividers ── */
+/* ── Expanded Detail Rows with Dividers ── */
 .expandedSection {
   display: flex;
   flex-direction: column;
@@ -116,7 +146,7 @@
 }
 
 .detailRow {
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #f1f5f9;
   padding: 10px 0;
   display: flex;
   align-items: flex-start;
@@ -136,7 +166,7 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #ffffff;
+  background: #f8fafc;
   border: 1px solid #e2e8f0;
   color: #64748b;
   display: flex;
@@ -221,13 +251,13 @@
 }
 
 .badgeChange {
-  background: #ffffff;
+  background: #f8fafc;
   color: #475569;
   border: 1px solid #e2e8f0;
 }
 
 .badgeContradiction {
-  background: #ffffff;
+  background: #f8fafc;
   color: #475569;
   border: 1px solid #e2e8f0;
 }
@@ -242,7 +272,7 @@
   font-size: 11px;
   font-weight: 600;
   color: #475569;
-  background: #ffffff;
+  background: #f8fafc;
   border: 1px solid #e2e8f0;
   padding: 3px 8px;
   border-radius: 6px;
@@ -255,34 +285,46 @@
   color: #64748b;
 }
 
-/* ── Action Footer ── */
+/* ── Action Footer: Soft Outlined Pill Controls ── */
 .actionFooter {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-top: 8px;
   padding-top: 12px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #f1f5f9;
 }
 
-.actionPrimaryBtn {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  color: #0f172a;
+.actionPrimaryBtn,
+.actionSecondaryBtn {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #334155;
   font-size: 11.5px;
   font-weight: 600;
-  padding: 5px 10px;
+  padding: 6px 12px;
   border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   cursor: pointer;
   transition: all 0.15s ease;
   white-space: nowrap;
 }
 
-.actionPrimaryBtn:hover {
+.actionPrimaryBtn:hover,
+.actionSecondaryBtn:hover {
   background: #ffffff;
-  border-color: #2563eb;
+  border-color: #cbd5e1;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.actionPrimaryBtn:hover {
+  border-color: #93c5fd;
   color: #2563eb;
+}
+
+.copiedCheckIcon {
+  color: #16a34a;
 }

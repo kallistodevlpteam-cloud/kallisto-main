@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Download, AlertCircle } from "lucide-react";
+import { Download, AlertCircle, FileText, FileSpreadsheet, FileCode, Paperclip } from "lucide-react";
 import styles from "./enquiry-project-documents-section.module.css";
 
 export interface ProjectDocumentItem {
@@ -45,102 +45,81 @@ export interface EnquiryProjectDocumentsSectionProps {
   onViewAll?: () => void;
 }
 
+function getFileIcon(ext: string) {
+  switch (ext) {
+    case "DWG":
+      return <FileCode size={16} />;
+    case "XLSX":
+    case "CSV":
+      return <FileSpreadsheet size={16} />;
+    case "PDF":
+      return <FileText size={16} />;
+    default:
+      return <Paperclip size={16} />;
+  }
+}
+
 export function EnquiryProjectDocumentsSection({
   documents = DEFAULT_PROJECT_DOCUMENTS,
-  extraCount = 5,
   title = "Project Documents",
   onDownload,
-  onViewAll,
 }: EnquiryProjectDocumentsSectionProps) {
-  const visibleDocs = documents.slice(0, 4);
-
   return (
     <div className={styles.container} aria-label={title}>
-      <h3 className={styles.title}>{title}</h3>
+      <div className={styles.headerRow}>
+        <h3 className={styles.title}>{title}</h3>
+        <span className={styles.countBadge}>{documents.length} files</span>
+      </div>
 
-      <div className={styles.documentRow}>
-        {visibleDocs.map((doc) => {
+      <div className={styles.documentList}>
+        {documents.map((doc) => {
           const ext = doc.name.split(".").pop()?.toUpperCase() || "DOC";
           return (
-            <div key={doc.id} className={styles.docCardWrapper}>
-              <button
-                type="button"
-                className={styles.paperSheet}
-                onClick={() => onDownload?.(doc.id)}
-                aria-label={`View or download ${doc.name}`}
-                title={doc.name}
-              >
-                {/* Folded Corner */}
-                <div className={styles.cornerFold} />
+            <div key={doc.id} className={styles.listItem}>
+              <div className={styles.itemLeft}>
+                <div
+                  className={`${styles.fileIconWrap} ${
+                    ext === "DWG"
+                      ? styles.iconDwg
+                      : ext === "XLSX"
+                      ? styles.iconXlsx
+                      : !doc.uploaded
+                      ? styles.iconMissing
+                      : styles.iconPdf
+                  }`}
+                >
+                  {getFileIcon(ext)}
+                </div>
 
-                {/* Paper Header */}
-                <div className={styles.paperHeader}>
-                  <span className={styles.paperTitle}>{doc.name}</span>
-                  <span className={styles.paperSubtitle}>
-                    {doc.uploaded ? doc.size || "PDF Document" : "Missing File"}
+                <div className={styles.fileDetails}>
+                  <span className={styles.fileName}>{doc.name}</span>
+                  <span className={styles.fileMeta}>
+                    {doc.uploaded ? `${doc.size || "Document"} • ${ext}` : "Missing File"}
                   </span>
                 </div>
+              </div>
 
-                {/* Mock Document Text Lines */}
-                <div className={styles.paperLines}>
-                  <div className={styles.paperLine} />
-                  <div className={`${styles.paperLine} ${styles.paperLineShort}`} />
-                  <div className={`${styles.paperLine} ${styles.paperLineMedium}`} />
-                  <div className={styles.paperLine} />
-                  <div className={`${styles.paperLine} ${styles.paperLineShort}`} />
-                </div>
-
-                {/* Paper Footer */}
-                <div className={styles.paperFooter}>
-                  {doc.uploaded ? (
-                    <>
-                      <span
-                        className={`${styles.paperBadge} ${
-                          ext === "DWG"
-                            ? styles.badgeDwg
-                            : ext === "XLSX"
-                            ? styles.badgeXlsx
-                            : styles.badgePdf
-                        }`}
-                      >
-                        {ext}
-                      </span>
-                      <Download size={10} className={styles.downloadIcon} />
-                    </>
-                  ) : (
-                    <>
-                      <span className={`${styles.paperBadge} ${styles.badgeMissing}`}>
-                        MISSING
-                      </span>
-                      <AlertCircle size={10} className={styles.missingBadge} />
-                    </>
-                  )}
-                </div>
-              </button>
-
-              <span className={styles.docLabelText} title={doc.name}>
-                {doc.name}
-              </span>
+              <div className={styles.itemRight}>
+                {doc.uploaded ? (
+                  <button
+                    type="button"
+                    className={styles.downloadBtn}
+                    onClick={() => onDownload?.(doc.id)}
+                    aria-label={`Download ${doc.name}`}
+                  >
+                    <Download size={12} />
+                    <span>Download</span>
+                  </button>
+                ) : (
+                  <span className={styles.missingStatus}>
+                    <AlertCircle size={12} />
+                    <span>Missing</span>
+                  </span>
+                )}
+              </div>
             </div>
           );
         })}
-
-        {/* 5th Overflow Card (+5 More) */}
-        <div className={styles.docCardWrapper}>
-          <button
-            type="button"
-            className={styles.morePaperSheet}
-            onClick={onViewAll}
-            aria-label={`View ${extraCount} more project documents`}
-          >
-            <div className={styles.cornerFold} />
-            <div className={styles.moreCardInner}>
-              <span className={styles.moreNumber}>+{extraCount}</span>
-              <span className={styles.moreText}>More</span>
-            </div>
-          </button>
-          <span className={styles.docLabelText}>+{extraCount} More</span>
-        </div>
       </div>
     </div>
   );

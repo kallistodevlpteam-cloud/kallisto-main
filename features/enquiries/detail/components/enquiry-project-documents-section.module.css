@@ -1,244 +1,160 @@
-/* ─── Project Documents Section ───────────────────────────── */
+/* ─── Project Documents List View ───────────────────────────── */
 
 .container {
-  margin-bottom: 0;
   width: 100%;
-  min-width: 0;
   box-sizing: border-box;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
 }
 
 .title {
   font-size: 13.5px;
   font-weight: 600;
   color: #1e293b;
-  margin: 0 0 12px 0;
+  margin: 0;
   letter-spacing: -0.01em;
 }
 
-.documentRow {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+.countBadge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.documentList {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
   width: 100%;
-  box-sizing: border-box;
 }
 
-.docCardWrapper {
+.listItem {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 5px;
-  width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-}
-
-/* Paper Document Sheet with folded top-right corner */
-.paperSheet {
-  position: relative;
-  width: 100%;
-  height: 86px;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
   background: #ffffff;
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.07), 0 1px 2px rgba(15, 23, 42, 0.04);
   border: 1px solid #e2e8f0;
-  box-sizing: border-box;
-  padding: 6px 5px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
+  transition: all 0.15s ease;
 }
 
-.paperSheet:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
+.listItem:hover {
   border-color: #cbd5e1;
+  background: #f8fafc;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
 }
 
-.paperSheet:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
-}
-
-/* Dog-eared folded top-right corner */
-.cornerFold {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 13px;
-  height: 13px;
-  background: linear-gradient(225deg, transparent 50%, #cbd5e1 50%);
-  border-bottom-left-radius: 2px;
-  box-shadow: -1px 1px 2px rgba(0, 0, 0, 0.08);
-  pointer-events: none;
-  z-index: 2;
-}
-
-.cornerCut {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 0 13px 13px 0;
-  border-color: transparent #ffffff transparent transparent;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Paper mock lines & content */
-.paperHeader {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin-top: 1px;
-}
-
-.paperTitle {
-  font-size: 7.5px;
-  font-weight: 700;
-  color: #0f172a;
-  line-height: 1.1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 44px;
-}
-
-.paperSubtitle {
-  font-size: 6.5px;
-  color: #64748b;
-  line-height: 1;
-}
-
-.paperLines {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  margin: 3px 0;
-}
-
-.paperLine {
-  height: 2px;
-  background: #e2e8f0;
-  border-radius: 1px;
-  width: 100%;
-}
-
-.paperLineShort {
-  width: 60%;
-}
-
-.paperLineMedium {
-  width: 80%;
-}
-
-.paperFooter {
+.itemLeft {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  border-top: 1px dashed #cbd5e1;
-  padding-top: 3px;
-  margin-top: auto;
+  gap: 12px;
+  min-width: 0;
+  flex: 1 1 0;
 }
 
-.paperBadge {
-  font-size: 6px;
-  font-weight: 700;
-  padding: 1px 3px;
-  border-radius: 2px;
-  text-transform: uppercase;
-}
-
-.badgePdf {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-.badgeDwg {
-  background: #eff6ff;
-  color: #2563eb;
-}
-
-.badgeXlsx {
-  background: #f0fdf4;
-  color: #16a34a;
-}
-
-.badgeMissing {
-  background: #fff7ed;
-  color: #d97706;
-}
-
-.downloadIcon {
-  color: #64748b;
+.fileIconWrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
-/* Label under card */
-.docLabelText {
-  font-size: 10.5px;
-  font-weight: 500;
-  color: #334155;
-  text-align: center;
-  width: 100%;
+.iconPdf {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.iconDwg {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+.iconXlsx {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.iconMissing {
+  background: #fff7ed;
+  color: #d97706;
+  border: 1px solid #ffedd5;
+}
+
+.fileDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.fileName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* 5th Overflow Card */
-.morePaperSheet {
-  position: relative;
-  width: 100%;
-  height: 86px;
-  background: #f8fafc;
+.fileMeta {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.itemRight {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.downloadBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #2563eb;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  padding: 5px 11px;
   border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
-  border: 1px solid #e2e8f0;
-  box-sizing: border-box;
-  padding: 6px 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
-  transition: transform 0.15s ease, background-color 0.15s ease;
-  overflow: hidden;
+  transition: all 0.15s ease;
 }
 
-.morePaperSheet:hover {
-  transform: translateY(-2px);
-  background: #f1f5f9;
-  border-color: #cbd5e1;
+.downloadBtn:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
 }
 
-.morePaperSheet:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
-}
-
-.moreCardInner {
+.missingStatus {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-}
-
-.moreNumber {
-  font-size: 15px;
-  font-weight: 700;
-  color: #0f172a;
-  line-height: 1.1;
-}
-
-.moreText {
-  font-size: 10px;
-  font-weight: 500;
-  color: #475569;
-  margin-top: 1px;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #d97706;
+  background: #fff7ed;
+  border: 1px solid #ffedd5;
+  padding: 4px 9px;
+  border-radius: 6px;
 }

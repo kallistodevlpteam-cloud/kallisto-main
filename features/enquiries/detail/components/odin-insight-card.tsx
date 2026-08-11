@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Sparkles,
   PlusCircle,
+  ChevronDown,
   HelpCircle,
   FileText,
   MessageSquare,
@@ -12,6 +13,8 @@ import {
   CheckCircle2,
   Info,
   Tag,
+  Copy,
+  Check,
 } from "lucide-react";
 import { OdinContextualInsight, OdinInsightSeverity } from "@/features/enquiries/services/enquiry-intelligence";
 import styles from "./odin-insight-card.module.css";
@@ -97,7 +100,20 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
   onAppendToClarification,
   onNavigateToTab,
 }) => {
+  const [copied, setCopied] = useState(false);
   const badgeConfig = getSeverityConfig(insight.severity);
+
+  const handleCopyInsight = () => {
+    const textToCopy = `[ODIN Insight] ${insight.title}
+Summary: ${insight.summary}
+Why flagged: ${insight.whyFlagged || "N/A"}
+Affected area: ${insight.affectedArea || "N/A"}
+Suggested question: ${insight.suggestedQuestion || "N/A"}`;
+
+    navigator.clipboard.writeText(textToCopy);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handlePrimaryAction = () => {
     if (!insight.actionPrimary) return;
@@ -122,7 +138,7 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* ── Top Header Strip: Crisp White Background + Title (No Dropdown Icon) ── */}
+      {/* ── Top Header Strip: Tinted Light Grey Surface (#f8fafc) ── */}
       <div className={styles.cardHeaderStrip}>
         <div className={styles.headerLeft}>
           <div className={styles.odinAvatar}>
@@ -130,14 +146,29 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
           </div>
           <span className={styles.headerTitleText}>{insight.title}</span>
         </div>
+
+        <button
+          type="button"
+          className={styles.chevronBtn}
+          aria-label={isExpanded ? "Collapse details" : "Expand details"}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleExpand();
+          }}
+        >
+          <ChevronDown
+            size={14}
+            className={`${styles.chevronIcon} ${isExpanded ? styles.chevronIconExpanded : ""}`}
+          />
+        </button>
       </div>
 
-      {/* ── Card Body Content: Grey Background ───────────────────────────────── */}
+      {/* ── Main Card Body: Crisp White Background (#ffffff) ─────────────────── */}
       <div className={styles.cardBody}>
-        {/* Summary Interpretation */}
+        {/* Summary Interpretation Paragraph */}
         <p className={styles.summaryText}>{insight.summary}</p>
 
-        {/* Expanded State: Hairline Dividers + Structured Detail Rows */}
+        {/* Expanded State: Hairline Dividers + Flat Detail Rows */}
         {isExpanded && (
           <div
             className={styles.expandedSection}
@@ -195,19 +226,34 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
           )}
         </div>
 
-        {/* Expanded Action Footer */}
-        {isExpanded && insight.actionPrimary && (
+        {/* Expanded Action Footer Buttons (Soft Outlined Controls) */}
+        {isExpanded && (
           <div
             className={styles.actionFooter}
             onClick={(e) => e.stopPropagation()}
           >
+            {insight.actionPrimary && (
+              <button
+                type="button"
+                className={styles.actionPrimaryBtn}
+                onClick={handlePrimaryAction}
+              >
+                <PlusCircle size={12} />
+                <span>{insight.actionPrimary.label}</span>
+              </button>
+            )}
+
             <button
               type="button"
-              className={styles.actionPrimaryBtn}
-              onClick={handlePrimaryAction}
+              className={styles.actionSecondaryBtn}
+              onClick={handleCopyInsight}
             >
-              <PlusCircle size={12} />
-              <span>{insight.actionPrimary.label}</span>
+              {copied ? (
+                <Check size={12} className={styles.copiedCheckIcon} />
+              ) : (
+                <Copy size={12} />
+              )}
+              <span>{copied ? "Copied!" : "Copy insight"}</span>
             </button>
           </div>
         )}
