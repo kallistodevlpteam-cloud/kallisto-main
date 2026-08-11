@@ -1128,11 +1128,11 @@ export function EnquiryActionsCard({
               </div>
               <div>
                 <h3 className={styles.warningModalTitle}>Accept Enquiry</h3>
-                <span style={{ fontSize: "11.5px", color: "#64748b" }}>Confirm project acceptance</span>
+                <span style={{ fontSize: "11.5px", color: "#64748b" }}>Start proposal preparation</span>
               </div>
             </div>
             <p className={styles.warningModalText}>
-              Are you sure you want to accept this enquiry? Accepting will move the project into active proposal preparation and notify the client lead.
+              Accept this enquiry and move it to Proposal Preparation? The client will be notified.
             </p>
             <div className={styles.warningModalBtnRow}>
               <button
@@ -1150,7 +1150,7 @@ export function EnquiryActionsCard({
                   onStageChange("accepted");
                 }}
               >
-                Confirm Acceptance
+                Accept Enquiry
               </button>
             </div>
           </div>
