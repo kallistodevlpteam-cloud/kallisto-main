@@ -160,64 +160,62 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.collapsibleInner}>
-          <div className={styles.innerCard}>
-            {/* Summary Paragraph */}
-            <p className={styles.summaryText}>{insight.summary}</p>
+          {/* Summary Paragraph */}
+          <p className={styles.summaryText}>{insight.summary}</p>
 
-            {/* Expanded Details */}
-            {hasExpandedDetails && (
-              <div className={styles.detailsGroup}>
-                {insight.whyFlagged && (
-                  <div className={styles.detailRow}>
-                    <div className={styles.labelCol}>
-                      <div className={styles.rowIconWrap}>
-                        <HelpCircle size={12} className={styles.rowIcon} />
-                      </div>
-                      <span className={styles.labelText}>Why flagged:</span>
+          {/* Expanded Details */}
+          {hasExpandedDetails && (
+            <div className={styles.detailsGroup}>
+              {insight.whyFlagged && (
+                <div className={styles.detailRow}>
+                  <div className={styles.labelCol}>
+                    <div className={styles.rowIconWrap}>
+                      <HelpCircle size={12} className={styles.rowIcon} />
                     </div>
-                    <p className={styles.valueText}>{insight.whyFlagged}</p>
+                    <span className={styles.labelText}>Why flagged:</span>
                   </div>
-                )}
+                  <p className={styles.valueText}>{insight.whyFlagged}</p>
+                </div>
+              )}
 
-                {insight.affectedArea && (
-                  <div className={styles.detailRow}>
-                    <div className={styles.labelCol}>
-                      <div className={styles.rowIconWrap}>
-                        <FileText size={12} className={styles.rowIcon} />
-                      </div>
-                      <span className={styles.labelText}>Affected area:</span>
+              {insight.affectedArea && (
+                <div className={styles.detailRow}>
+                  <div className={styles.labelCol}>
+                    <div className={styles.rowIconWrap}>
+                      <FileText size={12} className={styles.rowIcon} />
                     </div>
-                    <p className={styles.valueText}>{insight.affectedArea}</p>
+                    <span className={styles.labelText}>Affected area:</span>
                   </div>
-                )}
+                  <p className={styles.valueText}>{insight.affectedArea}</p>
+                </div>
+              )}
 
-                {insight.suggestedQuestion && (
-                  <div className={styles.detailRow}>
-                    <div className={styles.labelCol}>
-                      <div className={styles.rowIconWrap}>
-                        <MessageSquare size={12} className={styles.rowIcon} />
-                      </div>
-                      <span className={styles.labelText}>Suggested question:</span>
+              {insight.suggestedQuestion && (
+                <div className={styles.detailRow}>
+                  <div className={styles.labelCol}>
+                    <div className={styles.rowIconWrap}>
+                      <MessageSquare size={12} className={styles.rowIcon} />
                     </div>
-                    <p className={styles.valueText}>{insight.suggestedQuestion}</p>
+                    <span className={styles.labelText}>Suggested question:</span>
                   </div>
-                )}
-              </div>
-            )}
-
-            {/* Semantic Tags Row */}
-            <div className={styles.tagsRow}>
-              <span className={`${styles.badge} ${badgeConfig.styleClass}`}>
-                {badgeConfig.icon}
-                <span>{badgeConfig.label}</span>
-              </span>
-              {insight.domainTag && (
-                <span className={styles.domainTag}>
-                  <Tag size={11} className={styles.tagIcon} />
-                  <span>{insight.domainTag}</span>
-                </span>
+                  <p className={styles.valueText}>{insight.suggestedQuestion}</p>
+                </div>
               )}
             </div>
+          )}
+
+          {/* Semantic Tags Row */}
+          <div className={styles.tagsRow}>
+            <span className={`${styles.badge} ${badgeConfig.styleClass}`}>
+              {badgeConfig.icon}
+              <span>{badgeConfig.label}</span>
+            </span>
+            {insight.domainTag && (
+              <span className={styles.domainTag}>
+                <Tag size={11} className={styles.tagIcon} />
+                <span>{insight.domainTag}</span>
+              </span>
+            )}
           </div>
 
           {/* ── 3. LAYER 3: FOOTER CTA BUTTON ── */}
