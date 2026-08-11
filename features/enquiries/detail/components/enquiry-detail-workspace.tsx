@@ -914,38 +914,142 @@ export function EnquiryDetailWorkspace({
               <div className={styles.tabSectionGroup}>
                 <div className={styles.sectionCard}>
                   <h3 className={styles.cardHeading}>ACTIVITY TIMELINE</h3>
-                  <div className={styles.activityTimeline}>
-                    <div className={styles.activityItem}>
-                      <div className={styles.activityIcon}>
-                        <Clock size={14} />
+
+                  <div className={styles.timelineContainer}>
+                    {/* Dynamic current stage activity node */}
+                    {stage === "accepted" && (
+                      <div className={styles.timelineItem}>
+                        <div className={`${styles.timelineNode} ${styles.nodeGreen}`}>
+                          <FileCheck2 size={16} />
+                        </div>
+                        <div className={styles.timelineContent}>
+                          <div className={styles.timelineHeader}>
+                            <h4 className={styles.timelineTitle}>Enquiry Accepted & Proposal Workspace Created</h4>
+                            <span className={styles.timelineDate}>Today, Just now</span>
+                          </div>
+                          <p className={styles.timelineDesc}>
+                            Enquiry accepted by Arjun Architects. Transitioned from new evaluation to active proposal workspace.
+                          </p>
+                          <div className={styles.timelineActorRow}>
+                            <span className={styles.timelineActorBadge}>
+                              <UserCheck size={11} />
+                              <span>Arjun Mehta (Lead Architect)</span>
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <div className={styles.activityText}>
-                        <strong>Enquiry Received</strong>
-                        <span>Received via {header.source} on {header.receivedDate}</span>
+                    )}
+
+                    {stage === "clarification" && (
+                      <div className={styles.timelineItem}>
+                        <div className={`${styles.timelineNode} ${styles.nodeBlue}`}>
+                          <HelpCircle size={16} />
+                        </div>
+                        <div className={styles.timelineContent}>
+                          <div className={styles.timelineHeader}>
+                            <h4 className={styles.timelineTitle}>Clarification Request Sent to Client</h4>
+                            <span className={styles.timelineDate}>Today, 02:30 PM</span>
+                          </div>
+                          <p className={styles.timelineDesc}>
+                            Clarification requested regarding ground floor accessibility preferences and exact boundary setback constraints.
+                          </p>
+                          <div className={styles.timelineExtraBox}>
+                            &ldquo;Client response pending. Follow-up automated reminder scheduled in 24 hours.&rdquo;
+                          </div>
+                          <div className={styles.timelineActorRow}>
+                            <span className={styles.timelineActorBadge}>
+                              <UserCheck size={11} />
+                              <span>Arjun Mehta (Lead Architect)</span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Standard Historical Activity Items */}
+                    <div className={styles.timelineItem}>
+                      <div className={`${styles.timelineNode} ${styles.nodePurple}`}>
+                        <Sparkles size={16} />
+                      </div>
+                      <div className={styles.timelineContent}>
+                        <div className={styles.timelineHeader}>
+                          <h4 className={styles.timelineTitle}>ODIN Intelligence Assessment Completed</h4>
+                          <span className={styles.timelineDate}>10 Aug 2026, 04:15 PM</span>
+                        </div>
+                        <p className={styles.timelineDesc}>
+                          Requirement Strength score evaluated at 88% (High Confidence). 17 critical requirement drivers acknowledged.
+                        </p>
+                        <div className={styles.timelineActorRow}>
+                          <span className={styles.timelineActorBadge}>
+                            <Sparkles size={11} />
+                            <span>ODIN AI Engine</span>
+                          </span>
+                        </div>
                       </div>
                     </div>
-                    {stage === "clarification" && (
-                      <div className={styles.activityItem}>
-                        <div className={styles.activityIcon}>
-                          <HelpCircle size={14} />
+
+                    <div className={styles.timelineItem}>
+                      <div className={`${styles.timelineNode} ${styles.nodeGreen}`}>
+                        <FileText size={16} />
+                      </div>
+                      <div className={styles.timelineContent}>
+                        <div className={styles.timelineHeader}>
+                          <h4 className={styles.timelineTitle}>7 Site Assets & DWG Files Onboarded</h4>
+                          <span className={styles.timelineDate}>09 Aug 2026, 11:20 AM</span>
                         </div>
-                        <div className={styles.activityText}>
-                          <strong>Clarification Requested</strong>
-                          <span>Clarification request sent to client today</span>
+                        <p className={styles.timelineDesc}>
+                          Ground Floor Plan.pdf, Structural Layout.dwg, and 5 site inspection photos attached to workspace evidence.
+                        </p>
+                        <div className={styles.timelineActorRow}>
+                          <span className={styles.timelineActorBadge}>
+                            <UserCheck size={11} />
+                            <span>Neha Rao (Structural Engineer)</span>
+                          </span>
                         </div>
                       </div>
-                    )}
-                    {stage === "accepted" && (
-                      <div className={styles.activityItem}>
-                        <div className={styles.activityIcon}>
-                          <FileCheck2 size={14} />
+                    </div>
+
+                    <div className={styles.timelineItem}>
+                      <div className={`${styles.timelineNode} ${styles.nodeAmber}`}>
+                        <UserCheck size={16} />
+                      </div>
+                      <div className={styles.timelineContent}>
+                        <div className={styles.timelineHeader}>
+                          <h4 className={styles.timelineTitle}>Client & Household Profile Confirmed</h4>
+                          <span className={styles.timelineDate}>25 Jul 2026, 03:45 PM</span>
                         </div>
-                        <div className={styles.activityText}>
-                          <strong>Enquiry Accepted</strong>
-                          <span>Moved to accepted stage for proposal preparation</span>
+                        <p className={styles.timelineDesc}>
+                          Ananya Builders confirmed as primary sign-off decision maker along with 4 household occupant requirements.
+                        </p>
+                        <div className={styles.timelineActorRow}>
+                          <span className={styles.timelineActorBadge}>
+                            <UserCheck size={11} />
+                            <span>Priya Nair (Client Manager)</span>
+                          </span>
                         </div>
                       </div>
-                    )}
+                    </div>
+
+                    <div className={styles.timelineItem}>
+                      <div className={`${styles.timelineNode} ${styles.nodeSlate}`}>
+                        <Clock size={16} />
+                      </div>
+                      <div className={styles.timelineContent}>
+                        <div className={styles.timelineHeader}>
+                          <h4 className={styles.timelineTitle}>Enquiry Received</h4>
+                          <span className={styles.timelineDate}>{header.receivedDate}</span>
+                        </div>
+                        <p className={styles.timelineDesc}>
+                          Received via {header.source} portal for {header.projectType} ({header.title}) in {header.location}. Reference code: {header.enquiryRef}.
+                        </p>
+                        <div className={styles.timelineActorRow}>
+                          <span className={styles.timelineActorBadge}>
+                            <Globe size={11} />
+                            <span>Kallisto Ecosystem Portal</span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
