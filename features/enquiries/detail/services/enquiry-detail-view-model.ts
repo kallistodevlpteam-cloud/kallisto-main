@@ -68,6 +68,57 @@ export interface ClientContextSection {
   items: ClientContextItem[];
 }
 
+export interface ProjectOwner {
+  id: string;
+  name: string;
+  role: string;
+  avatarInitials: string;
+  timeOrOrg: string;
+  bio: string;
+  tags: string[];
+  isPrimary?: boolean;
+}
+
+export const DEFAULT_PROJECT_OWNERS: ProjectOwner[] = [
+  {
+    id: "owner-1",
+    name: "Ananya Sharma",
+    role: "Primary Owner & Client Lead",
+    avatarInitials: "AS",
+    timeOrOrg: "Ananya Builders • Primary Lead",
+    bio: "Managing Director & Primary Client Lead. Key decision maker for overall architectural direction, layout approvals, and master contract sign-off.",
+    tags: ["#primaryowner", "#decisionmaker", "#architecture"],
+    isPrimary: true,
+  },
+  {
+    id: "owner-2",
+    name: "David Langston",
+    role: "Co-Owner & Design Lead",
+    avatarInitials: "DL",
+    timeOrOrg: "Author • Updated Friday 3:12 PM",
+    bio: "Focuses on interior aesthetic preferences, custom teak joinery selections, lighting scenes, and residential lifestyle requirements.",
+    tags: ["#co-owner", "#interiors", "#lifestyle"],
+  },
+  {
+    id: "owner-3",
+    name: "Siddharth Kumar",
+    role: "Technical & Site Operations",
+    avatarInitials: "SK",
+    timeOrOrg: "Client Representative • Site Lead",
+    bio: "Oversees site readiness, municipal setbacks, structural survey coordination, and civil contractor milestone reviews.",
+    tags: ["#siteops", "#technical", "#coordination"],
+  },
+  {
+    id: "owner-4",
+    name: "Radhika Kulkarni",
+    role: "Commercial & Budget Director",
+    avatarInitials: "RK",
+    timeOrOrg: "Financial Stakeholder • Ananya Group",
+    bio: "Manages financial allocations, stage milestone disbursements, variation approvals, and overall ₹40L–₹60L budget governance.",
+    tags: ["#commercial", "#finance", "#budget"],
+  },
+];
+
 export interface EnquiryDetailViewModel {
   enquiryId: string;
   header: ProjectHeaderViewModel;
@@ -76,6 +127,7 @@ export interface EnquiryDetailViewModel {
   priorities: ClientPriority[];
   requirements: EnquiryRequirement[];
   clientContextSections: ClientContextSection[];
+  owners: ProjectOwner[];
   scopeGroups: ScopeGroupViewModel[];
   unconfirmedScope: string[];
   intelligence: EnquiryIntelligence;
@@ -461,6 +513,7 @@ export function buildEnquiryDetailViewModel({
     priorities,
     requirements,
     clientContextSections,
+    owners: DEFAULT_PROJECT_OWNERS,
     scopeGroups,
     unconfirmedScope,
     intelligence,

@@ -31,6 +31,7 @@ import {
   Info,
   Users,
   Palette,
+  MoreVertical,
 } from "lucide-react";
 
 import { RoutePageContainer } from "@/components/ui/route-page-container";
@@ -799,7 +800,55 @@ export function EnquiryDetailWorkspace({
                     Client background, preferences, behavioral patterns, and decision processes for{" "}
                     <strong>{header.clientName}</strong> in <strong>{header.location}</strong>.
                   </p>
-                  <ClientPrioritiesBar priorities={viewModel.priorities} />
+
+                  {/* ── Client / Owner Profile Cards (4 Cards in a Row Grid) ─────────── */}
+                  {(viewModel.owners || []).length > 0 && (
+                    <div className={styles.clientOwnersGrid}>
+                      {(viewModel.owners || []).map((owner) => (
+                        <div key={owner.id} className={styles.ownerCardShell}>
+                          <div>
+                            <div className={styles.ownerHeaderRow}>
+                              <div className={styles.ownerIdentityGroup}>
+                                <div className={styles.ownerAvatarCircle}>
+                                  {owner.avatarInitials}
+                                </div>
+                                <div className={styles.ownerMetaInfo}>
+                                  <div className={styles.ownerNameRow}>
+                                    <h4 className={styles.ownerName}>{owner.name}</h4>
+                                    {owner.isPrimary && (
+                                      <span className={styles.ownerPrimaryBadge}>Primary</span>
+                                    )}
+                                  </div>
+                                  <p className={styles.ownerSubtext}>{owner.timeOrOrg}</p>
+                                </div>
+                              </div>
+                              <button
+                                className={styles.ownerMoreBtn}
+                                aria-label={`Actions for ${owner.name}`}
+                              >
+                                <MoreVertical size={15} />
+                              </button>
+                            </div>
+                            <p className={styles.ownerBioText} style={{ marginTop: "10px" }}>
+                              {owner.bio}
+                            </p>
+                          </div>
+
+                          <div className={styles.ownerTagsRow}>
+                            {owner.tags.map((tag, idx) => (
+                              <span key={idx} className={styles.ownerHashtag}>
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div style={{ marginTop: "16px" }}>
+                    <ClientPrioritiesBar priorities={viewModel.priorities} />
+                  </div>
                 </div>
 
                 {(viewModel.clientContextSections || []).map((sec) => {
