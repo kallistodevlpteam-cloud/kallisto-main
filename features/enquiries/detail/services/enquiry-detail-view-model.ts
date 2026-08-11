@@ -211,7 +211,7 @@ export const DEFAULT_RESIDENTIAL_HOUSEHOLD: ClientHouseholdMember[] = [
     photoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80",
     age: "38",
     occupation: "Managing Director",
-    residenceStatus: "Kochi, Kerala",
+    residenceStatus: "Kochi",
     isPrimaryClient: true,
     decisionRole: "Primary Decision Maker",
     keyNeeds: ["Regular WFH", "High privacy", "Master suite (garden view)"],

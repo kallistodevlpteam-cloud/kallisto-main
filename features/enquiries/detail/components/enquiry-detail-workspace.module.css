@@ -4810,69 +4810,69 @@
   border-radius: 12px;
 }
 
-/* 4-Cards Grid Layout (Narrower, Fixed Portrait Sizing) */
+/* 4-Cards Grid Layout (Fixed 240px Portrait Tiles) */
 .householdGrid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(220px, 245px));
+  grid-template-columns: repeat(4, 240px);
   gap: 16px;
   width: 100%;
   align-items: start;
   justify-content: start;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1100px) {
   .householdGrid {
-    grid-template-columns: repeat(2, minmax(220px, 250px));
+    grid-template-columns: repeat(2, 240px);
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 600px) {
   .householdGrid {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
-/* Premium Household Profile Card (Matching Reference Layout) */
+/* Premium Household Floating Profile Tile (Matching Reference Layout) */
 .householdProfileCard {
-  width: 100%;
-  max-width: 245px;
+  width: 240px;
+  flex: 0 0 240px;
   background: #ffffff;
-  border: 1px solid rgba(15, 23, 42, 0.05);
-  border-radius: 24px;
-  padding: 10px 10px 10px 10px;
+  border: 1px solid rgba(15, 23, 42, 0.04);
+  border-radius: 23px;
+  padding: 8px 10px 10px 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.03);
-  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.08);
+  transition: box-shadow 0.22s ease, transform 0.22s ease;
 }
 
 .householdProfileCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.1);
-  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.11);
 }
 
 .profileCardHeader {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  height: 52px;
   gap: 2px;
   text-align: center;
-  padding: 4px 4px 2px 4px;
+  padding: 2px 4px 2px 4px;
 }
 
 .profileCardName {
-  font-size: 16.5px;
+  font-size: 15.5px;
   font-weight: 650;
   color: #0f172a;
   margin: 0;
   letter-spacing: -0.2px;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 
 .profileCardSubhead {
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 500;
   color: #64748b;
   margin: 0;
@@ -4881,11 +4881,12 @@
 
 .profileCardPhotoFrame {
   width: 100%;
-  aspect-ratio: 4 / 4.8;
-  border-radius: 16px;
+  aspect-ratio: 1 / 1.04;
+  border-radius: 17px;
   overflow: hidden;
   position: relative;
   background: #f1f5f9;
+  margin-bottom: 8px;
 }
 
 .profileCardPhoto {
@@ -4912,10 +4913,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  height: 38px;
-  padding: 2px 2px 0 2px;
-  margin-top: 2px;
+  gap: 7px;
+  height: 50px;
+  padding: 0 2px 2px 2px;
 }
 
 .profileCardUserMeta {
@@ -4927,12 +4927,12 @@
 }
 
 .profileCardMiniAvatar {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
   color: #ffffff;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -4967,13 +4967,13 @@
 }
 
 .profileCardDarkBtn {
-  background: #10131b;
+  background: #11131a;
   color: #ffffff;
   border: none;
   border-radius: 10px;
-  padding: 0 13px;
-  height: 34px;
-  font-size: 12px;
+  width: 82px;
+  height: 33px;
+  font-size: 11.5px;
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
@@ -4982,6 +4982,7 @@
   justify-content: center;
   transition: background-color 0.2s ease, transform 0.15s ease;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .profileCardDarkBtn:hover {
