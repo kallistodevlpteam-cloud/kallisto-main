@@ -5015,32 +5015,19 @@
   border-radius: 12px;
 }
 
-/* Responsive Household Cards Grid & Horizontal Rail Layout */
+/* Responsive Household Cards Grid & Geometry Rules */
 .householdGrid {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
   gap: 16px;
   width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-snap-type: x proximity;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  padding-bottom: 8px;
-  padding-right: 4px;
+  box-sizing: border-box;
 }
 
-.householdGrid::-webkit-scrollbar {
-  display: none;
-}
-
-/* Monica Geller Reference Card Layout */
 .morigCardShell {
-  flex: 0 0 clamp(220px, 26cqw, 280px);
-  min-width: 220px;
-  max-width: 280px;
-  scroll-snap-align: start;
+  width: 100%;
+  min-width: 0;
+  height: auto;
   box-sizing: border-box;
   background: #0f172a;
   border-radius: 24px;
@@ -5052,20 +5039,36 @@
   transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
 }
 
-/* Container-query for main-content width: 4 equal columns when main workspace >= 960px */
-@container (min-width: 960px) {
+/* Responsive Container-query breakpoints for household grid */
+@container (max-width: 860px) and (min-width: 520px) {
   .householdGrid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    overflow-x: visible;
-    padding-bottom: 0;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    gap: 14px;
+  }
+}
+
+@container (max-width: 519px) {
+  .householdGrid {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    padding-bottom: 6px;
+  }
+
+  .householdGrid::-webkit-scrollbar {
+    display: none;
   }
 
   .morigCardShell {
-    flex: 1 1 0;
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
+    flex: 0 0 clamp(200px, 60cqw, 260px);
+    min-width: 200px;
+    max-width: 260px;
+    scroll-snap-align: start;
   }
 }
 
@@ -5144,18 +5147,39 @@
 }
 
 .morigPhotoBox {
-  width: 100%;
-  height: 295px;
-  border-radius: 18px;
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-color: #1e293b;
   position: relative;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  aspect-ratio: 0.72 / 1;
+  border-radius: 18px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  overflow: hidden;
+  background-color: #1e293b;
+}
+
+.morigPhotoImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  z-index: 1;
+  border: none;
+  pointer-events: none;
+}
+
+.morigGradientOverlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 25%, rgba(15,23,42,0.82) 62%, rgba(15,23,42,0.98) 100%);
+  z-index: 2;
+  pointer-events: none;
 }
 
 .morigFallbackAvatar {

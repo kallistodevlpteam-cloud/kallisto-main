@@ -867,19 +867,20 @@ export function EnquiryDetailWorkspace({
                       </div>
 
                       {/* ── PHOTO CONTAINER WITH DARK GRADIENT OVERLAY ── */}
-                      <div
-                        className={styles.morigPhotoBox}
-                        style={{
-                          backgroundImage: member.photoUrl
-                            ? `linear-gradient(180deg, rgba(0,0,0,0) 25%, rgba(15,23,42,0.82) 62%, rgba(15,23,42,0.98) 100%), url(${member.photoUrl})`
-                            : undefined,
-                        }}
-                      >
-                        {!member.photoUrl && (
+                      <div className={styles.morigPhotoBox}>
+                        {member.photoUrl ? (
+                          <img
+                            src={member.photoUrl}
+                            alt={member.name}
+                            className={styles.morigPhotoImg}
+                          />
+                        ) : (
                           <div className={styles.morigFallbackAvatar}>
                             {member.avatarInitials}
                           </div>
                         )}
+
+                        <div className={styles.morigGradientOverlay} />
 
                         {/* ── BOTTOM OVERLAY CONTENT ── */}
                         <div className={styles.morigOverlayContent}>
