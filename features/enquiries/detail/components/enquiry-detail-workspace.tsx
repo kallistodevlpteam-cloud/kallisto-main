@@ -816,54 +816,46 @@ export function EnquiryDetailWorkspace({
                 <div className={styles.householdGrid}>
                   {(viewModel.householdMembers || []).map((member: ClientHouseholdMember) => (
                     <div key={member.id} className={styles.morigCardShell}>
-                      {/* ── ODIN HOVER TOOLTIP / POPOVER (Matching Reference Image 2) ── */}
+                      {/* ── ODIN HOVER TOOLTIP / POPOVER (Matching Reference Screenshot) ── */}
                       <div className={styles.odinHoverTooltip}>
                         <div className={styles.tooltipHeader}>
-                          <Sparkles size={13} className={styles.tooltipIcon} />
-                          <span className={styles.tooltipTitle}>
-                            ODIN Requirement Insight · {member.name}
-                          </span>
+                          <Sparkles size={12} className={styles.tooltipIcon} />
+                          <span className={styles.tooltipTitle}>ODIN Insight</span>
                         </div>
                         <div className={styles.tooltipBody}>
                           {(member.keyNeeds || []).length > 0 && (
                             <div className={styles.tooltipRow}>
-                              <span className={styles.tooltipLabel}>Design Needs</span>
+                              <span className={styles.tooltipLabel}>Needs:</span>
                               <span className={styles.tooltipVal}>{member.keyNeeds.join(" · ")}</span>
                             </div>
                           )}
                           {member.workPattern && (
                             <div className={styles.tooltipRow}>
-                              <span className={styles.tooltipLabel}>Work / Study</span>
+                              <span className={styles.tooltipLabel}>Work:</span>
                               <span className={styles.tooltipVal}>{member.workPattern}</span>
                             </div>
                           )}
                           {member.bedroomRequirement && (
                             <div className={styles.tooltipRow}>
-                              <span className={styles.tooltipLabel}>Bedroom</span>
+                              <span className={styles.tooltipLabel}>Bedroom:</span>
                               <span className={styles.tooltipVal}>{member.bedroomRequirement}</span>
                             </div>
                           )}
                           {member.privacyLevel && (
                             <div className={styles.tooltipRow}>
-                              <span className={styles.tooltipLabel}>Privacy</span>
+                              <span className={styles.tooltipLabel}>Privacy:</span>
                               <span className={styles.tooltipVal}>{member.privacyLevel}</span>
-                            </div>
-                          )}
-                          {member.accessibilityNeeds && (
-                            <div className={styles.tooltipRow}>
-                              <span className={styles.tooltipLabel}>Accessibility</span>
-                              <span className={styles.tooltipVal}>{member.accessibilityNeeds}</span>
                             </div>
                           )}
                           {member.decisionRole && (
                             <div className={styles.tooltipRow}>
-                              <span className={styles.tooltipLabel}>Decision Role</span>
+                              <span className={styles.tooltipLabel}>Role:</span>
                               <span className={styles.tooltipVal}>{member.decisionRole}</span>
                             </div>
                           )}
                           {member.specialNotes && (
                             <div className={styles.tooltipRow}>
-                              <span className={styles.tooltipLabel}>Special Notes</span>
+                              <span className={styles.tooltipLabel}>Notes:</span>
                               <span className={styles.tooltipVal}>{member.specialNotes}</span>
                             </div>
                           )}
