@@ -320,8 +320,8 @@
   margin-top: 1px;
 }
 
-.footerCtaInner {
-  min-height: 0;
+.footerCtaWrap {
+  margin-top: 6px;
   width: 100%;
 }
 
