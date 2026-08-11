@@ -572,7 +572,7 @@ export function EnquiryDetailWorkspace({
                   unconfirmedItems={viewModel.unconfirmedScope}
                 />
                 <EnquirySiteImagesCard
-                  title="ALL SITE IMAGES & EVIDENCE"
+                  title="CLIENT INSPIRATION IMAGES"
                   totalCount={8}
                 />
                 <EnquiryProjectDocumentsSection />
@@ -899,14 +899,14 @@ export function EnquiryDetailWorkspace({
                   ))}
                 </div>
 
-                {/* ── ALL SITE IMAGES & EVIDENCE (CLIENT INSPIRATION IMAGES) ── */}
-                <EnquirySiteImagesCard
-                  title="ALL SITE IMAGES & EVIDENCE"
-                  totalCount={8}
-                />
-
                 {/* ── CLIENT CONTEXT & PRIORITIES ── */}
                 <ClientPrioritiesBar priorities={viewModel.priorities} />
+
+                {/* ── CLIENT INSPIRATION IMAGES ── */}
+                <EnquirySiteImagesCard
+                  title="CLIENT INSPIRATION IMAGES"
+                  totalCount={8}
+                />
 
                 {(viewModel.clientContextSections || []).map((sec) => {
                   const IconComp = getClientContextSectionIcon(sec.iconName);
