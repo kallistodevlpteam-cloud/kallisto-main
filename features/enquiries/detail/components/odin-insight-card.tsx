@@ -3,7 +3,6 @@
 import React from "react";
 import {
   Sparkles,
-  PlusCircle,
   ChevronDown,
   HelpCircle,
   FileText,
@@ -117,6 +116,10 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
     }
   };
 
+  const hasExpandedDetails = Boolean(
+    insight.whyFlagged || insight.affectedArea || insight.suggestedQuestion
+  );
+
   return (
     <div
       className={`${styles.cardShell} ${isExpanded ? styles.cardShellExpanded : ""}`}
@@ -124,7 +127,7 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* ── 1. HEADER ROW: Icon Box + Title Text + Chevron ────────────────────── */}
+      {/* ── 1. LAYER 1: HEADER ROW ────────────────────────────────────────── */}
       <div className={styles.headerRow}>
         <div className={styles.headerTitleGroup}>
           <div className={styles.iconBox}>
@@ -149,49 +152,56 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
         </button>
       </div>
 
-      {/* ── 2. SECONDARY INNER CONTENT CARD (Crisp White Surface) ─────────────── */}
+      {/* ── 2. LAYER 2: SECONDARY INNER CONTENT CARD (#ffffff) ─────────────── */}
       <div className={styles.innerCard}>
         {/* Summary Paragraph */}
         <p className={styles.summaryText}>{insight.summary}</p>
 
-        {/* Expanded State: Hairline Dividers + Detail Rows */}
-        {isExpanded && (
-          <div className={styles.expandedContent} onClick={(e) => e.stopPropagation()}>
-            {insight.whyFlagged && (
-              <div className={styles.detailRow}>
-                <div className={styles.labelCol}>
-                  <div className={styles.rowIconWrap}>
-                    <HelpCircle size={12} className={styles.rowIcon} />
+        {/* Smooth CSS Grid Collapsible Container for Expanded Details */}
+        {hasExpandedDetails && (
+          <div
+            className={`${styles.collapsibleContainer} ${
+              isExpanded ? styles.collapsibleContainerExpanded : ""
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.collapsibleInner}>
+              {insight.whyFlagged && (
+                <div className={styles.detailRow}>
+                  <div className={styles.labelCol}>
+                    <div className={styles.rowIconWrap}>
+                      <HelpCircle size={12} className={styles.rowIcon} />
+                    </div>
+                    <span className={styles.labelText}>Why flagged:</span>
                   </div>
-                  <span className={styles.labelText}>Why flagged:</span>
+                  <p className={styles.valueText}>{insight.whyFlagged}</p>
                 </div>
-                <p className={styles.valueText}>{insight.whyFlagged}</p>
-              </div>
-            )}
+              )}
 
-            {insight.affectedArea && (
-              <div className={styles.detailRow}>
-                <div className={styles.labelCol}>
-                  <div className={styles.rowIconWrap}>
-                    <FileText size={12} className={styles.rowIcon} />
+              {insight.affectedArea && (
+                <div className={styles.detailRow}>
+                  <div className={styles.labelCol}>
+                    <div className={styles.rowIconWrap}>
+                      <FileText size={12} className={styles.rowIcon} />
+                    </div>
+                    <span className={styles.labelText}>Affected area:</span>
                   </div>
-                  <span className={styles.labelText}>Affected area:</span>
+                  <p className={styles.valueText}>{insight.affectedArea}</p>
                 </div>
-                <p className={styles.valueText}>{insight.affectedArea}</p>
-              </div>
-            )}
+              )}
 
-            {insight.suggestedQuestion && (
-              <div className={styles.detailRow}>
-                <div className={styles.labelCol}>
-                  <div className={styles.rowIconWrap}>
-                    <MessageSquare size={12} className={styles.rowIcon} />
+              {insight.suggestedQuestion && (
+                <div className={styles.detailRow}>
+                  <div className={styles.labelCol}>
+                    <div className={styles.rowIconWrap}>
+                      <MessageSquare size={12} className={styles.rowIcon} />
+                    </div>
+                    <span className={styles.labelText}>Suggested question:</span>
                   </div>
-                  <span className={styles.labelText}>Suggested question:</span>
+                  <p className={styles.valueText}>{insight.suggestedQuestion}</p>
                 </div>
-                <p className={styles.valueText}>{insight.suggestedQuestion}</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
 
@@ -210,17 +220,24 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
         </div>
       </div>
 
-      {/* ── 3. CTA BUTTON (OUTSIDE inner card, INSIDE outer shell) ────────────── */}
-      {isExpanded && insight.actionPrimary && (
-        <div className={styles.footerCtaRow} onClick={(e) => e.stopPropagation()}>
-          <button
-            type="button"
-            className={styles.ctaButton}
-            onClick={handlePrimaryAction}
-          >
-            <Plus size={13} />
-            <span>{insight.actionPrimary.label}</span>
-          </button>
+      {/* ── 3. LAYER 3: FOOTER CTA BUTTON (OUTSIDE Inner Card, INSIDE Outer Shell) ── */}
+      {insight.actionPrimary && (
+        <div
+          className={`${styles.footerCtaCollapsible} ${
+            isExpanded ? styles.footerCtaCollapsibleExpanded : ""
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className={styles.footerCtaInner}>
+            <button
+              type="button"
+              className={styles.ctaButton}
+              onClick={handlePrimaryAction}
+            >
+              <Plus size={13} />
+              <span>{insight.actionPrimary.label}</span>
+            </button>
+          </div>
         </div>
       )}
     </div>

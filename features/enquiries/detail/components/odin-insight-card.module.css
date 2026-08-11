@@ -4,15 +4,15 @@
   background: #f8fafc;
   border: none;
   border-radius: 14px;
-  padding: 5px 6px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
   cursor: pointer;
-  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 0.2s ease;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.25s ease;
   will-change: transform, box-shadow;
 }
 
@@ -38,7 +38,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 4px 6px;
+  padding: 2px 4px;
 }
 
 .headerTitleGroup {
@@ -50,8 +50,8 @@
 }
 
 .iconBox {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 6px;
   background: #ffffff;
   border: none;
@@ -65,7 +65,7 @@
 
 .sparkleIcon {
   color: #2563eb;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .cardShell:hover .sparkleIcon {
@@ -94,7 +94,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: color 0.15s ease;
+  transition: color 0.2s ease;
 }
 
 .chevronBtn:hover {
@@ -102,7 +102,7 @@
 }
 
 .chevronIcon {
-  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .chevronIconExpanded {
@@ -130,23 +130,35 @@
   margin: 0;
 }
 
-.expandedContent {
+/* ── Fluid CSS Grid Accordion Expansion for Inner Content ──────────── */
+.collapsibleContainer {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              margin-top 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  margin-top: 0;
+}
+
+.collapsibleContainerExpanded {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  margin-top: 2px;
+}
+
+.collapsibleInner {
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  animation: expandSlideFade 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  transform-origin: top center;
+  transition: transform 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(-6px);
 }
 
-@keyframes expandSlideFade {
-  0% {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.collapsibleContainerExpanded .collapsibleInner {
+  transform: translateY(0);
 }
 
 .detailRow {
@@ -289,13 +301,28 @@
   color: #64748b;
 }
 
-/* ── 4. LAYER 4: FOOTER CTA BUTTON (OUTSIDE Inner Card, INSIDE Outer Shell) ── */
+/* ── 4. LAYER 4: FOOTER CTA BUTTON COLLAPSIBLE (OUTSIDE Inner Card) ── */
 
-.footerCtaRow {
-  width: 100%;
-  display: flex;
-  align-items: center;
+.footerCtaCollapsible {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              margin-top 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  margin-top: 0;
+}
+
+.footerCtaCollapsibleExpanded {
+  grid-template-rows: 1fr;
+  opacity: 1;
   margin-top: 1px;
+}
+
+.footerCtaInner {
+  min-height: 0;
+  width: 100%;
 }
 
 .ctaButton {
