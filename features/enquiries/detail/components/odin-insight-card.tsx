@@ -43,6 +43,9 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
   onNavigateToTab,
 }) => {
   const badge = getSeverityBadge(insight.severity);
+  const hasExpandedDetails = Boolean(
+    insight.whyFlagged || insight.affectedArea || insight.suggestedQuestion
+  );
 
   return (
     <div
@@ -106,28 +109,28 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
       {/* ── Body: Concise 1-2 line summary ──────────────────────────────────── */}
       <p className={styles.summaryText}>{insight.summary}</p>
 
-      {/* ── Expanded Content Details ───────────────────────────────────────── */}
-      {isExpanded && (
+      {/* ── Expanded Content (Flat Disclosure, No Inner Container Card) ──── */}
+      {isExpanded && hasExpandedDetails && (
         <div
-          className={styles.expandedContent}
+          className={styles.expandedSection}
           onClick={(e) => e.stopPropagation()}
         >
           {insight.whyFlagged && (
-            <div className={styles.expandedDetailRow}>
-              <span className={styles.detailLabel}>Why Flagged:</span>
-              <span className={styles.detailValue}>{insight.whyFlagged}</span>
+            <div className={styles.detailGroup}>
+              <span className={styles.detailLabel}>WHY FLAGGED</span>
+              <p className={styles.detailValue}>{insight.whyFlagged}</p>
             </div>
           )}
           {insight.affectedArea && (
-            <div className={styles.expandedDetailRow}>
-              <span className={styles.detailLabel}>Affected Area:</span>
-              <span className={styles.detailValue}>{insight.affectedArea}</span>
+            <div className={styles.detailGroup}>
+              <span className={styles.detailLabel}>AFFECTED AREA</span>
+              <p className={styles.detailValue}>{insight.affectedArea}</p>
             </div>
           )}
           {insight.suggestedQuestion && (
-            <div className={styles.expandedDetailRow}>
-              <span className={styles.detailLabel}>Suggested Question:</span>
-              <span className={styles.detailValue}>{insight.suggestedQuestion}</span>
+            <div className={styles.detailGroup}>
+              <span className={styles.detailLabel}>SUGGESTED QUESTION</span>
+              <p className={styles.detailValue}>{insight.suggestedQuestion}</p>
             </div>
           )}
         </div>

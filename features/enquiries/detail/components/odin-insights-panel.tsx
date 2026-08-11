@@ -36,7 +36,7 @@ export const OdinInsightsPanel: React.FC<OdinInsightsPanelProps> = ({
   onAppendToClarification,
   onNavigateToTab,
 }) => {
-  const [expandedId, setExpandedId] = useState<string | null>(insights[0]?.id ?? null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
 
   const visibleInsights = showAll ? insights : insights.slice(0, 4);
