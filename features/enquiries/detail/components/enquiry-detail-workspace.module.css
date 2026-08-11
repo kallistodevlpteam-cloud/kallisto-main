@@ -4776,6 +4776,356 @@
   width: 100%;
 }
 
+/* ─── Members Assigned Layout (Recent Members List + Active Member Card) ─── */
+
+.membersAssignedContainer {
+  display: flex;
+  gap: 24px;
+  margin-top: 14px;
+  width: 100%;
+}
+
+@media (max-width: 960px) {
+  .membersAssignedContainer {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+.recentMembersCol {
+  width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.recentMembersHeading {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0 0 2px 0;
+}
+
+.recentMemberList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.recentMemberItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease;
+  width: 100%;
+}
+
+.recentMemberItem:hover {
+  background: #f1f5f9;
+}
+
+.recentMemberItemActive {
+  background: #f8fafc;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.recentMemberAvatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+  color: #1e293b;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.recentMemberInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.recentMemberName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recentMemberEmail {
+  font-size: 11px;
+  color: #64748b;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.assignedMemberMainCol {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.assignedMemberHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.assignedMemberTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.assignedMemberHeading {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.filtersChip {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.assignedCardShell {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+}
+
+.assignedCardTopRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.assignedAvatarGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.assignedAvatarWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.assignedAvatarCircle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fca5a5 0%, #f43f5e 100%);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(244, 63, 94, 0.25);
+}
+
+.onlineDot {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ef4444;
+  border: 2px solid #ffffff;
+}
+
+.assignedNameGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.assignedName {
+  font-size: 16px;
+  font-weight: 650;
+  color: #0f172a;
+  margin: 0;
+}
+
+.assignedEmail {
+  font-size: 12.5px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+.assignedCardStatusMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.activeChipBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #16a34a;
+  background: #dcfce7;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.assignedMetaDate {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.assignedTagsRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.purplePillTag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6d28d9;
+  background: #f3e8ff;
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+
+.yellowPillTag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #b45309;
+  background: #fef3c7;
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+
+.innerMetadataGridCard {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .innerMetadataGridCard {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.metaColItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metaLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.metaVal {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.quickActionsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.quickActionsLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.actionBtnsGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.outlineActionBtn {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 6px 14px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.outlineActionBtn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.unreadBadge {
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
 @media (max-width: 1380px) {
   .clientOwnersGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

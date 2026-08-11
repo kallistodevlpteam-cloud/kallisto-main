@@ -32,6 +32,7 @@ import {
   Users,
   Palette,
   MoreVertical,
+  MoreHorizontal,
 } from "lucide-react";
 
 import { RoutePageContainer } from "@/components/ui/route-page-container";
@@ -340,6 +341,7 @@ export function EnquiryDetailWorkspace({
   const [activeDomainKey, setActiveDomainKey] = useState<string>("room_programme");
   const [expandedRoomIds, setExpandedRoomIds] = useState<Record<string, boolean>>({});
   const [clarificationText, setClarificationText] = useState<string>("");
+  const [selectedOwnerId, setSelectedOwnerId] = useState<string>("owner-1");
 
   const activeTab: EnquiryTabKey = resolveValidTabKey(searchParams.get("tab"));
 
@@ -801,50 +803,146 @@ export function EnquiryDetailWorkspace({
                     <strong>{header.clientName}</strong> in <strong>{header.location}</strong>.
                   </p>
 
-                  {/* ── Client / Owner Profile Cards (4 Cards in a Row Grid) ─────────── */}
-                  {(viewModel.owners || []).length > 0 && (
-                    <div className={styles.clientOwnersGrid}>
-                      {(viewModel.owners || []).map((owner) => (
-                        <div key={owner.id} className={styles.ownerCardShell}>
-                          <div>
-                            <div className={styles.ownerHeaderRow}>
-                              <div className={styles.ownerIdentityGroup}>
-                                <div className={styles.ownerAvatarCircle}>
-                                  {owner.avatarInitials}
-                                </div>
-                                <div className={styles.ownerMetaInfo}>
-                                  <div className={styles.ownerNameRow}>
-                                    <h4 className={styles.ownerName}>{owner.name}</h4>
-                                    {owner.isPrimary && (
-                                      <span className={styles.ownerPrimaryBadge}>Primary</span>
-                                    )}
+                  {/* ── Members Assigned Section (Recent Members + Active Member Detail Card) ── */}
+                  <div className={styles.membersAssignedContainer}>
+                    {/* Left Column: Recent Members List */}
+                    <div className={styles.recentMembersCol}>
+                      <h4 className={styles.recentMembersHeading}>Recent Members</h4>
+                      <div className={styles.recentMemberList}>
+                        {(viewModel.owners || []).map((owner) => {
+                          const isSelected = (selectedOwnerId || "owner-1") === owner.id;
+                          return (
+                            <button
+                              key={owner.id}
+                              type="button"
+                              className={`${styles.recentMemberItem} ${
+                                isSelected ? styles.recentMemberItemActive : ""
+                              }`}
+                              onClick={() => setSelectedOwnerId(owner.id)}
+                            >
+                              <div className={styles.recentMemberAvatar}>
+                                {owner.avatarInitials}
+                              </div>
+                              <div className={styles.recentMemberInfo}>
+                                <h5 className={styles.recentMemberName}>{owner.name}</h5>
+                                <p className={styles.recentMemberEmail}>{owner.email}</p>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Right Column: Selected Member Assigned Card */}
+                    <div className={styles.assignedMemberMainCol}>
+                      <div className={styles.assignedMemberHeaderRow}>
+                        <div className={styles.assignedMemberTitleGroup}>
+                          <h4 className={styles.assignedMemberHeading}>Members Assigned</h4>
+                        </div>
+                        <button className={styles.filtersChip} type="button">
+                          <Filter size={13} />
+                          <span>Filters</span>
+                        </button>
+                      </div>
+
+                      {(() => {
+                        const activeOwner =
+                          (viewModel.owners || []).find((o) => o.id === (selectedOwnerId || "owner-1")) ||
+                          (viewModel.owners || [])[0];
+
+                        if (!activeOwner) return null;
+
+                        return (
+                          <div className={styles.assignedCardShell}>
+                            {/* Layer 1: Top Header Row */}
+                            <div className={styles.assignedCardTopRow}>
+                              <div className={styles.assignedAvatarGroup}>
+                                <div className={styles.assignedAvatarWrapper}>
+                                  <div className={styles.assignedAvatarCircle}>
+                                    {activeOwner.avatarInitials}
                                   </div>
-                                  <p className={styles.ownerSubtext}>{owner.timeOrOrg}</p>
+                                  <span className={styles.onlineDot} />
+                                </div>
+                                <div>
+                                  <div className={styles.assignedNameGroup}>
+                                    <h4 className={styles.assignedName}>{activeOwner.name}</h4>
+                                  </div>
+                                  <p className={styles.assignedEmail}>{activeOwner.email}</p>
                                 </div>
                               </div>
-                              <button
-                                className={styles.ownerMoreBtn}
-                                aria-label={`Actions for ${owner.name}`}
-                              >
-                                <MoreVertical size={15} />
-                              </button>
-                            </div>
-                            <p className={styles.ownerBioText} style={{ marginTop: "10px" }}>
-                              {owner.bio}
-                            </p>
-                          </div>
 
-                          <div className={styles.ownerTagsRow}>
-                            {owner.tags.map((tag, idx) => (
-                              <span key={idx} className={styles.ownerHashtag}>
-                                {tag}
-                              </span>
-                            ))}
+                              <div className={styles.assignedCardStatusMeta}>
+                                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                  <span className={styles.activeChipBadge}>
+                                    <CheckCircle2 size={13} />
+                                    <span>{activeOwner.status || "Active"}</span>
+                                  </span>
+                                  <button
+                                    className={styles.ownerMoreBtn}
+                                    type="button"
+                                    aria-label={`More options for ${activeOwner.name}`}
+                                  >
+                                    <MoreHorizontal size={16} />
+                                  </button>
+                                </div>
+                                <span className={styles.assignedMetaDate}>
+                                  Next: {activeOwner.nextReview || "Jun 25, 2026"}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Layer 2: Category Soft Tags Row */}
+                            <div className={styles.assignedTagsRow}>
+                              <span className={styles.purplePillTag}>{activeOwner.tag1}</span>
+                              <span className={styles.yellowPillTag}>{activeOwner.tag2}</span>
+                            </div>
+
+                            {/* Layer 3: Secondary Inner Metadata Grid Card (#f8fafc) */}
+                            <div className={styles.innerMetadataGridCard}>
+                              <div className={styles.metaColItem}>
+                                <span className={styles.metaLabel}>Role / Scope</span>
+                                <span className={styles.metaVal}>{activeOwner.meta.roleScope}</span>
+                              </div>
+                              <div className={styles.metaColItem}>
+                                <span className={styles.metaLabel}>Experience</span>
+                                <span className={styles.metaVal}>{activeOwner.meta.expOrAge}</span>
+                              </div>
+                              <div className={styles.metaColItem}>
+                                <span className={styles.metaLabel}>Location</span>
+                                <span className={styles.metaVal}>{activeOwner.meta.location}</span>
+                              </div>
+                              <div className={styles.metaColItem}>
+                                <span className={styles.metaLabel}>Channel</span>
+                                <span className={styles.metaVal}>{activeOwner.meta.channel}</span>
+                              </div>
+                              <div className={styles.metaColItem}>
+                                <span className={styles.metaLabel}>Status</span>
+                                <span className={styles.metaVal}>{activeOwner.meta.status}</span>
+                              </div>
+                            </div>
+
+                            {/* Layer 4: Quick Actions Bottom Row */}
+                            <div className={styles.quickActionsRow}>
+                              <span className={styles.quickActionsLabel}>Quick Actions</span>
+                              <div className={styles.actionBtnsGroup}>
+                                <button className={styles.outlineActionBtn} type="button">
+                                  <Calendar size={13} />
+                                  <span>Review Schedule</span>
+                                </button>
+                                <button className={styles.outlineActionBtn} type="button">
+                                  <MessageSquare size={13} />
+                                  <span>Chat</span>
+                                  {activeOwner.unreadCount ? (
+                                    <span className={styles.unreadBadge}>{activeOwner.unreadCount}</span>
+                                  ) : null}
+                                </button>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })()}
                     </div>
-                  )}
+                  </div>
 
                   <div style={{ marginTop: "16px" }}>
                     <ClientPrioritiesBar priorities={viewModel.priorities} />

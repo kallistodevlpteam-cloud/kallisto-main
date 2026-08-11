@@ -71,11 +71,23 @@ export interface ClientContextSection {
 export interface ProjectOwner {
   id: string;
   name: string;
+  email: string;
   role: string;
   avatarInitials: string;
+  status: "Active" | "Pending" | "Offline";
+  nextReview: string;
+  tag1: string;
+  tag2: string;
   timeOrOrg: string;
   bio: string;
-  tags: string[];
+  meta: {
+    expOrAge: string;
+    roleScope: string;
+    location: string;
+    channel: string;
+    status: string;
+  };
+  unreadCount?: number;
   isPrimary?: boolean;
 }
 
@@ -83,39 +95,85 @@ export const DEFAULT_PROJECT_OWNERS: ProjectOwner[] = [
   {
     id: "owner-1",
     name: "Ananya Sharma",
+    email: "ananyasharma@ananyabuilders.com",
     role: "Primary Owner & Client Lead",
     avatarInitials: "AS",
+    status: "Active",
+    nextReview: "Jul 28, 2026",
+    tag1: "Primary Decision Maker",
+    tag2: "Ananya Group",
     timeOrOrg: "Ananya Builders • Primary Lead",
     bio: "Managing Director & Primary Client Lead. Key decision maker for overall architectural direction, layout approvals, and master contract sign-off.",
-    tags: ["#primaryowner", "#decisionmaker", "#architecture"],
+    meta: {
+      expOrAge: "12+ yrs",
+      roleScope: "Managing Director",
+      location: "Kochi, Kerala",
+      channel: "Kallisto Portal",
+      status: "Confirmed",
+    },
+    unreadCount: 3,
     isPrimary: true,
   },
   {
     id: "owner-2",
     name: "David Langston",
+    email: "davidlangston@ananyabuilders.com",
     role: "Co-Owner & Design Lead",
     avatarInitials: "DL",
+    status: "Active",
+    nextReview: "Aug 02, 2026",
+    tag1: "Design Lead",
+    tag2: "Aesthetic Preference",
     timeOrOrg: "Author • Updated Friday 3:12 PM",
     bio: "Focuses on interior aesthetic preferences, custom teak joinery selections, lighting scenes, and residential lifestyle requirements.",
-    tags: ["#co-owner", "#interiors", "#lifestyle"],
+    meta: {
+      expOrAge: "8+ yrs",
+      roleScope: "Interior & Style Lead",
+      location: "Bengaluru",
+      channel: "WhatsApp / Email",
+      status: "Confirmed",
+    },
   },
   {
     id: "owner-3",
     name: "Siddharth Kumar",
+    email: "siddharth.k@siteops.com",
     role: "Technical & Site Operations",
     avatarInitials: "SK",
+    status: "Active",
+    nextReview: "Aug 05, 2026",
+    tag1: "Site Operations",
+    tag2: "Civil Coordination",
     timeOrOrg: "Client Representative • Site Lead",
     bio: "Oversees site readiness, municipal setbacks, structural survey coordination, and civil contractor milestone reviews.",
-    tags: ["#siteops", "#technical", "#coordination"],
+    meta: {
+      expOrAge: "10+ yrs",
+      roleScope: "Site Representative",
+      location: "Kochi",
+      channel: "Site Inspections",
+      status: "Confirmed",
+    },
+    unreadCount: 1,
   },
   {
     id: "owner-4",
     name: "Radhika Kulkarni",
+    email: "radhikakulkarni@ananyabuilders.com",
     role: "Commercial & Budget Director",
     avatarInitials: "RK",
+    status: "Active",
+    nextReview: "Aug 10, 2026",
+    tag1: "Commercial Director",
+    tag2: "Financial Approver",
     timeOrOrg: "Financial Stakeholder • Ananya Group",
     bio: "Manages financial allocations, stage milestone disbursements, variation approvals, and overall ₹40L–₹60L budget governance.",
-    tags: ["#commercial", "#finance", "#budget"],
+    meta: {
+      expOrAge: "15+ yrs",
+      roleScope: "Finance Director",
+      location: "Bengaluru",
+      channel: "Kallisto Portal",
+      status: "Confirmed",
+    },
   },
 ];
 
