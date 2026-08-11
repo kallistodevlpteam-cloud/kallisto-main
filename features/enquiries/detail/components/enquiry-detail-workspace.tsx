@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { ThemeSelect } from "@/components/ui/theme-select";
 import {
   Share2,
   Building2,
@@ -1178,18 +1179,20 @@ export function EnquiryActionsCard({
               <label className={styles.rejectionLabel}>
                 Rejection Reason (Optional):
               </label>
-              <select
+              <ThemeSelect
                 value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                className={styles.customSelect}
-              >
-                <option value="">Select a reason...</option>
-                <option value="capacity">Studio Capacity Full</option>
-                <option value="location">Outside Primary Service Area</option>
-                <option value="budget">Budget Mismatch</option>
-                <option value="scope">Scope Mismatch</option>
-                <option value="other">Other Reason</option>
-              </select>
+                options={[
+                  { value: "", label: "Select a reason..." },
+                  { value: "capacity", label: "Studio Capacity Full" },
+                  { value: "location", label: "Outside Primary Service Area" },
+                  { value: "budget", label: "Budget Mismatch" },
+                  { value: "scope", label: "Scope Mismatch" },
+                  { value: "other", label: "Other Reason" },
+                ]}
+                onChange={(val) => setRejectionReason(val)}
+                fullWidth
+                ariaLabel="Rejection Reason"
+              />
             </div>
 
             <div className={styles.warningModalBtnRow}>
