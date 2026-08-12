@@ -9,7 +9,6 @@ export type EnquiryTabKey =
   | "requirements"
   | "evidence"
   | "client"
-  | "intelligence"
   | "activity";
 
 export interface EnquiryTabItem {
@@ -20,10 +19,9 @@ export interface EnquiryTabItem {
 
 export const ENQUIRY_TABS: EnquiryTabItem[] = [
   { key: "overview", label: "Overview" },
+  { key: "client", label: "Client Context" },
   { key: "requirements", label: "Requirements" },
   { key: "evidence", label: "Site & Evidence" },
-  { key: "client", label: "Client Context" },
-  { key: "intelligence", label: "ODIN Intelligence" },
   { key: "activity", label: "Activity" },
 ];
 
@@ -31,10 +29,9 @@ export function resolveValidTabKey(queryTab: string | null): EnquiryTabKey {
   if (!queryTab) return "overview";
   const validKeys: EnquiryTabKey[] = [
     "overview",
+    "client",
     "requirements",
     "evidence",
-    "client",
-    "intelligence",
     "activity",
   ];
   return validKeys.includes(queryTab as EnquiryTabKey) ? (queryTab as EnquiryTabKey) : "overview";

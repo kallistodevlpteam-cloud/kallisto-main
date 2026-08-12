@@ -35,7 +35,7 @@ const DEFAULT_ENQUIRY_STAT_VALUES: EnquiryStatValues = {
   duration: "Within 6 Months",
   builtUpArea: "2,800 – 3,200 sq ft",
   budget: "₹40L – ₹60L",
-  client: "—",
+  client: "Greenleaf Spaces",
   budgetCoverageStatus: "Coverage partially defined",
   areaCoverageStatus: "Client supplied",
 };
@@ -92,7 +92,7 @@ export function EnquiryStatCardsBar({ values }: { values?: Partial<EnquiryStatVa
     {
       id: "client",
       label: "Client",
-      value: resolvedValues.client || "—",
+      value: resolvedValues.client || "Greenleaf Spaces",
       subValue: "Direct enquiry",
       icon: User,
       iconBg: "#ECFEFF",

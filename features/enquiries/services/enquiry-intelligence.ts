@@ -1240,6 +1240,53 @@ export function deriveContextualOdinInsights(
   const isResidential = enquiry.projectType !== "commercial";
   const budgetStr = enquiry.budget || "₹40L–₹60L";
 
+  if (scope === "overview" || scope === "intelligence") {
+    return [
+      {
+        id: "ov-insight-1",
+        title: "Budget coverage unclear",
+        scopeLabel: "Overview",
+        summary: `Commercial pricing cannot be finalized because execution scope is still unclear against the ${budgetStr} target range.`,
+        severity: "blocker",
+        domainTag: "Commercial",
+        whyFlagged: "Loose furniture package and 3-phase MEP infrastructure inclusion are unconfirmed in client specs.",
+        affectedArea: "BOQ Cost Estimation & Fixed Package Pricing",
+        suggestedQuestion: `Please clarify if the target budget range (${budgetStr}) covers loose furniture items and MEP distribution.`,
+        actionPrimary: {
+          label: "Add question",
+          type: "add_clarification",
+          payload: `Please clarify if the target budget range (${budgetStr}) covers loose furniture items and MEP distribution.`,
+        },
+      },
+      {
+        id: "ov-insight-2",
+        title: "Site survey technical dependency",
+        scopeLabel: "Overview",
+        summary: "Site survey verification is the primary technical pre-construction dependency.",
+        severity: "verification",
+        domainTag: "Site",
+        whyFlagged: "Physical access for heavy material transport is unconfirmed.",
+        affectedArea: "Logistics & Site Operations",
+      },
+      {
+        id: "ov-insight-3",
+        title: "Strong Opportunity Fit (89%)",
+        scopeLabel: "Overview",
+        summary: `Opportunity Fit remains strong due to exact alignment with core ${isResidential ? "residential villa" : "commercial fit-out"} portfolio offerings.`,
+        severity: "strength",
+        domainTag: "Commercial",
+      },
+      {
+        id: "ov-insight-4",
+        title: "Recommended Action: Consolidate P1s",
+        scopeLabel: "Overview",
+        summary: "Consolidate unresolved P1 questions into one single clarification request before accepting.",
+        severity: "recommendation",
+        domainTag: "Scope",
+      },
+    ];
+  }
+
   if (scope === "requirements") {
     return [
       {

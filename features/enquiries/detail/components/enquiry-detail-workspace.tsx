@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { ThemeSelect } from "@/components/ui/theme-select";
 import {
   Share2,
   Building2,
@@ -15,6 +17,7 @@ import {
   ChevronRight,
   Filter,
   CheckCircle2,
+  XCircle,
   AlertTriangle,
   LayoutGrid,
   Trees,
@@ -35,6 +38,7 @@ import {
   MoreHorizontal,
   QrCode,
   Copy,
+  X,
 } from "lucide-react";
 
 import { RoutePageContainer } from "@/components/ui/route-page-container";
@@ -47,6 +51,7 @@ import {
 import {
   buildEnquiryDetailViewModel,
   EnquiryDetailViewModel,
+  ClientHouseholdMember,
 } from "../services/enquiry-detail-view-model";
 import { RequirementStrengthCard } from "./requirement-strength-card";
 
@@ -84,7 +89,7 @@ const DEFAULT_ENQUIRY_RECORD: EnquiryRecord = {
   title: "Villa Design Consultation",
   requirementSummary:
     "Ananya Builders is seeking a residential fit-out for approximately 2,800–3,200 sq ft in Kochi. The current requirement covers space planning, interior fit-out and MEP coordination with a ₹40L–₹60L budget and a six-month target. The project is suitable for review, but budget coverage and expected deliverables should be clarified before proposal preparation.",
-  clientName: "—",
+  clientName: "Ananya Builders",
   location: "Kochi",
   thumbnailUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
   source: "website",
@@ -127,130 +132,92 @@ function getClientContextSectionIcon(iconName: string) {
   }
 }
 
-function formatBudgetValue(raw: unknown): string | undefined {
-  if (raw == null || raw === "") return undefined;
-  const num = typeof raw === "number" ? raw : Number(raw);
-  if (!Number.isFinite(num) || num === 0) return undefined;
-  const l = num / 100_000;
-  return l >= 100 ? `₹${num / 10_000_000}Cr` : `₹${l}L`;
-}
+function getMemberOdinInsightSummary(member: ClientHouseholdMember): string {
+  const name = (member.name || "").toLowerCase();
+  if (name.includes("ananya")) {
+    if (member.occupation?.toLowerCase().includes("director") || member.relationship?.toLowerCase().includes("mother")) {
+      return "Ananya regularly works from home and needs a high-privacy master suite with easy ground-floor and courtyard access. She holds final layout sign-off authority.";
+    }
+    return "Ananya requires an executive corner cabin with high acoustic privacy and holds full lease and fit-out sign-off authority.";
+  }
+  if (name.includes("rahul")) {
+    return "Rahul occasionally works from home and values outdoor entertaining, with a shared master suite and medium privacy needs. He is a co-decision maker.";
+  }
+  if (name.includes("nila")) {
+    return "Nila needs a private bedroom with a dedicated study desk and quiet space for reading and art.";
+  }
+  if (name.includes("meera")) {
+    return "Meera is a frequent visitor who needs a ground-floor bedroom, attached bathroom and minimal stair dependency for comfortable access.";
+  }
+  if (name.includes("david")) {
+    return "David prefers an open-plan collaborative zone with breakout studio space and teak finish approvals.";
+  }
+  if (name.includes("siddharth")) {
+    return "Siddharth coordinates site inspections, server room trunking, and MEP civil setback requirements.";
+  }
+  if (name.includes("radhika")) {
+    return "Radhika requires a high-privacy finance cabin and oversees milestone disbursement approvals.";
+  }
 
-interface BackendScopeRow {
-  id?: number | string | null;
-  scope_name?: string | null;
-  items?: Array<string | { item_name?: string }> | null;
-}
-
-interface BackendRequirementRow {
-  id?: string | null;
-  requirement_name?: string | null;
-  items?: Array<string | null> | null;
-}
-
-function mapBackendRequirements(raw: unknown): EnquiryRecord["requirementsList"] {
-  const rows = Array.isArray(raw) ? raw : [];
-  return rows.flatMap((entry) => {
-    const requirement = (entry ?? {}) as BackendRequirementRow;
-    const requirementName = String(requirement.requirement_name ?? "").trim();
-    if (!requirementName) return [];
-    const items = Array.isArray(requirement.items)
-      ? requirement.items.map((item) => String(item ?? "")).filter((item) => item.length > 0)
-      : [];
-    return [{ id: String(requirement.id ?? ""), requirement_name: requirementName, items }];
-  });
-}
-
-function mapBackendSiteImages(raw: unknown): string[] {
-  const values = Array.isArray(raw) ? raw : [];
-  return values.flatMap((entry) => {
-    if (typeof entry !== "string") return [];
-    return entry.trim() ? [entry] : [];
-  });
-}
-
-interface BackendProjectDocumentRow {
-  id?: number | string | null;
-  name?: string | null;
-  doc_name?: string | null;
-  docImageUrl?: string | null;
-  doc_img_url?: string | null;
-}
-
-function mapBackendProjectDocuments(
-  raw: unknown
-): EnquiryRecord["projectDocuments"] {
-  const rowsList = Array.isArray(raw) ? raw : [];
-  return rowsList.flatMap((entry) => {
-    const doc = (entry ?? {}) as BackendProjectDocumentRow;
-    const name = String(doc.name ?? doc.doc_name ?? "").trim();
-    if (!name) return [];
-    const docImageUrl = String(doc.docImageUrl ?? doc.doc_img_url ?? "").trim();
-    return [{ id: Number(doc.id), name, docImageUrl: docImageUrl || null }];
-  });
-}
-
-function mapBackendScopes(raw: unknown): EnquiryRecord["projectScopes"] {
-  const rows = Array.isArray(raw) ? raw : [];
-  return rows.flatMap((entry) => {
-    const scope = (entry ?? {}) as BackendScopeRow;
-    const scopeName = String(scope.scope_name ?? "").trim();
-    if (!scopeName) return [];
-    const items = Array.isArray(scope.items)
-      ? scope.items.map((item) => {
-          if (typeof item === "string") return item;
-          return String(item?.item_name ?? "");
-        })
-      : [];
-    return [{ id: Number(scope.id), scope_name: scopeName, items }];
-  });
+  if (member.specialNotes) {
+    return `${member.name} requires ${member.specialNotes.toLowerCase()}.`;
+  }
+  if (member.keyNeeds && member.keyNeeds.length > 0) {
+    return `${member.name} prioritizes ${member.keyNeeds.join(", ").toLowerCase()}.`;
+  }
+  return `${member.name}'s design requirements and space preferences have been verified by ODIN.`;
 }
 
 export function buildEnquiriesFromProjects(projects: Array<Record<string, unknown>>): EnquiryRecord[] {
   if (!projects || projects.length === 0) return [DEFAULT_ENQUIRY_RECORD];
   return projects.map((proj, idx) => {
     const id = String(proj.id || proj.enquiryRef || `enq-${idx + 1}`);
-    const title = String(proj.projectName || proj.name || proj.title || "Villa Design Consultation");
-    const clientName = String(proj.clientName || proj.client || proj.client_name || "—");
+    const title = String(proj.project_name || proj.name || proj.title || "Villa Design Consultation");
+    const clientName = String(proj.client_name || proj.client || proj.clientName || "Ananya Builders");
     const location = String(proj.place || proj.location || "Kochi");
-    const projectType = String(proj.projectType || proj.type || "residential").toLowerCase();
-    const normalizedType = projectType.includes("comm") ? "commercial" : "residential";
-    const backendProjectType =
-      typeof proj.projectType === "string" && proj.projectType.trim()
-        ? proj.projectType.trim()
-        : typeof proj.project_type === "string" && proj.project_type.trim()
-        ? proj.project_type.trim()
-        : null;
-    const budgetRaw = proj.estimatedOverallBudget ?? proj.estimated_overall_budget ?? proj.budget;
-    const budgetVal = formatBudgetValue(budgetRaw) ?? (typeof proj.budget === "string" ? proj.budget : undefined);
-    const areaRaw = proj.sqArea ?? proj.sq_area ?? proj.area;
-    const builtUpArea = areaRaw ? (typeof areaRaw === "number" ? `${areaRaw.toLocaleString("en-IN")} sq ft` : String(areaRaw)) : undefined;
-    const timelineVal = (proj.clientExpectedTimeline ?? proj.client_expected_timeline ?? proj.timeline ?? undefined) as string | undefined;
+    const rawType = String(proj.project_type || proj.type || proj.projectType || "residential").toLowerCase();
+    const normalizedType = rawType.includes("comm") ? "commercial" : "residential";
+
+    const isPrj = String(proj.project_character || "enq").toLowerCase() === "pr";
+    const status: EnquiryStatus = isPrj ? "completed" : "active";
+    const stage: EnquiryStage = isPrj ? "accepted" : (proj.view ? "reviewing" : "new");
+
+    const rawBudget = proj.estimated_overall_budget as number | string | undefined;
+    const formattedBudget = typeof rawBudget === "number"
+      ? (rawBudget > 0 ? `₹${(rawBudget / 100000).toFixed(rawBudget % 100000 === 0 ? 0 : 2)} Lakhs` : undefined)
+      : (typeof rawBudget === "string" && rawBudget.trim() !== "" ? rawBudget : undefined);
+
+    const rawArea = proj.sq_area as number | string | undefined;
+    const formattedArea = typeof rawArea === "number"
+      ? `${rawArea.toLocaleString()} sq ft`
+      : (typeof rawArea === "string" && rawArea.trim() !== "" ? rawArea : undefined);
 
     return {
-      id: id.startsWith("prj-") ? id : `prj-${id}`,
+      id,
       title,
-      requirementSummary: String(proj.briefDescription || proj.summary || proj.description || DEFAULT_ENQUIRY_RECORD.requirementSummary),
+      requirementSummary: String(proj.brief_description || proj.summary || proj.description || DEFAULT_ENQUIRY_RECORD.requirementSummary),
       clientName,
       location,
-      thumbnailUrl: String(proj.coverImageUrl || proj.thumbnailUrl || DEFAULT_ENQUIRY_RECORD.thumbnailUrl),
+      thumbnailUrl: String(proj.cover_image_url || proj.thumbnailUrl || DEFAULT_ENQUIRY_RECORD.thumbnailUrl),
       source: "website",
-      status: "active",
-      stage: "new",
+      status,
+      stage,
       projectType: normalizedType as any,
-      backendProjectType,
-      budgetMin: typeof budgetRaw === "number" ? budgetRaw : 0,
-      budgetMax: typeof budgetRaw === "number" ? budgetRaw : 0,
-      receivedAt: String(proj.createdAt || proj.receivedAt || DEFAULT_ENQUIRY_RECORD.receivedAt),
+      backendProjectType: String(proj.project_type || "Residential Design"),
+      budgetMin: 4000000,
+      budgetMax: 6000000,
+      receivedAt: String(proj.created_at || proj.createdAt || proj.receivedAt || DEFAULT_ENQUIRY_RECORD.receivedAt),
       nextAction: { type: "review_enquiry", label: "Review Requirements" },
       enquiryRef: String(proj.enquiryRef || proj.code || `ENQ-2026-${String(idx + 486).padStart(4, "0")}`),
-      budget: budgetVal,
-      timeline: timelineVal,
-      builtUpArea,
-      inspirationImages: (proj.inspirationImages ?? proj.inspiration_images ?? []) as any,
-      projectDocuments: mapBackendProjectDocuments(proj.projectDocuments ?? proj.project_docs),
-      siteImages: mapBackendSiteImages(proj.siteImages ?? proj.site_images),
-      projectScopes: mapBackendScopes(proj.projectScopes ?? proj.project_scopes),
-      requirementsList: mapBackendRequirements(proj.requirements ?? proj.requirements_list),
+      budget: formattedBudget || String(proj.budget || "₹40L – ₹60L"),
+      timeline: String(proj.client_expected_timeline || proj.timeline || "Within 6 Months"),
+      builtUpArea: formattedArea || String(proj.area || "2,800 – 3,200 sq ft"),
+      viewed: Boolean(proj.view),
+      inspirationImages: (proj.inspiration_images as any) || undefined,
+      projectDocuments: (proj.project_documents as any) || undefined,
+      siteImages: (proj.site_images as any) || undefined,
+      projectScopes: (proj.project_scopes as any) || undefined,
+      requirementsList: (proj.requirements_list as any) || undefined,
     };
   });
 }
@@ -436,10 +403,10 @@ export function EnquiryDetailWorkspace({
   const [stage, setStage] = useState<EnquiryStage>(DEFAULT_ENQUIRY_RECORD.stage || "new");
   const [selectedRequirementId, setSelectedRequirementId] = useState<string | null>(null);
   const [activeDomainKey, setActiveDomainKey] = useState<string>("room_programme");
-  const [activeBackendRequirementId, setActiveBackendRequirementId] = useState<string | null>(null);
   const [expandedRoomIds, setExpandedRoomIds] = useState<Record<string, boolean>>({});
   const [clarificationText, setClarificationText] = useState<string>("");
   const [selectedOwnerId, setSelectedOwnerId] = useState<string>("owner-1");
+  const [detailHouseholdMember, setDetailHouseholdMember] = useState<ClientHouseholdMember | null>(null);
 
   const activeTab: EnquiryTabKey = resolveValidTabKey(searchParams.get("tab"));
 
@@ -481,12 +448,7 @@ export function EnquiryDetailWorkspace({
           throw new Error("Backend projects request failed");
         }
         const records = buildEnquiriesFromProjects(payload.projects as never[]);
-        const match = records.find(
-          (record) =>
-            record.id === enquiryId ||
-            record.id === `prj-${enquiryId}` ||
-            record.id.replace("prj-", "") === enquiryId
-        );
+        const match = records.find((record) => record.id === enquiryId);
         return match ?? null;
       })
       .then((match) => {
@@ -548,58 +510,53 @@ export function EnquiryDetailWorkspace({
             <div className={styles.headerBlock}>
               <div className={styles.titleRow}>
                 <h1 className={styles.projectTitle}>{header.title}</h1>
-                <button
-                  type="button"
-                  className="title-share-btn"
-                  aria-label={`Share ${header.title}`}
-                  title={`Share ${header.title}`}
-                >
-                  <Share2 size={16} strokeWidth={1.8} />
-                </button>
-              </div>
-
-              <div className={styles.chipsMetaRow}>
-                <span className={styles.typeChip}>
-                  <Building2 size={13} />
-                  <span>{header.projectType}</span>
-                </span>
-                <span
-                  className={`${styles.stageChip} ${
-                    stage === "accepted"
-                      ? styles.stageAccepted
-                      : stage === "clarification"
-                      ? styles.stageClarification
-                      : stage === "rejected"
-                      ? styles.stageRejected
-                      : styles.stageNew
-                  }`}
-                >
-                  <span className={styles.stageDot} />
-                  <span style={{ textTransform: "capitalize" }}>{stage}</span>
-                </span>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  {header.enquiryRef && (
+                    <span className={styles.refCode}>{header.enquiryRef}</span>
+                  )}
+                  <button
+                    type="button"
+                    className="title-share-btn"
+                    aria-label={`Share ${header.title}`}
+                    title={`Share ${header.title}`}
+                  >
+                    <Share2 size={16} strokeWidth={1.8} />
+                  </button>
+                </div>
               </div>
 
               <div className={styles.subMetaRow}>
-                <span className={styles.metaItem}>
-                  <MapPin size={13} />
-                  <span>{header.location}</span>
-                </span>
-                <span className={styles.metaDot}>•</span>
-                <span className={styles.metaItem}>
-                  <Calendar size={13} />
-                  <span>Received {header.receivedDate}</span>
-                </span>
-                <span className={styles.metaDot}>•</span>
-                <span className={styles.metaItem}>
-                  <Globe size={13} />
-                  <span style={{ textTransform: "capitalize" }}>Via {header.source}</span>
-                </span>
-                {header.enquiryRef && (
-                  <>
-                    <span className={styles.metaDot}>•</span>
-                    <span className={styles.refCode}>{header.enquiryRef}</span>
-                  </>
-                )}
+                <div className={styles.subMetaLeft}>
+                  <span className={styles.metaChip}>
+                    <MapPin size={13} />
+                    <span>{header.location}</span>
+                  </span>
+                  <span className={styles.metaChip}>
+                    <Calendar size={13} />
+                    <span>Received {header.receivedDate}</span>
+                  </span>
+                </div>
+
+                <div className={styles.chipsMetaRow}>
+                  <span className={styles.typeChip}>
+                    <Building2 size={13} />
+                    <span>{header.projectType}</span>
+                  </span>
+                  <span
+                    className={`${styles.stageChip} ${
+                      stage === "accepted"
+                        ? styles.stageAccepted
+                        : stage === "clarification"
+                        ? styles.stageClarification
+                        : stage === "rejected"
+                        ? styles.stageRejected
+                        : styles.stageNew
+                    }`}
+                  >
+                    <span className={styles.stageDot} />
+                    <span style={{ textTransform: "capitalize" }}>{stage}</span>
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -633,6 +590,10 @@ export function EnquiryDetailWorkspace({
                   }))}
                   unconfirmedItems={viewModel.unconfirmedScope}
                 />
+                <EnquirySiteImagesCard
+                  title="CLIENT INSPIRATION IMAGES"
+                  totalCount={8}
+                />
               </div>
             )}
 
@@ -644,146 +605,60 @@ export function EnquiryDetailWorkspace({
                   <div className={styles.reqDomainNavHeader}>
                     <span className={styles.reqDomainNavTitle}>REQUIREMENTS</span>
                     <span className={styles.reqDomainNavSubtitle}>
-                      {viewModel.backendRequirements.length > 0
-                        ? `${viewModel.backendRequirements.length} requirement groups`
-                        : `${
-                            viewModel.requirements.filter((r) =>
-                              REQUIREMENT_DOMAIN_ORDER.some((d) => d.key === (r.domain || r.category))
-                            ).length
-                          } delivery specs`}
+                      {
+                        viewModel.requirements.filter((r) =>
+                          REQUIREMENT_DOMAIN_ORDER.some((d) => d.key === (r.domain || r.category))
+                        ).length
+                      }{" "}
+                      delivery specs
                     </span>
                   </div>
 
                   <div className={styles.reqDomainNavList}>
-                    {viewModel.backendRequirements.length > 0 ? (
-                      viewModel.backendRequirements.map((requirement) => {
-                        const isActive =
-                          activeBackendRequirementId === requirement.id ||
-                          (activeBackendRequirementId === null &&
-                            viewModel.backendRequirements[0].id === requirement.id);
+                    {REQUIREMENT_DOMAIN_ORDER.map((d) => {
+                      const domainReqs = viewModel.requirements.filter(
+                        (r) => (r.domain || r.category) === d.key
+                      );
+                      if (domainReqs.length === 0) return null;
 
-                        return (
-                          <button
-                            key={requirement.id}
-                            type="button"
-                            className={`${styles.reqDomainNavItem} ${isActive ? styles.reqDomainNavItemActive : ""}`}
-                            onClick={() => setActiveBackendRequirementId(requirement.id)}
-                          >
-                            <div className={styles.reqDomainNavLabelRow}>
-                              <span className={styles.reqDomainNavLabel}>{requirement.requirement_name}</span>
-                            </div>
-                            <span className={styles.reqDomainNavBadge}>
-                              {requirement.items.length}
+                      const clearCount = domainReqs.filter(
+                        (r) => r.state === "confirmed" || r.state === "odin_inferred"
+                      ).length;
+                      const totalCount = domainReqs.length;
+                      const hasBlocker = domainReqs.some(
+                        (r) => r.state === "needs_clarification" || r.state === "needs_verification"
+                      );
+                      const isActive = activeDomainKey === d.key;
+
+                      return (
+                        <button
+                          key={d.key}
+                          type="button"
+                          className={`${styles.reqDomainNavItem} ${isActive ? styles.reqDomainNavItemActive : ""}`}
+                          onClick={() => handleSelectDomain(d.key)}
+                        >
+                          <div className={styles.reqDomainNavLabelRow}>
+                            <span
+                              className={styles.reqDomainNavIconBadge}
+                              style={{ color: d.iconColor }}
+                            >
+                              {d.icon}
                             </span>
-                          </button>
-                        );
-                      })
-                    ) : (
-                      REQUIREMENT_DOMAIN_ORDER.map((d) => {
-                        const domainReqs = viewModel.requirements.filter(
-                          (r) => (r.domain || r.category) === d.key
-                        );
-                        if (domainReqs.length === 0) return null;
-
-                        const clearCount = domainReqs.filter(
-                          (r) => r.state === "confirmed" || r.state === "odin_inferred"
-                        ).length;
-                        const totalCount = domainReqs.length;
-                        const hasBlocker = domainReqs.some(
-                          (r) => r.state === "needs_clarification" || r.state === "needs_verification"
-                        );
-                        const isActive = activeDomainKey === d.key;
-
-                        return (
-                          <button
-                            key={d.key}
-                            type="button"
-                            className={`${styles.reqDomainNavItem} ${isActive ? styles.reqDomainNavItemActive : ""}`}
-                            onClick={() => handleSelectDomain(d.key)}
-                          >
-                            <div className={styles.reqDomainNavLabelRow}>
-                              <span
-                                className={styles.reqDomainNavIconBadge}
-                                style={{ color: d.iconColor }}
-                              >
-                                {d.icon}
-                              </span>
-                              <span className={styles.reqDomainNavLabel}>{d.shortTitle}</span>
-                              {hasBlocker && <span className={styles.reqDomainNavBlockerDot} title="Needs attention" />}
-                            </div>
-                            <span className={styles.reqDomainNavBadge}>
-                              {clearCount}/{totalCount}
-                            </span>
-                          </button>
-                        );
-                      })
-                    )}
+                            <span className={styles.reqDomainNavLabel}>{d.shortTitle}</span>
+                            {hasBlocker && <span className={styles.reqDomainNavBlockerDot} title="Needs attention" />}
+                          </div>
+                          <span className={styles.reqDomainNavBadge}>
+                            {clearCount}/{totalCount}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </aside>
 
                 {/* PANE 2: Active Requirement Domain Workspace (Center, Master-Detail) */}
                 <section className={styles.activeDomainWorkspace} aria-label="Active Domain Workspace">
-                  {viewModel.backendRequirements.length > 0
-                    ? (() => {
-                        const activeRequirement =
-                          viewModel.backendRequirements.find(
-                            (requirement) => requirement.id === activeBackendRequirementId
-                          ) || viewModel.backendRequirements[0];
-
-                        return (
-                          <>
-                            <div className={styles.activeDomainHeader}>
-                              <div className={styles.activeDomainHeaderLeft} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                                <span
-                                  className={`${styles.reqDomainNavIconBadge} ${styles.reqDomainNavHeaderIconBadge}`}
-                                >
-                                  <FileText size={16} />
-                                </span>
-                                <div>
-                                  <h3 className={styles.activeDomainTitle}>{activeRequirement.requirement_name}</h3>
-                                  <p className={styles.activeDomainDesc}>
-                                    {activeRequirement.items.length} specification values
-                                  </p>
-                                </div>
-                              </div>
-                              <div className={styles.activeDomainHeaderRight}>
-                                <span className={styles.activeDomainCompletenessPill}>
-                                  {activeRequirement.items.length} items
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className={styles.activeDomainContent}>
-                              <div className={styles.reqValueListHeader}>
-                                <span>Specification / Value</span>
-                                <span className={styles.reqValueListCount}>
-                                  {activeRequirement.items.length}
-                                </span>
-                              </div>
-                              {activeRequirement.items.length === 0 ? (
-                                <p className={styles.reqValueListEmpty}>
-                                  No specification values recorded for this requirement.
-                                </p>
-                              ) : (
-                                <ul className={styles.reqValueList}>
-                                  {activeRequirement.items.map((item, itemIndex) => (
-                                    <li
-                                      key={`${activeRequirement.id}-${itemIndex}`}
-                                      className={styles.reqValueItem}
-                                    >
-                                      <span className={styles.reqValueItemIndex}>
-                                        {itemIndex + 1}
-                                      </span>
-                                      <span className={styles.roomNameText}>{item}</span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
-                            </div>
-                          </>
-                        );
-                      })()
-                    : (() => {
+                  {(() => {
                     const currentDomainMeta =
                       REQUIREMENT_DOMAIN_ORDER.find((d) => d.key === activeDomainKey) ||
                       REQUIREMENT_DOMAIN_ORDER[0];
@@ -973,28 +848,11 @@ export function EnquiryDetailWorkspace({
               <div className={styles.tabSectionGroup}>
                 <div className={styles.sectionCard}>
                   <h3 className={styles.cardHeading}>SITE IMAGES & EVIDENCE</h3>
-                  <EnquirySiteImagesCard
-                    title="All Site Images"
-                    totalCount={enquiry.siteImages?.length ?? 0}
-                    images={(enquiry.siteImages ?? []).map((src, index) => ({
-                      id: `site-${index + 1}`,
-                      src,
-                      alt: `Site image ${index + 1}`,
-                    }))}
-                  />
+                  <EnquirySiteImagesCard title="All Site Images" totalCount={7} />
                 </div>
                 <div className={styles.sectionCard} id="enquiry-files">
                   <h3 className={styles.cardHeading}>PROJECT DOCUMENTS</h3>
-                  <EnquiryProjectDocumentsSection
-                    documents={(enquiry.projectDocuments ?? []).map((doc, index) => ({
-                      id: String(doc.id || `doc-${index + 1}`),
-                      name: doc.name,
-                      docImageUrl: doc.docImageUrl ?? undefined,
-                      discipline: "Drawings",
-                      uploaded: true,
-                      isNew: index === 0,
-                    }))}
-                  />
+                  <EnquiryProjectDocumentsSection />
                 </div>
               </div>
             )}
@@ -1002,218 +860,76 @@ export function EnquiryDetailWorkspace({
             {/* ── TAB 4: CLIENT CONTEXT ───────────────────────────────────────────── */}
             {activeTab === "client" && (
               <div className={styles.tabSectionGroup}>
-                <div className={styles.sectionCard}>
-                  <div className={styles.assignedMemberHeaderRow} style={{ marginBottom: "14px" }}>
-                    <div className={styles.assignedMemberTitleGroup}>
-                      <h4 className={styles.assignedMemberHeading}>Members Assigned</h4>
-                      <span className={styles.countBadge}>{(viewModel.owners || []).length} active</span>
-                    </div>
-                    <button className={styles.filtersChip} type="button">
-                      <Filter size={13} />
-                      <span>Filters</span>
-                    </button>
-                  </div>
-
-                  {/* ── 4 Member Reference ID Cards Grid (Matching Reference Image 1) ── */}
-                  <div className={styles.idCardsGrid}>
-                    {(viewModel.owners || []).map((owner) => (
-                      <div key={owner.id} className={styles.idCardShell}>
-                        <div>
-                          {/* Top Row: Avatar + Expire Date / Status + QR Box */}
-                          <div className={styles.idCardTopRow}>
-                            <div className={styles.idAvatarMetaGroup}>
-                              <div className={styles.idAvatarCircle}>
-                                {owner.avatarInitials}
-                              </div>
-                              <div className={styles.idStatusGroup}>
-                                <div className={styles.idStatusLabelRow}>
-                                  <Clock size={12} className={styles.idClockIcon} />
-                                  <span className={styles.idStatusLabel}>Review Date</span>
-                                </div>
-                                <span className={styles.idStatusValue}>{owner.nextReview}</span>
-                              </div>
-                            </div>
-
-                            <div className={styles.idQrBox} title={`Scan ID: ${owner.idNumber}`}>
-                              <QrCode size={22} />
-                            </div>
-                          </div>
-
-                          {/* 2-Column Key-Value Pairs Grid (Matching Reference Image 1) */}
-                          <div className={styles.idMetaGrid} style={{ marginTop: "14px" }}>
-                            <div className={styles.idMetaField}>
-                              <span className={styles.idMetaLabel}>Client Name</span>
-                              <h5 className={styles.idMetaValue}>{owner.name}</h5>
-                            </div>
-                            <div className={styles.idMetaField}>
-                              <span className={styles.idMetaLabel}>Role & Scope</span>
-                              <span className={styles.idMetaValue}>{owner.meta.roleScope}</span>
-                            </div>
-
-                            <div className={styles.idMetaField}>
-                              <span className={styles.idMetaLabel}>City of Residence</span>
-                              <span className={styles.idMetaValue}>{owner.meta.location}</span>
-                            </div>
-                            <div className={styles.idMetaField}>
-                              <span className={styles.idMetaLabel}>ID Number</span>
-                              <span className={styles.idMetaValue}>
-                                {owner.idNumber}
-                                <button
-                                  type="button"
-                                  className={styles.idCopyBtn}
-                                  title="Copy ID Number"
-                                  aria-label={`Copy ${owner.idNumber}`}
-                                >
-                                  <Copy size={11} />
-                                </button>
-                              </span>
-                            </div>
-
-                            <div className={styles.idMetaField}>
-                              <span className={styles.idMetaLabel}>Experience</span>
-                              <span className={styles.idMetaValue}>{owner.meta.expOrAge}</span>
-                            </div>
-                            <div className={styles.idMetaField}>
-                              <span className={styles.idMetaLabel}>Primary Channel</span>
-                              <span className={styles.idMetaValue}>{owner.meta.channel}</span>
-                            </div>
-
-                            <div className={styles.idMetaField} style={{ gridColumn: "span 2" }}>
-                              <span className={styles.idMetaLabel}>Stakeholder Status</span>
-                              <span className={styles.idMetaValue}>{owner.tag1}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Bottom Full-Width Dark Action Button */}
-                        <button className={styles.idDarkActionBtn} type="button">
-                          <span>Schedule Review</span>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div style={{ marginTop: "20px" }}>
-                    <ClientPrioritiesBar priorities={viewModel.priorities} />
+                {/* ── CLIENT & HOUSEHOLD ── */}
+                <div className={styles.householdHeaderRow}>
+                  <div className={styles.householdTitleGroup}>
+                    <h4 className={styles.householdHeading}>
+                      {viewModel.isCommercialProject ? "Client & Stakeholders" : "Client & Household"}
+                    </h4>
+                    <span className={styles.householdCountBadge}>
+                      {(viewModel.householdMembers || []).length} members
+                    </span>
                   </div>
                 </div>
 
-                {(viewModel.clientContextSections || []).map((sec) => {
-                  const IconComp = getClientContextSectionIcon(sec.iconName);
-                  const clearCount = sec.items.filter(
-                    (item) => item.state === "confirmed" || item.state === "odin_inferred"
-                  ).length;
-
-                  return (
-                    <div key={sec.key} className={styles.sectionCard}>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                          <span
-                            className={`${styles.reqDomainNavIconBadge} ${styles.reqDomainNavHeaderIconBadge}`}
-                            style={{ color: sec.iconColor }}
-                          >
-                            <IconComp size={16} />
-                          </span>
-                          <div>
-                            <h3 className={styles.cardHeading}>{sec.title}</h3>
-                            <p className={styles.cardDesc}>{sec.subtitle}</p>
-                          </div>
+                <div className={styles.householdGrid}>
+                  {(viewModel.householdMembers || []).map((member: ClientHouseholdMember) => (
+                    <div key={member.id} className={styles.morigCardShell}>
+                      {/* ── ODIN HOVER TOOLTIP / POPOVER (Natural-Language AI Interpretation) ── */}
+                      <div className={styles.odinHoverTooltip}>
+                        <div className={styles.tooltipHeader}>
+                          <Sparkles size={12} className={styles.tooltipIcon} />
+                          <span className={styles.tooltipTitle}>ODIN Insight</span>
                         </div>
-                        <span className={styles.activeDomainCompletenessPill}>
-                          {clearCount}/{sec.items.length} clear
-                        </span>
+                        <p className={styles.tooltipSummaryText}>
+                          {getMemberOdinInsightSummary(member)}
+                        </p>
+                        <div className={styles.tooltipTail} />
                       </div>
 
-                      <div className={styles.reqCardsGrid}>
-                        {sec.items.map((item) => {
-                          const CategoryIcon = getReqCategoryIcon(item.category);
+                      {/* ── PHOTO CONTAINER WITH DARK GRADIENT OVERLAY ── */}
+                      <div className={styles.morigPhotoBox}>
+                        {member.photoUrl ? (
+                          <img
+                            src={member.photoUrl}
+                            alt={member.name}
+                            className={styles.morigPhotoImg}
+                          />
+                        ) : (
+                          <div className={styles.morigFallbackAvatar}>
+                            {member.avatarInitials}
+                          </div>
+                        )}
 
-                          return (
-                            <div
-                              key={item.id}
-                              className={`${styles.cardShell} ${
-                                selectedRequirementId === item.id ? styles.cardShellSelected : ""
-                              }`}
-                              onClick={() =>
-                                setSelectedRequirementId((prev) => (prev === item.id ? null : item.id))
-                              }
-                              role="button"
-                              tabIndex={0}
-                              aria-selected={selectedRequirementId === item.id}
-                            >
-                              <div className={styles.headerRow}>
-                                <div className={styles.headerTitleGroup}>
-                                  <div className={styles.iconBox}>
-                                    <CategoryIcon size={13} className={styles.headerIcon} />
-                                  </div>
-                                  <h4 className={styles.cardTitle}>{item.label}</h4>
-                                  <span className={`${styles.prioTag} ${styles[`prio_${item.priority}`]}`}>
-                                    {item.priority.toUpperCase()}
-                                  </span>
-                                </div>
-                                <span className={`${styles.reqStateBadge} ${styles[`state_${item.state}`]}`}>
-                                  {item.state.replace("_", " ")}
-                                </span>
-                              </div>
+                        <div className={styles.morigGradientOverlay} />
 
-                              {item.value ? (
-                                <div className={styles.innerCard}>
-                                  <p className={styles.reqValue}>{String(item.value)}</p>
-                                </div>
-                              ) : null}
-                            </div>
-                          );
-                        })}
+                        {/* ── BOTTOM OVERLAY CONTENT ── */}
+                        <div className={styles.morigOverlayContent}>
+                          {/* Member Name */}
+                          <h5 className={styles.morigName}>{member.name}</h5>
+
+                          {/* Description line */}
+                          <p className={styles.morigDesc}>
+                            {member.relationship}{member.age ? ` · ${member.age} yrs` : ""}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* ── TAB 6: ODIN INTELLIGENCE ───────────────────────────────────────── */}
-            {activeTab === "intelligence" && (
-              <div className={styles.tabSectionGroup}>
-                <div className={styles.sectionCard}>
-                  <h3 className={styles.cardHeading}>FULL ODIN INTELLIGENCE SCORE BREAKDOWN</h3>
-                  <div className={styles.intelligenceDetailsGrid}>
-                    <div className={styles.detailBox}>
-                      <span className={styles.detailTitle}>Requirement Strength</span>
-                      <span className={styles.detailValue}>
-                        {viewModel.intelligence.requirementStrength.score}% (
-                        {viewModel.intelligence.requirementStrength.label})
-                      </span>
-                      <p className={styles.detailSub}>
-                        {viewModel.intelligence.requirementStrength.explanation}
-                      </p>
-                    </div>
-
-                    <div className={styles.detailBox}>
-                      <span className={styles.detailTitle}>Opportunity Fit</span>
-                      <span className={styles.detailValue}>
-                        {viewModel.intelligence.opportunityFit.score}% (
-                        {viewModel.intelligence.opportunityFit.label})
-                      </span>
-                      <p className={styles.detailSub}>
-                        Confidence: {viewModel.intelligence.opportunityFit.confidence}
-                      </p>
-                    </div>
-
-                    <div className={styles.detailBox}>
-                      <span className={styles.detailTitle}>Proposal Readiness</span>
-                      <span className={styles.detailValue}>
-                        {viewModel.intelligence.proposalReadiness.state}
-                      </span>
-                      <p className={styles.detailSub}>
-                        {viewModel.intelligence.proposalReadiness.reason}
-                      </p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
+
+                {/* ── CLIENT CONTEXT & PRIORITIES ── */}
+                <ClientPrioritiesBar priorities={viewModel.priorities} />
+
+                {/* ── CLIENT INSPIRATION IMAGES ── */}
+                <EnquirySiteImagesCard
+                  title="CLIENT INSPIRATION IMAGES"
+                  totalCount={8}
+                />
               </div>
             )}
 
-            {/* ── TAB 7: ACTIVITY ─────────────────────────────────────────────────── */}
+            {/* ── TAB 6: ACTIVITY ─────────────────────────────────────────────────── */}
             {activeTab === "activity" && (
               <div className={styles.tabSectionGroup}>
                 <div className={styles.sectionCard}>
@@ -1263,6 +979,7 @@ export function EnquiryDetailWorkspace({
               {activeTab === "overview" ? (
                 <GlobalEnquiryIntelligenceCard
                   viewModel={viewModel}
+                  enquiry={enquiry}
                   onAppendToClarification={handleAppendToClarification}
                   onNavigateToIntelligence={handleViewAllFiles}
                 />
@@ -1323,6 +1040,14 @@ export function EnquiryActionsCard({
 }: EnquiryActionsCardProps) {
   const [proposalStatus] = useState<ProposalStatus>(initialProposalStatus);
   const [showWarningModal, setShowWarningModal] = useState(false);
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleCreateProposalClick = () => {
     setShowWarningModal(true);
@@ -1362,7 +1087,7 @@ export function EnquiryActionsCard({
           </button>
         </div>
 
-        {showWarningModal && (
+        {showWarningModal && mounted && createPortal(
           <div className={styles.modalBackdrop} onClick={() => setShowWarningModal(false)}>
             <div className={styles.warningModalCard} onClick={(e) => e.stopPropagation()}>
               <div className={styles.warningModalHeaderRow}>
@@ -1397,54 +1122,142 @@ export function EnquiryActionsCard({
                 </button>
               </div>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </>
     );
   }
 
   return (
-    <div className={styles.actionBtnRow}>
-      <button type="button" className={styles.acceptBtn} onClick={() => onStageChange("accepted")}>
-        Accept Enquiry
-      </button>
-      <button type="button" className={styles.rejectBtn} onClick={() => onStageChange("rejected")}>
-        Reject Enquiry
-      </button>
-    </div>
+    <>
+      <div className={styles.actionBtnRow}>
+        <button type="button" className={styles.acceptBtn} onClick={() => setShowAcceptModal(true)}>
+          Accept Enquiry
+        </button>
+        <button type="button" className={styles.rejectBtn} onClick={() => setShowRejectModal(true)}>
+          Reject Enquiry
+        </button>
+      </div>
+
+      {/* Accept Confirmation Modal */}
+      {showAcceptModal && mounted && createPortal(
+        <div className={styles.modalBackdrop} onClick={() => setShowAcceptModal(false)}>
+          <div className={styles.warningModalCard} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.warningModalHeaderRow}>
+              <div className={styles.acceptModalIconWrap}>
+                <CheckCircle2 size={22} />
+              </div>
+              <div>
+                <h3 className={styles.warningModalTitle}>Accept Enquiry</h3>
+                <span style={{ fontSize: "11.5px", color: "#64748b" }}>Start proposal preparation</span>
+              </div>
+            </div>
+            <p className={styles.warningModalText}>
+              Accept this enquiry and move it to Proposal Preparation? The client will be notified.
+            </p>
+            <div className={styles.warningModalBtnRow}>
+              <button
+                type="button"
+                className={styles.modalCancelBtn}
+                onClick={() => setShowAcceptModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={styles.acceptConfirmBtn}
+                onClick={() => {
+                  setShowAcceptModal(false);
+                  onStageChange("accepted");
+                }}
+              >
+                Accept Enquiry
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Reject Confirmation Modal */}
+      {showRejectModal && mounted && createPortal(
+        <div className={styles.modalBackdrop} onClick={() => setShowRejectModal(false)}>
+          <div className={styles.warningModalCard} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.warningModalHeaderRow}>
+              <div className={styles.rejectModalIconWrap}>
+                <XCircle size={22} />
+              </div>
+              <div>
+                <h3 className={styles.warningModalTitle}>Reject Enquiry</h3>
+                <span style={{ fontSize: "11.5px", color: "#64748b" }}>Confirm project rejection</span>
+              </div>
+            </div>
+            <p className={styles.warningModalText}>
+              Are you sure you want to reject this enquiry? This action will mark the enquiry as rejected and update the project record.
+            </p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <label className={styles.rejectionLabel}>
+                Rejection Reason (Optional):
+              </label>
+              <ThemeSelect
+                value={rejectionReason}
+                options={[
+                  { value: "", label: "Select a reason..." },
+                  { value: "capacity", label: "Studio Capacity Full" },
+                  { value: "location", label: "Outside Primary Service Area" },
+                  { value: "budget", label: "Budget Mismatch" },
+                  { value: "scope", label: "Scope Mismatch" },
+                  { value: "other", label: "Other Reason" },
+                ]}
+                onChange={(val) => setRejectionReason(val)}
+                fullWidth
+                ariaLabel="Rejection Reason"
+              />
+            </div>
+
+            <div className={styles.warningModalBtnRow}>
+              <button
+                type="button"
+                className={styles.modalCancelBtn}
+                onClick={() => setShowRejectModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={styles.rejectConfirmBtn}
+                onClick={() => {
+                  setShowRejectModal(false);
+                  onStageChange("rejected");
+                }}
+              >
+                Confirm Rejection
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }
 
 export function GlobalEnquiryIntelligenceCard({
   viewModel,
-  selectedRequirement,
-  onDeselectRequirement,
+  enquiry,
   onAppendToClarification,
-  onNavigateToIntelligence,
 }: {
   viewModel: EnquiryDetailViewModel;
-  selectedRequirement?: EnquiryRequirement | null;
-  onDeselectRequirement?: () => void;
+  enquiry: EnquiryRecord;
   onAppendToClarification: (text: string) => void;
   onNavigateToIntelligence: () => void;
 }) {
   const { intelligence } = viewModel;
 
-  const unconfirmedCount = (viewModel.requirements || []).filter(
-    (r: EnquiryRequirement) => r.state === "needs_clarification" || r.state === "needs_verification" || r.state === "partial"
-  ).length;
-
-  const insights: string[] = [
-    "Budget coverage is still unclear.",
-    "Site information is largely unverified.",
-    "Timeline contains a possible schedule conflict.",
-    "Professional scope requires clarification before proposal.",
-  ];
-
   return (
     <div className={styles.globalIntelCard}>
-      <h3 className={styles.globalIntelHeader}>ENQUIRY INTELLIGENCE</h3>
-
       {/* 1. Requirement Strength */}
       <div className={styles.signalBlock}>
         <div className={styles.signalLabelRow}>
@@ -1497,119 +1310,12 @@ export function GlobalEnquiryIntelligenceCard({
         </div>
       </div>
 
-      <div className={styles.signalDivider} />
-
-      {/* 2. Opportunity Fit */}
-      <div className={styles.signalBlock}>
-        <div className={styles.signalLabelRow}>
-          <span className={styles.signalTitle}>Opportunity Fit</span>
-        </div>
-        <div className={styles.signalValueRow}>
-          <span className={styles.signalScore}>{intelligence.opportunityFit.score}%</span>
-          <span className={styles.signalDot}>·</span>
-          <span className={styles.signalBand}>{intelligence.opportunityFit.label}</span>
-        </div>
-        <p className={styles.signalSubtext}>
-          Confidence: <strong>{intelligence.opportunityFit.confidence}</strong>
-        </p>
-      </div>
-
-      <div className={styles.signalDivider} />
-
-      {/* 3. Proposal Readiness */}
-      <div className={styles.signalBlock}>
-        <div className={styles.signalLabelRow}>
-          <span className={styles.signalTitle}>Proposal Readiness</span>
-        </div>
-        <div className={styles.signalValueRow}>
-          <span className={`${styles.signalReadinessState} ${intelligence.proposalReadiness.state === "READY" ? styles.stateReady : styles.statePartial}`}>
-            {intelligence.proposalReadiness.state}
-          </span>
-        </div>
-        <p className={styles.signalSubtext}>
-          {unconfirmedCount > 0
-            ? `${unconfirmedCount} critical gaps must be clarified before proposal creation.`
-            : intelligence.proposalReadiness.reason}
-        </p>
-      </div>
-
-      <div className={styles.sectionDivider} />
-
-      {/* ODIN INSIGHTS */}
-      <div className={styles.odinInsightsSection}>
-        <h4 className={styles.odinInsightsTitle}>ODIN INSIGHTS</h4>
-        <ul className={styles.odinInsightsList}>
-          {insights.map((insight, idx) => (
-            <li key={idx} className={styles.odinInsightItem}>
-              <span className={styles.bulletDot}>•</span>
-              <span>{insight}</span>
-            </li>
-          ))}
-        </ul>
-
-        {selectedRequirement && (
-          <div className={styles.selectedContextBlock}>
-            <div className={styles.selectedContextHeader}>
-              <span className={styles.selectedContextLabel}>SELECTED</span>
-              {onDeselectRequirement && (
-                <button
-                  type="button"
-                  className={styles.selectedContextCloseBtn}
-                  onClick={onDeselectRequirement}
-                >
-                  ×
-                </button>
-              )}
-            </div>
-            <div className={styles.selectedContextName}>{selectedRequirement.label}</div>
-            <div className={styles.selectedContextMeta}>
-              <span className={`${styles.reqStateBadge} ${styles[`state_${selectedRequirement.state}`]}`}>
-                {selectedRequirement.state.replace("_", " ")}
-              </span>
-              <span className={`${styles.prioTag} ${styles[`prio_${selectedRequirement.priority}`]}`}>
-                {selectedRequirement.priority.toUpperCase()}
-              </span>
-            </div>
-            <p className={styles.selectedContextOdinText}>
-              ODIN: &ldquo;{selectedRequirement.id.includes("budget")
-                ? "This blocks reliable commercial pricing."
-                : selectedRequirement.id.includes("drawings")
-                ? "Existing floor plan DWG file must be verified against physical site dimensions."
-                : selectedRequirement.id.includes("mep")
-                ? "Floor raceways and HVAC duct relocation scope requires contractor confirmation."
-                : "Requires verification before finalizing proposal."}&rdquo;
-            </p>
-            {(selectedRequirement.state === "needs_clarification" ||
-              selectedRequirement.state === "needs_verification" ||
-              selectedRequirement.state === "partial") && (
-              <button
-                type="button"
-                className={styles.addClarificationSmallBtn}
-                onClick={() => {
-                  const text = selectedRequirement.id.includes("budget")
-                    ? "Please confirm whether the ₹40L–₹60L budget includes furniture, lighting, MEP works and execution."
-                    : selectedRequirement.id.includes("drawings")
-                    ? "Please confirm whether the uploaded DWG is the latest verified drawing and reflects current site dimensions."
-                    : selectedRequirement.id.includes("mep")
-                    ? "Please confirm electrical load capacity, floor raceways, and HVAC duct relocation scope."
-                    : `Please clarify details regarding ${selectedRequirement.label}.`;
-                  onAppendToClarification(text);
-                }}
-              >
-                + Add to clarification
-              </button>
-            )}
-          </div>
-        )}
-
-        <button
-          type="button"
-          className={styles.viewFullOdinBtn}
-          onClick={onNavigateToIntelligence}
-        >
-          View full ODIN Intelligence →
-        </button>
-      </div>
+      {/* 2. ODIN Insights Panel */}
+      <OdinInsightsPanel
+        scope="overview"
+        insights={deriveContextualOdinInsights(enquiry, "overview")}
+        onAppendToClarification={onAppendToClarification}
+      />
     </div>
   );
 }

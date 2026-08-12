@@ -152,20 +152,20 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
         </button>
       </div>
 
-      {/* ── 2. LAYER 2: SECONDARY INNER CONTENT CARD (#ffffff) ─────────────── */}
-      <div className={styles.innerCard}>
-        {/* Summary Paragraph */}
-        <p className={styles.summaryText}>{insight.summary}</p>
+      {/* ── 2. LAYER 2: SECONDARY INNER CONTENT CARD (#ffffff) — COLLAPSIBLE ── */}
+      <div
+        className={`${styles.collapsibleContainer} ${
+          isExpanded ? styles.collapsibleContainerExpanded : ""
+        }`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className={styles.collapsibleInner}>
+          {/* Summary Paragraph */}
+          <p className={styles.summaryText}>{insight.summary}</p>
 
-        {/* Smooth CSS Grid Collapsible Container for Expanded Details */}
-        {hasExpandedDetails && (
-          <div
-            className={`${styles.collapsibleContainer} ${
-              isExpanded ? styles.collapsibleContainerExpanded : ""
-            }`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className={styles.collapsibleInner}>
+          {/* Expanded Details */}
+          {hasExpandedDetails && (
+            <div className={styles.detailsGroup}>
               {insight.whyFlagged && (
                 <div className={styles.detailRow}>
                   <div className={styles.labelCol}>
@@ -202,44 +202,37 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
                 </div>
               )}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Semantic Tags Row */}
-        <div className={styles.tagsRow}>
-          <span className={`${styles.badge} ${badgeConfig.styleClass}`}>
-            {badgeConfig.icon}
-            <span>{badgeConfig.label}</span>
-          </span>
-          {insight.domainTag && (
-            <span className={styles.domainTag}>
-              <Tag size={11} className={styles.tagIcon} />
-              <span>{insight.domainTag}</span>
+          {/* Semantic Tags Row */}
+          <div className={styles.tagsRow}>
+            <span className={`${styles.badge} ${badgeConfig.styleClass}`}>
+              {badgeConfig.icon}
+              <span>{badgeConfig.label}</span>
             </span>
+            {insight.domainTag && (
+              <span className={styles.domainTag}>
+                <Tag size={11} className={styles.tagIcon} />
+                <span>{insight.domainTag}</span>
+              </span>
+            )}
+          </div>
+
+          {/* ── 3. LAYER 3: FOOTER CTA BUTTON ── */}
+          {insight.actionPrimary && (
+            <div className={styles.footerCtaWrap} onClick={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                className={styles.ctaButton}
+                onClick={handlePrimaryAction}
+              >
+                <Plus size={13} />
+                <span>{insight.actionPrimary.label}</span>
+              </button>
+            </div>
           )}
         </div>
       </div>
-
-      {/* ── 3. LAYER 3: FOOTER CTA BUTTON (OUTSIDE Inner Card, INSIDE Outer Shell) ── */}
-      {insight.actionPrimary && (
-        <div
-          className={`${styles.footerCtaCollapsible} ${
-            isExpanded ? styles.footerCtaCollapsibleExpanded : ""
-          }`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className={styles.footerCtaInner}>
-            <button
-              type="button"
-              className={styles.ctaButton}
-              onClick={handlePrimaryAction}
-            >
-              <Plus size={13} />
-              <span>{insight.actionPrimary.label}</span>
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

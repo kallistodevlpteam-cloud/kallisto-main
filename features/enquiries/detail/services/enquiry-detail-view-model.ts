@@ -193,6 +193,176 @@ export const DEFAULT_PROJECT_OWNERS: ProjectOwner[] = [
   },
 ];
 
+export interface ClientHouseholdMember {
+  id: string;
+  name: string;
+  relationship: string;
+  avatarInitials: string;
+  photoUrl?: string;
+  age?: number | string;
+  occupation?: string;
+  residenceStatus: string;
+  isPrimaryClient?: boolean;
+  decisionRole: "Primary Decision Maker" | "Co-decision Maker" | "Influencer" | "Household Member";
+  /** 2–3 curated design-relevant needs shown in collapsed card state */
+  keyNeeds: string[];
+  workPattern?: string;
+  privacyLevel?: string;
+  bedroomRequirement?: string;
+  accessibilityNeeds?: string;
+  specialNotes?: string;
+}
+
+export const DEFAULT_RESIDENTIAL_HOUSEHOLD: ClientHouseholdMember[] = [
+  {
+    id: "mem-1",
+    name: "Ananya Sharma",
+    relationship: "Mother",
+    avatarInitials: "AS",
+    photoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
+    age: "38",
+    occupation: "Managing Director",
+    residenceStatus: "Kochi",
+    isPrimaryClient: true,
+    decisionRole: "Primary Decision Maker",
+    keyNeeds: ["Regular WFH", "High privacy", "Master suite (garden view)"],
+    workPattern: "Regular WFH (Dedicated Study)",
+    privacyLevel: "High Privacy",
+    bedroomRequirement: "Master Suite (Garden View)",
+    accessibilityNeeds: "Ground-floor & Courtyard Access",
+    specialNotes: "Final layout sign-off authority",
+  },
+  {
+    id: "mem-2",
+    name: "Rahul Sharma",
+    relationship: "Spouse · Father",
+    avatarInitials: "RS",
+    photoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
+    age: "40",
+    occupation: "Entrepreneur",
+    residenceStatus: "Full-time resident",
+    isPrimaryClient: false,
+    decisionRole: "Co-decision Maker",
+    keyNeeds: ["Occasional WFH", "Outdoor entertaining", "Shared master suite"],
+    workPattern: "Occasional WFH (Shared Study)",
+    privacyLevel: "Medium Privacy",
+    bedroomRequirement: "Master Suite (Shared)",
+    accessibilityNeeds: "No special requirement",
+    specialNotes: "Outdoor deck & entertainment space priority",
+  },
+  {
+    id: "mem-3",
+    name: "Nila Sharma",
+    relationship: "Daughter",
+    avatarInitials: "NS",
+    photoUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80",
+    age: "12",
+    occupation: "Student",
+    residenceStatus: "Full-time resident",
+    isPrimaryClient: false,
+    decisionRole: "Household Member",
+    keyNeeds: ["Private bedroom", "Study desk required", "Reading & art"],
+    workPattern: "Bedroom Study Desk Required",
+    privacyLevel: "Medium Privacy",
+    bedroomRequirement: "Private Bedroom + Built-in Study",
+    accessibilityNeeds: "No special requirement",
+    specialNotes: "Reading & art corner nook",
+  },
+  {
+    id: "mem-4",
+    name: "Meera Menon",
+    relationship: "Grandmother",
+    avatarInitials: "MM",
+    photoUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80",
+    age: "68",
+    occupation: "Retired",
+    residenceStatus: "Frequent visitor",
+    isPrimaryClient: false,
+    decisionRole: "Influencer",
+    keyNeeds: ["Ground-floor bedroom", "Attached bathroom", "Avoid stair dependency"],
+    workPattern: "No WFH",
+    privacyLevel: "High Privacy",
+    bedroomRequirement: "Ground-Floor Guest Bedroom",
+    accessibilityNeeds: "Avoid stair dependency",
+    specialNotes: "Attached bathroom required",
+  },
+];
+
+export const DEFAULT_COMMERCIAL_STAKEHOLDERS: ClientHouseholdMember[] = [
+  {
+    id: "comm-1",
+    name: "Ananya Sharma",
+    relationship: "Primary Contact · Managing Partner",
+    avatarInitials: "AS",
+    photoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
+    age: "38",
+    occupation: "Managing Director",
+    residenceStatus: "Kochi HQ",
+    isPrimaryClient: true,
+    decisionRole: "Primary Decision Maker",
+    keyNeeds: ["Executive corner cabin", "High acoustic privacy", "Fit-out sign-off authority"],
+    workPattern: "Executive Corner Cabin",
+    privacyLevel: "High Privacy",
+    bedroomRequirement: "Executive Suite / Conference",
+    accessibilityNeeds: "Barrier-free access",
+    specialNotes: "Full lease & fit-out sign-off authority",
+  },
+  {
+    id: "comm-2",
+    name: "David Langston",
+    relationship: "Design & Style Lead",
+    avatarInitials: "DL",
+    photoUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80",
+    age: "34",
+    occupation: "Creative Director",
+    residenceStatus: "Kochi Office",
+    isPrimaryClient: false,
+    decisionRole: "Co-decision Maker",
+    keyNeeds: ["Open-plan collaborative zone", "Breakout studio space", "Teak finish approval"],
+    workPattern: "Open-plan Collaborative Zone",
+    privacyLevel: "Medium Privacy",
+    bedroomRequirement: "Breakout & Studio Space",
+    accessibilityNeeds: "Flexible workstations",
+    specialNotes: "Teak finish & acoustic approval",
+  },
+  {
+    id: "comm-3",
+    name: "Siddharth Kumar",
+    relationship: "Operations & Facilities",
+    avatarInitials: "SK",
+    photoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
+    age: "42",
+    occupation: "Facilities Head",
+    residenceStatus: "Kochi Office",
+    isPrimaryClient: false,
+    decisionRole: "Influencer",
+    keyNeeds: ["Site inspection access", "Server & storage trunking", "MEP coordination"],
+    workPattern: "Site Inspection & Server Room",
+    privacyLevel: "Standard",
+    bedroomRequirement: "Server & Storage Trunking",
+    accessibilityNeeds: "Service entrance access",
+    specialNotes: "MEP & civil setback coordination",
+  },
+  {
+    id: "comm-4",
+    name: "Radhika Kulkarni",
+    relationship: "Finance & Commercial",
+    avatarInitials: "RK",
+    photoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80",
+    age: "45",
+    occupation: "Finance Director",
+    residenceStatus: "Bengaluru Regional HQ",
+    isPrimaryClient: false,
+    decisionRole: "Co-decision Maker",
+    keyNeeds: ["Finance cabin", "High privacy", "Milestone disbursement approval"],
+    workPattern: "Financial Governance",
+    privacyLevel: "High Privacy",
+    bedroomRequirement: "Finance Cabin",
+    accessibilityNeeds: "Standard",
+    specialNotes: "Milestone disbursement approval",
+  },
+];
+
 export interface EnquiryDetailViewModel {
   enquiryId: string;
   header: ProjectHeaderViewModel;
@@ -206,6 +376,8 @@ export interface EnquiryDetailViewModel {
   backendRequirements: BackendRequirementGroup[];
   clientContextSections: ClientContextSection[];
   owners: ProjectOwner[];
+  householdMembers: ClientHouseholdMember[];
+  isCommercialProject: boolean;
   scopeGroups: ScopeGroupViewModel[];
   unconfirmedScope: string[];
   intelligence: EnquiryIntelligence;
@@ -511,7 +683,7 @@ export function buildEnquiryDetailViewModel({
     duration: enquiry.duration || enquiry.timeline || "Within 6 Months",
     builtUpArea: enquiry.builtUpArea || "2,800 – 3,200 sq ft",
     budget: enquiry.budget || "₹40L – ₹60L",
-    client: enquiry.clientName || "—",
+    client: enquiry.clientName || "Ananya Builders",
     budgetCoverageStatus: enquiry.budgetCoverageStatus || "Coverage partially defined",
     areaCoverageStatus: enquiry.areaCoverageStatus || "Client supplied",
   };
@@ -597,6 +769,9 @@ export function buildEnquiryDetailViewModel({
       ];
 
   const clientContextSections = buildClientContextSections(requirements, enquiry);
+  const householdMembers = isCommercial
+    ? DEFAULT_COMMERCIAL_STAKEHOLDERS
+    : DEFAULT_RESIDENTIAL_HOUSEHOLD;
 
   const scopeGroups: ScopeGroupViewModel[] =
     backendScopeGroups.length > 0 ? backendScopeGroups : fallbackScopeGroups;
@@ -615,6 +790,8 @@ export function buildEnquiryDetailViewModel({
     })),
     clientContextSections,
     owners: DEFAULT_PROJECT_OWNERS,
+    householdMembers,
+    isCommercialProject: isCommercial,
     scopeGroups,
     unconfirmedScope,
     intelligence,

@@ -190,9 +190,6 @@ export function EnquiryClarificationComposer({
       className={styles.container}
       aria-label="Clarification request composer"
     >
-      <div className={styles.sectionHeader}>
-        <h3 className={styles.sectionTitle}>Request Clarification</h3>
-      </div>
 
       {/* Floating attachment previews (always rendered to preserve fixed section height) */}
       <div

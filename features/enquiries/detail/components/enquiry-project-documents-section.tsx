@@ -71,6 +71,71 @@ const DEFAULT_PROJECT_DOCUMENTS: ProjectDocumentItem[] = [
     updatedBy: { name: "Rahul Kumar", initials: "RK" },
     isNew: false,
     uploaded: false,
+    updatedAt: "10 Aug 2026",
+    updatedBy: { name: "Rahul Kumar", initials: "RK" },
+    isNew: true,
+    uploaded: true,
+  },
+  {
+    id: "doc-5",
+    name: "Concept Client Sign-off.pdf",
+    size: "723 KB",
+    discipline: "Approvals",
+    status: "Approved",
+    revision: "R01",
+    updatedAt: "09 Aug 2026",
+    updatedBy: { name: "Priya Nair", initials: "PN" },
+    isNew: false,
+    uploaded: true,
+  },
+  {
+    id: "doc-6",
+    name: "Electrical Layout.dwg",
+    size: "9.0 MB",
+    discipline: "Drawings",
+    status: "In Review",
+    revision: "R02",
+    updatedAt: "09 Aug 2026",
+    updatedBy: { name: "Neha Rao", initials: "NR" },
+    isNew: false,
+    uploaded: true,
+  },
+  {
+    id: "doc-7",
+    name: "Site Photo Set.zip",
+    size: "17.6 MB",
+    discipline: "Photos & Media",
+    status: "In Review",
+    revision: "R03",
+    updatedAt: "09 Aug 2026",
+    updatedBy: { name: "Rahul Kumar", initials: "RK" },
+    isNew: false,
+    uploaded: true,
+  },
+  {
+    id: "doc-8",
+    name: "Detailed BOQ.xlsx",
+    size: "1.8 MB",
+    discipline: "BOQ & Estimates",
+    status: "Draft",
+    revision: "R04",
+    updatedAt: "09 Aug 2026",
+    updatedBy: { name: "Arjun Mehta", initials: "AM" },
+    isNew: false,
+    uploaded: true,
+  },
+  {
+    id: "doc-9",
+    name: "Client Agreement.pdf",
+    size: "2.1 MB",
+    discipline: "Contracts",
+    status: "Approved",
+    revision: "R01",
+    updatedAt: "08 Aug 2026",
+    updatedBy: { name: "Priya Nair", initials: "PN" },
+    isNew: false,
+    uploaded: true,
+>>>>>>> origin/ui
   },
 ];
 
@@ -169,94 +234,95 @@ export function EnquiryProjectDocumentsSection({
               ) : (
                 documents.map((doc) => (
                   <tr key={doc.id}>
-                  {/* FILE Column */}
-                  <td>
-                    <div className={styles.fileCell}>
-                      <div className={`${styles.fileIconWrap} ${getFileIconStyleClass(doc)}`}>
-                        {doc.docImageUrl ? (
-                          <img
-                            src={doc.docImageUrl}
-                            alt=""
-                            className={styles.filePreviewImg}
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        ) : (
-                          getFileIcon(doc)
-                        )}
-                      </div>
-                      <div className={styles.fileInfo}>
-                        <div className={styles.fileNameRow}>
-                          <span className={styles.fileName}>{doc.name}</span>
-                          {doc.isNew && <span className={styles.newBadge}>New</span>}
+                    {/* FILE Column */}
+                    <td>
+                      <div className={styles.fileCell}>
+                        <div className={`${styles.fileIconWrap} ${getFileIconStyleClass(doc)}`}>
+                          {doc.docImageUrl ? (
+                            <img
+                              src={doc.docImageUrl}
+                              alt=""
+                              className={styles.filePreviewImg}
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          ) : (
+                            getFileIcon(doc)
+                          )}
                         </div>
-                        <span className={styles.fileSize}>
-                          {doc.uploaded ? doc.size || "Document" : "Missing File"}
-                        </span>
+                        <div className={styles.fileInfo}>
+                          <div className={styles.fileNameRow}>
+                            <span className={styles.fileName}>{doc.name}</span>
+                            {doc.isNew && <span className={styles.newBadge}>New</span>}
+                          </div>
+                          <span className={styles.fileSize}>
+                            {doc.uploaded ? doc.size || "Document" : "Missing File"}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* DISCIPLINE Column */}
-                  <td>
-                    <span className={styles.disciplineText}>{doc.discipline || "Drawings"}</span>
-                  </td>
+                    {/* DISCIPLINE Column */}
+                    <td>
+                      <span className={styles.disciplineText}>{doc.discipline || "Drawings"}</span>
+                    </td>
 
-                  {/* STATUS Column */}
-                  <td>
-                    <span className={`${styles.statusBadge} ${getStatusStyleClass(doc.status)}`}>
-                      {doc.status || (doc.uploaded ? "Approved" : "Missing")}
-                    </span>
-                  </td>
+                    {/* STATUS Column */}
+                    <td>
+                      <span className={`${styles.statusBadge} ${getStatusStyleClass(doc.status)}`}>
+                        {doc.status || (doc.uploaded ? "Approved" : "Missing")}
+                      </span>
+                    </td>
 
-                  {/* REVISION Column */}
-                  <td>
-                    <span className={styles.revisionText}>{doc.revision || "R01"}</span>
-                  </td>
+                    {/* REVISION Column */}
+                    <td>
+                      <span className={styles.revisionText}>{doc.revision || "R01"}</span>
+                    </td>
 
-                  {/* UPDATED Column */}
-                  <td>
-                    <span className={styles.updatedDate}>{doc.updatedAt || "Recent"}</span>
-                  </td>
+                    {/* UPDATED Column */}
+                    <td>
+                      <span className={styles.updatedDate}>{doc.updatedAt || "Recent"}</span>
+                    </td>
 
-                  {/* UPDATED BY Column */}
-                  <td>
-                    <div className={styles.updatedByCell}>
-                      <div className={styles.userAvatar}>
-                        {doc.updatedBy?.initials || "AM"}
+                    {/* UPDATED BY Column */}
+                    <td>
+                      <div className={styles.updatedByCell}>
+                        <div className={styles.userAvatar}>
+                          {doc.updatedBy?.initials || "AM"}
+                        </div>
+                        <span className={styles.userName}>{doc.updatedBy?.name || "Arjun Mehta"}</span>
                       </div>
-                      <span className={styles.userName}>{doc.updatedBy?.name || "Arjun Mehta"}</span>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* ACTIONS Column */}
-                  <td className={styles.alignRight}>
-                    <div className={styles.actionCell}>
-                      {doc.uploaded ? (
+                    {/* ACTIONS Column */}
+                    <td className={styles.alignRight}>
+                      <div className={styles.actionCell}>
+                        {doc.uploaded ? (
+                          <button
+                            type="button"
+                            className={styles.actionIconBtn}
+                            onClick={() => onDownload?.(doc.id)}
+                            title={`Download ${doc.name}`}
+                            aria-label={`Download ${doc.name}`}
+                          >
+                            <Download size={13} />
+                          </button>
+                        ) : (
+                          <AlertCircle size={13} className={styles.missingAlertIcon} />
+                        )}
                         <button
                           type="button"
                           className={styles.actionIconBtn}
-                          onClick={() => onDownload?.(doc.id)}
-                          title={`Download ${doc.name}`}
-                          aria-label={`Download ${doc.name}`}
+                          title="More options"
+                          aria-label="More options"
                         >
-                          <Download size={13} />
+                          <MoreHorizontal size={14} />
                         </button>
-                      ) : (
-                        <AlertCircle size={13} className={styles.missingAlertIcon} />
-                      )}
-                      <button
-                        type="button"
-                        className={styles.actionIconBtn}
-                        title="More options"
-                        aria-label="More options"
-                      >
-                        <MoreHorizontal size={14} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                )))}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

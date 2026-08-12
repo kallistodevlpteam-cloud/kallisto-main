@@ -22,6 +22,9 @@ def _load_dotenv() -> None:
     env_path = Path(__file__).resolve().parent / ".env"
     if env_path.exists():
         load_dotenv(env_path)
+    alt_env_path = Path(__file__).resolve().parent / "env"
+    if alt_env_path.exists():
+        load_dotenv(alt_env_path)
 
 
 _load_dotenv()
