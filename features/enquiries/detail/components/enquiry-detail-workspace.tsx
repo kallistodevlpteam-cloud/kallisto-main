@@ -44,6 +44,7 @@ import {
 import { RoutePageContainer } from "@/components/ui/route-page-container";
 import {
   EnquiryRecord,
+  EnquiryStatus,
   EnquiryStage,
   EnquiryRequirement,
   EnquiryRequirementDomain,
@@ -180,7 +181,7 @@ export function buildEnquiriesFromProjects(projects: Array<Record<string, unknow
 
     const isPrj = String(proj.project_character || "enq").toLowerCase() === "pr";
     const status: EnquiryStatus = isPrj ? "completed" : "active";
-    const stage: EnquiryStage = isPrj ? "accepted" : (proj.view ? "reviewing" : "new");
+    const stage: EnquiryStage = isPrj ? "accepted" : (proj.view ? "clarification" : "new");
 
     const rawBudget = proj.estimated_overall_budget as number | string | undefined;
     const formattedBudget = typeof rawBudget === "number"

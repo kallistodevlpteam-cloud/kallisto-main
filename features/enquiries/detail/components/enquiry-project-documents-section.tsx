@@ -71,10 +71,6 @@ const DEFAULT_PROJECT_DOCUMENTS: ProjectDocumentItem[] = [
     updatedBy: { name: "Rahul Kumar", initials: "RK" },
     isNew: false,
     uploaded: false,
-    updatedAt: "10 Aug 2026",
-    updatedBy: { name: "Rahul Kumar", initials: "RK" },
-    isNew: true,
-    uploaded: true,
   },
   {
     id: "doc-5",
@@ -135,7 +131,6 @@ const DEFAULT_PROJECT_DOCUMENTS: ProjectDocumentItem[] = [
     updatedBy: { name: "Priya Nair", initials: "PN" },
     isNew: false,
     uploaded: true,
->>>>>>> origin/ui
   },
 ];
 

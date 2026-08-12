@@ -34,20 +34,21 @@ const DEFAULT_SITE_IMAGES: SiteImageItem[] = [
 
 export function EnquirySiteImagesCard({
   images = DEFAULT_SITE_IMAGES,
-  totalCount = 8,
+  totalCount = 7,
   extraCount,
-  title = "INSPIRATION IMAGES",
-  showAll = true,
+  title = "Site Images Preview",
+  showAll = false,
   onImageClick,
   onViewAll,
 }: EnquirySiteImagesCardProps) {
   const [expanded, setExpanded] = useState(true);
 
   const hasImages = images.length > 0;
-  const displayImages = showAll ? images : images.slice(0, 3);
-  const overflowThumb = images[3] || images[0];
+  const VISIBLE = showAll ? images.length : 4;
+  const displayImages = images.slice(0, VISIBLE);
+  const overflowThumb = images[4] || images[0];
   const overflowCount =
-    extraCount !== undefined ? extraCount : Math.max(0, totalCount - 3);
+    extraCount !== undefined ? extraCount : Math.max(0, totalCount - 4);
 
   return (
     <div className={styles.container}>
