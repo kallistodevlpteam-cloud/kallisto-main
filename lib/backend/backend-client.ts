@@ -3,6 +3,7 @@ import type {
   BackendProject,
   BackendInspirationImage,
   BackendProjectDocument,
+  BackendProjectRequirement,
   BackendProjectScope,
 } from "@/types/domain/backend-project";
 
@@ -92,11 +93,18 @@ export interface BackendProjectRow {
   project_docs: BackendProjectDocumentRow[];
   site_images: string[] | null;
   project_scopes: BackendProjectScopeRow[] | null;
+  requirements: BackendProjectRequirementRow[] | null;
 }
 
 export interface BackendProjectScopeRow {
   id: number;
   scope_name: string;
+  items: string[];
+}
+
+export interface BackendProjectRequirementRow {
+  id: string;
+  requirement_name: string;
   items: string[];
 }
 
@@ -149,6 +157,23 @@ function mapBackendProjectScopes(
     .filter((scope) => typeof scope.scope_name === "string" && scope.scope_name.length > 0);
 }
 
+function mapBackendProjectRequirements(
+  rows: BackendProjectRequirementRow[] | null | undefined
+): BackendProjectRequirement[] {
+  return (rows ?? [])
+    .map((requirement) => ({
+      id: requirement.id,
+      requirement_name: requirement.requirement_name,
+      items: Array.isArray(requirement.items)
+        ? requirement.items.filter((item) => typeof item === "string" && item.length > 0)
+        : [],
+    }))
+    .filter(
+      (requirement) =>
+        typeof requirement.requirement_name === "string" && requirement.requirement_name.length > 0
+    );
+}
+
 function mapBackendProjectRow(row: BackendProjectRow): BackendProject {
   return {
     id: row.id,
@@ -174,6 +199,7 @@ function mapBackendProjectRow(row: BackendProjectRow): BackendProject {
       ? row.site_images.filter((url) => typeof url === "string" && url.length > 0)
       : [],
     projectScopes: mapBackendProjectScopes(row.project_scopes),
+    requirements: mapBackendProjectRequirements(row.requirements),
   };
 }
 

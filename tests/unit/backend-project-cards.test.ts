@@ -29,6 +29,7 @@ function makeProject(overrides: Partial<BackendProject> = {}): BackendProject {
     projectDocuments: [],
     siteImages: [],
     projectScopes: [],
+    requirements: [],
     ...overrides,
   };
 }

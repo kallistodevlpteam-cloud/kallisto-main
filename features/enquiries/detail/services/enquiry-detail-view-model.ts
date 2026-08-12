@@ -51,6 +51,15 @@ export interface ScopeGroupViewModel {
   sortOrder?: number;
 }
 
+/** Requirement group straight from backend requirements rows, each with
+ * its requirement_items children. Strictly backend-sourced; the workspace
+ * must never substitute mock requirement groups when this list is present. */
+export interface BackendRequirementGroup {
+  id: string;
+  requirement_name: string;
+  items: string[];
+}
+
 export interface ClientContextItem {
   id: string;
   category: string;
@@ -191,6 +200,10 @@ export interface EnquiryDetailViewModel {
   snapshot: ProjectSnapshotViewModel;
   priorities: ClientPriority[];
   requirements: EnquiryRequirement[];
+  /** Requirement groups straight from the backend requirements table
+   * (requirement_name + requirement_items). Strictly backend-sourced;
+   * an empty list means the backend has no requirement rows. */
+  backendRequirements: BackendRequirementGroup[];
   clientContextSections: ClientContextSection[];
   owners: ProjectOwner[];
   scopeGroups: ScopeGroupViewModel[];
@@ -595,6 +608,11 @@ export function buildEnquiryDetailViewModel({
     snapshot,
     priorities,
     requirements,
+    backendRequirements: (enquiry.requirementsList ?? []).map((requirement) => ({
+      id: requirement.id,
+      requirement_name: requirement.requirement_name,
+      items: requirement.items ?? [],
+    })),
     clientContextSections,
     owners: DEFAULT_PROJECT_OWNERS,
     scopeGroups,

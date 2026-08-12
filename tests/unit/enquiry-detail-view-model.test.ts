@@ -99,3 +99,47 @@ describe("buildEnquiryDetailViewModel scope sourcing", () => {
     expect(scopeGroups[0].scopeId).toBeUndefined();
   });
 });
+
+describe("buildEnquiryDetailViewModel requirement sourcing", () => {
+  it("passes backend requirement groups through with name and item sub-lists", () => {
+    const record = baseRecord();
+    record.requirementsList = [
+      {
+        id: "req-1",
+        requirement_name: "Building & Project Type",
+        items: ["Residential, Ground + 1 Floor", "Design + Build scope"],
+      },
+      {
+        id: "req-2",
+        requirement_name: "Timeline",
+        items: ["Move-in within 10 months"],
+      },
+    ];
+    const { backendRequirements } = buildEnquiryDetailViewModel({
+      enquiry: record,
+      providerContext: {},
+    });
+    expect(backendRequirements).toEqual([
+      {
+        id: "req-1",
+        requirement_name: "Building & Project Type",
+        items: ["Residential, Ground + 1 Floor", "Design + Build scope"],
+      },
+      {
+        id: "req-2",
+        requirement_name: "Timeline",
+        items: ["Move-in within 10 months"],
+      },
+    ]);
+  });
+
+  it("keeps backend requirements empty when the backend has no requirement rows", () => {
+    const record = baseRecord();
+    record.requirementsList = [];
+    const { backendRequirements } = buildEnquiryDetailViewModel({
+      enquiry: record,
+      providerContext: {},
+    });
+    expect(backendRequirements).toEqual([]);
+  });
+});

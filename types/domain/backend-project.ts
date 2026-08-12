@@ -20,6 +20,14 @@ export interface BackendProjectScope {
   items: string[];
 }
 
+/** One project requirement group (requirements row) with its nested
+ * sub-list of values (requirement_items rows). */
+export interface BackendProjectRequirement {
+  id: string;
+  requirement_name: string;
+  items: string[];
+}
+
 export interface BackendProject {
   id: number;
   projectName: string;
@@ -56,6 +64,10 @@ export interface BackendProject {
   /** Project scopes with nested sub-lists (project_scope +
    * project_scope_item). Strictly backend-sourced. */
   projectScopes: BackendProjectScope[];
+  /** Requirement groups with nested sub-lists (requirements +
+   * requirement_items). Strictly backend-sourced; an empty list means no
+   * requirement rows exist for the project. */
+  requirements: BackendProjectRequirement[];
 }
 
 export interface BackendProjectsResponse {

@@ -178,6 +178,11 @@ export interface EnquiryRecord {
    * (JSON list). Strictly backend-sourced; empty when the backend has no
    * site images. */
   siteImages?: string[];
+  /** Requirement groups straight from backend requirements rows, each
+   * with its requirement_items children (requirement_name + item list).
+   * Strictly backend-sourced; empty/absent when the backend has no
+   * requirement rows. */
+  requirementsList?: Array<{ id: string; requirement_name: string; items: string[] }>;
   /** Project documents straight from backend project_DOC rows (name +
    * doc_img_url preview). Strictly backend-sourced; empty when the backend
    * has no document rows. */

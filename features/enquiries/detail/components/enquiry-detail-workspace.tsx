@@ -141,6 +141,25 @@ interface BackendScopeRow {
   items?: Array<string | { item_name?: string }> | null;
 }
 
+interface BackendRequirementRow {
+  id?: string | null;
+  requirement_name?: string | null;
+  items?: Array<string | null> | null;
+}
+
+function mapBackendRequirements(raw: unknown): EnquiryRecord["requirementsList"] {
+  const rows = Array.isArray(raw) ? raw : [];
+  return rows.flatMap((entry) => {
+    const requirement = (entry ?? {}) as BackendRequirementRow;
+    const requirementName = String(requirement.requirement_name ?? "").trim();
+    if (!requirementName) return [];
+    const items = Array.isArray(requirement.items)
+      ? requirement.items.map((item) => String(item ?? "")).filter((item) => item.length > 0)
+      : [];
+    return [{ id: String(requirement.id ?? ""), requirement_name: requirementName, items }];
+  });
+}
+
 function mapBackendSiteImages(raw: unknown): string[] {
   const values = Array.isArray(raw) ? raw : [];
   return values.flatMap((entry) => {
@@ -231,6 +250,7 @@ export function buildEnquiriesFromProjects(projects: Array<Record<string, unknow
       projectDocuments: mapBackendProjectDocuments(proj.projectDocuments ?? proj.project_docs),
       siteImages: mapBackendSiteImages(proj.siteImages ?? proj.site_images),
       projectScopes: mapBackendScopes(proj.projectScopes ?? proj.project_scopes),
+      requirementsList: mapBackendRequirements(proj.requirements ?? proj.requirements_list),
     };
   });
 }
@@ -416,6 +436,7 @@ export function EnquiryDetailWorkspace({
   const [stage, setStage] = useState<EnquiryStage>(DEFAULT_ENQUIRY_RECORD.stage || "new");
   const [selectedRequirementId, setSelectedRequirementId] = useState<string | null>(null);
   const [activeDomainKey, setActiveDomainKey] = useState<string>("room_programme");
+  const [activeBackendRequirementId, setActiveBackendRequirementId] = useState<string | null>(null);
   const [expandedRoomIds, setExpandedRoomIds] = useState<Record<string, boolean>>({});
   const [clarificationText, setClarificationText] = useState<string>("");
   const [selectedOwnerId, setSelectedOwnerId] = useState<string>("owner-1");
@@ -623,60 +644,146 @@ export function EnquiryDetailWorkspace({
                   <div className={styles.reqDomainNavHeader}>
                     <span className={styles.reqDomainNavTitle}>REQUIREMENTS</span>
                     <span className={styles.reqDomainNavSubtitle}>
-                      {
-                        viewModel.requirements.filter((r) =>
-                          REQUIREMENT_DOMAIN_ORDER.some((d) => d.key === (r.domain || r.category))
-                        ).length
-                      }{" "}
-                      delivery specs
+                      {viewModel.backendRequirements.length > 0
+                        ? `${viewModel.backendRequirements.length} requirement groups`
+                        : `${
+                            viewModel.requirements.filter((r) =>
+                              REQUIREMENT_DOMAIN_ORDER.some((d) => d.key === (r.domain || r.category))
+                            ).length
+                          } delivery specs`}
                     </span>
                   </div>
 
                   <div className={styles.reqDomainNavList}>
-                    {REQUIREMENT_DOMAIN_ORDER.map((d) => {
-                      const domainReqs = viewModel.requirements.filter(
-                        (r) => (r.domain || r.category) === d.key
-                      );
-                      if (domainReqs.length === 0) return null;
+                    {viewModel.backendRequirements.length > 0 ? (
+                      viewModel.backendRequirements.map((requirement) => {
+                        const isActive =
+                          activeBackendRequirementId === requirement.id ||
+                          (activeBackendRequirementId === null &&
+                            viewModel.backendRequirements[0].id === requirement.id);
 
-                      const clearCount = domainReqs.filter(
-                        (r) => r.state === "confirmed" || r.state === "odin_inferred"
-                      ).length;
-                      const totalCount = domainReqs.length;
-                      const hasBlocker = domainReqs.some(
-                        (r) => r.state === "needs_clarification" || r.state === "needs_verification"
-                      );
-                      const isActive = activeDomainKey === d.key;
-
-                      return (
-                        <button
-                          key={d.key}
-                          type="button"
-                          className={`${styles.reqDomainNavItem} ${isActive ? styles.reqDomainNavItemActive : ""}`}
-                          onClick={() => handleSelectDomain(d.key)}
-                        >
-                          <div className={styles.reqDomainNavLabelRow}>
-                            <span
-                              className={styles.reqDomainNavIconBadge}
-                              style={{ color: d.iconColor }}
-                            >
-                              {d.icon}
+                        return (
+                          <button
+                            key={requirement.id}
+                            type="button"
+                            className={`${styles.reqDomainNavItem} ${isActive ? styles.reqDomainNavItemActive : ""}`}
+                            onClick={() => setActiveBackendRequirementId(requirement.id)}
+                          >
+                            <div className={styles.reqDomainNavLabelRow}>
+                              <span className={styles.reqDomainNavLabel}>{requirement.requirement_name}</span>
+                            </div>
+                            <span className={styles.reqDomainNavBadge}>
+                              {requirement.items.length}
                             </span>
-                            <span className={styles.reqDomainNavLabel}>{d.shortTitle}</span>
-                            {hasBlocker && <span className={styles.reqDomainNavBlockerDot} title="Needs attention" />}
-                          </div>
-                          <span className={styles.reqDomainNavBadge}>
-                            {clearCount}/{totalCount}
-                          </span>
-                        </button>
-                      );
-                    })}
+                          </button>
+                        );
+                      })
+                    ) : (
+                      REQUIREMENT_DOMAIN_ORDER.map((d) => {
+                        const domainReqs = viewModel.requirements.filter(
+                          (r) => (r.domain || r.category) === d.key
+                        );
+                        if (domainReqs.length === 0) return null;
+
+                        const clearCount = domainReqs.filter(
+                          (r) => r.state === "confirmed" || r.state === "odin_inferred"
+                        ).length;
+                        const totalCount = domainReqs.length;
+                        const hasBlocker = domainReqs.some(
+                          (r) => r.state === "needs_clarification" || r.state === "needs_verification"
+                        );
+                        const isActive = activeDomainKey === d.key;
+
+                        return (
+                          <button
+                            key={d.key}
+                            type="button"
+                            className={`${styles.reqDomainNavItem} ${isActive ? styles.reqDomainNavItemActive : ""}`}
+                            onClick={() => handleSelectDomain(d.key)}
+                          >
+                            <div className={styles.reqDomainNavLabelRow}>
+                              <span
+                                className={styles.reqDomainNavIconBadge}
+                                style={{ color: d.iconColor }}
+                              >
+                                {d.icon}
+                              </span>
+                              <span className={styles.reqDomainNavLabel}>{d.shortTitle}</span>
+                              {hasBlocker && <span className={styles.reqDomainNavBlockerDot} title="Needs attention" />}
+                            </div>
+                            <span className={styles.reqDomainNavBadge}>
+                              {clearCount}/{totalCount}
+                            </span>
+                          </button>
+                        );
+                      })
+                    )}
                   </div>
                 </aside>
 
                 {/* PANE 2: Active Requirement Domain Workspace (Center, Master-Detail) */}
                 <section className={styles.activeDomainWorkspace} aria-label="Active Domain Workspace">
-                  {(() => {
+                  {viewModel.backendRequirements.length > 0
+                    ? (() => {
+                        const activeRequirement =
+                          viewModel.backendRequirements.find(
+                            (requirement) => requirement.id === activeBackendRequirementId
+                          ) || viewModel.backendRequirements[0];
+
+                        return (
+                          <>
+                            <div className={styles.activeDomainHeader}>
+                              <div className={styles.activeDomainHeaderLeft} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                <span
+                                  className={`${styles.reqDomainNavIconBadge} ${styles.reqDomainNavHeaderIconBadge}`}
+                                >
+                                  <FileText size={16} />
+                                </span>
+                                <div>
+                                  <h3 className={styles.activeDomainTitle}>{activeRequirement.requirement_name}</h3>
+                                  <p className={styles.activeDomainDesc}>
+                                    {activeRequirement.items.length} specification values
+                                  </p>
+                                </div>
+                              </div>
+                              <div className={styles.activeDomainHeaderRight}>
+                                <span className={styles.activeDomainCompletenessPill}>
+                                  {activeRequirement.items.length} items
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className={styles.activeDomainContent}>
+                              <div className={styles.reqValueListHeader}>
+                                <span>Specification / Value</span>
+                                <span className={styles.reqValueListCount}>
+                                  {activeRequirement.items.length}
+                                </span>
+                              </div>
+                              {activeRequirement.items.length === 0 ? (
+                                <p className={styles.reqValueListEmpty}>
+                                  No specification values recorded for this requirement.
+                                </p>
+                              ) : (
+                                <ul className={styles.reqValueList}>
+                                  {activeRequirement.items.map((item, itemIndex) => (
+                                    <li
+                                      key={`${activeRequirement.id}-${itemIndex}`}
+                                      className={styles.reqValueItem}
+                                    >
+                                      <span className={styles.reqValueItemIndex}>
+                                        {itemIndex + 1}
+                                      </span>
+                                      <span className={styles.roomNameText}>{item}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </div>
+                          </>
+                        );
+                      })()
+                    : (() => {
                     const currentDomainMeta =
                       REQUIREMENT_DOMAIN_ORDER.find((d) => d.key === activeDomainKey) ||
                       REQUIREMENT_DOMAIN_ORDER[0];

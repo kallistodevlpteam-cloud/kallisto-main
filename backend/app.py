@@ -262,6 +262,40 @@ def list_projects():
         project["project_docs"] = docs_by_project.get(project["id"], [])
         project["project_scopes"] = scopes_by_project.get(project["id"], [])
 
+    # Project requirements: strictly backend-sourced list (requirements rows
+    # with their requirement_items children as item_value sub-lists).
+    try:
+        req_result = pipeline(
+            [
+                "SELECT id, project_id, requirement_name FROM requirements "
+                "ORDER BY project_id, sort_order, id"
+            ]
+        )[0]
+        req_item_result = pipeline(
+            [
+                "SELECT requirement_id, item_value FROM requirement_items "
+                "ORDER BY requirement_id, sort_order, id"
+            ]
+        )[0]
+        items_by_requirement: dict[str, list[str]] = {}
+        for row in rows(req_item_result):
+            items_by_requirement.setdefault(row[0], []).append(row[1])
+        requirements_by_project: dict[int, list[dict[str, object]]] = {}
+        for row in rows(req_result):
+            requirement_id, project_id, requirement_name = row
+            requirements_by_project.setdefault(project_id, []).append(
+                {
+                    "id": requirement_id,
+                    "requirement_name": requirement_name,
+                    "items": items_by_requirement.get(requirement_id, []),
+                }
+            )
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+    for project in projects:
+        project["requirements"] = requirements_by_project.get(project["id"], [])
+
     return jsonify({"status": "ok", "projects": projects})
 
 

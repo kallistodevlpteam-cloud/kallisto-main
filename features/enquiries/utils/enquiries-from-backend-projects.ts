@@ -98,6 +98,11 @@ export function buildEnquiriesFromProjects(projects: BackendProject[]): EnquiryR
         scope_name: scope.scope_name,
         items: scope.items ?? [],
       })),
+      requirementsList: (project.requirements ?? []).map((requirement) => ({
+        id: requirement.id,
+        requirement_name: requirement.requirement_name,
+        items: requirement.items ?? [],
+      })),
       nextAction: { type: "review_enquiry", label: "Review enquiry" },
     };
   });

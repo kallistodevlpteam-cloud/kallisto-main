@@ -4156,6 +4156,69 @@
   color: #0f172a;
 }
 
+.reqValueListHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.reqValueListCount {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  background: #e2e8f0;
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+
+.reqValueList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.reqValueItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eef2f7;
+  font-size: 13px;
+  transition: background 0.15s ease;
+}
+
+.reqValueItem:hover {
+  background: #f8fafc;
+}
+
+.reqValueItemIndex {
+  min-width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: #eef2f7;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.reqValueListEmpty {
+  margin: 0;
+  padding: 16px 12px;
+  color: #64748b;
+  font-size: 13px;
+}
+
 .expandToggleBtn {
   background: transparent;
   border: none;
