@@ -330,7 +330,7 @@ export function AccountPopover({
             className={styles.signOutRow}
             onClick={() => {
               onClose();
-              alert("Signing out...");
+              router.push("/login");
             }}
           >
             <LogOut size={14} className={styles.signOutIcon} />

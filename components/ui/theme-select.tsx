@@ -18,29 +18,39 @@ export interface ThemeSelectProps<T extends string = string> {
   onChange: (value: T) => void;
   ariaLabel?: string;
   id?: string;
+  name?: string;
   className?: string;
-  size?: "sm" | "md";
-  variant?: "pill" | "subtle" | "bordered";
+  size?: "sm" | "md" | "form";
+  variant?: "pill" | "subtle" | "bordered" | "formField";
   align?: "left" | "right";
   fullWidth?: boolean;
+  icon?: React.ReactNode;
+  placeholder?: string;
+  hasError?: boolean;
+  disabled?: boolean;
 }
 
 export function ThemeSelect<T extends string = string>({
   value,
   options,
   onChange,
-  ariaLabel = "Select option",
+  ariaLabel,
   id,
+  name,
   className = "",
   size = "md",
   variant = "bordered",
   align,
   fullWidth = false,
+  icon,
+  placeholder,
+  hasError = false,
+  disabled = false,
 }: ThemeSelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const selectedOption = options.find((opt) => opt.value === value) ?? options[0];
+  const selectedOption = options.find((opt) => opt.value === value);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -68,22 +78,38 @@ export function ThemeSelect<T extends string = string>({
     };
   }, [isOpen]);
 
-  const variantClass = variant === "pill" ? styles.triggerPill : "";
+  const isFormField = variant === "formField" || size === "form";
+  const variantClass = isFormField
+    ? styles.triggerFormField
+    : variant === "pill"
+    ? styles.triggerPill
+    : "";
   const sizeClass = size === "sm" ? styles.triggerSm : "";
   const effectiveAlign = align ?? (variant === "pill" ? "right" : "left");
   const alignClass = effectiveAlign === "left" ? styles.alignLeft : styles.alignRight;
-  const fullWidthClass = fullWidth ? styles.fullWidth : "";
+  const fullWidthClass = fullWidth || isFormField ? styles.fullWidth : "";
+  const errorClass = hasError ? styles.triggerError : "";
+  const disabledClass = disabled ? styles.triggerDisabled : "";
 
   return (
-    <div ref={containerRef} className={`${styles.selectWrapper} ${fullWidthClass} ${className}`}>
-      {/* Hidden native select for accessibility/tests fallback */}
+    <div
+      ref={containerRef}
+      className={`${styles.selectWrapper} ${fullWidthClass} ${className}`}
+    >
+      {/* Hidden native select for HTML forms, accessibility & testing */}
       <select
         id={id}
+        name={name}
         className="sr-only"
-        aria-label={ariaLabel}
         value={value}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.value as T)}
       >
+        {placeholder && (
+          <option value="" disabled>
+            {placeholder}
+          </option>
+        )}
         {options.map((opt) => (
           <option key={opt.value} value={opt.value} disabled={opt.disabled}>
             {opt.label}
@@ -93,15 +119,29 @@ export function ThemeSelect<T extends string = string>({
 
       <button
         type="button"
-        className={`${styles.triggerButton} ${variantClass} ${sizeClass}`}
-        aria-label={ariaLabel}
+        id={id ? `${id}-button` : undefined}
+        className={`${styles.triggerButton} ${variantClass} ${sizeClass} ${errorClass} ${disabledClass} ${
+          isOpen ? styles.triggerOpen : ""
+        }`}
+        aria-label={!id ? ariaLabel : undefined}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        onClick={() => setIsOpen((prev) => !prev)}
+        aria-invalid={hasError}
+        disabled={disabled}
+        onClick={() => !disabled && setIsOpen((prev) => !prev)}
       >
-        <span className={styles.triggerLabel}>{selectedOption ? selectedOption.label : value}</span>
+        <div className={styles.triggerLeft}>
+          {icon && <span className={styles.triggerIcon}>{icon}</span>}
+          <span
+            className={`${styles.triggerLabel} ${
+              !selectedOption && placeholder ? styles.triggerPlaceholder : ""
+            }`}
+          >
+            {selectedOption ? selectedOption.label : placeholder || value || "Select..."}
+          </span>
+        </div>
         <ChevronDown
-          size={13}
+          size={14}
           className={`${styles.triggerChevron} ${isOpen ? styles.triggerChevronOpen : ""}`}
           aria-hidden="true"
         />
@@ -133,7 +173,7 @@ export function ThemeSelect<T extends string = string>({
                   )}
                 </div>
                 {isSelected && (
-                  <Check size={13} className={styles.optionCheck} aria-hidden="true" />
+                  <Check size={14} className={styles.optionCheck} aria-hidden="true" />
                 )}
               </button>
             );
