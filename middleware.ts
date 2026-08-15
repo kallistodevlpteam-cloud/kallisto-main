@@ -27,10 +27,9 @@ export function middleware(request: NextRequest) {
     (publicPath) => pathname === publicPath || pathname.startsWith(`${publicPath}/`)
   );
 
-  // Check auth session in cookies
+  // Check auth session in cookies: require a valid auth token
   const authToken = request.cookies.get("kallisto_auth_token")?.value;
-  const simulatedRole = request.cookies.get("kallisto_simulated_role")?.value;
-  const isAuthenticated = Boolean(authToken || simulatedRole);
+  const isAuthenticated = Boolean(authToken && authToken.trim().length > 0);
 
   // If user is unauthenticated and attempting to access a protected route
   if (!isAuthenticated && !isPublicPath) {

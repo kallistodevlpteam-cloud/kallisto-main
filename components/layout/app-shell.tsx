@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { getStoredAuthToken } from "@/lib/auth/authed-fetch";
 import { OdinProvider } from "@/contexts/odin-context";
 import { useOdin } from "@/hooks/use-odin";
 import { usePendingEnquiryCount } from "@/hooks/use-pending-enquiry-count";
@@ -26,7 +28,16 @@ interface AppShellProps {
 }
 
 function AppShellContent({ children, layoutProfile = "default" }: AppShellProps) {
+  const router = useRouter();
   const [userSidebarCollapsed, setUserSidebarCollapsed] = useState(false);
+
+  // Client-side authentication gate
+  useEffect(() => {
+    const token = getStoredAuthToken();
+    if (!token) {
+      router.replace("/login");
+    }
+  }, [router]);
   const { assistantOpen, odinPinned, toggleAssistant, closeOdin } = useOdin();
   const responsiveState = useShellResponsiveState(userSidebarCollapsed, odinPinned);
   const { shellMode, sidebarMode, odinMode, canDockOdin } = responsiveState;

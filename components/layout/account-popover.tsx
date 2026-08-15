@@ -330,7 +330,14 @@ export function AccountPopover({
             className={styles.signOutRow}
             onClick={() => {
               onClose();
-              router.push("/login");
+              document.cookie = "kallisto_auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+              document.cookie = "kallisto_provider_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+              document.cookie = "kallisto_simulated_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+              if (typeof window !== "undefined") {
+                localStorage.removeItem("kallisto_auth_token");
+                localStorage.removeItem("kallisto_provider_id");
+              }
+              window.location.href = "/login";
             }}
           >
             <LogOut size={14} className={styles.signOutIcon} />
