@@ -74,8 +74,8 @@ export function sortEnquiries(
   const mapped = items.map((item, idx) => ({ item, idx }));
 
   mapped.sort((x, y) => {
-    const timeX = new Date(x.item.receivedAt).getTime();
-    const timeY = new Date(y.item.receivedAt).getTime();
+    const timeX = new Date(x.item.receivedAt ?? 0).getTime();
+    const timeY = new Date(y.item.receivedAt ?? 0).getTime();
 
     if (timeX !== timeY) {
       return sort === "received_desc" ? timeY - timeX : timeX - timeY;

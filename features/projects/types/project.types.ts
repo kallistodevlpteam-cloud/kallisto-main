@@ -71,6 +71,7 @@ export interface ProjectListItem {
   type: string;
   clientId: string;
   clientDisplayName: string;
+  location?: string;
   phase: ProjectPhase;
   phaseProgress?: string;
   nextAction: {

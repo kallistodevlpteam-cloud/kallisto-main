@@ -25,9 +25,10 @@ function formatTime(date: Date): string {
   return `${hh}:${mm} ${ampm}`;
 }
 
-export function formatEnquiryDate(dateStr: string, now: Date): string {
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return "";
+export function formatEnquiryDate(dateVal: string | number | null | undefined, now: Date): string {
+  if (dateVal === null || dateVal === undefined) return "—";
+  const d = new Date(dateVal);
+  if (isNaN(d.getTime())) return "—";
 
   // Compare UTC calendar dates
   const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());

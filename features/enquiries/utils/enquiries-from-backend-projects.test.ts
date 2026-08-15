@@ -12,10 +12,19 @@ const project = (partial: Partial<BackendProject>): BackendProject => ({
   purposeOfProject: null,
   briefDescription: null,
   coverImageUrl: null,
+  sqArea: null,
+  clientExpectedTimeline: null,
   clientName: null,
   place: null,
+  estimatedOverallBudget: null,
   createdAt: "2026-07-01T00:00:00.000Z",
   updatedAt: "2026-07-01T00:00:00.000Z",
+  viewed: false,
+  inspirationImages: [],
+  projectDocuments: [],
+  siteImages: [],
+  projectScopes: [],
+  requirements: [],
   ...partial,
 });
 
@@ -68,6 +77,71 @@ describe("buildEnquiriesFromProjects", () => {
     const missing = buildEnquiriesFromProjects([project({ clientName: null, place: null })]);
     expect(missing[0].clientName).toBe("—");
     expect(missing[0].location).toBe("—");
+  });
+
+  it("passes through the backend site image URL list untouched", () => {
+    const withImages = buildEnquiriesFromProjects([
+      project({
+        siteImages: ["/assets/nila-thumb1.jpg", "/assets/scattered.webp"],
+      }),
+    ]);
+    expect(withImages[0].siteImages).toEqual(["/assets/nila-thumb1.jpg", "/assets/scattered.webp"]);
+  });
+
+  it("keeps site images empty when the backend provides none", () => {
+    const withoutImages = buildEnquiriesFromProjects([project({ siteImages: [] })]);
+    expect(withoutImages[0].siteImages).toEqual([]);
+  });
+
+  it("passes through backend project documents with name and doc_img_url", () => {
+    const withDocs = buildEnquiriesFromProjects([
+      project({
+        projectDocuments: [
+          { id: 306, name: "Feasibility Study.pdf", docImageUrl: "/assets/nila-thumb1.jpg" },
+          { id: 307, name: "Concept Proposal.pdf", docImageUrl: null },
+        ],
+      }),
+    ]);
+    expect(withDocs[0].projectDocuments).toEqual([
+      { id: 306, name: "Feasibility Study.pdf", docImageUrl: "/assets/nila-thumb1.jpg" },
+      { id: 307, name: "Concept Proposal.pdf", docImageUrl: null },
+    ]);
+  });
+
+  it("maps backend requirement groups with their item sub-lists", () => {
+    const withRequirements = buildEnquiriesFromProjects([
+      project({
+        requirements: [
+          {
+            id: "req-1",
+            requirement_name: "Building & Project Type",
+            items: ["Residential, Ground + 1 Floor", "Design + Build scope"],
+          },
+          {
+            id: "req-2",
+            requirement_name: "Timeline",
+            items: ["Move-in within 10 months"],
+          },
+        ],
+      }),
+    ]);
+    expect(withRequirements[0].requirementsList).toEqual([
+      {
+        id: "req-1",
+        requirement_name: "Building & Project Type",
+        items: ["Residential, Ground + 1 Floor", "Design + Build scope"],
+      },
+      {
+        id: "req-2",
+        requirement_name: "Timeline",
+        items: ["Move-in within 10 months"],
+      },
+    ]);
+  });
+
+  it("keeps requirements empty when the backend provides none", () => {
+    const withoutRequirements = buildEnquiriesFromProjects([project({ requirements: [] })]);
+    expect(withoutRequirements[0].requirementsList).toEqual([]);
   });
 });
 

@@ -44,6 +44,7 @@ interface EnquiryStatCard {
   id: string;
   label: string;
   value: string;
+  subValue?: string;
   icon: React.ElementType;
   iconBg: string;
   iconColor: string;
@@ -56,6 +57,7 @@ export function EnquiryStatCardsBar({ values }: { values?: Partial<EnquiryStatVa
       id: "project-type",
       label: "Project Type",
       value: resolvedValues.projectType || "Commercial Interior",
+      subValue: "Verified offering",
       icon: Building2,
       iconBg: "#EEF2FF",
       iconColor: "#4F46E5",
@@ -64,6 +66,7 @@ export function EnquiryStatCardsBar({ values }: { values?: Partial<EnquiryStatVa
       id: "duration",
       label: "Duration",
       value: resolvedValues.duration || "Within 6 Months",
+      subValue: "Target timeline",
       icon: Clock,
       iconBg: "#F0FDF4",
       iconColor: "#16A34A",
@@ -72,6 +75,7 @@ export function EnquiryStatCardsBar({ values }: { values?: Partial<EnquiryStatVa
       id: "built-up",
       label: "Built-up Area",
       value: resolvedValues.builtUpArea || "2,800 – 3,200 sq ft",
+      subValue: resolvedValues.areaCoverageStatus || "Client supplied",
       icon: Layers,
       iconBg: "#F5F3FF",
       iconColor: "#7C3AED",
@@ -80,6 +84,7 @@ export function EnquiryStatCardsBar({ values }: { values?: Partial<EnquiryStatVa
       id: "budget",
       label: "Budget",
       value: resolvedValues.budget || "₹40L – ₹60L",
+      subValue: resolvedValues.budgetCoverageStatus || "Coverage partially defined",
       icon: IndianRupee,
       iconBg: "#FEF2F2",
       iconColor: "#E11D48",
@@ -88,6 +93,7 @@ export function EnquiryStatCardsBar({ values }: { values?: Partial<EnquiryStatVa
       id: "client",
       label: "Client",
       value: resolvedValues.client || "Greenleaf Spaces",
+      subValue: "Direct enquiry",
       icon: User,
       iconBg: "#ECFEFF",
       iconColor: "#0891B2",
@@ -121,6 +127,18 @@ export function EnquiryStatCardsBar({ values }: { values?: Partial<EnquiryStatVa
               <div className="horiz-stat-info">
                 <span className="horiz-stat-label">{card.label}</span>
                 <span className="horiz-stat-value">{card.value}</span>
+                {card.subValue && (
+                  <span
+                    style={{
+                      fontSize: "10.5px",
+                      color: "var(--muted, #64748b)",
+                      marginTop: "1px",
+                      display: "block",
+                    }}
+                  >
+                    {card.subValue}
+                  </span>
+                )}
               </div>
             </div>
           );
@@ -143,6 +161,8 @@ interface EnquiryOverviewCardProps {
   description?: string;
   highlights?: Array<string | HighlightItem>;
   customRightPanel?: ReactNode;
+  inspirationImages?: Array<{ url: string; alt: string | null }>;
+  projectScopes?: Array<{ id: number; scope_name: string; items: string[] }>;
 }
 
 export function EnquiryOverviewCard({
@@ -155,7 +175,25 @@ export function EnquiryOverviewCard({
   description,
   highlights,
   customRightPanel,
+  inspirationImages,
+  projectScopes,
 }: EnquiryOverviewCardProps) {
+  const galleryImages: GalleryImage[] = inspirationImages
+    ? inspirationImages.map((img, idx) => ({
+        id: `img-${idx + 1}`,
+        src: img.url,
+        alt: img.alt || `Inspiration image ${idx + 1}`,
+      }))
+    : [];
+
+  const scopeCategories = projectScopes
+    ? projectScopes.map((s) => ({
+        id: `cat-${s.id}`,
+        title: s.scope_name,
+        items: s.items,
+      }))
+    : undefined;
+
   return (
     <div
       ref={dashboardRef}
@@ -174,9 +212,15 @@ export function EnquiryOverviewCard({
           description={description}
           highlights={highlights}
         />
-        <ProjectGallery images={GALLERY_IMAGES} />
+        {galleryImages.length > 0 && <ProjectGallery images={galleryImages} />}
         <EnquiryStatCardsBar values={statValues} />
-        <EnquiryProjectScopeSection />
+        {projectScopes && projectScopes.length === 0 ? (
+          <div className="po-section-inner">
+            <p className="po-section-description">No scope categories have been shared yet.</p>
+          </div>
+        ) : (
+          <EnquiryProjectScopeSection categories={scopeCategories} />
+        )}
       </main>
 
       {customRightPanel}

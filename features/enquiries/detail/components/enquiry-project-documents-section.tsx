@@ -7,6 +7,8 @@ import styles from "./enquiry-project-documents-section.module.css";
 export interface ProjectDocumentItem {
   id: string;
   name: string;
+  /** Preview image URL straight from backend project_DOC.doc_img_url. */
+  docImageUrl?: string;
   size?: string;
   discipline?: string;
   status?: "Approved" | "In Review" | "Draft" | "Missing";
@@ -24,11 +26,11 @@ export interface ProjectDocumentItem {
 const DEFAULT_PROJECT_DOCUMENTS: ProjectDocumentItem[] = [
   {
     id: "doc-1",
-    name: "Ground Floor Plan.pdf",
+    name: "Client Requirements.pdf",
     size: "4.2 MB",
-    discipline: "Drawings",
+    discipline: "Requirements",
     status: "Approved",
-    revision: "R03",
+    revision: "R01",
     updatedAt: "11 Aug 2026",
     updatedBy: { name: "Arjun Mehta", initials: "AM" },
     isNew: true,
@@ -36,9 +38,9 @@ const DEFAULT_PROJECT_DOCUMENTS: ProjectDocumentItem[] = [
   },
   {
     id: "doc-2",
-    name: "Structural Layout.dwg",
+    name: "Site Inspection Report.pdf",
     size: "12.8 MB",
-    discipline: "Drawings",
+    discipline: "Site Reports",
     status: "In Review",
     revision: "R02",
     updatedAt: "10 Aug 2026",
@@ -48,7 +50,7 @@ const DEFAULT_PROJECT_DOCUMENTS: ProjectDocumentItem[] = [
   },
   {
     id: "doc-3",
-    name: "First Floor Plan.pdf",
+    name: "Existing Floor Plan.dwg",
     size: "3.9 MB",
     discipline: "Drawings",
     status: "Approved",
@@ -60,15 +62,15 @@ const DEFAULT_PROJECT_DOCUMENTS: ProjectDocumentItem[] = [
   },
   {
     id: "doc-4",
-    name: "Site Progress Log 07.pdf",
+    name: "Brand Guidelines.pdf",
     size: "6.8 MB",
-    discipline: "Site Reports",
-    status: "In Review",
-    revision: "R07",
+    discipline: "Brand Assets",
+    status: "Missing",
+    revision: "R01",
     updatedAt: "10 Aug 2026",
     updatedBy: { name: "Rahul Kumar", initials: "RK" },
-    isNew: true,
-    uploaded: true,
+    isNew: false,
+    uploaded: false,
   },
   {
     id: "doc-5",
@@ -216,86 +218,106 @@ export function EnquiryProjectDocumentsSection({
               </tr>
             </thead>
             <tbody>
-              {documents.map((doc) => (
-                <tr key={doc.id}>
-                  {/* FILE Column */}
-                  <td>
-                    <div className={styles.fileCell}>
-                      <div className={`${styles.fileIconWrap} ${getFileIconStyleClass(doc)}`}>
-                        {getFileIcon(doc)}
-                      </div>
-                      <div className={styles.fileInfo}>
-                        <div className={styles.fileNameRow}>
-                          <span className={styles.fileName}>{doc.name}</span>
-                          {doc.isNew && <span className={styles.newBadge}>New</span>}
+              {documents.length === 0 ? (
+                <tr>
+                  <td colSpan={7}>
+                    <p className={styles.emptyState} aria-label="No documents available">
+                      No documents have been shared yet.
+                    </p>
+                  </td>
+                </tr>
+              ) : (
+                documents.map((doc) => (
+                  <tr key={doc.id}>
+                    {/* FILE Column */}
+                    <td>
+                      <div className={styles.fileCell}>
+                        <div className={`${styles.fileIconWrap} ${getFileIconStyleClass(doc)}`}>
+                          {doc.docImageUrl ? (
+                            <img
+                              src={doc.docImageUrl}
+                              alt=""
+                              className={styles.filePreviewImg}
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          ) : (
+                            getFileIcon(doc)
+                          )}
                         </div>
-                        <span className={styles.fileSize}>
-                          {doc.uploaded ? doc.size || "Document" : "Missing File"}
-                        </span>
+                        <div className={styles.fileInfo}>
+                          <div className={styles.fileNameRow}>
+                            <span className={styles.fileName}>{doc.name}</span>
+                            {doc.isNew && <span className={styles.newBadge}>New</span>}
+                          </div>
+                          <span className={styles.fileSize}>
+                            {doc.uploaded ? doc.size || "Document" : "Missing File"}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* DISCIPLINE Column */}
-                  <td>
-                    <span className={styles.disciplineText}>{doc.discipline || "Drawings"}</span>
-                  </td>
+                    {/* DISCIPLINE Column */}
+                    <td>
+                      <span className={styles.disciplineText}>{doc.discipline || "Drawings"}</span>
+                    </td>
 
-                  {/* STATUS Column */}
-                  <td>
-                    <span className={`${styles.statusBadge} ${getStatusStyleClass(doc.status)}`}>
-                      {doc.status || (doc.uploaded ? "Approved" : "Missing")}
-                    </span>
-                  </td>
+                    {/* STATUS Column */}
+                    <td>
+                      <span className={`${styles.statusBadge} ${getStatusStyleClass(doc.status)}`}>
+                        {doc.status || (doc.uploaded ? "Approved" : "Missing")}
+                      </span>
+                    </td>
 
-                  {/* REVISION Column */}
-                  <td>
-                    <span className={styles.revisionText}>{doc.revision || "R01"}</span>
-                  </td>
+                    {/* REVISION Column */}
+                    <td>
+                      <span className={styles.revisionText}>{doc.revision || "R01"}</span>
+                    </td>
 
-                  {/* UPDATED Column */}
-                  <td>
-                    <span className={styles.updatedDate}>{doc.updatedAt || "Recent"}</span>
-                  </td>
+                    {/* UPDATED Column */}
+                    <td>
+                      <span className={styles.updatedDate}>{doc.updatedAt || "Recent"}</span>
+                    </td>
 
-                  {/* UPDATED BY Column */}
-                  <td>
-                    <div className={styles.updatedByCell}>
-                      <div className={styles.userAvatar}>
-                        {doc.updatedBy?.initials || "AM"}
+                    {/* UPDATED BY Column */}
+                    <td>
+                      <div className={styles.updatedByCell}>
+                        <div className={styles.userAvatar}>
+                          {doc.updatedBy?.initials || "AM"}
+                        </div>
+                        <span className={styles.userName}>{doc.updatedBy?.name || "Arjun Mehta"}</span>
                       </div>
-                      <span className={styles.userName}>{doc.updatedBy?.name || "Arjun Mehta"}</span>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* ACTIONS Column */}
-                  <td className={styles.alignRight}>
-                    <div className={styles.actionCell}>
-                      {doc.uploaded ? (
+                    {/* ACTIONS Column */}
+                    <td className={styles.alignRight}>
+                      <div className={styles.actionCell}>
+                        {doc.uploaded ? (
+                          <button
+                            type="button"
+                            className={styles.actionIconBtn}
+                            onClick={() => onDownload?.(doc.id)}
+                            title={`Download ${doc.name}`}
+                            aria-label={`Download ${doc.name}`}
+                          >
+                            <Download size={13} />
+                          </button>
+                        ) : (
+                          <AlertCircle size={13} className={styles.missingAlertIcon} />
+                        )}
                         <button
                           type="button"
                           className={styles.actionIconBtn}
-                          onClick={() => onDownload?.(doc.id)}
-                          title={`Download ${doc.name}`}
-                          aria-label={`Download ${doc.name}`}
+                          title="More options"
+                          aria-label="More options"
                         >
-                          <Download size={13} />
+                          <MoreHorizontal size={14} />
                         </button>
-                      ) : (
-                        <AlertCircle size={13} className={styles.missingAlertIcon} />
-                      )}
-                      <button
-                        type="button"
-                        className={styles.actionIconBtn}
-                        title="More options"
-                        aria-label="More options"
-                      >
-                        <MoreHorizontal size={14} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

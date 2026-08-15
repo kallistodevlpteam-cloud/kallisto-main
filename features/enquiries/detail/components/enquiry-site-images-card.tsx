@@ -34,26 +34,28 @@ const DEFAULT_SITE_IMAGES: SiteImageItem[] = [
 
 export function EnquirySiteImagesCard({
   images = DEFAULT_SITE_IMAGES,
-  totalCount = 8,
+  totalCount = 7,
   extraCount,
-  title = "INSPIRATION IMAGES",
-  showAll = true,
+  title = "Site Images Preview",
+  showAll = false,
   onImageClick,
   onViewAll,
 }: EnquirySiteImagesCardProps) {
   const [expanded, setExpanded] = useState(true);
 
-  // If showAll is true (default), show all images directly in the grid without overflow overlay card
-  const displayImages = showAll ? images : images.slice(0, 3);
-  const overflowThumb = images[3] || images[0];
+  const hasImages = images.length > 0;
+  const VISIBLE = showAll ? images.length : 4;
+  const displayImages = images.slice(0, VISIBLE);
+  const overflowThumb = images[4] || images[0];
   const overflowCount =
-    extraCount !== undefined ? extraCount : Math.max(0, totalCount - 3);
+    extraCount !== undefined ? extraCount : Math.max(0, totalCount - 4);
 
   return (
     <div className={styles.container}>
       {/* ── Collapsible Header Row ── */}
       <button
         type="button"
+        data-testid="site-images-toggle"
         className={styles.headerToggle}
         onClick={() => setExpanded((prev) => !prev)}
         aria-expanded={expanded}
@@ -68,7 +70,12 @@ export function EnquirySiteImagesCard({
       </button>
 
       {/* ── 4-Column Image Gallery Grid ── */}
-      {expanded && (
+      {expanded && !hasImages && (
+        <p className={styles.emptyState} aria-label="No site images available">
+          No site images have been shared yet.
+        </p>
+      )}
+      {expanded && hasImages && (
         <div id="site-images-gallery" className={styles.galleryGrid}>
           {displayImages.map((img, index) => (
             <button
@@ -107,6 +114,7 @@ export function EnquirySiteImagesCard({
               />
               <div className={styles.overflowOverlay}>
                 <span className={styles.overflowText}>+{overflowCount}</span>
+                <span style={{ fontSize: "11px", fontWeight: 500, color: "#94a3b8" }}>more</span>
               </div>
             </button>
           )}

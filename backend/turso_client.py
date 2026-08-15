@@ -31,13 +31,17 @@ def get_turso_config() -> tuple[str, str]:
 
 
 def _typed_value(value: Any) -> dict[str, Any]:
+    if value is None:
+        # The libSQL v2 pipeline requires {"type": "null"} without a value
+        # key; {"type": "text", "value": null} is rejected with a 400.
+        return {"type": "null"}
     if isinstance(value, bool):
         return {"type": "integer", "value": "1" if value else "0"}
     if isinstance(value, int):
         return {"type": "integer", "value": str(value)}
     if isinstance(value, float):
         return {"type": "float", "value": str(value)}
-    return {"type": "text", "value": str(value) if value is not None else None}
+    return {"type": "text", "value": str(value)}
 
 
 def _value_cell(cell: dict[str, Any]) -> Any:

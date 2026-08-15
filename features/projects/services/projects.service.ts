@@ -101,6 +101,7 @@ export const projectsService = {
         type: proj.type,
         clientId: proj.clientId,
         clientDisplayName,
+        location: proj.siteLocation || "—",
         phase: proj.phase,
         phaseProgress: proj.phaseProgress,
         nextAction: nextActionDto,

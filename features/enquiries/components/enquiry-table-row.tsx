@@ -178,7 +178,7 @@ export function EnquiryTableRow({ enquiry, now }: TableRowProps) {
 
       {/* 4. Budget Range */}
       <div className={`${styles.budgetVal} ${styles.budgetCell}`} role="gridcell">
-        {formatEnquiryBudgetRange(enquiry.budgetMin, enquiry.budgetMax)}
+        {enquiry.budget ? enquiry.budget : formatEnquiryBudgetRange(enquiry.budgetMin, enquiry.budgetMax)}
       </div>
 
       {/* 5. Project Type */}
