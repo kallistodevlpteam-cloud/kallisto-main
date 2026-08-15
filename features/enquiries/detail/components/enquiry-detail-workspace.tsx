@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -51,6 +51,7 @@ import {
 } from "@/features/enquiries/types/enquiry.types";
 import {
   buildEnquiryDetailViewModel,
+  buildBackendRequirementRows,
   EnquiryDetailViewModel,
   ClientHouseholdMember,
 } from "../services/enquiry-detail-view-model";
@@ -67,6 +68,7 @@ import { EnquiryClarificationComposer } from "./enquiry-clarification-composer";
 import { EnquiryDetailTabs, EnquiryTabKey, resolveValidTabKey } from "./enquiry-detail-tabs";
 import { OdinInsightsPanel } from "./odin-insights-panel";
 import { deriveContextualOdinInsights } from "@/features/enquiries/services/enquiry-intelligence";
+import { authedFetch } from "@/lib/auth/authed-fetch";
 
 export function EnquiryDetailSkeleton() {
   return (
@@ -77,13 +79,6 @@ export function EnquiryDetailSkeleton() {
     </div>
   );
 }
-
-const GALLERY_IMAGES = [
-  { url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80", caption: "Exterior Elevation Reference" },
-  { url: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80", caption: "Living Area & Double-height Volume" },
-  { url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80", caption: "Teak Joinery & Courtyard View" },
-  { url: "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80", caption: "Master Suite & Balcony Connection" },
-];
 
 const DEFAULT_ENQUIRY_RECORD: EnquiryRecord = {
   id: "enq-2026-0486",
@@ -133,7 +128,12 @@ function getClientContextSectionIcon(iconName: string) {
   }
 }
 
-function getMemberOdinInsightSummary(member: ClientHouseholdMember): string {
+export function getMemberOdinInsightSummary(member: ClientHouseholdMember): string {
+  // Strictly backend-sourced description (family_details.description):
+  // shown verbatim whenever the backend provides one.
+  if (member.description && member.description.trim().length > 0) {
+    return member.description.trim();
+  }
   const name = (member.name || "").toLowerCase();
   if (name.includes("ananya")) {
     if (member.occupation?.toLowerCase().includes("director") || member.relationship?.toLowerCase().includes("mother")) {
@@ -169,56 +169,220 @@ function getMemberOdinInsightSummary(member: ClientHouseholdMember): string {
   return `${member.name}'s design requirements and space preferences have been verified by ODIN.`;
 }
 
+/**
+ * Builds the site image alt text strictly from the backend-provided URL
+ * (project_site.site_img_url entries): the URL basename is used verbatim,
+ * so no non-backend label is ever fabricated.
+ */
+function deriveSiteImageAlt(url: string, index: number): string {
+  const basename = url.split("/").pop()?.split(".")[0] ?? "";
+  return basename ? `Site image ${index + 1}: ${basename}` : `Site image ${index + 1}`;
+}
+
+/**
+ * Initials derived strictly from the backend client_name; returns the
+ * documented fallback when the name cannot be resolved.
+ */
+function deriveClientInitials(clientName: string): string {
+  const tokens = clientName.trim().split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) return "—";
+  const initials = tokens
+    .slice(0, 3)
+    .map((token) => token.charAt(0).toUpperCase())
+    .join("");
+  return initials || "—";
+}
+
+/** Formats project_DOC.updated_at (Unix epoch seconds) as "11 Aug 2026",
+ * strictly derived from the backend timestamp. */
+function deriveDocUpdatedLabel(epochSeconds: number | null | undefined): string | undefined {
+  if (epochSeconds == null) return undefined;
+  const parsed = typeof epochSeconds === "number" ? epochSeconds : Number(epochSeconds);
+  if (!Number.isFinite(parsed)) return undefined;
+  const ms = parsed > 1e11 ? parsed : parsed * 1000;
+  return new Date(ms).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export function buildEnquiriesFromProjects(projects: Array<Record<string, unknown>>): EnquiryRecord[] {
   if (!projects || projects.length === 0) return [DEFAULT_ENQUIRY_RECORD];
   return projects.map((proj, idx) => {
-    const id = String(proj.id || proj.enquiryRef || `enq-${idx + 1}`);
-    const title = String(proj.project_name || proj.name || proj.title || "Villa Design Consultation");
-    const clientName = String(proj.client_name || proj.client || proj.clientName || "Ananya Builders");
+    const rawId = String(proj.id ?? proj.enquiryRef ?? `enq-${idx + 1}`);
+    // Align with the enquiries list route ids (`prj-<id>`): the backend
+    // project id is numeric, the list links use the prefixed form.
+    const id = rawId.startsWith("prj-") ? rawId : `prj-${rawId}`;
+    const title = String(proj.projectName || proj.project_name || proj.name || proj.title || "Villa Design Consultation");
+    const clientName = String(proj.clientName || proj.client_name || proj.client || "—");
     const location = String(proj.place || proj.location || "Kochi");
-    const rawType = String(proj.project_type || proj.type || proj.projectType || "residential").toLowerCase();
+    const rawType = String(proj.projectType || proj.project_type || proj.type || "residential").toLowerCase();
     const normalizedType = rawType.includes("comm") ? "commercial" : "residential";
 
-    const isPrj = String(proj.project_character || "enq").toLowerCase() === "pr";
+    const isPrj = String(proj.projectCharacter || proj.project_character || "enq").toLowerCase() === "pr";
     const status: EnquiryStatus = isPrj ? "completed" : "active";
-    const stage: EnquiryStage = isPrj ? "accepted" : (proj.view ? "clarification" : "new");
+    const stage: EnquiryStage = isPrj ? "accepted" : (proj.viewed || proj.view ? "clarification" : "new");
 
-    const rawBudget = proj.estimated_overall_budget as number | string | undefined;
+    const rawBudget = (proj.estimatedOverallBudget ?? proj.estimated_overall_budget) as number | string | undefined;
     const formattedBudget = typeof rawBudget === "number"
       ? (rawBudget > 0 ? `₹${(rawBudget / 100000).toFixed(rawBudget % 100000 === 0 ? 0 : 2)} Lakhs` : undefined)
       : (typeof rawBudget === "string" && rawBudget.trim() !== "" ? rawBudget : undefined);
 
-    const rawArea = proj.sq_area as number | string | undefined;
+    const rawArea = (proj.sqArea ?? proj.sq_area) as number | string | undefined;
     const formattedArea = typeof rawArea === "number"
       ? `${rawArea.toLocaleString()} sq ft`
       : (typeof rawArea === "string" && rawArea.trim() !== "" ? rawArea : undefined);
 
+    const requirementsRows = Array.isArray(proj.requirements)
+      ? proj.requirements
+      : (Array.isArray(proj.requirements_list) ? proj.requirements_list : []);
+
     return {
       id,
       title,
-      requirementSummary: String(proj.brief_description || proj.summary || proj.description || DEFAULT_ENQUIRY_RECORD.requirementSummary),
+      requirementSummary: String(proj.briefDescription || proj.brief_description || proj.summary || proj.description || DEFAULT_ENQUIRY_RECORD.requirementSummary),
+      overview: String(proj.overView ?? proj.over_view ?? "") || null,
+      providerIds: (() => {
+        const raw = proj.providerIds ?? proj.provider_ids;
+        if (Array.isArray(raw)) {
+          return raw.map((item) => String(item ?? "")).filter((item) => item.length > 0);
+        }
+        if (typeof raw === "string" && raw.trim().length > 0) {
+          try {
+            const parsed: unknown = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+              return parsed.map((item) => String(item ?? "")).filter((item) => item.length > 0);
+            }
+          } catch {
+            return [raw];
+          }
+        }
+        return [];
+      })(),
       clientName,
       location,
-      thumbnailUrl: String(proj.cover_image_url || proj.thumbnailUrl || DEFAULT_ENQUIRY_RECORD.thumbnailUrl),
+      thumbnailUrl: String(proj.coverImageUrl || proj.cover_image_url || proj.thumbnailUrl || DEFAULT_ENQUIRY_RECORD.thumbnailUrl),
       source: "website",
       status,
       stage,
       projectType: normalizedType as any,
-      backendProjectType: String(proj.project_type || "Residential Design"),
+      backendProjectType: String(proj.projectType || proj.project_type || "Residential Design"),
       budgetMin: 4000000,
       budgetMax: 6000000,
-      receivedAt: String(proj.created_at || proj.createdAt || proj.receivedAt || DEFAULT_ENQUIRY_RECORD.receivedAt),
+      receivedAt: String(proj.createdAt || proj.created_at || proj.receivedAt || DEFAULT_ENQUIRY_RECORD.receivedAt),
       nextAction: { type: "review_enquiry", label: "Review Requirements" },
       enquiryRef: String(proj.enquiryRef || proj.code || `ENQ-2026-${String(idx + 486).padStart(4, "0")}`),
       budget: formattedBudget || String(proj.budget || "₹40L – ₹60L"),
-      timeline: String(proj.client_expected_timeline || proj.timeline || "Within 6 Months"),
+      timeline: String(proj.clientExpectedTimeline || proj.client_expected_timeline || proj.timeline || "Within 6 Months"),
       builtUpArea: formattedArea || String(proj.area || "2,800 – 3,200 sq ft"),
-      viewed: Boolean(proj.view),
-      inspirationImages: (proj.inspiration_images as any) || undefined,
-      projectDocuments: (proj.project_documents as any) || undefined,
-      siteImages: (proj.site_images as any) || undefined,
-      projectScopes: (proj.project_scopes as any) || undefined,
-      requirementsList: (proj.requirements_list as any) || undefined,
+      viewed: Boolean(proj.viewed || proj.view),
+      inspirationImages: (() => {
+        const raw = Array.isArray(proj.inspirationImages)
+          ? proj.inspirationImages
+          : Array.isArray(proj.inspiration_images)
+            ? proj.inspiration_images
+            : [];
+        return raw.map((img: { url?: string; alt?: string | null }) => ({
+          url: String(img.url ?? ""),
+          alt: img.alt ?? undefined,
+        }));
+      })(),
+      projectDocuments: (proj.projectDocuments ?? proj.project_documents) as any,
+      siteImages: (proj.siteImages ?? proj.site_images) as any,
+      projectScopes: (proj.projectScopes ?? proj.project_scopes) as any,
+      requirementsList: requirementsRows.flatMap((entry) => {
+        const requirement = (entry ?? {}) as {
+          id?: unknown;
+          requirement_name?: unknown;
+          items?: unknown;
+          item_details?: unknown;
+          statuses?: unknown;
+        };
+        const requirementName = String(requirement.requirement_name ?? "").trim();
+        if (!requirementName) return [];
+        const items = Array.isArray(requirement.items)
+          ? requirement.items.map((item) => String(item ?? "")).filter((item) => item.length > 0)
+          : [];
+        const itemDetails = Array.isArray(requirement.item_details)
+          ? requirement.item_details.map((details) =>
+              Array.isArray(details)
+                ? details.map((detail) => String(detail ?? "")).filter((detail) => detail.length > 0)
+                : []
+            )
+          : [];
+        const statuses = Array.isArray(requirement.statuses)
+          ? requirement.statuses.map((status) => {
+              if (typeof status === "boolean") return status;
+              if (status === 1 || status === "1") return true;
+              if (status === 0 || status === "0") return false;
+              return null;
+            })
+          : [];
+        return [
+          {
+            id: String(requirement.id ?? ""),
+            requirement_name: requirementName,
+            items,
+            item_details: itemDetails,
+            statuses,
+          },
+        ];
+      }),
+      clientPriorities: ((
+        proj.priorities as Array<{ [k: string]: unknown }>
+      ) ?? [])
+        .map((priority) => {
+          const label = String(priority?.priority_name ?? "").trim();
+          if (!label) return null;
+          const details = Array.isArray(priority.details)
+            ? priority.details
+                .map((detail) => String(detail ?? ""))
+                .filter((detail) => detail.length > 0)
+            : [];
+          const status = (priority?.statuses as unknown[] | undefined)?.[0];
+          const isConfirmed = status === true || status === 1;
+          const tags = Array.isArray(priority.tags)
+            ? priority.tags
+                .filter((tagList) => Array.isArray(tagList))
+                .flatMap((tagList) =>
+                  (tagList as unknown[])
+                    .map((tag) => String(tag ?? ""))
+                    .filter((tag) => tag.length > 0)
+                )
+            : [];
+          return {
+            id: String(priority?.id ?? ""),
+            label,
+            type: isConfirmed ? ("confirmed" as const) : ("inferred" as const),
+            details,
+            tags,
+          };
+        })
+        .filter((priority) => priority !== null),
+      familyMembers: ((
+        proj.familyMembers ?? proj.family_members
+      ) as Array<{ [k: string]: unknown }> | null | undefined)
+        ?.map((member) => {
+          const name = String(member?.name ?? "").trim();
+          if (!name) return null;
+          const rawClientId = member?.client_id ?? member?.clientId;
+          const rawAge = member?.age;
+          const rawImgUrl = member?.family_member_img_url ?? member?.familyMemberImgUrl;
+          const rawDescription = member?.description;
+          return {
+            familyId: String(member?.family_id ?? member?.familyId ?? ""),
+            clientId: typeof rawClientId === "string" ? rawClientId : null,
+            name,
+            age: typeof rawAge === "number" && Number.isFinite(rawAge) ? rawAge : null,
+            job: typeof member?.job === "string" ? member.job : null,
+            phone: typeof member?.phone === "string" ? member.phone : null,
+            relation: typeof member?.relation === "string" ? member.relation : null,
+            familyMemberImgUrl: typeof rawImgUrl === "string" ? rawImgUrl : null,
+            description: typeof rawDescription === "string" ? rawDescription : null,
+          };
+        })
+        .filter((member) => member !== null),
     };
   });
 }
@@ -267,72 +431,99 @@ interface DomainColumnDef {
   render: (req: EnquiryRequirement) => React.ReactNode;
 }
 
+/** Badge label for a requirement state, strictly derived from the state
+ * value (mapped from backend requirement_items.status). */
+export function requirementStateLabel(state: string): string {
+  if (state === "ai_derived") return "AI-Derived";
+  return state.replace("_", " ");
+}
+
 const DOMAIN_TABLE_COLUMNS: Record<string, DomainColumnDef[]> = {
   exterior_facade: [
     { header: "Requirement", width: "28%", render: (r) => <span className={styles.roomNameText}>{r.label}</span> },
     { header: "Specification", width: "46%", render: (r) => <span style={{ color: "#334155", lineHeight: "1.4" }}>{String(r.value || "—")}</span> },
     { header: "Priority", width: "12%", render: (r) => <span className={`${styles.prioTag} ${styles[`prio_${r.priority}`]}`}>{r.priority.toUpperCase()}</span> },
-    { header: "Status", width: "14%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{r.state.replace("_", " ")}</span> },
+    { header: "Status", width: "14%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{requirementStateLabel(r.state)}</span> },
   ],
   outdoor_landscape: [
     { header: "Requirement", width: "28%", render: (r) => <span className={styles.roomNameText}>{r.label}</span> },
     { header: "Specification", width: "46%", render: (r) => <span style={{ color: "#334155", lineHeight: "1.4" }}>{String(r.value || "—")}</span> },
     { header: "Priority", width: "12%", render: (r) => <span className={`${styles.prioTag} ${styles[`prio_${r.priority}`]}`}>{r.priority.toUpperCase()}</span> },
-    { header: "Status", width: "14%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{r.state.replace("_", " ")}</span> },
+    { header: "Status", width: "14%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{requirementStateLabel(r.state)}</span> },
   ],
   site: [
     { header: "Parameter", width: "24%", render: (r) => <span className={styles.roomNameText}>{r.label}</span> },
     { header: "Current Value", width: "42%", render: (r) => <span style={{ color: "#334155" }}>{String(r.value || "—")}</span> },
     { header: "Source", width: "12%", render: (r) => <span className={styles.reqCategoryBadge}>{r.source.toUpperCase()}</span> },
     { header: "Priority", width: "10%", render: (r) => <span className={`${styles.prioTag} ${styles[`prio_${r.priority}`]}`}>{r.priority.toUpperCase()}</span> },
-    { header: "Status", width: "12%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{r.state.replace("_", " ")}</span> },
+    { header: "Status", width: "12%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{requirementStateLabel(r.state)}</span> },
   ],
   technical: [
     { header: "System", width: "22%", render: (r) => <span className={styles.roomNameText}>{r.label}</span> },
     { header: "Requirement / Specification", width: "48%", render: (r) => <span style={{ color: "#334155", lineHeight: "1.4" }}>{String(r.value || "—")}</span> },
     { header: "Priority", width: "12%", render: (r) => <span className={`${styles.prioTag} ${styles[`prio_${r.priority}`]}`}>{r.priority.toUpperCase()}</span> },
-    { header: "Status", width: "18%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{r.state.replace("_", " ")}</span> },
+    { header: "Status", width: "18%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{requirementStateLabel(r.state)}</span> },
   ],
   budget_commercial: [
     { header: "Item", width: "26%", render: (r) => <span className={styles.roomNameText}>{r.label}</span> },
     { header: "Current Value", width: "34%", render: (r) => <span style={{ color: "#0f172a", fontWeight: 600 }}>{String(r.value || "—")}</span> },
     { header: "Coverage / Notes", width: "20%", render: (r) => <span style={{ color: "#64748b", fontSize: "12px" }}>{r.source === "client" ? "Client stated" : "Coverage pending confirmation"}</span> },
     { header: "Priority", width: "8%", render: (r) => <span className={`${styles.prioTag} ${styles[`prio_${r.priority}`]}`}>{r.priority.toUpperCase()}</span> },
-    { header: "Status", width: "12%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{r.state.replace("_", " ")}</span> },
+    { header: "Status", width: "12%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{requirementStateLabel(r.state)}</span> },
   ],
   timeline: [
     { header: "Milestone / Constraint", width: "30%", render: (r) => <span className={styles.roomNameText}>{r.label}</span> },
     { header: "Target / Value", width: "42%", render: (r) => <span style={{ color: "#334155", fontWeight: 600 }}>{String(r.value || "—")}</span> },
     { header: "Priority", width: "12%", render: (r) => <span className={`${styles.prioTag} ${styles[`prio_${r.priority}`]}`}>{r.priority.toUpperCase()}</span> },
-    { header: "Status", width: "16%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{r.state.replace("_", " ")}</span> },
+    { header: "Status", width: "16%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{requirementStateLabel(r.state)}</span> },
   ],
   regulatory: [
     { header: "Requirement", width: "26%", render: (r) => <span className={styles.roomNameText}>{r.label}</span> },
     { header: "Current Status", width: "42%", render: (r) => <span style={{ color: "#334155", lineHeight: "1.4" }}>{String(r.value || "—")}</span> },
     { header: "Responsibility", width: "14%", render: (r) => <span style={{ color: "#64748b", fontSize: "11.5px" }}>{r.source === "client" ? "Client" : "SP Architect TBD"}</span> },
     { header: "Priority", width: "8%", render: (r) => <span className={`${styles.prioTag} ${styles[`prio_${r.priority}`]}`}>{r.priority.toUpperCase()}</span> },
-    { header: "Status", width: "10%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{r.state.replace("_", " ")}</span> },
+    { header: "Status", width: "10%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{requirementStateLabel(r.state)}</span> },
   ],
   documentation: [
     { header: "Document", width: "26%", render: (r) => <span className={styles.roomNameText}>{r.label}</span> },
     { header: "Availability", width: "38%", render: (r) => <span style={{ color: "#334155" }}>{String(r.value || "Not received")}</span> },
     { header: "Source", width: "12%", render: (r) => <span className={styles.reqCategoryBadge}>{r.source.toUpperCase()}</span> },
     { header: "Verification", width: "12%", render: (r) => <span style={{ color: r.state === "confirmed" ? "#16a34a" : "#d97706", fontWeight: 600, fontSize: "11.5px" }}>{r.state === "confirmed" ? "Available" : "Needs review"}</span> },
-    { header: "Status", width: "12%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{r.state.replace("_", " ")}</span> },
+    { header: "Status", width: "12%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{requirementStateLabel(r.state)}</span> },
   ],
   scope: [
     { header: "Service", width: "28%", render: (r) => <span className={styles.roomNameText}>{r.label}</span> },
     { header: "Expectation", width: "44%", render: (r) => <span style={{ color: "#334155", lineHeight: "1.4" }}>{String(r.value || "—")}</span> },
     { header: "Priority", width: "12%", render: (r) => <span className={`${styles.prioTag} ${styles[`prio_${r.priority}`]}`}>{r.priority.toUpperCase()}</span> },
-    { header: "Status", width: "16%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{r.state.replace("_", " ")}</span> },
+    { header: "Status", width: "16%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{requirementStateLabel(r.state)}</span> },
   ],
 };
 
+/** Renders the requirement row's specification value: a detail list when
+ * the backend provides one (requirement_items.details), otherwise the raw
+ * value or an em dash. Never invents data. */
+function renderRequirementValue(r: EnquiryRequirement) {
+  if (Array.isArray(r.value) && r.value.length > 0) {
+    return (
+      <ul className={styles.requirementDetailList}>
+        {r.value.map((detail, idx) => (
+          <li key={idx}>{String(detail)}</li>
+        ))}
+      </ul>
+    );
+  }
+  return (
+    <span style={{ color: "#334155", lineHeight: "1.4" }}>
+      {String(r.value || "—")}
+    </span>
+  );
+}
+
 const DEFAULT_DOMAIN_COLUMNS: DomainColumnDef[] = [
   { header: "Requirement", width: "30%", render: (r) => <span className={styles.roomNameText}>{r.label}</span> },
-  { header: "Specification / Details", width: "42%", render: (r) => <span style={{ color: "#334155", lineHeight: "1.4" }}>{String(r.value || "—")}</span> },
+  { header: "Specification / Details", width: "42%", render: renderRequirementValue },
   { header: "Priority", width: "12%", render: (r) => <span className={`${styles.prioTag} ${styles[`prio_${r.priority}`]}`}>{r.priority.toUpperCase()}</span> },
-  { header: "Status", width: "16%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{r.state.replace("_", " ")}</span> },
+  { header: "Status", width: "16%", align: "right", render: (r) => <span className={`${styles.reqStateBadge} ${styles[`state_${r.state}`]}`}>{requirementStateLabel(r.state)}</span> },
 ];
 
 export function GenericDomainScheduleTable({
@@ -411,12 +602,42 @@ export function EnquiryDetailWorkspace({
 
   const activeTab: EnquiryTabKey = resolveValidTabKey(searchParams.get("tab"));
 
+  // Backend-driven requirement mode: when the project carries backend
+  // requirements rows (requirement_name + requirement_items), the
+  // requirement navigator and tables are rendered strictly from them;
+  // the static taxonomy and mock requirement rows are never substituted.
+  const backendRequirementGroups = (enquiry.requirementsList ?? []).map((requirement) => ({
+    id: requirement.id,
+    requirement_name: requirement.requirement_name,
+    items: requirement.items ?? [],
+    item_details: requirement.item_details ?? [],
+  }));
+  const isBackendRequirementMode = backendRequirementGroups.length > 0;
+  const backendDomainKeyList = backendRequirementGroups.map((group) => group.id).join("|");
+  const backendDomainKeySet = new Set(backendRequirementGroups.map((group) => group.id));
+  const backendRequirementRows = buildBackendRequirementRows(enquiry.requirementsList);
+  const resolvedActiveDomainKey = isBackendRequirementMode
+    ? backendDomainKeySet.has(activeDomainKey)
+      ? activeDomainKey
+      : (backendRequirementGroups[0]?.id ?? activeDomainKey)
+    : activeDomainKey;
+  const activeBackendGroup = isBackendRequirementMode
+    ? (backendRequirementGroups.find((group) => group.id === resolvedActiveDomainKey) ?? null)
+    : null;
+  const activeBackendRows = activeBackendGroup
+    ? backendRequirementRows.filter((row) => row.domain === activeBackendGroup.id)
+    : [];
+
   const rawDomain = searchParams.get("domain");
   useEffect(() => {
-    if (rawDomain && REQUIREMENT_DOMAIN_ORDER.some((d) => d.key === rawDomain)) {
+    if (
+      rawDomain &&
+      (REQUIREMENT_DOMAIN_ORDER.some((d) => d.key === rawDomain) ||
+        backendDomainKeyList.split("|").includes(rawDomain))
+    ) {
       setActiveDomainKey(rawDomain);
     }
-  }, [rawDomain]);
+  }, [rawDomain, backendDomainKeyList]);
 
   const handleSelectDomain = (domainKey: string) => {
     setActiveDomainKey(domainKey);
@@ -439,7 +660,7 @@ export function EnquiryDetailWorkspace({
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/projects?character=enq", { cache: "no-store" })
+    authedFetch("/api/projects?character=enq", { cache: "no-store" })
       .then(async (response) => {
         const payload = (await response.json()) as {
           status: string;
@@ -449,7 +670,12 @@ export function EnquiryDetailWorkspace({
           throw new Error("Backend projects request failed");
         }
         const records = buildEnquiriesFromProjects(payload.projects as never[]);
-        const match = records.find((record) => record.id === enquiryId);
+        const match = records.find(
+          (record) =>
+            record.id === enquiryId ||
+            record.id === `prj-${enquiryId}` ||
+            record.id.replace("prj-", "") === enquiryId
+        );
         return match ?? null;
       })
       .then((match) => {
@@ -567,7 +793,7 @@ export function EnquiryDetailWorkspace({
             {/* Active Tab Scroll Area */}
             <div className={styles.mainScrollArea}>
 
-            {/* ── TAB 1: OVERVIEW ────────────────────────────────────────────────── */}
+            {/* —— TAB 1: OVERVIEW —————————————————————————————————————————————————— */}
             {activeTab === "overview" && (
               <div className={styles.tabSectionGroup}>
                 <OdinProjectBrief brief={viewModel.brief} />
@@ -593,12 +819,17 @@ export function EnquiryDetailWorkspace({
                 />
                 <EnquirySiteImagesCard
                   title="CLIENT INSPIRATION IMAGES"
-                  totalCount={8}
+                  images={enquiry.inspirationImages?.map((img, idx) => ({
+                    id: `inspiration-${idx}`,
+                    src: img.url,
+                    alt: img.alt || `Inspiration image ${idx + 1}`,
+                  }))}
+                  totalCount={enquiry.inspirationImages?.length ?? 0}
                 />
               </div>
             )}
 
-            {/* ── TAB 2: REQUIREMENTS (THREE-PANE WORKSPACE) ───────────────────────── */}
+            {/* —— TAB 2: REQUIREMENTS (THREE-PANE WORKSPACE) ————————————————————————— */}
             {activeTab === "requirements" && (
               <div className={styles.requirementsWorkspace}>
                 {/* PANE 1: Requirement Domain Navigator (Left, ~210px) */}
@@ -607,16 +838,43 @@ export function EnquiryDetailWorkspace({
                     <span className={styles.reqDomainNavTitle}>REQUIREMENTS</span>
                     <span className={styles.reqDomainNavSubtitle}>
                       {
-                        viewModel.requirements.filter((r) =>
-                          REQUIREMENT_DOMAIN_ORDER.some((d) => d.key === (r.domain || r.category))
-                        ).length
+                        isBackendRequirementMode
+                          ? backendRequirementRows.length
+                          : viewModel.requirements.filter((r) =>
+                              REQUIREMENT_DOMAIN_ORDER.some((d) => d.key === (r.domain || r.category))
+                            ).length
                       }{" "}
                       delivery specs
                     </span>
                   </div>
 
                   <div className={styles.reqDomainNavList}>
-                    {REQUIREMENT_DOMAIN_ORDER.map((d) => {
+                    {isBackendRequirementMode
+                      ? backendRequirementGroups.map((group) => {
+                          const isActive = resolvedActiveDomainKey === group.id;
+                          return (
+                            <button
+                              key={group.id}
+                              type="button"
+                              className={`${styles.reqDomainNavItem} ${isActive ? styles.reqDomainNavItemActive : ""}`}
+                              onClick={() => handleSelectDomain(group.id)}
+                            >
+                              <div className={styles.reqDomainNavLabelRow}>
+                                <span
+                                  className={styles.reqDomainNavIconBadge}
+                                  style={{ color: "#2563eb" }}
+                                >
+                                  <FileText size={13} strokeWidth={2.2} />
+                                </span>
+                                <span className={styles.reqDomainNavLabel}>{group.requirement_name}</span>
+                              </div>
+                              <span className={styles.reqDomainNavBadge}>
+                                {group.items.length}/{group.items.length}
+                              </span>
+                            </button>
+                          );
+                        })
+                      : REQUIREMENT_DOMAIN_ORDER.map((d) => {
                       const domainReqs = viewModel.requirements.filter(
                         (r) => (r.domain || r.category) === d.key
                       );
@@ -660,6 +918,45 @@ export function EnquiryDetailWorkspace({
                 {/* PANE 2: Active Requirement Domain Workspace (Center, Master-Detail) */}
                 <section className={styles.activeDomainWorkspace} aria-label="Active Domain Workspace">
                   {(() => {
+                    if (isBackendRequirementMode) {
+                      if (!activeBackendGroup) return null;
+                      return (
+                        <>
+                          <div className={styles.activeDomainHeader}>
+                            <div className={styles.activeDomainHeaderLeft} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                              <span
+                                className={`${styles.reqDomainNavIconBadge} ${styles.reqDomainNavHeaderIconBadge}`}
+                                style={{ color: "#2563eb" }}
+                              >
+                                <FileText size={16} strokeWidth={2.2} />
+                              </span>
+                              <div>
+                                <h3 className={styles.activeDomainTitle}>{activeBackendGroup.requirement_name}</h3>
+                                <p className={styles.activeDomainDesc}>
+                                  {activeBackendGroup.items.length} confirmed item
+                                  {activeBackendGroup.items.length === 1 ? "" : "s"} from the client brief
+                                </p>
+                              </div>
+                            </div>
+                            <div className={styles.activeDomainHeaderRight}>
+                              <span className={styles.activeDomainCompletenessPill}>
+                                {activeBackendGroup.items.length}/{activeBackendGroup.items.length} clear
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className={styles.activeDomainContent}>
+                            <GenericDomainScheduleTable
+                              domainKey="__backend_requirement_items__"
+                              requirements={activeBackendRows}
+                              selectedRequirementId={selectedRequirementId}
+                              onSelectRequirement={(id) => setSelectedRequirementId(id)}
+                            />
+                          </div>
+                        </>
+                      );
+                    }
+
                     const currentDomainMeta =
                       REQUIREMENT_DOMAIN_ORDER.find((d) => d.key === activeDomainKey) ||
                       REQUIREMENT_DOMAIN_ORDER[0];
@@ -844,24 +1141,48 @@ export function EnquiryDetailWorkspace({
               </div>
             )}
 
-            {/* ── TAB 3: SITE & EVIDENCE ──────────────────────────────────────────── */}
+            {/* —— TAB 3: SITE & EVIDENCE ———————————————————————————————————————————— */}
             {activeTab === "evidence" && (
               <div className={styles.tabSectionGroup}>
                 <div className={styles.sectionCard}>
                   <h3 className={styles.cardHeading}>SITE IMAGES & EVIDENCE</h3>
-                  <EnquirySiteImagesCard title="All Site Images" totalCount={7} />
+                  <EnquirySiteImagesCard
+                    title="All Site Images"
+                    images={enquiry.siteImages?.map((url, idx) => ({
+                      id: `site-${idx}`,
+                      src: url,
+                      alt: deriveSiteImageAlt(url, idx),
+                    }))}
+                    totalCount={enquiry.siteImages?.length ?? 0}
+                  />
                 </div>
                 <div className={styles.sectionCard} id="enquiry-files">
                   <h3 className={styles.cardHeading}>PROJECT DOCUMENTS</h3>
-                  <EnquiryProjectDocumentsSection />
+                  <EnquiryProjectDocumentsSection
+                    documents={enquiry.projectDocuments?.map((doc) => ({
+                      id: String(doc.id),
+                      name: doc.name,
+                      docType: doc.docType ?? undefined,
+                      approved: doc.status,
+                      uploaded: Boolean(doc.name),
+                      updatedAt: deriveDocUpdatedLabel(doc.updatedAt),
+                      updatedBy:
+                        enquiry.clientName && enquiry.clientName !== "—"
+                          ? {
+                              name: enquiry.clientName,
+                              initials: deriveClientInitials(enquiry.clientName),
+                            }
+                          : undefined,
+                    }))}
+                  />
                 </div>
               </div>
             )}
 
-            {/* ── TAB 4: CLIENT CONTEXT ───────────────────────────────────────────── */}
+            {/* —— TAB 4: CLIENT CONTEXT ————————————————————————————————————————————— */}
             {activeTab === "client" && (
               <div className={styles.tabSectionGroup}>
-                {/* ── CLIENT & HOUSEHOLD ── */}
+                {/* —— CLIENT & HOUSEHOLD —— */}
                 <div className={styles.householdHeaderRow}>
                   <div className={styles.householdTitleGroup}>
                     <h4 className={styles.householdHeading}>
@@ -876,7 +1197,7 @@ export function EnquiryDetailWorkspace({
                 <div className={styles.householdGrid}>
                   {(viewModel.householdMembers || []).map((member: ClientHouseholdMember) => (
                     <div key={member.id} className={styles.morigCardShell}>
-                      {/* ── ODIN HOVER TOOLTIP / POPOVER (Natural-Language AI Interpretation) ── */}
+                      {/* —— ODIN HOVER TOOLTIP / POPOVER (Natural-Language AI Interpretation) —— */}
                       <div className={styles.odinHoverTooltip}>
                         <div className={styles.tooltipHeader}>
                           <Sparkles size={12} className={styles.tooltipIcon} />
@@ -888,7 +1209,7 @@ export function EnquiryDetailWorkspace({
                         <div className={styles.tooltipTail} />
                       </div>
 
-                      {/* ── PHOTO CONTAINER WITH DARK GRADIENT OVERLAY ── */}
+                      {/* —— PHOTO CONTAINER WITH DARK GRADIENT OVERLAY —— */}
                       <div className={styles.morigPhotoBox}>
                         {member.photoUrl ? (
                           <img
@@ -904,7 +1225,7 @@ export function EnquiryDetailWorkspace({
 
                         <div className={styles.morigGradientOverlay} />
 
-                        {/* ── BOTTOM OVERLAY CONTENT ── */}
+                        {/* —— BOTTOM OVERLAY CONTENT —— */}
                         <div className={styles.morigOverlayContent}>
                           {/* Member Name */}
                           <h5 className={styles.morigName}>{member.name}</h5>
@@ -919,18 +1240,23 @@ export function EnquiryDetailWorkspace({
                   ))}
                 </div>
 
-                {/* ── CLIENT CONTEXT & PRIORITIES ── */}
+                {/* —— CLIENT CONTEXT & PRIORITIES —— */}
                 <ClientPrioritiesBar priorities={viewModel.priorities} />
 
-                {/* ── CLIENT INSPIRATION IMAGES ── */}
+                {/* —— CLIENT INSPIRATION IMAGES —— */}
                 <EnquirySiteImagesCard
                   title="CLIENT INSPIRATION IMAGES"
-                  totalCount={8}
+                  images={enquiry.inspirationImages?.map((img, idx) => ({
+                    id: `inspiration-${idx}`,
+                    src: img.url,
+                    alt: img.alt || `Inspiration image ${idx + 1}`,
+                  }))}
+                  totalCount={enquiry.inspirationImages?.length ?? 0}
                 />
               </div>
             )}
 
-            {/* ── TAB 6: ACTIVITY ─────────────────────────────────────────────────── */}
+            {/* —— TAB 6: ACTIVITY ——————————————————————————————————————————————————— */}
             {activeTab === "activity" && (
               <div className={styles.tabSectionGroup}>
                 <div className={styles.sectionCard}>
@@ -1037,21 +1363,100 @@ export interface EnquiryActionsCardProps {
 export function EnquiryActionsCard({
   stage,
   onStageChange,
+  enquiry,
   initialProposalStatus = "none",
 }: EnquiryActionsCardProps) {
   const [proposalStatus] = useState<ProposalStatus>(initialProposalStatus);
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [acceptError, setAcceptError] = useState<string | null>(null);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [isRejecting, setIsRejecting] = useState(false);
+  const [rejectError, setRejectError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  const handleConfirmAccept = async () => {
+    if (isAccepting) return;
+    const rawId = String(enquiry?.id ?? "").replace(/^prj-/, "");
+    const projectId = Number(rawId);
+    if (!Number.isInteger(projectId) || projectId <= 0) {
+      setAcceptError(
+        "This enquiry has no backend project link, so acceptance could not be saved."
+      );
+      return;
+    }
+    setIsAccepting(true);
+    setAcceptError(null);
+    try {
+      const response = await authedFetch(`/api/projects/${projectId}/accept`, {
+        method: "POST",
+        cache: "no-store",
+      });
+      const payload = (await response.json()) as {
+        status: string;
+        message?: string;
+      };
+      if (!response.ok || payload.status !== "ok") {
+        throw new Error(
+          payload.message ?? `Accept failed with status ${response.status}`
+        );
+      }
+      setShowAcceptModal(false);
+      onStageChange("accepted");
+    } catch (error) {
+      setAcceptError(
+        error instanceof Error ? error.message : "Accept failed. Please try again."
+      );
+    } finally {
+      setIsAccepting(false);
+    }
+  };
+
   const handleCreateProposalClick = () => {
     setShowWarningModal(true);
+  };
+
+  const handleConfirmRejection = async () => {
+    if (isRejecting) return;
+    const rawId = String(enquiry?.id ?? "").replace(/^prj-/, "");
+    const projectId = Number(rawId);
+    if (!Number.isInteger(projectId) || projectId <= 0) {
+      setRejectError(
+        "This enquiry has no backend project link, so the rejection could not be saved."
+      );
+      return;
+    }
+    setIsRejecting(true);
+    setRejectError(null);
+    try {
+      const response = await authedFetch(`/api/projects/${projectId}/reject`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rejection_reason: rejectionReason,
+          notes: rejectionReason === "other" ? "Other reason selected by provider" : undefined,
+        }),
+        cache: "no-store",
+      });
+      const payload = (await response.json()) as { status: string; message?: string };
+      if (!response.ok || payload.status !== "ok") {
+        throw new Error(payload.message ?? `Reject failed with status ${response.status}`);
+      }
+      setShowRejectModal(false);
+      onStageChange("rejected");
+    } catch (error) {
+      setRejectError(
+        error instanceof Error ? error.message : "Rejection failed. Please try again."
+      );
+    } finally {
+      setIsRejecting(false);
+    }
   };
 
   if (stage === "accepted") {
@@ -1060,7 +1465,34 @@ export function EnquiryActionsCard({
         <div style={{ display: "flex", flexDirection: "column", gap: "6px", width: "100%" }}>
           <span style={{ fontSize: "12px", fontWeight: 600, color: "#15803d" }}>Proposal: Accepted</span>
           <div className={styles.actionBtnRow}>
-            <button type="button" className={styles.acceptBtn}>Convert to Project</button>
+            <button
+              type="button"
+              className={styles.acceptBtn}
+              onClick={() => {
+                const rawId = String(enquiry?.id ?? "").replace(/^prj-/, "");
+                const projectId = Number(rawId);
+                if (!Number.isInteger(projectId) || projectId <= 0) {
+                  alert("This enquiry has no backend project link, so conversion could not proceed.");
+                  return;
+                }
+                authedFetch(`/api/projects/${projectId}/convert`, { method: "POST", cache: "no-store" })
+                  .then((r) => r.json())
+                  .then((payload: { status: string; converted?: boolean; message?: string }) => {
+                    if (payload.status === "ok" && payload.converted) {
+                      alert("Project converted successfully! Navigating to Projects...");
+                      window.location.href = "/projects";
+                    } else if (payload.status === "ok" && !payload.converted) {
+                      alert("Project was already converted. Navigating to Projects...");
+                      window.location.href = "/projects";
+                    } else {
+                      alert(payload.message ?? "Conversion failed.");
+                    }
+                  })
+                  .catch(() => alert("Conversion request failed. Please try again."));
+              }}
+            >
+              Convert to Project
+            </button>
             <button type="button" className={styles.secondaryBtn}>View Proposal</button>
           </div>
         </div>
@@ -1136,7 +1568,14 @@ export function EnquiryActionsCard({
         <button type="button" className={styles.acceptBtn} onClick={() => setShowAcceptModal(true)}>
           Accept Enquiry
         </button>
-        <button type="button" className={styles.rejectBtn} onClick={() => setShowRejectModal(true)}>
+        <button
+          type="button"
+          className={styles.rejectBtn}
+          onClick={() => {
+            setRejectError(null);
+            setShowRejectModal(true);
+          }}
+        >
           Reject Enquiry
         </button>
       </div>
@@ -1157,6 +1596,11 @@ export function EnquiryActionsCard({
             <p className={styles.warningModalText}>
               Accept this enquiry and move it to Proposal Preparation? The client will be notified.
             </p>
+            {acceptError && (
+              <div style={{ color: "#dc2626", fontSize: "12px", marginTop: "8px" }}>
+                {acceptError}
+              </div>
+            )}
             <div className={styles.warningModalBtnRow}>
               <button
                 type="button"
@@ -1168,12 +1612,10 @@ export function EnquiryActionsCard({
               <button
                 type="button"
                 className={styles.acceptConfirmBtn}
-                onClick={() => {
-                  setShowAcceptModal(false);
-                  onStageChange("accepted");
-                }}
+                disabled={isAccepting}
+                onClick={handleConfirmAccept}
               >
-                Accept Enquiry
+                {isAccepting ? "Accepting..." : "Accept Enquiry"}
               </button>
             </div>
           </div>
@@ -1229,14 +1671,20 @@ export function EnquiryActionsCard({
               <button
                 type="button"
                 className={styles.rejectConfirmBtn}
-                onClick={() => {
-                  setShowRejectModal(false);
-                  onStageChange("rejected");
-                }}
+                disabled={isRejecting}
+                onClick={handleConfirmRejection}
               >
-                Confirm Rejection
+                {isRejecting ? "Rejecting…" : "Confirm Rejection"}
               </button>
             </div>
+            {rejectError && (
+              <p
+                role="alert"
+                style={{ fontSize: "12.5px", color: "#dc2626", marginTop: "4px" }}
+              >
+                {rejectError}
+              </p>
+            )}
           </div>
         </div>,
         document.body
