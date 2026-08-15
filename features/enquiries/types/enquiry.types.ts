@@ -178,15 +178,30 @@ export interface EnquiryRecord {
    * (JSON list). Strictly backend-sourced; empty when the backend has no
    * site images. */
   siteImages?: string[];
+  /** Inspiration gallery images straight from backend inspiration_img rows. */
+  inspirationImages?: Array<{ url: string; alt?: string | null }>;
   /** Requirement groups straight from backend requirements rows, each
    * with its requirement_items children (requirement_name + item list).
    * Strictly backend-sourced; empty/absent when the backend has no
    * requirement rows. */
-  requirementsList?: Array<{ id: string; requirement_name: string; items: string[] }>;
+  requirementsList?: Array<{
+    id: string;
+    requirement_name: string;
+    items: string[];
+    item_details?: string[][];
+    statuses?: (boolean | null)[];
+  }>;
   /** Project documents straight from backend project_DOC rows (name +
    * doc_img_url preview). Strictly backend-sourced; empty when the backend
    * has no document rows. */
-  projectDocuments?: Array<{ id: number; name: string; docImageUrl: string | null }>;
+  projectDocuments?: Array<{
+    id: number;
+    name: string;
+    docImageUrl: string | null;
+    docType?: string | null;
+    status?: boolean;
+    updatedAt?: number | null;
+  }>;
   proposalStatus?: "none" | "draft" | "sent" | "viewed" | "accepted" | "rejected" | "revision_requested";
 }
 

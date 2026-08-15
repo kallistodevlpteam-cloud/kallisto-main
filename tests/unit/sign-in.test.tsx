@@ -18,6 +18,14 @@ describe("SignInCard Component", () => {
     mockPush.mockClear();
     // Clear cookies
     document.cookie = "kallisto_simulated_role=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        status: "ok",
+        token: "test-token-123",
+        sp_id: "SP-001",
+      }),
+    } as unknown as Response);
   });
 
   afterEach(() => {

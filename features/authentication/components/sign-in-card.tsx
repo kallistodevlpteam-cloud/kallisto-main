@@ -66,16 +66,32 @@ export function SignInCard() {
     setGeneralError(null);
 
     try {
-      // Simulate network authentication request
-      await new Promise((resolve) => setTimeout(resolve, 600));
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), password }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || data.status !== "ok") {
+        throw new Error(data.message || "Invalid credentials or service unavailable.");
+      }
+
+      if (data.token) {
+        localStorage.setItem("kallisto_auth_token", data.token);
+      }
+      if (data.sp_id) {
+        localStorage.setItem("kallisto_provider_id", data.sp_id);
+      }
 
       // Persist role simulation cookie for authorized server-side workspace context
       document.cookie = `kallisto_simulated_role=developer; path=/; max-age=2592000; SameSite=Lax`;
 
       // Navigate to main workspace
       router.push("/");
-    } catch {
-      setGeneralError("Unable to sign in. Please verify your credentials and try again.");
+    } catch (err) {
+      setGeneralError(err instanceof Error ? err.message : "Unable to sign in. Please verify your credentials and try again.");
     } finally {
       setIsLoading(false);
     }

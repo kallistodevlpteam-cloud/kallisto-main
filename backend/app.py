@@ -18,15 +18,17 @@ from typing import Any
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
-
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from turso_client import get_turso_config, is_read_only, pipeline, rows
-
-from auth import (  # noqa: E402
+from auth import (
     authenticate_provider,
     get_auth_sp_id,
     get_provider_project_ids,
     require_provider,
+    _ensure_project_owned,
 )
+
 
 
 def _load_dotenv() -> None:

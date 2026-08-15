@@ -1,6 +1,7 @@
 import {
   EnquiryRecord,
   EnquiryRequirement,
+  EnquiryRequirementDomain,
   ClientPriority,
 } from "../../types/enquiry.types";
 import {
@@ -58,6 +59,53 @@ export interface BackendRequirementGroup {
   id: string;
   requirement_name: string;
   items: string[];
+}
+
+export interface BackendRequirementRowItem {
+  id: string;
+  domain: string;
+  category: string;
+  requirement: string;
+  spaceName?: string;
+  confirmed?: boolean;
+  status?: string;
+  items?: string[];
+  itemDetails?: string[];
+}
+
+export function buildBackendRequirementRows(
+  requirements?: Array<{ id: string; requirement_name: string; items?: string[]; item_details?: string[][] }> | null
+): EnquiryRequirement[] {
+  if (!requirements) return [];
+  const rows: EnquiryRequirement[] = [];
+  for (const group of requirements) {
+    if (!group.items || group.items.length === 0) {
+      rows.push({
+        id: group.id,
+        category: "project",
+        domain: group.id as unknown as EnquiryRequirementDomain,
+        label: group.requirement_name,
+        value: group.requirement_name,
+        state: "confirmed",
+        source: "client",
+        priority: "p1",
+      });
+    } else {
+      group.items.forEach((item, idx) => {
+        rows.push({
+          id: `${group.id}-${idx}`,
+          category: "project",
+          domain: group.id as unknown as EnquiryRequirementDomain,
+          label: item,
+          value: item,
+          state: "confirmed",
+          source: "client",
+          priority: "p1",
+        });
+      });
+    }
+  }
+  return rows;
 }
 
 export interface ClientContextItem {
@@ -211,6 +259,7 @@ export interface ClientHouseholdMember {
   bedroomRequirement?: string;
   accessibilityNeeds?: string;
   specialNotes?: string;
+  description?: string;
 }
 
 export const DEFAULT_RESIDENTIAL_HOUSEHOLD: ClientHouseholdMember[] = [

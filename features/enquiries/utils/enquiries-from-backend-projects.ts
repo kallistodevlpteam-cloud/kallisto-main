@@ -90,7 +90,14 @@ export function buildEnquiriesFromProjects(projects: BackendProject[]): EnquiryR
       })),
       projectDocuments: (project.projectDocuments ?? []).flatMap((doc) => {
         if (!doc.name) return [];
-        return [{ id: doc.id, name: doc.name, docImageUrl: doc.docImageUrl }];
+        return [{
+          id: doc.id,
+          name: doc.name,
+          docImageUrl: doc.docImageUrl,
+          docType: doc.docType,
+          status: doc.status,
+          updatedAt: doc.updatedAt,
+        }];
       }),
       siteImages: project.siteImages ?? [],
       projectScopes: (project.projectScopes ?? []).map((scope) => ({
@@ -102,6 +109,8 @@ export function buildEnquiriesFromProjects(projects: BackendProject[]): EnquiryR
         id: requirement.id,
         requirement_name: requirement.requirement_name,
         items: requirement.items ?? [],
+        item_details: requirement.item_details ?? [],
+        statuses: requirement.statuses ?? [],
       })),
       nextAction: { type: "review_enquiry", label: "Review enquiry" },
     };

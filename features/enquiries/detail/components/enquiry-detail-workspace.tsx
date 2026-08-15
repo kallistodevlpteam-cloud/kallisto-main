@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -625,7 +625,7 @@ export function EnquiryDetailWorkspace({
     ? (backendRequirementGroups.find((group) => group.id === resolvedActiveDomainKey) ?? null)
     : null;
   const activeBackendRows = activeBackendGroup
-    ? backendRequirementRows.filter((row) => row.domain === activeBackendGroup.id)
+    ? backendRequirementRows.filter((row) => (row.domain as string) === activeBackendGroup.id)
     : [];
 
   const rawDomain = searchParams.get("domain");
@@ -661,7 +661,7 @@ export function EnquiryDetailWorkspace({
   useEffect(() => {
     let cancelled = false;
     authedFetch("/api/projects?character=enq", { cache: "no-store" })
-      .then(async (response) => {
+      .then(async (response: Response) => {
         const payload = (await response.json()) as {
           status: string;
           projects: Array<Record<string, unknown>>;
@@ -678,7 +678,7 @@ export function EnquiryDetailWorkspace({
         );
         return match ?? null;
       })
-      .then((match) => {
+      .then((match: EnquiryRecord | null) => {
         if (cancelled || !match) return;
         setEnquiry(match);
         if (match.stage) setStage(match.stage);
@@ -819,7 +819,7 @@ export function EnquiryDetailWorkspace({
                 />
                 <EnquirySiteImagesCard
                   title="CLIENT INSPIRATION IMAGES"
-                  images={enquiry.inspirationImages?.map((img, idx) => ({
+                  images={enquiry.inspirationImages?.map((img: { url: string; alt?: string | null }, idx: number) => ({
                     id: `inspiration-${idx}`,
                     src: img.url,
                     alt: img.alt || `Inspiration image ${idx + 1}`,
@@ -1246,7 +1246,7 @@ export function EnquiryDetailWorkspace({
                 {/* —— CLIENT INSPIRATION IMAGES —— */}
                 <EnquirySiteImagesCard
                   title="CLIENT INSPIRATION IMAGES"
-                  images={enquiry.inspirationImages?.map((img, idx) => ({
+                  images={enquiry.inspirationImages?.map((img: { url: string; alt?: string | null }, idx: number) => ({
                     id: `inspiration-${idx}`,
                     src: img.url,
                     alt: img.alt || `Inspiration image ${idx + 1}`,
@@ -1476,7 +1476,7 @@ export function EnquiryActionsCard({
                   return;
                 }
                 authedFetch(`/api/projects/${projectId}/convert`, { method: "POST", cache: "no-store" })
-                  .then((r) => r.json())
+                  .then((r: Response) => r.json())
                   .then((payload: { status: string; converted?: boolean; message?: string }) => {
                     if (payload.status === "ok" && payload.converted) {
                       alert("Project converted successfully! Navigating to Projects...");
