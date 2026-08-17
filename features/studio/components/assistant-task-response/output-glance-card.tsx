@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Eye, FileText } from "lucide-react";
+import { Eye } from "lucide-react";
+import { DocumentsDuotoneIcon } from "@/components/layout/sidebar-icons";
 import { OutputCardSkeleton } from "./output-card-skeleton";
 
 export interface OutputGlanceCardProps {
@@ -151,14 +152,14 @@ export function OutputGlanceCard({
               placeItems: "center",
               width: "28px",
               height: "28px",
-              borderRadius: "7px",
-              background: "#f0fdf4",
-              color: "#16a34a",
+              borderRadius: "8px",
+              background: "#f7f7f5",
+              color: "#0f172a",
               border: "none",
               flexShrink: 0,
             }}
           >
-            <FileText size={15} />
+            <DocumentsDuotoneIcon size={16} />
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
             <h3 style={{ margin: 0, fontSize: "14px", fontWeight: 650, color: "#0f172a" }}>

@@ -1,15 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
+import { History, Layers, MessageSquare, X } from "lucide-react";
 import {
-  FileSpreadsheet,
-  FileText,
-  History,
-  Image as ImageIcon,
-  Layers,
-  MessageSquare,
-  X,
-} from "lucide-react";
+  DocumentsDuotoneIcon,
+  PortfolioDuotoneIcon,
+  SpreadsheetDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import styles from "./studio-right-sidebar.module.css";
 import type { StudioTask } from "@/types/domain/studio";
 
@@ -242,7 +239,7 @@ export function StudioRightSidebar({
               <div className={styles.outputCardHeader}>
                 <div className={styles.outputTitleRow}>
                   <div className={styles.outputIconWrapper}>
-                    <FileText size={15} />
+                    <DocumentsDuotoneIcon size={16} />
                   </div>
                   <div>
                     <div className={styles.outputTitleText}>Villa Design Proposal</div>
@@ -297,13 +294,13 @@ export function StudioRightSidebar({
                   role="button"
                   tabIndex={0}
                 >
-                  <div className={`${styles.fileIconWrapper} ${styles[`file_${file.type}`]}`}>
+                  <div className={styles.fileIconWrapper}>
                     {file.type === "pdf" ? (
-                      <FileText size={14} />
+                      <DocumentsDuotoneIcon size={16} />
                     ) : file.type === "xlsx" ? (
-                      <FileSpreadsheet size={14} />
+                      <SpreadsheetDuotoneIcon size={16} />
                     ) : (
-                      <ImageIcon size={14} />
+                      <PortfolioDuotoneIcon size={16} />
                     )}
                   </div>
                   <div className={styles.itemTextCol}>

@@ -177,11 +177,13 @@
   place-items: center;
   width: 28px;
   height: 28px;
-  border-radius: 6px;
-  background: #f0fdf4;
-  color: #16a34a;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #0f172a;
   border: none;
   flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.15s ease;
 }
 
 .outputTitleText {
@@ -269,10 +271,17 @@
   place-items: center;
   width: 28px;
   height: 28px;
-  border-radius: 50%;
-  background: #f3e8ff;
-  color: #581c87;
+  border-radius: 8px;
+  background: #f7f7f5;
+  color: #0f172a;
   flex-shrink: 0;
+  transition: background-color 0.15s ease;
+}
+
+.itemRow:hover .chatIconWrapper,
+.itemRow:focus-visible .chatIconWrapper {
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .fileIconWrapper {
@@ -280,24 +289,18 @@
   place-items: center;
   width: 28px;
   height: 28px;
-  border-radius: 6px;
+  border-radius: 8px;
+  background: #f7f7f5;
+  color: #0f172a;
+  border: none;
   flex-shrink: 0;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.file_pdf {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-.file_png,
-.file_jpg {
-  background: #f0f9ff;
-  color: #0284c7;
-}
-
-.file_xlsx {
-  background: #f0fdf4;
-  color: #16a34a;
+.itemRow:hover .fileIconWrapper,
+.itemRow:focus-visible .fileIconWrapper {
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .itemTextCol {

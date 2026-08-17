@@ -213,6 +213,33 @@ export function DocumentsDuotoneIcon({ size = 17, className = "", ...props }: Si
 }
 
 /**
+ * Spreadsheet (XLSX/BOQ/Sheets) — Duotone table grid sheet with tinted header & solid cell lines
+ */
+export function SpreadsheetDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted table header & sheet base */}
+      <rect x="3" y="3" width="18" height="18" rx="4" fill="currentColor" opacity="0.38" />
+      {/* Solid table grid lines & borders */}
+      <path
+        d="M3 8.5H21M3 14H21M9 8.5V21M15 8.5V21M3 7C3 4.8 4.8 3 7 3H17C19.2 3 21 4.8 21 7V17C21 19.2 19.2 21 17 21H7C4.8 21 3 19.2 3 17V7Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/**
  * 7. Payments — Credit card with tinted magnetic stripe & chip
  */
 export function PaymentsDuotoneIcon({ size = 17, className = "", ...props }: SidebarIconProps) {
