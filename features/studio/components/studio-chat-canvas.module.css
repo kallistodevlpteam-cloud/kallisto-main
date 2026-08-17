@@ -546,6 +546,25 @@
   width: min(100%, 720px);
 }
 
+.messageTurnWrap {
+  width: 100%;
+  transition: background-color 0.3s ease, border-radius 0.3s ease;
+}
+
+.messageHighlighted {
+  animation: messagePulseHighlight 1.2s ease-out;
+}
+
+@keyframes messagePulseHighlight {
+  0% {
+    background-color: rgba(241, 245, 249, 0.95);
+    border-radius: 12px;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
 /* ── StudioEdgeOverlay (Unpadded Edge Overlay Layer over Studio Workspace) ── */
 .studioEdgeOverlay {
   position: absolute;

@@ -1,0 +1,245 @@
+/* ── Conversation Spine (Vertical Activity Timeline) ── */
+.spineRail {
+  position: absolute;
+  top: 32px;
+  left: 20px;
+  bottom: calc(var(--studio-composer-height, 120px) + 32px);
+  width: 32px;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  pointer-events: none;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+/* Vertical guide axis */
+.spineAxis {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 8px;
+  width: 1.5px;
+  background: transparent;
+  pointer-events: none;
+}
+
+.spineTicksList {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  pointer-events: auto;
+}
+
+/* Individual Tick Marker Button */
+.tickButton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 32px;
+  height: 18px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.15s ease;
+}
+
+.tickButton:focus-visible {
+  outline: 2px solid #0f172a;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Horizontal Dash Indicator */
+.tickBar {
+  display: block;
+  height: 1.5px;
+  width: 8px;
+  background: #cbd5e1;
+  border-radius: 1px;
+  transition: width 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.18s ease,
+              height 0.18s ease;
+}
+
+/* Important / Major Milestone Marker */
+.tickBarImportant {
+  width: 13px;
+  height: 2px;
+  background: #94a3b8;
+}
+
+/* Hover State */
+.tickButton:hover .tickBar {
+  width: 16px;
+  background: #64748b;
+}
+
+/* Selected / Active State — Strong extending horizontal bar */
+.tickButtonActive .tickBar,
+.tickButtonActive .tickBarImportant {
+  width: 24px;
+  height: 2.5px;
+  background: #0f172a;
+  border-radius: 1.5px;
+}
+
+/* ── Floating Event Card ── */
+.floatingCard {
+  position: absolute;
+  left: 36px;
+  z-index: 50;
+  width: 280px;
+  max-width: calc(100vw - 120px);
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.09), 0 2px 8px rgba(15, 23, 42, 0.04);
+  pointer-events: auto;
+  animation: cardFlyIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  box-sizing: border-box;
+}
+
+@keyframes cardFlyIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-6px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.cardHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.cardCategoryBadge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardCloseBtn {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.12s ease;
+  flex-shrink: 0;
+}
+
+.cardCloseBtn:hover {
+  color: #0f172a;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.cardSummary {
+  font-size: 12.5px;
+  font-weight: 450;
+  line-height: 1.45;
+  color: #1e293b;
+  margin: 0 0 8px 0;
+  word-break: break-word;
+}
+
+.cardBulletList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cardBulletItem {
+  font-size: 11.5px;
+  color: #64748b;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 10px;
+  margin-top: 4px;
+}
+
+.cardTimestamp {
+  font-size: 11px;
+  font-weight: 500;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cardActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #0f172a;
+  background: #f4f4f5;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.cardActionBtn:hover {
+  background: #e4e4e7;
+  color: #000000;
+}
+
+.cardActionBtnPrimary {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.cardActionBtnPrimary:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+/* Responsive hides on small screens */
+@media (max-width: 860px) {
+  .spineRail {
+    display: none;
+  }
+}

@@ -1,14 +1,17 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ChevronDown, ChevronRight, FilePlus, Loader2, Mic, Plus, RefreshCw, Send, Sparkles } from "lucide-react";
 import { StudioAgentType, StudioProjectOption, StudioTask, StudioWorkspaceType } from "@/types/domain/studio";
 import { StudioChatMessage, StudioMessageAction, StudioRetryPayload } from "@/types/domain/studio-message";
+import { ConversationEvent } from "@/types/domain/studio-conversation-event";
 import { StudioIntent, StudioSource, StudioWorkspaceMode } from "../types/studio-source";
 import { StudioComposer } from "./studio-composer/studio-composer";
 import { Message } from "@/components/ui/message";
 import { ThinkingIndicator } from "@/components/ui/thinking-indicator";
 import { StudioRightSidebar } from "./studio-right-sidebar";
+import { ConversationSpine } from "./conversation-spine/conversation-spine";
+import { deriveConversationEvents } from "../lib/derive-conversation-events";
 import { AssistantTaskResponse } from "./assistant-task-response/assistant-task-response";
 import { formatRelativeTime } from "@/lib/utils/format-relative-time";
 import { StudioRightPanelMode, StudioRightPanelState } from "@/types/domain/studio-right-panel";
@@ -210,6 +213,36 @@ export function StudioActiveTaskCanvas({
 
   const isProcessing = taskStatus === "validating" || taskStatus === "generating";
 
+  const conversationEvents = useMemo(
+    () => deriveConversationEvents({ messages, task, projectName: project.name }),
+    [messages, task, project.name]
+  );
+
+  const handleJumpToMessage = (messageId: string) => {
+    const msgElement = document.getElementById(`msg-${messageId}`);
+    if (msgElement && conversationViewportRef.current) {
+      if (typeof msgElement.scrollIntoView === "function") {
+        msgElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else {
+        conversationViewportRef.current.scrollTop = msgElement.offsetTop - 40;
+      }
+      msgElement.classList.add(styles.messageHighlighted);
+      setTimeout(() => {
+        msgElement.classList.remove(styles.messageHighlighted);
+      }, 1200);
+    }
+  };
+
+  const handleOpenEntityFromSpine = (event: ConversationEvent) => {
+    if (event.relatedEntityType === "output" || event.relatedEntityType === "proposal" || event.relatedEntityType === "boq") {
+      setPanelState({
+        mode: "preview",
+        selectedOutputId: event.relatedEntityId || "out-1",
+        selectedVersionId: event.relatedEntityVersion || "V01",
+      });
+    }
+  };
+
   const handleRequestChangesFromPreview = () => {
     // Keep preview visible on supported desktop widths!
     if (containerMode !== "desktop") {
@@ -263,6 +296,15 @@ export function StudioActiveTaskCanvas({
         className={styles.studioTaskPane}
         style={{ "--studio-composer-height": `${composerHeight}px` } as React.CSSProperties}
       >
+        {/* ── Conversation Spine (Vertical Activity Indicator) ── */}
+        {messages.length > 0 && (
+          <ConversationSpine
+            events={conversationEvents}
+            onJumpToMessage={handleJumpToMessage}
+            onOpenEntity={handleOpenEntityFromSpine}
+          />
+        )}
+
         {/* ROW 1: Task Conversation (Vertical Scroll Owner - Full height) */}
         <div
           ref={conversationViewportRef}
@@ -288,12 +330,13 @@ export function StudioActiveTaskCanvas({
               messages.map((msg) => {
                 if (msg.role === "user") {
                   return (
-                    <Message
-                      key={msg.id}
-                      role="user"
-                      content={msg.content}
-                      timestamp={formatRelativeTime(msg.createdAt)}
-                    />
+                    <div key={msg.id} id={`msg-${msg.id}`} className={styles.messageTurnWrap}>
+                      <Message
+                        role="user"
+                        content={msg.content}
+                        timestamp={formatRelativeTime(msg.createdAt)}
+                      />
+                    </div>
                   );
                 }
 
@@ -304,7 +347,7 @@ export function StudioActiveTaskCanvas({
                   msg.content.startsWith("Processing ")
                 ) {
                   return (
-                    <div key={msg.id} style={{ margin: "4px 0" }}>
+                    <div key={msg.id} id={`msg-${msg.id}`} className={styles.messageTurnWrap} style={{ margin: "4px 0" }}>
                       <ThinkingIndicator
                         active={true}
                         variant="shimmer"
@@ -315,39 +358,40 @@ export function StudioActiveTaskCanvas({
                 }
 
                 return (
-                  <Message
-                    key={msg.id}
-                    role="assistant"
-                    timestamp={formatRelativeTime(msg.createdAt)}
-                  >
-                    <AssistantTaskResponse
-                      content={msg.content}
-                      outputReference={msg.outputReference}
-                      task={task}
-                      projectName={project.name}
-                      clientName="Ananya Builders"
-                      budget="₹18L – ₹25L"
-                      actions={msg.actions || []}
-                      onActionSelect={onActionSelect}
-                      onPreviewClick={(outputRef) =>
-                        setPanelState({
-                          mode: "preview",
-                          selectedOutputId: outputRef?.outputId || "out-1",
-                          selectedVersionId: outputRef?.versionId || "V01",
-                        })
-                      }
-                    />
-                    {msg.kind === "error" && msg.retryPayload && (
-                      <button
-                        type="button"
-                        className={styles.retryBtn}
-                        onClick={() => onRetryMessage(msg.retryPayload!)}
-                      >
-                        <RefreshCw size={13} />
-                        <span>Retry submission</span>
-                      </button>
-                    )}
-                  </Message>
+                  <div key={msg.id} id={`msg-${msg.id}`} className={styles.messageTurnWrap}>
+                    <Message
+                      role="assistant"
+                      timestamp={formatRelativeTime(msg.createdAt)}
+                    >
+                      <AssistantTaskResponse
+                        content={msg.content}
+                        outputReference={msg.outputReference}
+                        task={task}
+                        projectName={project.name}
+                        clientName="Ananya Builders"
+                        budget="₹18L – ₹25L"
+                        actions={msg.actions || []}
+                        onActionSelect={onActionSelect}
+                        onPreviewClick={(outputRef) =>
+                          setPanelState({
+                            mode: "preview",
+                            selectedOutputId: outputRef?.outputId || "out-1",
+                            selectedVersionId: outputRef?.versionId || "V01",
+                          })
+                        }
+                      />
+                      {msg.kind === "error" && msg.retryPayload && (
+                        <button
+                          type="button"
+                          className={styles.retryBtn}
+                          onClick={() => onRetryMessage(msg.retryPayload!)}
+                        >
+                          <RefreshCw size={13} />
+                          <span>Retry submission</span>
+                        </button>
+                      )}
+                    </Message>
+                  </div>
                 );
               })
             )}
