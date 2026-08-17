@@ -38,7 +38,7 @@ export function ConversationEventCard({
   return (
     <div
       className={styles.floatingCard}
-      style={{ top: `${Math.max(0, topOffset - 24)}px` }}
+      style={{ top: `${topOffset}px` }}
       role="region"
       aria-label={`Event details: ${event.title}`}
     >

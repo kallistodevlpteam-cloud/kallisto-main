@@ -1,14 +1,16 @@
 /* ── Conversation Spine (Vertical Activity Timeline) ── */
 .spineRail {
   position: absolute;
-  top: 32px;
+  top: 50%;
   left: 20px;
-  bottom: calc(var(--studio-composer-height, 120px) + 32px);
+  transform: translateY(-50%);
   width: 32px;
+  max-height: calc(100% - var(--studio-composer-height, 120px) - 64px);
   z-index: 25;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: center;
   pointer-events: none;
   user-select: none;
   box-sizing: border-box;
@@ -30,18 +32,18 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
+  gap: 2.5px;
   width: 100%;
   pointer-events: auto;
 }
 
-/* Individual Tick Marker Button */
+/* Individual Tick Marker Button — Compact ruler spacing */
 .tickButton {
   position: relative;
   display: flex;
   align-items: center;
   width: 32px;
-  height: 18px;
+  height: 9px;
   padding: 0;
   background: transparent;
   border: none;
@@ -103,6 +105,7 @@
   padding: 14px 16px;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.09), 0 2px 8px rgba(15, 23, 42, 0.04);
   pointer-events: auto;
+  transform: translateY(-50%);
   animation: cardFlyIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   box-sizing: border-box;
 }
@@ -110,11 +113,11 @@
 @keyframes cardFlyIn {
   0% {
     opacity: 0;
-    transform: translateX(-6px) scale(0.97);
+    transform: translateY(-50%) translateX(-6px) scale(0.97);
   }
   100% {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateY(-50%) translateX(0) scale(1);
   }
 }
 
