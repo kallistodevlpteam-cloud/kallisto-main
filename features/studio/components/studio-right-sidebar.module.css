@@ -103,19 +103,23 @@
   place-items: center;
   width: 28px;
   height: 28px;
-  border: 1px solid #fecaca;
+  border: none;
   border-radius: 8px;
-  background: #fef2f2;
-  color: #dc2626;
+  background: transparent;
+  color: #64748b;
   cursor: pointer;
   transition: all 0.15s ease;
   flex-shrink: 0;
+  outline: none;
 }
 
 .collapseToggleBtn:hover {
-  background: #fee2e2;
-  color: #b91c1c;
-  border-color: #fca5a5;
+  background: rgba(0, 0, 0, 0.04);
+  color: #0f172a;
+}
+
+.collapseToggleBtn:active {
+  transform: scale(0.96);
 }
 
 /* Sections */
