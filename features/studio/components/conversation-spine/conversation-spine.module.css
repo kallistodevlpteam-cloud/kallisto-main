@@ -32,7 +32,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2.5px;
+  gap: 3px;
   width: 100%;
   pointer-events: auto;
 }
@@ -43,7 +43,7 @@
   display: flex;
   align-items: center;
   width: 32px;
-  height: 9px;
+  height: 10px;
   padding: 0;
   background: transparent;
   border: none;
@@ -60,13 +60,14 @@
   box-shadow: none;
 }
 
-/* Horizontal Dash Indicator — All unselected dashes are identical size and color */
+/* Horizontal Dash Indicator — Exact 2px integer thickness across all states */
 .tickBar {
   display: block;
-  height: 1.5px;
-  width: 7px;
+  height: 2px;
+  width: 8px;
   background: #cbd5e1;
   border-radius: 1px;
+  transform: translateZ(0);
   transition: width 0.18s cubic-bezier(0.16, 1, 0.3, 1),
               background-color 0.18s ease;
 }
@@ -74,10 +75,11 @@
 /* Hover State */
 .tickButton:hover .tickBar {
   width: 14px;
+  height: 2px;
   background: #64748b;
 }
 
-/* Selected / Active State — Strong extending horizontal bar */
+/* Selected / Active State — Strong extending horizontal bar with same 2px thickness */
 .tickButtonActive .tickBar {
   width: 24px;
   height: 2px;
