@@ -323,11 +323,20 @@ export function OutputPreviewPanel({
               placeItems: "center",
               width: "28px",
               height: "28px",
-              borderRadius: "6px",
-              border: "1px solid #e2e8f0",
-              background: "#ffffff",
+              borderRadius: "8px",
+              border: "none",
+              background: "transparent",
               color: "#64748b",
               cursor: "pointer",
+              transition: "all 0.15s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.04)";
+              e.currentTarget.style.color = "#0f172a";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "#64748b";
             }}
           >
             <X size={15} />

@@ -128,15 +128,46 @@ export function StudioRightSidebar({
   if (isCollapsed) {
     return (
       <aside className={`${styles.sidebarContainer} ${styles.sidebarContainerCollapsed} ${className}`}>
-        <button
-          type="button"
-          onClick={() => updateState({ mode: "outputs", selectedOutputId: panelState.selectedOutputId, selectedVersionId: panelState.selectedVersionId })}
-          className={styles.glassIconBtn}
-          title="View Outputs"
-          aria-label="View Outputs"
-        >
-          <FileText size={18} strokeWidth={1.75} />
-        </button>
+        <div className={styles.segmentedControl}>
+          <button
+            type="button"
+            onClick={() => updateState({ mode: "collapsed", selectedOutputId: panelState.selectedOutputId, selectedVersionId: panelState.selectedVersionId })}
+            className={`${styles.segmentedBtn} ${panelState.mode === "collapsed" ? styles.activeSegmentedBtn : ""}`}
+            title="Chat view"
+            aria-label="Chat view"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="6" cy="8" r="2" />
+              <circle cx="6" cy="16" r="2" />
+              <line x1="12" y1="8" x2="20" y2="8" />
+              <line x1="12" y1="16" x2="20" y2="16" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={() => updateState({ mode: "outputs", selectedOutputId: panelState.selectedOutputId, selectedVersionId: panelState.selectedVersionId })}
+            className={`${styles.segmentedBtn} ${panelState.mode === "outputs" ? styles.activeSegmentedBtn : ""}`}
+            title="Outputs panel"
+            aria-label="Outputs panel"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="16" rx="4" />
+              <line x1="8" y1="16" x2="16" y2="16" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={() => updateState({ mode: "preview", selectedOutputId: panelState.selectedOutputId || "out-1", selectedVersionId: panelState.selectedVersionId || "V01" })}
+            className={`${styles.segmentedBtn} ${panelState.mode === "preview" ? styles.activeSegmentedBtn : ""}`}
+            title="Split preview"
+            aria-label="Split preview"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="16" rx="4" />
+              <line x1="16" y1="8" x2="16" y2="16" />
+            </svg>
+          </button>
+        </div>
       </aside>
     );
   }
@@ -204,15 +235,58 @@ export function StudioRightSidebar({
           </button>
         </div>
 
-        <button
-          type="button"
-          onClick={handleToggleCollapse}
-          className={styles.collapseToggleBtn}
-          title="Close Panel"
-          aria-label="Close Panel"
-        >
-          <X size={15} />
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <div className={styles.segmentedControl}>
+            <button
+              type="button"
+              onClick={() => updateState({ mode: "collapsed", selectedOutputId: panelState.selectedOutputId, selectedVersionId: panelState.selectedVersionId })}
+              className={`${styles.segmentedBtn} ${panelState.mode === "collapsed" ? styles.activeSegmentedBtn : ""}`}
+              title="Chat view"
+              aria-label="Chat view"
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="6" cy="8" r="2" />
+                <circle cx="6" cy="16" r="2" />
+                <line x1="12" y1="8" x2="20" y2="8" />
+                <line x1="12" y1="16" x2="20" y2="16" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={() => updateState({ mode: "outputs", selectedOutputId: panelState.selectedOutputId, selectedVersionId: panelState.selectedVersionId })}
+              className={`${styles.segmentedBtn} ${panelState.mode === "outputs" ? styles.activeSegmentedBtn : ""}`}
+              title="Outputs panel"
+              aria-label="Outputs panel"
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="16" rx="4" />
+                <line x1="8" y1="16" x2="16" y2="16" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={() => updateState({ mode: "preview", selectedOutputId: panelState.selectedOutputId || "out-1", selectedVersionId: panelState.selectedVersionId || "V01" })}
+              className={`${styles.segmentedBtn} ${(panelState.mode as string) === "preview" ? styles.activeSegmentedBtn : ""}`}
+              title="Split preview"
+              aria-label="Split preview"
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="16" rx="4" />
+                <line x1="16" y1="8" x2="16" y2="16" />
+              </svg>
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleToggleCollapse}
+            className={styles.collapseToggleBtn}
+            title="Close Panel"
+            aria-label="Close Panel"
+          >
+            <X size={15} />
+          </button>
+        </div>
       </div>
 
       {/* TAB 1: OUTPUTS (Linked to Active Task Context) */}
