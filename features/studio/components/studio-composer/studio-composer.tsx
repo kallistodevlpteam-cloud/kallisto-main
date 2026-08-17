@@ -615,22 +615,7 @@ export function StudioComposer({
 
             {/* Toolbar Right */}
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  fontSize: "12.5px",
-                  fontWeight: 450,
-                  color: "#71717a",
-                  userSelect: "none",
-                  cursor: "pointer",
-                  marginRight: "2px",
-                }}
-              >
-                <span>5.6 Sol High</span>
-                <ChevronDown size={12} style={{ color: "#a1a1aa" }} />
-              </div>
+              <PromptUsage percentage={Math.min(100, Math.round((prompt.length / 4000) * 100))} />
 
               <button
                 type="button"
