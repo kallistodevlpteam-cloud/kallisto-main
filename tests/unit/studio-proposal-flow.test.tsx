@@ -77,11 +77,9 @@ describe("Hive Studio Proposal Conversational Flow", () => {
       expect(workspaceEl).toHaveAttribute("data-panel-mode", "preview");
       expect(screen.getByRole("button", { name: "Close Preview" })).toBeInTheDocument();
       expect(screen.getByText("1. Executive Summary")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Executive Summary" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Scope & Deliverables" })).toBeInTheDocument();
     });
-
-    // Verify section navigation tabs exist
-    expect(screen.getByRole("button", { name: "Executive Summary" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Scope & Deliverables" })).toBeInTheDocument();
 
     // 3. Click Preview again, then test Close Preview -> sets data-panel-mode="collapsed"
     fireEvent.click(screen.getByRole("button", { name: "Preview" }));
