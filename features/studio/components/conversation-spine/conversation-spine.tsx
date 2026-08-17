@@ -89,8 +89,7 @@ export function ConversationSpine({
 
       <div className={styles.spineTicksList} role="list" aria-label="Conversation events">
         {events.map((evt, idx) => {
-          const isSelected = evt.id === selectedEventId;
-          const isImportant = evt.isImportant || evt.type === "REQUIREMENT" || evt.type === "REVISION" || evt.type === "AI_ACTION";
+          const isSelected = isCardOpen && evt.id === selectedEventId;
 
           return (
             <button
@@ -102,10 +101,7 @@ export function ConversationSpine({
               aria-current={isSelected ? "true" : undefined}
               title={`${evt.title} — ${evt.summary}`}
             >
-              <span
-                className={`${styles.tickBar} ${isImportant ? styles.tickBarImportant : ""}`}
-                aria-hidden="true"
-              />
+              <span className={styles.tickBar} aria-hidden="true" />
             </button>
           );
         })}

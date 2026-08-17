@@ -60,38 +60,29 @@
   box-shadow: none;
 }
 
-/* Horizontal Dash Indicator */
+/* Horizontal Dash Indicator — All unselected dashes are identical size and color */
 .tickBar {
   display: block;
   height: 1.5px;
-  width: 8px;
+  width: 7px;
   background: #cbd5e1;
   border-radius: 1px;
   transition: width 0.18s cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 0.18s ease,
-              height 0.18s ease;
-}
-
-/* Important / Major Milestone Marker */
-.tickBarImportant {
-  width: 13px;
-  height: 2px;
-  background: #94a3b8;
+              background-color 0.18s ease;
 }
 
 /* Hover State */
 .tickButton:hover .tickBar {
-  width: 16px;
+  width: 14px;
   background: #64748b;
 }
 
 /* Selected / Active State — Strong extending horizontal bar */
-.tickButtonActive .tickBar,
-.tickButtonActive .tickBarImportant {
+.tickButtonActive .tickBar {
   width: 24px;
-  height: 2.5px;
+  height: 2px;
   background: #0f172a;
-  border-radius: 1.5px;
+  border-radius: 1px;
 }
 
 /* ── Floating Event Card ── */
