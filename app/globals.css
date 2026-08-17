@@ -142,7 +142,7 @@ textarea:focus-visible {
   height: 100%;
   max-height: 100%;
   border-radius: 18px;
-  border: 1px solid var(--line);
+  border: none;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
   overflow: hidden;
   background: #ffffff !important;
@@ -1198,7 +1198,9 @@ textarea:focus-visible {
   overflow: visible;
 }
 
-/* Strictly scope fixed height outer layout for studio workspaces only. */
+/* Strictly scope fixed height outer layout to schedule and task workspaces only. */
+.workspace:has(.schedulePageMainShell),
+.workspace:has(.projectTasksWorkspace),
 .workspace:has(.studio-page-container),
 .workspace:has(.hive-studio-workspace) {
   height: calc(100dvh - 56px);
@@ -1253,84 +1255,6 @@ textarea:focus-visible {
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-}
-
-/* Hide scrollbar indicators on operational workspace pages (Projects, Tasks, BOQ, Finance, Site, Timeline, Documents) */
-.workspace,
-.workspace-container,
-.workspace:has([class*="projectsContainer"]),
-.workspace-container:has([class*="projectsContainer"]),
-[class*="projectsContainer"],
-[class*="projectsContainer"] *,
-.workspace:has(.projectTasksWorkspace),
-.workspace:has(.projectBoqWorkspace),
-.workspace:has(.projectFinanceWorkspace),
-.workspace:has(.projectSiteWorkspace),
-.workspace:has(.documentsBoundedRoute),
-.workspace-container:has(.projectTasksWorkspace),
-.workspace-container:has(.projectBoqWorkspace),
-.workspace-container:has(.projectFinanceWorkspace),
-.workspace-container:has(.projectSiteWorkspace),
-.workspace-container:has(.documentsBoundedRoute),
-.workspace-container:has(.tasks-page-container),
-.workspace-container.studio-page-container,
-.workspace-container:has([class*="studioSplitWorkspace"]),
-.projectTasksWorkspace,
-.projectBoqWorkspace,
-.projectFinanceWorkspace,
-.projectSiteWorkspace,
-.documentsBoundedRoute,
-[class*="documentsWorkspace"],
-[class*="documentsWorkspace"] *,
-[class*="taskConversationScrollArea"],
-[class*="taskConversationScrollArea"] *,
-[class*="studioSplitWorkspace"],
-[class*="studioSplitWorkspace"] *,
-.projectTasksWorkspace *,
-.projectBoqWorkspace *,
-.projectFinanceWorkspace *,
-.projectSiteWorkspace * {
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
-}
-
-.workspace::-webkit-scrollbar,
-.workspace-container::-webkit-scrollbar,
-.workspace:has([class*="projectsContainer"])::-webkit-scrollbar,
-.workspace-container:has([class*="projectsContainer"])::-webkit-scrollbar,
-[class*="projectsContainer"]::-webkit-scrollbar,
-[class*="projectsContainer"] *::-webkit-scrollbar,
-.workspace:has(.projectTasksWorkspace)::-webkit-scrollbar,
-.workspace:has(.projectBoqWorkspace)::-webkit-scrollbar,
-.workspace:has(.projectFinanceWorkspace)::-webkit-scrollbar,
-.workspace:has(.projectSiteWorkspace)::-webkit-scrollbar,
-.workspace:has(.documentsBoundedRoute)::-webkit-scrollbar,
-.workspace-container:has(.projectTasksWorkspace)::-webkit-scrollbar,
-.workspace-container:has(.projectBoqWorkspace)::-webkit-scrollbar,
-.workspace-container:has(.projectFinanceWorkspace)::-webkit-scrollbar,
-.workspace-container:has(.projectSiteWorkspace)::-webkit-scrollbar,
-.workspace-container:has(.documentsBoundedRoute)::-webkit-scrollbar,
-.workspace-container:has(.tasks-page-container)::-webkit-scrollbar,
-.workspace-container.studio-page-container::-webkit-scrollbar,
-.workspace-container.studio-page-container *::-webkit-scrollbar,
-[class*="taskConversationScrollArea"]::-webkit-scrollbar,
-[class*="taskConversationScrollArea"] *::-webkit-scrollbar,
-[class*="studioSplitWorkspace"]::-webkit-scrollbar,
-[class*="studioSplitWorkspace"] *::-webkit-scrollbar,
-.projectTasksWorkspace::-webkit-scrollbar,
-.projectBoqWorkspace::-webkit-scrollbar,
-.projectFinanceWorkspace::-webkit-scrollbar,
-.projectSiteWorkspace::-webkit-scrollbar,
-.documentsBoundedRoute::-webkit-scrollbar,
-[class*="documentsWorkspace"]::-webkit-scrollbar,
-[class*="documentsWorkspace"] *::-webkit-scrollbar,
-.projectTasksWorkspace *::-webkit-scrollbar,
-.projectBoqWorkspace *::-webkit-scrollbar,
-.projectFinanceWorkspace *::-webkit-scrollbar,
-.projectSiteWorkspace *::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
 }
 
 .page-heading {
