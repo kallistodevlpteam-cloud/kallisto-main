@@ -208,7 +208,7 @@ export function OutputGlanceCard({
           padding: "10px 0",
           fontSize: "12px",
           color: "#64748b",
-          borderBottom: "1px solid #f8fafc",
+          borderBottom: "1px solid #f7f7f5",
           flexWrap: "wrap",
           opacity: isMetaVisible ? 1 : 0,
           transform: isMetaVisible ? "translateY(0)" : "translateY(4px)",

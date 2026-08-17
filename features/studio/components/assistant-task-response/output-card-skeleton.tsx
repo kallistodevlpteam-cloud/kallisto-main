@@ -28,7 +28,7 @@ export function OutputCardSkeleton() {
           alignItems: "center",
           justifyContent: "space-between",
           paddingBottom: "10px",
-          borderBottom: "1px solid #f8fafc",
+          borderBottom: "1px solid #f7f7f5",
           gap: "8px",
         }}
       >
@@ -38,7 +38,7 @@ export function OutputCardSkeleton() {
               width: "28px",
               height: "28px",
               borderRadius: "7px",
-              background: "#f1f5f9",
+              background: "#ebebe8",
             }}
           />
           <div
@@ -46,7 +46,7 @@ export function OutputCardSkeleton() {
               width: "160px",
               height: "16px",
               borderRadius: "4px",
-              background: "#f1f5f9",
+              background: "#ebebe8",
             }}
           />
           <div
@@ -54,7 +54,7 @@ export function OutputCardSkeleton() {
               width: "36px",
               height: "16px",
               borderRadius: "9999px",
-              background: "#f1f5f9",
+              background: "#ebebe8",
             }}
           />
         </div>
@@ -63,34 +63,34 @@ export function OutputCardSkeleton() {
             width: "100px",
             height: "20px",
             borderRadius: "9999px",
-            background: "#f1f5f9",
+            background: "#ebebe8",
           }}
         />
       </div>
 
       {/* ── Metadata Row Skeleton ── */}
       <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-        <div style={{ width: "90px", height: "12px", borderRadius: "4px", background: "#f8fafc" }} />
-        <div style={{ width: "80px", height: "12px", borderRadius: "4px", background: "#f8fafc" }} />
-        <div style={{ width: "70px", height: "12px", borderRadius: "4px", background: "#f8fafc" }} />
+        <div style={{ width: "90px", height: "12px", borderRadius: "4px", background: "#f7f7f5" }} />
+        <div style={{ width: "80px", height: "12px", borderRadius: "4px", background: "#f7f7f5" }} />
+        <div style={{ width: "70px", height: "12px", borderRadius: "4px", background: "#f7f7f5" }} />
       </div>
 
       {/* ── Highlights Section Skeleton ── */}
       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "2px" }}>
-        <div style={{ width: "110px", height: "10px", borderRadius: "3px", background: "#f1f5f9" }} />
-        <div style={{ width: "85%", height: "12px", borderRadius: "4px", background: "#f8fafc" }} />
-        <div style={{ width: "75%", height: "12px", borderRadius: "4px", background: "#f8fafc" }} />
-        <div style={{ width: "90%", height: "12px", borderRadius: "4px", background: "#f8fafc" }} />
+        <div style={{ width: "110px", height: "10px", borderRadius: "3px", background: "#ebebe8" }} />
+        <div style={{ width: "85%", height: "12px", borderRadius: "4px", background: "#f7f7f5" }} />
+        <div style={{ width: "75%", height: "12px", borderRadius: "4px", background: "#f7f7f5" }} />
+        <div style={{ width: "90%", height: "12px", borderRadius: "4px", background: "#f7f7f5" }} />
       </div>
 
       {/* ── Button Skeleton ── */}
       <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "4px" }}>
         <div
           style={{
-            width: "110px",
+            width: "84px",
             height: "28px",
             borderRadius: "7px",
-            background: "#f1f5f9",
+            background: "#ebebe8",
           }}
         />
       </div>
