@@ -541,8 +541,8 @@ export function SearchDuotoneIcon({ size = 14, className = "", ...props }: Sideb
       className={className}
       {...props}
     >
-      {/* Tinted lens interior */}
-      <circle cx="11" cy="11" r="7" fill="currentColor" opacity="0.35" />
+      {/* Pure white lens interior */}
+      <circle cx="11" cy="11" r="6.5" fill="#ffffff" />
       {/* Solid bezel and handle */}
       <path
         d="M11 2C6 2 2 6 2 11C2 16 6 20 11 20C13.3 20 15.3 19.1 16.8 17.7L20.3 21.2C20.7 21.6 21.3 21.6 21.7 21.2C22.1 20.8 22.1 20.2 21.7 19.8L18.2 16.3C19.3 14.8 20 13 20 11C20 6 16 2 11 2ZM4.5 11C4.5 7.4 7.4 4.5 11 4.5C14.6 4.5 17.5 7.4 17.5 11C17.5 14.6 14.6 17.5 11 17.5C7.4 17.5 4.5 14.6 4.5 11Z"
