@@ -256,16 +256,16 @@ export function OutputPreviewPanel({
               style={{
                 display: "grid",
                 placeItems: "center",
-                width: "26px",
-                height: "26px",
-                borderRadius: "7px",
-                background: "#f7f7f5",
-                color: "#0f172a",
+                width: "28px",
+                height: "28px",
+                borderRadius: "8px",
+                background: "#f0fdf4",
+                color: "#16a34a",
                 border: "none",
                 flexShrink: 0,
               }}
             >
-              <DocumentsDuotoneIcon size={15} />
+              <DocumentsDuotoneIcon size={16} />
             </div>
             <h2
               ref={headingRef}

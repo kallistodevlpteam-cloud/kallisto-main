@@ -88,8 +88,8 @@ export function ProposalOutputPanel({
               width: "28px",
               height: "28px",
               borderRadius: "7px",
-              background: "#f7f7f5",
-              color: "#0f172a",
+              background: "#f0fdf4",
+              color: "#16a34a",
               border: "none",
             }}
           >
