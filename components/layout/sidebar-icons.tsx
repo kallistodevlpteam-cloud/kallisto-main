@@ -833,3 +833,167 @@ export function DrawingsDuotoneIcon({ size = 16, className = "", ...props }: Sid
     </svg>
   );
 }
+
+/**
+ * 28. Mail (Email Input) — Tinted envelope interior with solid envelope contours
+ */
+export function MailDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted envelope interior */}
+      <rect x="2.5" y="4.5" width="19" height="15" rx="3.5" fill="currentColor" opacity="0.32" />
+      {/* Solid envelope contour and fold lines */}
+      <path
+        d="M3 6L11.1 12.5C11.6 12.9 12.4 12.9 12.9 12.5L21 6M3 18V6C3 4.9 3.9 4 5 4H19C20.1 4 21 4.9 21 6V18C21 19.1 20.1 20 19 20H5C3.9 20 3 19.1 3 18Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/**
+ * 29. Lock (Password Input) — Tinted padlock shackle with solid body
+ */
+export function LockDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted shackle loop */}
+      <path
+        d="M7 10V6.5C7 3.7 9.2 1.5 12 1.5C14.8 1.5 17 3.7 17 6.5V10"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        opacity="0.45"
+      />
+      {/* Solid lock body */}
+      <rect x="4" y="9.5" width="16" height="13" rx="3" fill="currentColor" />
+      {/* Keyhole slot */}
+      <circle cx="12" cy="15" r="1.5" fill="#ffffff" opacity="0.9" />
+      <path d="M12 16.5V18.5" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" opacity="0.9" />
+    </svg>
+  );
+}
+
+/**
+ * 30. Eye (Password Visible) — Duotone eye with tinted iris & solid lid/pupil
+ */
+export function EyeDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted eye shape */}
+      <path
+        d="M2 12C3.8 7.5 7.6 4.5 12 4.5C16.4 4.5 20.2 7.5 22 12C20.2 16.5 16.4 19.5 12 19.5C7.6 19.5 3.8 16.5 2 12Z"
+        fill="currentColor"
+        opacity="0.28"
+      />
+      {/* Solid lid outline */}
+      <path
+        d="M2 12C3.8 7.5 7.6 4.5 12 4.5C16.4 4.5 20.2 7.5 22 12C20.2 16.5 16.4 19.5 12 19.5C7.6 19.5 3.8 16.5 2 12Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Solid pupil */}
+      <circle cx="12" cy="12" r="3.2" fill="currentColor" />
+    </svg>
+  );
+}
+
+/**
+ * 31. EyeOff (Password Hidden) — Duotone eye with strike-through
+ */
+export function EyeOffDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted background arc */}
+      <path
+        d="M9.9 4.8C10.6 4.6 11.3 4.5 12 4.5C16.4 4.5 20.2 7.5 22 12C21.3 13.7 20.2 15.2 18.7 16.4M14.1 19.1C13.4 19.4 12.7 19.5 12 19.5C7.6 19.5 3.8 16.5 2 12C2.9 9.8 4.5 8 6.5 6.8"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        opacity="0.4"
+      />
+      {/* Strike through */}
+      <path d="M3 3L21 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      {/* Pupil remnant */}
+      <path
+        d="M10.7 10.7C10.3 11.1 10 11.5 10 12C10 13.1 10.9 14 12 14C12.5 14 12.9 13.7 13.3 13.3"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/**
+ * 32. Shield (Governance & Security) — Tinted shield crest with solid checkmark
+ */
+export function ShieldDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      <path
+        d="M12 2.5L20 6V12C20 17 16.5 21 12 22.5C7.5 21 4 17 4 12V6L12 2.5Z"
+        fill="currentColor"
+        opacity="0.32"
+      />
+      <path
+        d="M9 12L11 14L15 10"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 2.5L20 6V12C20 17 16.5 21 12 22.5C7.5 21 4 17 4 12V6L12 2.5Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}

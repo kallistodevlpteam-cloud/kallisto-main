@@ -4,14 +4,16 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
   AlertCircle,
   ArrowRight,
-  ShieldCheck,
 } from "lucide-react";
+import {
+  EyeDuotoneIcon,
+  EyeOffDuotoneIcon,
+  LockDuotoneIcon,
+  MailDuotoneIcon,
+  ShieldDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import { KallistoBrand } from "@/components/layout/kallisto-brand";
 import styles from "./sign-in-card.module.css";
 
@@ -139,7 +141,7 @@ export function SignInCard() {
         <div className={styles.brandingBottomSection}>
           <div className={styles.brandingBottomMeta}>
             <div className={styles.brandingFooterNote}>
-              <ShieldCheck size={14} aria-hidden="true" />
+              <ShieldDuotoneIcon size={15} aria-hidden="true" />
               <span>Enterprise Governance & Role-Based Access Control</span>
             </div>
             <span>v2026.1</span>
@@ -188,7 +190,7 @@ export function SignInCard() {
                   Work Email
                 </label>
                 <div className={styles.inputWrapper}>
-                  <Mail size={15} className={styles.inputIcon} aria-hidden="true" />
+                  <MailDuotoneIcon size={16} className={styles.inputIcon} aria-hidden="true" />
                   <input
                     id="signin-email"
                     type="email"
@@ -227,7 +229,7 @@ export function SignInCard() {
                   </button>
                 </div>
                 <div className={styles.inputWrapper}>
-                  <Lock size={15} className={styles.inputIcon} aria-hidden="true" />
+                  <LockDuotoneIcon size={16} className={styles.inputIcon} aria-hidden="true" />
                   <input
                     id="signin-password"
                     type={showPassword ? "text" : "password"}
@@ -251,7 +253,7 @@ export function SignInCard() {
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     tabIndex={0}
                   >
-                    {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                    {showPassword ? <EyeOffDuotoneIcon size={16} /> : <EyeDuotoneIcon size={16} />}
                   </button>
                 </div>
                 {passwordError && (
