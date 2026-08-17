@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { CheckCircle2, Download, FileText, Save, Send, Sparkles } from "lucide-react";
+import { CheckCircle2, Download, Save, Send, Sparkles } from "lucide-react";
+import { DocumentsDuotoneIcon } from "@/components/layout/sidebar-icons";
 import type { StudioTask } from "@/types/domain/studio";
 
 export interface ProposalOutputPanelProps {
@@ -86,13 +87,13 @@ export function ProposalOutputPanel({
               placeItems: "center",
               width: "28px",
               height: "28px",
-              borderRadius: "6px",
-              background: "#f0fdf4",
-              color: "#16a34a",
-              border: "1px solid #bbf7d0",
+              borderRadius: "7px",
+              background: "#f7f7f5",
+              color: "#0f172a",
+              border: "none",
             }}
           >
-            <FileText size={15} />
+            <DocumentsDuotoneIcon size={16} />
           </div>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { CheckCircle2, FileText, Send, Sparkles, X } from "lucide-react";
+import { CheckCircle2, Send, X } from "lucide-react";
+import { DocumentsDuotoneIcon, OdinDuotoneIcon } from "@/components/layout/sidebar-icons";
 import type { StudioDeliveryRecipient, StudioTask } from "@/types/domain/studio";
 import { useStudioDelivery } from "@/features/studio/hooks/use-studio-delivery";
 import { SendToClientDialog } from "./send-to-client-dialog";
@@ -257,14 +258,14 @@ export function OutputPreviewPanel({
                 placeItems: "center",
                 width: "26px",
                 height: "26px",
-                borderRadius: "6px",
-                background: "#f0fdf4",
-                color: "#16a34a",
-                border: "1px solid #bbf7d0",
+                borderRadius: "7px",
+                background: "#f7f7f5",
+                color: "#0f172a",
+                border: "none",
                 flexShrink: 0,
               }}
             >
-              <FileText size={14} />
+              <DocumentsDuotoneIcon size={15} />
             </div>
             <h2
               ref={headingRef}
@@ -600,7 +601,7 @@ export function OutputPreviewPanel({
               transition: "all 0.15s ease",
             }}
           >
-            <Sparkles size={13} />
+            <OdinDuotoneIcon size={14} />
             <span>Request changes</span>
           </button>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Sparkles } from "lucide-react";
+import { OdinDuotoneIcon } from "@/components/layout/sidebar-icons";
 import type { StudioMessageAction } from "@/types/domain/studio-message";
 import styles from "../studio-chat-canvas.module.css";
 
@@ -31,7 +31,7 @@ export function SuggestionChips({ actions, isAnimated = false, onActionSelect }:
           }
           onClick={() => onActionSelect(act)}
         >
-          <Sparkles size={12.5} className={styles.actionChipSparkle} />
+          <OdinDuotoneIcon size={13} className={styles.actionChipSparkle} />
           <span>{act.label}</span>
         </button>
       ))}
