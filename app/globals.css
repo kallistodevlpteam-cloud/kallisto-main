@@ -998,8 +998,8 @@ textarea:focus-visible {
 
 /* Studio Task Command Composer Focus Outline */
 .studio-composer-box:focus-within {
-  border-color: #cbd5e1 !important;
-  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06) !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.08) !important;
 }
 
 @keyframes studioDotBounce {

@@ -270,11 +270,11 @@ export function StudioComposer({
             flexDirection: "column",
             minHeight: isActive ? "90px" : "100px",
             padding: "12px 16px 8px",
-            border: "1px solid #e2e8f0",
+            border: "none",
             borderRadius: isActive ? "16px" : "20px",
             background: "#ffffff",
             boxShadow: isActive ? "0 4px 16px rgba(15, 23, 42, 0.05)" : "0 4px 20px rgba(15, 23, 42, 0.04)",
-            transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+            transition: "box-shadow 0.2s ease",
             position: "relative",
           }}
         >
