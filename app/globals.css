@@ -843,7 +843,7 @@ textarea:focus-visible {
   max-width: 420px;
   height: 32px;
   padding: 0 12px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: none;
   border-radius: 8px;
   background: #ffffff;
   color: #64748b;
@@ -862,7 +862,6 @@ textarea:focus-visible {
 
 .global-search-pill:hover {
   background: #ffffff;
-  border-color: rgba(0, 0, 0, 0.12);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
 }
 
