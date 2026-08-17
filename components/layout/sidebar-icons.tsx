@@ -438,3 +438,116 @@ export function MoreToolsDuotoneIcon({ size = 17, className = "", ...props }: Si
     </svg>
   );
 }
+
+/**
+ * 15. Feedback — Duotone speech bubble with tinted message lines
+ */
+export function FeedbackDuotoneIcon({ size = 14, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted background bubble */}
+      <path
+        d="M20 2H4C2.9 2 2 2.9 2 4V18C2 19.1 2.9 20 4 20H18L22 24V4C22 2.9 21.1 2 20 2Z"
+        fill="currentColor"
+        opacity="0.38"
+      />
+      {/* Solid text lines & speech bubble outline */}
+      <path
+        d="M2 4C2 2.9 2.9 2 4 2H20C21.1 2 22 2.9 22 4V17C22 18.1 21.1 19 20 19H6L2 23V4ZM6 7C5.4 7 5 7.4 5 8C5 8.6 5.4 9 6 9H18C18.6 9 19 8.6 19 8C19 7.4 18.6 7 18 7H6ZM6 11C5.4 11 5 11.4 5 12C5 12.6 5.4 13 6 13H14C14.6 13 15 12.6 15 12C15 11.4 14.6 11 14 11H6Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * 16. Ask Odin (Sparkles) — Solid primary star with tinted secondary sparkles
+ */
+export function OdinDuotoneIcon({ size = 14, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted satellite stars */}
+      <path
+        d="M19 2C19.3 3.6 20.4 4.7 22 5C20.4 5.3 19.3 6.4 19 8C18.7 6.4 17.6 5.3 16 5C17.6 4.7 18.7 3.6 19 2ZM5.5 17C5.7 18 6.5 18.8 7.5 19C6.5 19.2 5.7 20 5.5 21C5.3 20 4.5 19.2 3.5 19C4.5 18.8 5.3 18 5.5 17Z"
+        fill="currentColor"
+        opacity="0.45"
+      />
+      {/* Solid central star */}
+      <path
+        d="M10.5 3C11 7.2 14.3 10.5 18.5 11C14.3 11.5 11 14.8 10.5 19C10 14.8 6.7 11.5 2.5 11C6.7 10.5 10 7.2 10.5 3Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * 17. Bell (Notifications) — Solid bell with tinted ring and clapper
+ */
+export function BellDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted top loop ring & clapper */}
+      <circle cx="12" cy="3" r="2" fill="currentColor" opacity="0.38" />
+      <path
+        d="M9.5 19C9.5 20.4 10.6 21.5 12 21.5C13.4 21.5 14.5 20.4 14.5 19H9.5Z"
+        fill="currentColor"
+        opacity="0.38"
+      />
+      {/* Solid bell body */}
+      <path
+        d="M12 4C8.7 4 6 6.7 6 10V14L4 16C3.4 16.6 3.8 17.5 4.6 17.5H19.4C20.2 17.5 20.6 16.6 20 16L18 14V10C18 6.7 15.3 4 12 4Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * 18. Search — Solid rim & handle with tinted lens interior
+ */
+export function SearchDuotoneIcon({ size = 14, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted lens interior */}
+      <circle cx="11" cy="11" r="7" fill="currentColor" opacity="0.35" />
+      {/* Solid bezel and handle */}
+      <path
+        d="M11 2C6 2 2 6 2 11C2 16 6 20 11 20C13.3 20 15.3 19.1 16.8 17.7L20.3 21.2C20.7 21.6 21.3 21.6 21.7 21.2C22.1 20.8 22.1 20.2 21.7 19.8L18.2 16.3C19.3 14.8 20 13 20 11C20 6 16 2 11 2ZM4.5 11C4.5 7.4 7.4 4.5 11 4.5C14.6 4.5 17.5 7.4 17.5 11C17.5 14.6 14.6 17.5 11 17.5C7.4 17.5 4.5 14.6 4.5 11Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}

@@ -2,14 +2,16 @@
 
 import { useState, useEffect, Suspense } from "react";
 import {
-  Bell,
   ChevronLeft,
   ChevronRight,
   Menu,
-  MessageSquareText,
-  Search,
-  Sparkles,
 } from "lucide-react";
+import {
+  BellDuotoneIcon,
+  FeedbackDuotoneIcon,
+  OdinDuotoneIcon,
+  SearchDuotoneIcon,
+} from "./sidebar-icons";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FeedbackPopover } from "./feedback-popover";
 import { NotificationPopover } from "./notification-popover";
@@ -254,7 +256,7 @@ export function TopBar({
         aria-label="Search Kallisto"
         onClick={onOpenSearch}
       >
-        <Search size={14} className="search-icon" aria-hidden="true" />
+        <SearchDuotoneIcon size={14} className="search-icon" aria-hidden="true" />
         <span className="search-placeholder">Search everything...</span>
       </button>
 
@@ -266,7 +268,7 @@ export function TopBar({
             onClick={() => setFeedbackOpen((prev) => !prev)}
             aria-expanded={feedbackOpen}
           >
-            <MessageSquareText size={14} />
+            <FeedbackDuotoneIcon size={15} />
             <span>Feedback</span>
           </button>
           <FeedbackPopover
@@ -281,7 +283,7 @@ export function TopBar({
           aria-expanded={assistantOpen}
           aria-controls="odin-panel"
         >
-          <Sparkles size={14} className="sparkle-icon" />
+          <OdinDuotoneIcon size={15} className="sparkle-icon" />
           <span>Ask Odin</span>
         </button>
         <button
@@ -291,7 +293,7 @@ export function TopBar({
           title="Notifications"
           onClick={() => setNotificationsOpen((prev) => !prev)}
         >
-          <Bell size={16} strokeWidth={1.8} />
+          <BellDuotoneIcon size={16} />
           <span className="notification-indicator" />
         </button>
         <button
