@@ -39,6 +39,7 @@ export function Message({
 
   const defaultAssistantAvatar = (
     <div
+      className={status === "thinking" ? styles.avatarThinking : undefined}
       style={{
         width: "28px",
         height: "28px",

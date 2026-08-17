@@ -858,3 +858,35 @@
   color: #0f172a;
   transform: scale(1.08);
 }
+
+@keyframes progressiveCardIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes progressiveChipIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actionChipBtn,
+  .messageTurnWrap,
+  .conversationContentColumn {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}

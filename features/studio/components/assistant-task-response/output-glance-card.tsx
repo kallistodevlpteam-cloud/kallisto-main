@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Eye, FileText } from "lucide-react";
+import { OutputCardSkeleton } from "./output-card-skeleton";
 
 export interface OutputGlanceCardProps {
   title?: string;
@@ -11,8 +12,10 @@ export interface OutputGlanceCardProps {
   clientName?: string;
   budget?: string;
   highlights?: string[];
+  isAnimated?: boolean;
   onPreviewClick: () => void;
   onRequestChanges?: () => void;
+  onAssemblyComplete?: () => void;
 }
 
 const DEFAULT_HIGHLIGHTS = [
@@ -22,6 +25,18 @@ const DEFAULT_HIGHLIGHTS = [
   "6-month phase schedule & 4-tier commercial payment milestones",
 ];
 
+type AssemblyStep =
+  | "skeleton"
+  | "header"
+  | "status"
+  | "meta"
+  | "highlights-start"
+  | "highlights-1"
+  | "highlights-2"
+  | "highlights-3"
+  | "highlights-4"
+  | "complete";
+
 export function OutputGlanceCard({
   title = "Villa Design Proposal",
   version = "V01",
@@ -30,9 +45,71 @@ export function OutputGlanceCard({
   clientName = "Ananya Builders",
   budget = "₹18L – ₹25L",
   highlights = DEFAULT_HIGHLIGHTS,
+  isAnimated = false,
   onPreviewClick,
   onRequestChanges,
+  onAssemblyComplete,
 }: OutputGlanceCardProps) {
+  const prefersReducedMotion = useMemo(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }, []);
+
+  const shouldAnimate = isAnimated && !prefersReducedMotion;
+  const [step, setStep] = useState<AssemblyStep>(shouldAnimate ? "skeleton" : "complete");
+  const onAssemblyCompleteRef = useRef(onAssemblyComplete);
+  onAssemblyCompleteRef.current = onAssemblyComplete;
+
+  useEffect(() => {
+    if (!shouldAnimate) {
+      setStep("complete");
+      onAssemblyCompleteRef.current?.();
+      return;
+    }
+
+    const timers: NodeJS.Timeout[] = [];
+
+    // Progressive assembly schedule (80-120ms steps)
+    timers.push(setTimeout(() => setStep("header"), 120));
+    timers.push(setTimeout(() => setStep("status"), 240));
+    timers.push(setTimeout(() => setStep("meta"), 380));
+    timers.push(setTimeout(() => setStep("highlights-start"), 500));
+    timers.push(setTimeout(() => setStep("highlights-1"), 600));
+    timers.push(setTimeout(() => setStep("highlights-2"), 700));
+    timers.push(setTimeout(() => setStep("highlights-3"), 800));
+    timers.push(setTimeout(() => setStep("highlights-4"), 900));
+    timers.push(
+      setTimeout(() => {
+        setStep("complete");
+        onAssemblyCompleteRef.current?.();
+      }, 1040)
+    );
+
+    return () => {
+      timers.forEach(clearTimeout);
+    };
+  }, [shouldAnimate]);
+
+  if (step === "skeleton") {
+    return <OutputCardSkeleton />;
+  }
+
+  const isHeaderVisible = true;
+  const isStatusVisible = step !== "header";
+  const isMetaVisible = isStatusVisible && step !== "status";
+  const isHighlightsHeaderVisible = isMetaVisible && step !== "meta";
+
+  const getBulletVisible = (index: number) => {
+    if (step === "complete") return true;
+    if (index === 0) return step === "highlights-1" || step === "highlights-2" || step === "highlights-3" || step === "highlights-4";
+    if (index === 1) return step === "highlights-2" || step === "highlights-3" || step === "highlights-4";
+    if (index === 2) return step === "highlights-3" || step === "highlights-4";
+    if (index === 3) return step === "highlights-4";
+    return false;
+  };
+
+  const isButtonVisible = step === "complete";
+
   return (
     <div
       style={{
@@ -48,6 +125,7 @@ export function OutputGlanceCard({
         marginBottom: "8px",
         boxShadow: "0 1px 3px rgba(15, 23, 42, 0.03)",
         boxSizing: "border-box",
+        animation: shouldAnimate ? "progressiveCardIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards" : undefined,
       }}
     >
       {/* ── Header ── */}
@@ -59,6 +137,9 @@ export function OutputGlanceCard({
           paddingBottom: "10px",
           borderBottom: "1px solid #f1f5f9",
           gap: "8px",
+          opacity: isHeaderVisible ? 1 : 0,
+          transform: isHeaderVisible ? "translateY(0)" : "translateY(4px)",
+          transition: "opacity 0.18s ease-out, transform 0.18s ease-out",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -107,6 +188,9 @@ export function OutputGlanceCard({
             color: "#15803d",
             border: "none",
             flexShrink: 0,
+            opacity: isStatusVisible ? 1 : 0,
+            transform: isStatusVisible ? "scale(1)" : "scale(0.92)",
+            transition: "opacity 0.18s ease-out, transform 0.18s ease-out",
           }}
         >
           {statusBadge}
@@ -124,6 +208,9 @@ export function OutputGlanceCard({
           color: "#64748b",
           borderBottom: "1px solid #f8fafc",
           flexWrap: "wrap",
+          opacity: isMetaVisible ? 1 : 0,
+          transform: isMetaVisible ? "translateY(0)" : "translateY(4px)",
+          transition: "opacity 0.18s ease-out, transform 0.18s ease-out",
         }}
       >
         <div>
@@ -142,8 +229,14 @@ export function OutputGlanceCard({
         </div>
       </div>
 
-      {/* ── PreviewHighlights (3-5 key highlights, NO full body text) ── */}
-      <div style={{ padding: "10px 0 12px" }}>
+      {/* ── PreviewHighlights (3-5 key highlights) ── */}
+      <div
+        style={{
+          padding: "10px 0 12px",
+          opacity: isHighlightsHeaderVisible ? 1 : 0,
+          transition: "opacity 0.18s ease-out",
+        }}
+      >
         <div
           style={{
             fontSize: "10.5px",
@@ -168,9 +261,21 @@ export function OutputGlanceCard({
             color: "#475569",
           }}
         >
-          {highlights.map((item, idx) => (
-            <li key={idx}>{item}</li>
-          ))}
+          {highlights.map((item, idx) => {
+            const isVisible = getBulletVisible(idx);
+            return (
+              <li
+                key={idx}
+                style={{
+                  opacity: isVisible ? 1 : 0,
+                  transform: isVisible ? "translateX(0)" : "translateX(-4px)",
+                  transition: "opacity 0.15s ease-out, transform 0.15s ease-out",
+                }}
+              >
+                {item}
+              </li>
+            );
+          })}
         </ul>
       </div>
 
@@ -182,6 +287,9 @@ export function OutputGlanceCard({
           justifyContent: "space-between",
           paddingTop: "10px",
           borderTop: "1px solid #f1f5f9",
+          opacity: isButtonVisible ? 1 : 0,
+          transform: isButtonVisible ? "translateY(0)" : "translateY(4px)",
+          transition: "opacity 0.18s ease-out, transform 0.18s ease-out",
         }}
       >
         <button

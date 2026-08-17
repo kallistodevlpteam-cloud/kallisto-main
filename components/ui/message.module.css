@@ -157,3 +157,31 @@
     filter: blur(0);
   }
 }
+
+.avatarThinking {
+  animation: aiAvatarPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes aiAvatarPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(22, 163, 74, 0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avatarThinking,
+  .messageContent,
+  .messageParagraph,
+  .messageUser .messageContent {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+}

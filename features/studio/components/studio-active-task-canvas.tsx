@@ -112,7 +112,19 @@ export function StudioActiveTaskCanvas({
   const [outputContextChip, setOutputContextChip] = useState<{ id: string; title: string; version: string } | null>(null);
   const [showJumpToLatest, setShowJumpToLatest] = useState<boolean>(false);
   const [composerHeight, setComposerHeight] = useState<number>(120);
+  const [activeGeneratingMsgId, setActiveGeneratingMsgId] = useState<string | null>(null);
+  const prevMessagesCountRef = useRef<number>(messages.length);
   const isUserScrolledUpRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    if (messages.length > prevMessagesCountRef.current) {
+      const latestMsg = messages[messages.length - 1];
+      if (latestMsg && latestMsg.role === "assistant" && latestMsg.kind !== "status") {
+        setActiveGeneratingMsgId(latestMsg.id);
+      }
+    }
+    prevMessagesCountRef.current = messages.length;
+  }, [messages]);
 
   // ResizeObserver for container-width responsiveness (safely guarded for SSR/test envs)
   useEffect(() => {
@@ -367,10 +379,13 @@ export function StudioActiveTaskCanvas({
                   );
                 }
 
+                const isGeneratingThisMsg = activeGeneratingMsgId === msg.id;
+
                 return (
                   <div key={msg.id} id={`msg-${msg.id}`} className={styles.messageTurnWrap}>
                     <Message
                       role="assistant"
+                      status={isGeneratingThisMsg ? "thinking" : "ready"}
                       timestamp={formatRelativeTime(msg.createdAt)}
                     >
                       <AssistantTaskResponse
@@ -381,6 +396,8 @@ export function StudioActiveTaskCanvas({
                         clientName="Ananya Builders"
                         budget="₹18L – ₹25L"
                         actions={msg.actions || []}
+                        isNewTurn={isGeneratingThisMsg}
+                        onAnimationComplete={() => setActiveGeneratingMsgId(null)}
                         onActionSelect={onActionSelect}
                         onPreviewClick={(outputRef) =>
                           setPanelState({
