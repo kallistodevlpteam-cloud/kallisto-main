@@ -2194,65 +2194,68 @@ textarea:focus-visible {
 .composer-project-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  height: 26px;
-  padding: 0 10px;
-  border: 1px solid transparent;
-  border-radius: 9999px;
+  gap: 6px;
+  height: 28px;
+  padding: 0 6px;
+  border: none;
+  border-radius: 8px;
   background: transparent;
-  color: #0f172a;
-  font-size: 12.5px;
-  font-weight: 600;
+  color: #ea580c;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .composer-project-pill:hover {
-  background: #f1f5f9;
-  border-color: #e2e8f0;
-  color: #0f172a;
+  background: rgba(234, 88, 12, 0.08);
+  color: #c2410c;
 }
 
 .chatgpt-mic-btn {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: #4b5563;
+  color: #52525b;
   cursor: pointer;
   flex-shrink: 0;
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .chatgpt-mic-btn:hover {
-  color: #111827;
-  background: rgba(0, 0, 0, 0.05);
+  color: #18181b;
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .chatgpt-voice-wave-btn {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: #0f172a;
+  background: #71717a;
   color: #ffffff;
-  cursor: pointer;
+  cursor: default;
   flex-shrink: 0;
   transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
 }
 
-.chatgpt-voice-wave-btn:hover {
+.chatgpt-voice-wave-btn.chatgpt-send-btn {
+  background: #18181b;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.chatgpt-voice-wave-btn.chatgpt-send-btn:hover {
   background: #000000;
   transform: scale(1.05);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
 .chatgpt-voice-wave-btn:active {

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowUp, AudioLines, Check, ChevronDown, ChevronRight, FileText, Folder, Mic, Sparkles, X } from "lucide-react";
+import { AlertCircle, ArrowUp, AudioLines, Check, ChevronDown, ChevronRight, FileText, Folder, Mic, Sparkles, X } from "lucide-react";
 import { StudioAgentType, StudioProjectOption } from "@/types/domain/studio";
 import { StudioIntent, StudioSource } from "../../types/studio-source";
 import { STUDIO_INTENTS } from "../../lib/studio-intents";
@@ -268,12 +268,12 @@ export function StudioComposer({
           style={{
             display: "flex",
             flexDirection: "column",
-            minHeight: isActive ? "90px" : "100px",
-            padding: "12px 16px 8px",
+            minHeight: isActive ? "94px" : "106px",
+            padding: "16px 20px 12px 20px",
             border: "none",
-            borderRadius: isActive ? "16px" : "20px",
+            borderRadius: "26px",
             background: "#ffffff",
-            boxShadow: isActive ? "0 4px 16px rgba(15, 23, 42, 0.05)" : "0 4px 20px rgba(15, 23, 42, 0.04)",
+            boxShadow: "0 4px 24px rgba(15, 23, 42, 0.06), 0 1px 4px rgba(15, 23, 42, 0.02)",
             transition: "box-shadow 0.2s ease",
             position: "relative",
           }}
@@ -339,9 +339,9 @@ export function StudioComposer({
                 background: "transparent",
                 color: "#0f172a",
                 fontFamily: "inherit",
-                fontSize: "14px",
-                lineHeight: 1.45,
-                fontWeight: 500,
+                fontSize: "14.5px",
+                lineHeight: 1.5,
+                fontWeight: 450,
                 caretColor: showOverlay ? "transparent" : undefined,
               }}
             />
@@ -356,11 +356,11 @@ export function StudioComposer({
                   left: 0,
                   width: "100%",
                   minHeight: "44px",
-                  fontSize: "14px",
-                  lineHeight: 1.45,
-                  fontWeight: 500,
+                  fontSize: "14.5px",
+                  lineHeight: 1.5,
+                  fontWeight: 400,
                   fontFamily: "inherit",
-                  color: "#94a3b8",
+                  color: "#9ca3af",
                   pointerEvents: "none",
                   userSelect: "none",
                   whiteSpace: "pre-wrap",
@@ -395,7 +395,7 @@ export function StudioComposer({
                 onRemoveAttachment={onRemoveAttachment}
               />
 
-              {/* Project Selector Pill (Black Theme with Dropdown) */}
+              {/* Project Selector Pill (Amber badge theme) */}
               <div style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
                 <button
                   type="button"
@@ -404,9 +404,9 @@ export function StudioComposer({
                   onClick={() => setIsProjectMenuOpen(!isProjectMenuOpen)}
                   className="composer-project-pill"
                 >
-                  <Folder size={13.5} style={{ color: "#0f172a" }} />
+                  <AlertCircle size={14} style={{ color: "#ea580c" }} />
                   <span>{projectDisplay}</span>
-                  <ChevronDown size={12} style={{ color: "#64748b", marginLeft: "1px" }} />
+                  <ChevronDown size={12} style={{ color: "#ea580c", opacity: 0.8, marginLeft: "1px" }} />
                 </button>
 
                 {isProjectMenuOpen && (
@@ -615,26 +615,28 @@ export function StudioComposer({
 
             {/* Toolbar Right */}
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <PromptUsage percentage={Math.min(100, Math.round((prompt.length / 4000) * 100))} />
-
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  fontSize: "12.5px",
+                  fontWeight: 450,
+                  color: "#71717a",
+                  userSelect: "none",
+                  cursor: "pointer",
+                  marginRight: "2px",
+                }}
+              >
+                <span>5.6 Sol High</span>
+                <ChevronDown size={12} style={{ color: "#a1a1aa" }} />
+              </div>
 
               <button
                 type="button"
                 className="chatgpt-mic-btn"
                 title="Voice input"
                 aria-label="Voice input"
-                style={{
-                  display: "grid",
-                  placeItems: "center",
-                  width: "32px",
-                  height: "32px",
-                  border: "none",
-                  borderRadius: "50%",
-                  background: "transparent",
-                  color: "#475569",
-                  cursor: "pointer",
-                  padding: 0,
-                }}
               >
                 <Mic size={18} strokeWidth={2} />
               </button>
@@ -643,27 +645,10 @@ export function StudioComposer({
                 type={canSubmit ? "submit" : "button"}
                 disabled={!canSubmit}
                 className={`chatgpt-voice-wave-btn${canSubmit ? " chatgpt-send-btn" : ""}`}
-                aria-label={canSubmit ? "Send task command" : "Voice mode"}
-                title={canSubmit ? "Send task command" : "Voice mode"}
-                style={{
-                  display: "grid",
-                  placeItems: "center",
-                  width: "34px",
-                  height: "34px",
-                  border: "none",
-                  borderRadius: "50%",
-                  background: canSubmit ? "#0f172a" : "#cbd5e1",
-                  color: "#ffffff",
-                  cursor: canSubmit ? "pointer" : "not-allowed",
-                  boxShadow: canSubmit ? "0 2px 8px rgba(15, 23, 42, 0.25)" : "none",
-                  transition: "transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease",
-                }}
+                aria-label={canSubmit ? "Send task command" : "Submit prompt"}
+                title={canSubmit ? "Send task command" : "Submit prompt"}
               >
-                {canSubmit ? (
-                  <ArrowUp size={18} strokeWidth={2.5} />
-                ) : (
-                  <AudioLines size={18} strokeWidth={2.2} />
-                )}
+                <ArrowUp size={16} strokeWidth={2.4} />
               </button>
             </div>
           </div>

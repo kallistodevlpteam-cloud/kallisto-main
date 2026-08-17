@@ -57,17 +57,22 @@ export function ComposerAttachmentMenu({
         title="Add attachment"
         aria-label="Add attachment"
         style={{
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
+          display: "grid",
+          placeItems: "center",
+          width: "28px",
+          height: "28px",
           border: "none",
-          background: "none",
-          color: "#475569",
+          borderRadius: "50%",
+          background: "transparent",
+          color: "#71717a",
           cursor: "pointer",
-          padding: "2px",
+          padding: 0,
+          transition: "color 0.15s ease, background-color 0.15s ease",
         }}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.04)")}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
       >
-        <Plus size={18} strokeWidth={1.8} />
+        <Plus size={17} strokeWidth={2} />
       </button>
 
       {attachments.map((source) => (
