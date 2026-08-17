@@ -607,3 +607,153 @@ export function SearchDuotoneIcon({ size = 14, className = "", ...props }: Sideb
     </svg>
   );
 }
+
+/**
+ * 19. Outputs (Layers/Stack) — Duotone layer stack with tinted base layers
+ */
+export function OutputsDuotoneIcon({ size = 14, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted bottom layer */}
+      <path d="M12 21.5L3 17L12 12.5L21 17L12 21.5Z" fill="currentColor" opacity="0.38" />
+      {/* Tinted middle layer */}
+      <path d="M12 16.5L3 12L12 7.5L21 12L12 16.5Z" fill="currentColor" opacity="0.38" />
+      {/* Solid top layer */}
+      <path d="M12 11.5L3 7L12 2.5L21 7L12 11.5Z" fill="currentColor" />
+    </svg>
+  );
+}
+
+/**
+ * 20. History (Clock/Revisions) — Tinted dial with solid arrow hands
+ */
+export function HistoryDuotoneIcon({ size = 14, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted dial base */}
+      <circle cx="12" cy="12" r="8.5" fill="currentColor" opacity="0.32" />
+      {/* Solid reverse path & hands */}
+      <path
+        d="M12 7V12L15 14M3.5 12C3.5 7.3 7.3 3.5 12 3.5C16.7 3.5 20.5 7.3 20.5 12C20.5 16.7 16.7 20.5 12 20.5C8.6 20.5 5.6 18.4 4.3 15.3M2 8.5L4 12L7.5 10"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/**
+ * 21. Explore / Compass — Duotone compass rose
+ */
+export function ExploreDuotoneIcon({ size = 15, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted circle bezel */}
+      <circle cx="12" cy="12" r="9.5" fill="currentColor" opacity="0.35" />
+      {/* Solid needle & outer ring */}
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M16 8L13.5 13.5L8 16L10.5 10.5L16 8Z" fill="currentColor" />
+    </svg>
+  );
+}
+
+/**
+ * 22. Build / Hammer — Duotone tool with tinted head & solid handle
+ */
+export function BuildDuotoneIcon({ size = 15, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted tool head */}
+      <path d="M14 2L22 10L19 13L16 10L14 12L12 10L14 8L11 5L14 2Z" fill="currentColor" opacity="0.4" />
+      {/* Solid handle */}
+      <path
+        d="M15 9L5 19C4.2 19.8 3 19.8 2.2 19C1.4 18.2 1.4 17 2.2 16.2L12.2 6.2L15 9Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * 23. Review / Refine — Duotone circular refresh arrows
+ */
+export function ReviewDuotoneIcon({ size = 15, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted central core */}
+      <circle cx="12" cy="12" r="4.5" fill="currentColor" opacity="0.35" />
+      {/* Solid cyclical arrows */}
+      <path
+        d="M21 12C21 17 17 21 12 21C7.6 21 4 17.8 3.2 13.5M3 12C3 7 7 3 12 3C16.4 3 20 6.2 20.8 10.5M21 3V8H16M3 21V16H8"
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/**
+ * 24. Resolve / Alert — Duotone shield alert badge
+ */
+export function ResolveDuotoneIcon({ size = 15, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted shield badge */}
+      <path d="M12 2.5L20 6V12C20 17 16.5 21 12 22.5C7.5 21 4 17 4 12V6L12 2.5Z" fill="currentColor" opacity="0.35" />
+      {/* Solid alert exclamation */}
+      <path d="M12 7V13M12 16.5V17" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+    </svg>
+  );
+}

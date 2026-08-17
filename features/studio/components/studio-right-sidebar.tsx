@@ -1,9 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { History, Layers, MessageSquare, X } from "lucide-react";
+import { X } from "lucide-react";
 import {
   DocumentsDuotoneIcon,
+  FeedbackDuotoneIcon,
+  HistoryDuotoneIcon,
+  OutputsDuotoneIcon,
   PortfolioDuotoneIcon,
   SpreadsheetDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
@@ -189,7 +192,7 @@ export function StudioRightSidebar({
             className={`${styles.tabBtn} ${internalTab === "outputs" ? styles.activeTabBtn : ""}`}
             onClick={() => setInternalTab("outputs")}
           >
-            <Layers size={13} />
+            <OutputsDuotoneIcon size={14} />
             <span>Outputs</span>
             <span className={styles.tabBadge}>V01</span>
           </button>
@@ -199,7 +202,7 @@ export function StudioRightSidebar({
             className={`${styles.tabBtn} ${internalTab === "chats" ? styles.activeTabBtn : ""}`}
             onClick={() => setInternalTab("chats")}
           >
-            <History size={13} />
+            <HistoryDuotoneIcon size={14} />
             <span>Chat History</span>
           </button>
         </div>
@@ -340,7 +343,7 @@ export function StudioRightSidebar({
                 tabIndex={0}
               >
                 <div className={styles.chatIconWrapper}>
-                  <MessageSquare size={13} />
+                  <FeedbackDuotoneIcon size={14} />
                 </div>
                 <div className={styles.itemTextCol}>
                   <span className={styles.itemTitle}>{chat.title}</span>

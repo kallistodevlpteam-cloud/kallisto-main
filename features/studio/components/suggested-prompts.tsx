@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Sparkles } from "lucide-react";
+import { OdinDuotoneIcon } from "@/components/layout/sidebar-icons";
 import { StudioIntent } from "../types/studio-source";
 import { STUDIO_INTENTS } from "../lib/studio-intents";
 
@@ -31,12 +31,12 @@ export function SuggestedPrompts({
           alignItems: "center",
           gap: "6px",
           marginBottom: "10px",
-          color: "#64748b",
+          color: "#475569",
           fontSize: "12.5px",
           fontWeight: 600,
         }}
       >
-        <Sparkles size={14} style={{ color: "#7c3aed" }} />
+        <OdinDuotoneIcon size={15} style={{ color: "#0f172a" }} />
         <span>Suggested prompts</span>
       </div>
 
