@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowUp, AudioLines, Check, ChevronDown, ChevronRight, FileText, Folder, Mic, Sparkles, X } from "lucide-react";
+import { ArrowUp, AudioLines, Check, ChevronDown, ChevronRight, FileText, Folder, Mic, X } from "lucide-react";
 import { StudioAgentType, StudioProjectOption } from "@/types/domain/studio";
 import { StudioIntent, StudioSource } from "../../types/studio-source";
 import { STUDIO_INTENTS } from "../../lib/studio-intents";
@@ -98,7 +98,6 @@ export function StudioComposer({
   placeholderOverride,
   focusRef,
 }: StudioComposerProps) {
-  const [showVoiceBanner, setShowVoiceBanner] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
   const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<"projects" | "enquiries" | null>("projects");
@@ -184,76 +183,6 @@ export function StudioComposer({
 
   return (
     <div style={{ width: "100%", position: "relative" }}>
-      {/* Voice Banner Row (Idle mode only) */}
-      {!isActive && showVoiceBanner && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "12px",
-            padding: "10px 14px",
-            border: "1px solid #f1f5f9",
-            borderRadius: "14px",
-            background: "#ffffff",
-            marginBottom: "12px",
-            boxShadow: "0 1px 3px rgba(15, 23, 42, 0.02)",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div
-              style={{
-                width: "32px",
-                height: "32px",
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #a5b4fc 0%, #818cf8 50%, #6366f1 100%)",
-                display: "grid",
-                placeItems: "center",
-                color: "#ffffff",
-                flexShrink: 0,
-              }}
-            >
-              <Sparkles size={16} />
-            </div>
-            <div>
-              <h4 style={{ margin: 0, fontSize: "13px", fontWeight: 650, color: "#0f172a" }}>
-                Try Voice mode
-              </h4>
-              <p style={{ margin: 0, fontSize: "12px", color: "#64748b" }}>
-                Create outputs, review drawings and coordinate project tasks hands-free.
-              </p>
-            </div>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <button
-              type="button"
-              style={{
-                height: "28px",
-                padding: "0 14px",
-                border: "none",
-                borderRadius: "9999px",
-                background: "#0f172a",
-                color: "#ffffff",
-                fontSize: "12px",
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
-              Start Voice
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowVoiceBanner(false)}
-              aria-label="Close voice prompt banner"
-              style={{ border: "none", background: "none", color: "#94a3b8", cursor: "pointer" }}
-            >
-              <X size={14} />
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Dynamic Example Suggestion Chips (Idle mode) */}
       {!isActive && (
         <div style={{ marginBottom: "12px" }}>
