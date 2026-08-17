@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ChevronDown,
   Globe2,
   PanelLeft,
   Send,
@@ -9,53 +8,17 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
 import { KallistoBrand } from "./kallisto-brand";
 import {
   isSidebarItemActive,
   SIDEBAR_NAVIGATION,
   SIDEBAR_SECTIONS,
 } from "./sidebar-navigation";
-import { WORKSPACE_CONFIG } from "@/lib/config/workspace-config";
 
 interface SidebarExpandedProps {
   pendingEnquiryCount?: number | null;
   onToggleAccountPopover?: (initialView?: "main" | "switcher") => void;
   onToggleSidebar?: () => void;
-}
-
-function useHasOverflow(value: string) {
-  const ref = useRef<HTMLElement>(null);
-  const [hasOverflow, setHasOverflow] = useState(false);
-
-  useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
-
-    const measure = () => {
-      setHasOverflow(element.scrollWidth > element.clientWidth + 1);
-    };
-
-    measure();
-    const resizeObserver =
-      typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
-    resizeObserver?.observe(element);
-    const mutationObserver = new MutationObserver(measure);
-    mutationObserver.observe(element, {
-      childList: true,
-      characterData: true,
-      subtree: true,
-    });
-
-    window.addEventListener("resize", measure);
-    return () => {
-      resizeObserver?.disconnect();
-      mutationObserver.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, [value]);
-
-  return { ref, hasOverflow };
 }
 
 export function SidebarExpanded({
@@ -64,10 +27,6 @@ export function SidebarExpanded({
   onToggleSidebar,
 }: SidebarExpandedProps) {
   const pathname = usePathname();
-  const workspaceName = WORKSPACE_CONFIG.currentWorkspaceName;
-  const workspaceTooltipId = "workspace-name-tooltip";
-  const { ref: workspaceNameRef, hasOverflow: workspaceNameOverflows } =
-    useHasOverflow(workspaceName);
 
   return (
     <aside className="sidebar sidebar--expanded" aria-label="Primary navigation">
@@ -85,30 +44,6 @@ export function SidebarExpanded({
           </button>
         )}
       </div>
-
-      <button
-        className="workspace-selector-card"
-        type="button"
-        aria-label={`Switch workspace, ${workspaceName}`}
-        aria-describedby={workspaceNameOverflows ? workspaceTooltipId : undefined}
-        onClick={() => onToggleAccountPopover?.("switcher")}
-      >
-        <span className="workspace-avatar">AA</span>
-        <span className="workspace-meta">
-          <strong ref={workspaceNameRef}>{workspaceName}</strong>
-          <small>{WORKSPACE_CONFIG.workspaceType}</small>
-        </span>
-        <ChevronDown size={14} className="workspace-chevron" strokeWidth={2} />
-        {workspaceNameOverflows ? (
-          <span
-            id={workspaceTooltipId}
-            className="sidebar-overflow-tooltip"
-            role="tooltip"
-          >
-            {workspaceName}
-          </span>
-        ) : null}
-      </button>
 
       <div className="sidebar-scrollable">
         {SIDEBAR_SECTIONS.map((section) => {
