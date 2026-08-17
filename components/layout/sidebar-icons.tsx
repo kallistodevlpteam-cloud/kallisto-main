@@ -184,6 +184,35 @@ export function TeamDuotoneIcon({ size = 17, className = "", ...props }: Sidebar
 }
 
 /**
+ * Documents — Dual-tone document sheet with tinted corner fold and lines
+ */
+export function DocumentsDuotoneIcon({ size = 17, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted sheet base */}
+      <path
+        d="M6 2C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2H6Z"
+        fill="currentColor"
+        opacity="0.38"
+      />
+      {/* Solid folded corner and document lines */}
+      <path
+        d="M14 2V7C14 7.6 14.4 8 15 8H20L14 2ZM7 11.5C7 11 7.4 10.5 8 10.5H16C16.6 10.5 17 11 17 11.5C17 12 16.6 12.5 16 12.5H8C7.4 12.5 7 12 7 11.5ZM7 15C7 14.4 7.4 14 8 14H16C16.6 14 17 14.4 17 15C17 15.6 16.6 16 16 16H8C7.4 16 7 15.6 7 15ZM7 18.5C7 18 7.4 17.5 8 17.5H13C13.6 17.5 14 18 14 18.5C14 19 13.6 19.5 13 19.5H8C7.4 19.5 7 19 7 18.5Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
  * 7. Payments — Credit card with tinted magnetic stripe & chip
  */
 export function PaymentsDuotoneIcon({ size = 17, className = "", ...props }: SidebarIconProps) {
