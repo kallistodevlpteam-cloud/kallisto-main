@@ -14,7 +14,7 @@ export function SuggestionChips({ actions, onActionSelect }: SuggestionChipsProp
   if (!actions || actions.length === 0) return null;
 
   return (
-    <div className={styles.actionChipsRow} style={{ marginTop: "6px" }}>
+    <div className={styles.actionChipsRow}>
       {actions.map((act) => (
         <button
           key={act.id}
@@ -22,7 +22,7 @@ export function SuggestionChips({ actions, onActionSelect }: SuggestionChipsProp
           className={styles.actionChipBtn}
           onClick={() => onActionSelect(act)}
         >
-          <Sparkles size={12} />
+          <Sparkles size={12.5} className={styles.actionChipSparkle} />
           <span>{act.label}</span>
         </button>
       ))}

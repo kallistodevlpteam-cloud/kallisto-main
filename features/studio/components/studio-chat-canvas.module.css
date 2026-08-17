@@ -806,3 +806,55 @@
     padding: 8px 16px 16px;
   }
 }
+
+/* ── Assistant Suggestion Action Chips (Native Theme) ── */
+.actionChipsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.actionChipBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  text-align: left;
+}
+
+.actionChipBtn:hover {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.14);
+  color: #0f172a;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
+  transform: translateY(-1px);
+}
+
+.actionChipBtn:active {
+  transform: translateY(0);
+  background: #f1f5f9;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.actionChipSparkle {
+  color: #64748b;
+  flex-shrink: 0;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.actionChipBtn:hover .actionChipSparkle {
+  color: #0f172a;
+  transform: scale(1.08);
+}
