@@ -219,13 +219,23 @@ export function StudioActiveTaskCanvas({
   );
 
   const handleJumpToMessage = (messageId: string) => {
+    const viewport = conversationViewportRef.current;
     const msgElement = document.getElementById(`msg-${messageId}`);
-    if (msgElement && conversationViewportRef.current) {
-      if (typeof msgElement.scrollIntoView === "function") {
-        msgElement.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (msgElement && viewport) {
+      const viewportRect = viewport.getBoundingClientRect();
+      const elementRect = msgElement.getBoundingClientRect();
+      const relativeTop = elementRect.top - viewportRect.top + viewport.scrollTop;
+      const targetScrollTop = relativeTop - viewport.clientHeight / 2 + elementRect.height / 2;
+
+      if (typeof viewport.scrollTo === "function") {
+        viewport.scrollTo({
+          top: Math.max(0, targetScrollTop),
+          behavior: "smooth",
+        });
       } else {
-        conversationViewportRef.current.scrollTop = msgElement.offsetTop - 40;
+        viewport.scrollTop = Math.max(0, targetScrollTop);
       }
+
       msgElement.classList.add(styles.messageHighlighted);
       setTimeout(() => {
         msgElement.classList.remove(styles.messageHighlighted);
