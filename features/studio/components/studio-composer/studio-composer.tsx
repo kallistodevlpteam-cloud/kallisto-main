@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { AlertCircle, ArrowUp, AudioLines, Check, ChevronDown, ChevronRight, FileText, Folder, Mic, Sparkles, X } from "lucide-react";
+import { ArrowUp, AudioLines, Check, ChevronDown, ChevronRight, FileText, Folder, Mic, Sparkles, X } from "lucide-react";
 import { StudioAgentType, StudioProjectOption } from "@/types/domain/studio";
 import { StudioIntent, StudioSource } from "../../types/studio-source";
 import { STUDIO_INTENTS } from "../../lib/studio-intents";
@@ -404,7 +404,6 @@ export function StudioComposer({
                   onClick={() => setIsProjectMenuOpen(!isProjectMenuOpen)}
                   className="composer-project-pill"
                 >
-                  <AlertCircle size={14} style={{ color: "#ea580c" }} />
                   <span>{projectDisplay}</span>
                   <ChevronDown size={12} style={{ color: "#ea580c", opacity: 0.8, marginLeft: "1px" }} />
                 </button>
