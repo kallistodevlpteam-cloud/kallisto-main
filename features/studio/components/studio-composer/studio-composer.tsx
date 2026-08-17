@@ -1,7 +1,13 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowUp, AudioLines, Check, ChevronDown, ChevronRight, FileText, Folder, Mic, X } from "lucide-react";
+import { ArrowUp, Check, ChevronDown, ChevronRight, X } from "lucide-react";
+import {
+  DocumentsDuotoneIcon,
+  EnquiriesDuotoneIcon,
+  MicDuotoneIcon,
+  ProjectsDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import { StudioAgentType, StudioProjectOption } from "@/types/domain/studio";
 import { StudioIntent, StudioSource } from "../../types/studio-source";
 import { STUDIO_INTENTS } from "../../lib/studio-intents";
@@ -216,8 +222,8 @@ export function StudioComposer({
                 gap: "6px",
                 padding: "3px 8px",
                 borderRadius: "6px",
-                background: "#f1f5f9",
-                border: "1px solid #cbd5e1",
+                background: "#f7f7f5",
+                border: "none",
                 fontSize: "12px",
                 fontWeight: 600,
                 color: "#0f172a",
@@ -225,7 +231,7 @@ export function StudioComposer({
                 alignSelf: "flex-start",
               }}
             >
-              <FileText size={13} style={{ color: "#16a34a" }} />
+              <DocumentsDuotoneIcon size={14} style={{ color: "#059669" }} />
               <span>{outputContextChip.title} · {outputContextChip.version}</span>
               <button
                 type="button"
@@ -333,6 +339,7 @@ export function StudioComposer({
                   onClick={() => setIsProjectMenuOpen(!isProjectMenuOpen)}
                   className="composer-project-pill"
                 >
+                  <ProjectsDuotoneIcon size={14} style={{ color: "#ea580c", flexShrink: 0 }} />
                   <span>{projectDisplay}</span>
                   <ChevronDown size={12} style={{ color: "#ea580c", opacity: 0.8, marginLeft: "1px" }} />
                 </button>
@@ -387,7 +394,7 @@ export function StudioComposer({
                           padding: "8px 10px",
                           border: "none",
                           borderRadius: "8px",
-                          background: hoveredCategory === "projects" ? "#f1f5f9" : "transparent",
+                          background: hoveredCategory === "projects" ? "#f7f7f5" : "transparent",
                           color: "#0f172a",
                           fontSize: "12.5px",
                           fontWeight: 600,
@@ -397,7 +404,7 @@ export function StudioComposer({
                         }}
                       >
                         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                          <Folder size={14} style={{ color: "#7c3aed" }} />
+                          <ProjectsDuotoneIcon size={15} style={{ color: "#7c3aed" }} />
                           <span>Active Projects</span>
                         </div>
                         <ChevronRight size={13} style={{ color: "#64748b" }} />
@@ -415,7 +422,7 @@ export function StudioComposer({
                           padding: "8px 10px",
                           border: "none",
                           borderRadius: "8px",
-                          background: hoveredCategory === "enquiries" ? "#f1f5f9" : "transparent",
+                          background: hoveredCategory === "enquiries" ? "#f7f7f5" : "transparent",
                           color: "#0f172a",
                           fontSize: "12.5px",
                           fontWeight: 600,
@@ -425,7 +432,7 @@ export function StudioComposer({
                         }}
                       >
                         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                          <FileText size={14} style={{ color: "#2563eb" }} />
+                          <EnquiriesDuotoneIcon size={15} style={{ color: "#2563eb" }} />
                           <span>Enquiries</span>
                         </div>
                         <ChevronRight size={13} style={{ color: "#64748b" }} />
@@ -476,7 +483,7 @@ export function StudioComposer({
                                   padding: "7px 10px",
                                   border: "none",
                                   borderRadius: "8px",
-                                  background: isSelected ? "#f1f5f9" : "transparent",
+                                  background: isSelected ? "#f7f7f5" : "transparent",
                                   color: "#0f172a",
                                   fontSize: "12.5px",
                                   fontWeight: isSelected ? 650 : 500,
@@ -486,7 +493,7 @@ export function StudioComposer({
                                 }}
                               >
                                 <div style={{ display: "flex", alignItems: "center", gap: "8px", overflow: "hidden" }}>
-                                  <Folder size={13} style={{ color: "#7c3aed", flexShrink: 0 }} />
+                                  <ProjectsDuotoneIcon size={14} style={{ color: "#7c3aed", flexShrink: 0 }} />
                                   <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                     {proj.name}
                                   </span>
@@ -515,7 +522,7 @@ export function StudioComposer({
                                   padding: "7px 10px",
                                   border: "none",
                                   borderRadius: "8px",
-                                  background: isSelected ? "#f1f5f9" : "transparent",
+                                  background: isSelected ? "#f7f7f5" : "transparent",
                                   color: "#0f172a",
                                   fontSize: "12.5px",
                                   fontWeight: isSelected ? 650 : 500,
@@ -525,7 +532,7 @@ export function StudioComposer({
                                 }}
                               >
                                 <div style={{ display: "flex", alignItems: "center", gap: "8px", overflow: "hidden" }}>
-                                  <FileText size={13} style={{ color: "#2563eb", flexShrink: 0 }} />
+                                  <EnquiriesDuotoneIcon size={14} style={{ color: "#2563eb", flexShrink: 0 }} />
                                   <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                     {enq.name}
                                   </span>
@@ -551,7 +558,7 @@ export function StudioComposer({
                 title="Voice mode"
                 aria-label="Voice mode"
               >
-                <Mic size={18} strokeWidth={2} />
+                <MicDuotoneIcon size={18} />
               </button>
 
               <button

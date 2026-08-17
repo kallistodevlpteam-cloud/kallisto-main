@@ -757,3 +757,79 @@ export function ResolveDuotoneIcon({ size = 15, className = "", ...props }: Side
     </svg>
   );
 }
+
+/**
+ * 25. Plus (Attachment/Add) — Tinted background circle with solid plus crosshair
+ */
+export function PlusDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      <circle cx="12" cy="12" r="9.5" fill="currentColor" opacity="0.18" />
+      <path d="M12 7.5V16.5M7.5 12H16.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/**
+ * 26. Microphone (Voice Input) — Solid capsule with tinted stand & pickup ring
+ */
+export function MicDuotoneIcon({ size = 17, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted stand & pickup arc */}
+      <path
+        d="M5.5 10.5C5.5 14 8.4 17 12 17C15.6 17 18.5 14 18.5 10.5M12 17V21M8 21H16"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        opacity="0.45"
+      />
+      {/* Solid capsule */}
+      <rect x="8.5" y="3" width="7" height="11" rx="3.5" fill="currentColor" />
+    </svg>
+  );
+}
+
+/**
+ * 27. Drawings / Blueprint — Architecture blueprint with ruler grid
+ */
+export function DrawingsDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted base blueprint pad */}
+      <rect x="3" y="3" width="18" height="18" rx="4" fill="currentColor" opacity="0.35" />
+      {/* Solid blueprint ruler & drafting lines */}
+      <path
+        d="M3 9H9V3M15 3V9H21M9 21V15H3M21 15H15V21M9 9H15V15H9V9Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
