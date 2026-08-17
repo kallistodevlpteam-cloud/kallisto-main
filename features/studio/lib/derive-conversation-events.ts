@@ -77,8 +77,11 @@ export function deriveConversationEvents(options: DeriveEventsOptions): Conversa
           title: "PROJECT REQUIREMENT",
           summary: msg.content.length > 120 ? `${msg.content.substring(0, 117)}…` : msg.content,
           details: [
-            `Project: ${projectName}`,
-            "Scope: 2D floorplans, 3D interior renders, BOQ estimate",
+            `• Project: ${projectName}`,
+            "• Scope: 2D floorplans, 3D interior renders, BOQ estimate",
+          ],
+          chips: [
+            { id: "brief", label: "Project Brief", icon: "file" },
           ],
           timestamp,
           messageId: msg.id,
@@ -94,10 +97,13 @@ export function deriveConversationEvents(options: DeriveEventsOptions): Conversa
           summary: msg.content.length > 120 ? `${msg.content.substring(0, 117)}…` : msg.content,
           details: [
             lowerContent.includes("timeline") || lowerContent.includes("month")
-              ? "• Revised schedule to 4 months"
+              ? "• Revised delivery schedule to 4 months"
               : lowerContent.includes("mep") || lowerContent.includes("furniture")
-              ? "• Include MEP and furniture procurement in scope"
-              : "• Adjusted project parameters",
+              ? "• Include MEP & loose furniture procurement in scope"
+              : "• Adjusted project scope and parameters",
+          ],
+          chips: [
+            { id: "rev", label: "Revision Note", icon: "file" },
           ],
           timestamp,
           messageId: msg.id,
@@ -111,6 +117,9 @@ export function deriveConversationEvents(options: DeriveEventsOptions): Conversa
           type: "MESSAGE",
           title: "USER QUERY",
           summary: msg.content.length > 120 ? `${msg.content.substring(0, 117)}…` : msg.content,
+          details: [
+            `• Message query: "${msg.content.length > 60 ? msg.content.substring(0, 57) + "…" : msg.content}"`,
+          ],
           timestamp,
           messageId: msg.id,
           isImportant: false,
@@ -136,9 +145,13 @@ export function deriveConversationEvents(options: DeriveEventsOptions): Conversa
             title: `PROPOSAL ${versionLabel} READY`,
             summary: `Created initial ${outputRef.title || "Proposal"} draft from project scope and budget.`,
             details: [
-              "• Spatial layout & 2D floorplans",
-              "• Budget: ₹18L – ₹25L",
-              "• Schedule: 6-month phase breakdown",
+              "• Spatial layout & 2D architectural floorplans",
+              "• Budget: ₹18L – ₹25L commercial breakdown",
+              "• Schedule: 6-month phased delivery milestones",
+            ],
+            chips: [
+              { id: "preview", label: "Web preview...", icon: "globe" },
+              { id: "pdf", label: `Villa_Proposal_${versionLabel}.pdf`, icon: "file" },
             ],
             timestamp,
             messageId: msg.id,
@@ -158,9 +171,13 @@ export function deriveConversationEvents(options: DeriveEventsOptions): Conversa
             title: `PROPOSAL ${versionLabel} UPDATED`,
             summary: `Updated proposal draft to ${versionLabel} incorporating requested changes.`,
             details: [
-              "• Revised timeline & delivery phases",
-              "• Updated commercial payment structure",
-              "• 2 revisions synchronized",
+              "• Revised timeline & delivery phases to 4 months",
+              "• Updated commercial milestone payout schedule",
+              "• Synchronized BOQ line items with revised scope",
+            ],
+            chips: [
+              { id: "preview", label: "Web preview...", icon: "globe" },
+              { id: "pdf", label: `Villa_Proposal_${versionLabel}.pdf`, icon: "file" },
             ],
             timestamp,
             messageId: msg.id,
@@ -178,8 +195,11 @@ export function deriveConversationEvents(options: DeriveEventsOptions): Conversa
           threadId: msg.taskId || task?.id,
           projectId: task?.projectId,
           type: "AI_ACTION",
-          title: "AI ANALYSIS",
+          title: "AI RESPONSE",
           summary: msg.content.length > 120 ? `${msg.content.substring(0, 117)}…` : msg.content,
+          details: [
+            "• Processed query and updated project session state",
+          ],
           timestamp,
           messageId: msg.id,
           isImportant: false,

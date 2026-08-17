@@ -28,6 +28,12 @@ export type ConversationRelatedEntityType =
   | "decision"
   | "approval";
 
+export interface ConversationEventChip {
+  id: string;
+  label: string;
+  icon?: "globe" | "image" | "file" | "layers";
+}
+
 export interface ConversationEvent {
   /** Unique identifier for the timeline event */
   id: string;
@@ -43,6 +49,8 @@ export interface ConversationEvent {
   summary: string;
   /** Optional bullet details (e.g. ["3 drawing changes", "2 comments"]) */
   details?: string[];
+  /** Optional artifact chips (e.g. Web preview, PDF output) */
+  chips?: ConversationEventChip[];
   /** Human-readable or relative timestamp */
   timestamp: string;
   /** Exact message ID linked to this event for jump-to-turn scrolling */
