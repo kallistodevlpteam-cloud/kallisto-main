@@ -179,7 +179,7 @@ describe("ConversationSpine Component", () => {
     },
   ];
 
-  it("renders 30 uniform tick dashes in idle state", () => {
+  it("renders tick markers for each conversation event", () => {
     render(
       <ConversationSpine
         events={mockEvents}
@@ -188,10 +188,10 @@ describe("ConversationSpine Component", () => {
     );
 
     const ticks = screen.getAllByRole("button");
-    expect(ticks).toHaveLength(30);
+    expect(ticks).toHaveLength(2);
   });
 
-  it("clicking a dash opens the floating event card and calls onJumpToMessage", () => {
+  it("clicking a marker opens the floating event card and calls onJumpToMessage", () => {
     const handleJump = vi.fn();
     const handleSelect = vi.fn();
 
@@ -204,8 +204,7 @@ describe("ConversationSpine Component", () => {
     );
 
     const ticks = screen.getAllByRole("button");
-    // Click the slot mapped to the second event (near end of ruler)
-    fireEvent.click(ticks[27]);
+    fireEvent.click(ticks[1]);
 
     expect(handleJump).toHaveBeenCalledWith("msg-2");
     expect(handleSelect).toHaveBeenCalledWith(mockEvents[1]);
@@ -226,9 +225,9 @@ describe("ConversationSpine Component", () => {
       />
     );
 
-    // Open card by clicking the second event marker
+    // Open card by clicking the second marker
     const ticks = screen.getAllByRole("button");
-    fireEvent.click(ticks[27]);
+    fireEvent.click(ticks[1]);
 
     const openPreviewBtn = screen.getByRole("button", { name: /Open preview/i });
     expect(openPreviewBtn).toBeInTheDocument();
@@ -237,7 +236,7 @@ describe("ConversationSpine Component", () => {
     expect(handleOpenEntity).toHaveBeenCalledWith(mockEvents[1]);
   });
 
-  it("Escape key dismisses the floating event card and restores idle state", () => {
+  it("Escape key dismisses the floating event card", () => {
     render(
       <ConversationSpine
         events={mockEvents}
@@ -246,7 +245,7 @@ describe("ConversationSpine Component", () => {
     );
 
     const ticks = screen.getAllByRole("button");
-    fireEvent.click(ticks[2]);
+    fireEvent.click(ticks[0]);
     expect(screen.getByText("PROJECT REQUIREMENT")).toBeInTheDocument();
 
     fireEvent.keyDown(window, { key: "Escape" });
