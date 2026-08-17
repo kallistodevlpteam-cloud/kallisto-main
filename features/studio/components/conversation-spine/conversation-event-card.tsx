@@ -11,6 +11,8 @@ export interface ConversationEventCardProps {
   onClose: () => void;
   onJumpToMessage: (messageId: string) => void;
   onOpenEntity?: (event: ConversationEvent) => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 export function ConversationEventCard({
@@ -19,6 +21,8 @@ export function ConversationEventCard({
   onClose,
   onJumpToMessage,
   onOpenEntity,
+  onMouseEnter,
+  onMouseLeave,
 }: ConversationEventCardProps) {
   const getActionIcon = () => {
     switch (event.relatedEntityType) {
@@ -38,9 +42,11 @@ export function ConversationEventCard({
   return (
     <div
       className={styles.floatingCard}
-      style={{ top: `${topOffset}px` }}
+      style={{ top: `${Math.max(0, topOffset - 24)}px` }}
       role="region"
       aria-label={`Event details: ${event.title}`}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       <div className={styles.cardHeaderRow}>
         <span className={styles.cardCategoryBadge}>{event.title}</span>

@@ -191,6 +191,25 @@ describe("ConversationSpine Component", () => {
     expect(ticks).toHaveLength(2);
   });
 
+  it("hovering over a dash marker reveals the floating event card", () => {
+    const handleSelect = vi.fn();
+
+    render(
+      <ConversationSpine
+        events={mockEvents}
+        onJumpToMessage={vi.fn()}
+        onSelectEvent={handleSelect}
+      />
+    );
+
+    const ticks = screen.getAllByRole("button");
+    fireEvent.mouseEnter(ticks[0]);
+
+    expect(handleSelect).toHaveBeenCalledWith(mockEvents[0]);
+    expect(screen.getByText("PROJECT REQUIREMENT")).toBeInTheDocument();
+    expect(screen.getByText("Villa Design Consultation initial scope")).toBeInTheDocument();
+  });
+
   it("clicking a marker opens the floating event card and calls onJumpToMessage", () => {
     const handleJump = vi.fn();
     const handleSelect = vi.fn();

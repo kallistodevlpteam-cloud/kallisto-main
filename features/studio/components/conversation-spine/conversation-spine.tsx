@@ -23,6 +23,7 @@ export function ConversationSpine({
   className = "",
 }: ConversationSpineProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [internalSelectedId, setInternalSelectedId] = useState<string | null>(null);
   const [isCardOpen, setIsCardOpen] = useState<boolean>(false);
   const [cardTopOffset, setCardTopOffset] = useState<number>(0);
@@ -30,7 +31,15 @@ export function ConversationSpine({
   const selectedEventId = internalSelectedId ?? externalSelectedEventId ?? (events.length > 0 ? events[events.length - 1].id : null);
   const activeEvent = events.find((e) => e.id === selectedEventId) || null;
 
-  const handleSelectEvent = (event: ConversationEvent, eventIndex: number, eventTarget: HTMLElement) => {
+  const clearCloseTimer = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+
+  const showEventCard = (event: ConversationEvent, eventIndex: number, eventTarget: HTMLElement) => {
+    clearCloseTimer();
     setInternalSelectedId(event.id);
     onSelectEvent?.(event);
 
@@ -44,10 +53,26 @@ export function ConversationSpine({
     }
 
     setIsCardOpen(true);
+  };
+
+  const handleHoverEvent = (event: ConversationEvent, eventIndex: number, eventTarget: HTMLElement) => {
+    showEventCard(event, eventIndex, eventTarget);
+  };
+
+  const handleSelectEvent = (event: ConversationEvent, eventIndex: number, eventTarget: HTMLElement) => {
+    showEventCard(event, eventIndex, eventTarget);
     onJumpToMessage(event.messageId);
   };
 
+  const handleScheduleClose = () => {
+    clearCloseTimer();
+    closeTimerRef.current = setTimeout(() => {
+      setIsCardOpen(false);
+    }, 250);
+  };
+
   const handleCloseCard = () => {
+    clearCloseTimer();
     setIsCardOpen(false);
   };
 
@@ -55,7 +80,7 @@ export function ConversationSpine({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isCardOpen) {
-        setIsCardOpen(false);
+        handleCloseCard();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -67,12 +92,17 @@ export function ConversationSpine({
     if (!isCardOpen) return;
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsCardOpen(false);
+        handleCloseCard();
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isCardOpen]);
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => clearCloseTimer();
+  }, []);
 
   if (!events || events.length === 0) {
     return null;
@@ -84,6 +114,8 @@ export function ConversationSpine({
       className={`${styles.spineRail} ${className}`}
       aria-label="Conversation activity timeline"
       role="navigation"
+      onMouseEnter={clearCloseTimer}
+      onMouseLeave={handleScheduleClose}
     >
       <div className={styles.spineAxis} aria-hidden="true" />
 
@@ -95,6 +127,7 @@ export function ConversationSpine({
             <button
               key={evt.id}
               type="button"
+              onMouseEnter={(e) => handleHoverEvent(evt, idx, e.currentTarget)}
               onClick={(e) => handleSelectEvent(evt, idx, e.currentTarget)}
               className={`${styles.tickButton} ${isSelected ? styles.tickButtonActive : ""}`}
               aria-label={`${evt.title}: ${evt.summary} (${evt.timestamp})`}
@@ -114,6 +147,8 @@ export function ConversationSpine({
           onClose={handleCloseCard}
           onJumpToMessage={onJumpToMessage}
           onOpenEntity={onOpenEntity}
+          onMouseEnter={clearCloseTimer}
+          onMouseLeave={handleScheduleClose}
         />
       )}
     </div>
