@@ -179,7 +179,7 @@ describe("ConversationSpine Component", () => {
     },
   ];
 
-  it("renders tick markers along the continuous spine ruler", () => {
+  it("renders tick markers for each conversation event", () => {
     render(
       <ConversationSpine
         events={mockEvents}
@@ -188,7 +188,7 @@ describe("ConversationSpine Component", () => {
     );
 
     const ticks = screen.getAllByRole("button");
-    expect(ticks).toHaveLength(36);
+    expect(ticks).toHaveLength(2);
   });
 
   it("clicking a marker opens the floating event card and calls onJumpToMessage", () => {
@@ -204,8 +204,7 @@ describe("ConversationSpine Component", () => {
     );
 
     const ticks = screen.getAllByRole("button");
-    // Click a tick slot mapped to the second event (near end of ruler)
-    fireEvent.click(ticks[32]);
+    fireEvent.click(ticks[1]);
 
     expect(handleJump).toHaveBeenCalledWith("msg-2");
     expect(handleSelect).toHaveBeenCalledWith(mockEvents[1]);
@@ -214,7 +213,7 @@ describe("ConversationSpine Component", () => {
     expect(screen.getByText("• Scope & 3D renders")).toBeInTheDocument();
   });
 
-  it("clicking Open preview chip in the event card invokes onOpenEntity", () => {
+  it("clicking Open preview in the event card invokes onOpenEntity", () => {
     const handleOpenEntity = vi.fn();
 
     render(
@@ -226,9 +225,9 @@ describe("ConversationSpine Component", () => {
       />
     );
 
-    // Open card by clicking the second event marker
+    // Open card by clicking the second marker
     const ticks = screen.getAllByRole("button");
-    fireEvent.click(ticks[32]);
+    fireEvent.click(ticks[1]);
 
     const openPreviewBtn = screen.getByRole("button", { name: /Open preview/i });
     expect(openPreviewBtn).toBeInTheDocument();
@@ -246,7 +245,7 @@ describe("ConversationSpine Component", () => {
     );
 
     const ticks = screen.getAllByRole("button");
-    fireEvent.click(ticks[2]);
+    fireEvent.click(ticks[0]);
     expect(screen.getByText("PROJECT REQUIREMENT")).toBeInTheDocument();
 
     fireEvent.keyDown(window, { key: "Escape" });

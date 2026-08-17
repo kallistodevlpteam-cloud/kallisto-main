@@ -64,51 +64,34 @@
 .tickBar {
   display: block;
   height: 1.5px;
-  width: 6px;
-  background: #e2e8f0;
+  width: 8px;
+  background: #cbd5e1;
   border-radius: 1px;
   transition: width 0.18s cubic-bezier(0.16, 1, 0.3, 1),
               background-color 0.18s ease,
               height 0.18s ease;
 }
 
-/* Subtle background ruler dash */
-.tickBarSubtle {
-  width: 6px;
-  height: 1px;
-  background: #e2e8f0;
-}
-
-/* Milestone event mark */
-.tickBarEvent {
-  width: 11px;
-  height: 1.5px;
-  background: #94a3b8;
-}
-
 /* Important / Major Milestone Marker */
 .tickBarImportant {
-  width: 15px;
+  width: 13px;
   height: 2px;
-  background: #64748b;
+  background: #94a3b8;
 }
 
 /* Hover State */
 .tickButton:hover .tickBar {
   width: 16px;
-  background: #475569;
+  background: #64748b;
 }
 
 /* Selected / Active State — Strong extending horizontal bar */
-.tickBarActive,
 .tickButtonActive .tickBar,
-.tickButtonActive .tickBarSubtle,
-.tickButtonActive .tickBarEvent,
 .tickButtonActive .tickBarImportant {
-  width: 24px !important;
-  height: 2px !important;
-  background: #000000 !important;
-  border-radius: 1px;
+  width: 24px;
+  height: 2.5px;
+  background: #0f172a;
+  border-radius: 1.5px;
 }
 
 /* ── Floating Event Card ── */
@@ -116,14 +99,15 @@
   position: absolute;
   left: 36px;
   z-index: 50;
-  width: 350px;
+  width: 280px;
   max-width: calc(100vw - 120px);
   background: #ffffff;
-  border: 1px solid #eef2f6;
-  border-radius: 14px;
-  padding: 16px 18px;
-  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.03);
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.09), 0 2px 8px rgba(15, 23, 42, 0.04);
   pointer-events: auto;
+  transform: translateY(-50%);
   animation: cardFlyIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   box-sizing: border-box;
 }
@@ -131,29 +115,31 @@
 @keyframes cardFlyIn {
   0% {
     opacity: 0;
-    transform: translateX(-6px) scale(0.98);
+    transform: translateY(-50%) translateX(-6px) scale(0.97);
   }
   100% {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateY(-50%) translateX(0) scale(1);
   }
 }
 
 .cardHeaderRow {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 8px;
+  gap: 8px;
+  margin-bottom: 6px;
 }
 
 .cardCategoryBadge {
-  font-size: 11.5px;
-  font-weight: 750;
-  color: #0f172a;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cardCloseBtn {
@@ -177,27 +163,27 @@
 }
 
 .cardSummary {
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #64748b;
-  margin: 0 0 10px 0;
+  font-size: 12.5px;
+  font-weight: 450;
+  line-height: 1.45;
+  color: #1e293b;
+  margin: 0 0 8px 0;
   word-break: break-word;
 }
 
 .cardBulletList {
   list-style: none;
   padding: 0;
-  margin: 0 0 14px 0;
+  margin: 0 0 10px 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .cardBulletItem {
-  font-size: 12.5px;
-  color: #475569;
-  line-height: 1.45;
+  font-size: 11.5px;
+  color: #64748b;
+  line-height: 1.35;
   word-break: break-word;
 }
 
@@ -207,42 +193,12 @@
   justify-content: space-between;
   gap: 8px;
   border-top: 1px solid #f1f5f9;
-  padding-top: 12px;
+  padding-top: 10px;
   margin-top: 4px;
-  flex-wrap: wrap;
-}
-
-.cardChipsList {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.cardChip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 9px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  font-size: 11.5px;
-  font-weight: 500;
-  color: #475569;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  white-space: nowrap;
-}
-
-.cardChip:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-  color: #0f172a;
 }
 
 .cardTimestamp {
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 500;
   color: #94a3b8;
   white-space: nowrap;
@@ -264,7 +220,7 @@
   background: #f4f4f5;
   border: none;
   border-radius: 6px;
-  padding: 5px 10px;
+  padding: 4px 8px;
   cursor: pointer;
   transition: all 0.15s ease;
   text-decoration: none;

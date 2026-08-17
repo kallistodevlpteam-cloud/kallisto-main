@@ -20,32 +20,25 @@ export function ConversationEventCard({
   onJumpToMessage,
   onOpenEntity,
 }: ConversationEventCardProps) {
-  const getChipIcon = (icon?: string) => {
-    switch (icon) {
-      case "globe":
-        return <Globe size={11} />;
-      case "image":
-        return <ExternalLink size={11} />;
-      case "layers":
-        return <Layers size={11} />;
-      case "file":
+  const getActionIcon = () => {
+    switch (event.relatedEntityType) {
+      case "output":
+      case "proposal":
+      case "boq":
+      case "estimate":
+        return <Layers size={12} />;
+      case "document":
+      case "drawing":
+        return <FileText size={12} />;
       default:
-        return <FileText size={11} />;
-    }
-  };
-
-  const handleChipClick = (chipId: string) => {
-    if (chipId === "preview" && onOpenEntity) {
-      onOpenEntity(event);
-    } else if (onOpenEntity) {
-      onOpenEntity(event);
+        return <ExternalLink size={12} />;
     }
   };
 
   return (
     <div
       className={styles.floatingCard}
-      style={{ top: `${Math.max(0, topOffset - 24)}px` }}
+      style={{ top: `${topOffset}px` }}
       role="region"
       aria-label={`Event details: ${event.title}`}
     >
@@ -58,7 +51,7 @@ export function ConversationEventCard({
           aria-label="Close event card"
           title="Close"
         >
-          <X size={13} />
+          <X size={14} />
         </button>
       </div>
 
@@ -68,42 +61,14 @@ export function ConversationEventCard({
         <ul className={styles.cardBulletList}>
           {event.details.map((detail, idx) => (
             <li key={idx} className={styles.cardBulletItem}>
-              {detail.startsWith("•") ? detail : `• ${detail}`}
+              {detail}
             </li>
           ))}
         </ul>
       )}
 
       <div className={styles.cardFooter}>
-        <div className={styles.cardChipsList}>
-          {event.chips && event.chips.length > 0 ? (
-            event.chips.map((chip) => (
-              <button
-                key={chip.id}
-                type="button"
-                className={styles.cardChip}
-                onClick={() => handleChipClick(chip.id)}
-                title={chip.label}
-              >
-                {getChipIcon(chip.icon)}
-                <span>{chip.label}</span>
-              </button>
-            ))
-          ) : event.relatedEntityActionLabel && onOpenEntity ? (
-            <button
-              type="button"
-              onClick={() => onOpenEntity(event)}
-              className={styles.cardChip}
-              title={event.relatedEntityActionLabel}
-              aria-label={event.relatedEntityActionLabel}
-            >
-              <Globe size={11} />
-              <span>{event.relatedEntityActionLabel}</span>
-            </button>
-          ) : (
-            <span className={styles.cardTimestamp}>{event.timestamp}</span>
-          )}
-        </div>
+        <span className={styles.cardTimestamp}>{event.timestamp}</span>
 
         <div className={styles.cardActions}>
           <button
@@ -115,6 +80,19 @@ export function ConversationEventCard({
             <ArrowDown size={11} />
             <span>Jump to turn</span>
           </button>
+
+          {event.relatedEntityActionLabel && onOpenEntity && (
+            <button
+              type="button"
+              onClick={() => onOpenEntity(event)}
+              className={`${styles.cardActionBtn} ${styles.cardActionBtnPrimary}`}
+              title={event.relatedEntityActionLabel}
+              aria-label={event.relatedEntityActionLabel}
+            >
+              {getActionIcon()}
+              <span>{event.relatedEntityActionLabel}</span>
+            </button>
+          )}
         </div>
       </div>
     </div>
