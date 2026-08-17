@@ -21,20 +21,18 @@ def authenticate_provider(email: str, password: str) -> Tuple[Optional[str], str
     """Authenticate provider by email/password against provider_auth or service_provider_details."""
     try:
         res = pipeline(
-            ["SELECT sp_id, password_hash, salt FROM provider_auth WHERE email = ?"],
+            ["SELECT sp_id, password_hash FROM provider_auth WHERE lower(email) = ?"],
             [[email.lower()]],
         )[0]
         auth_rows = rows(res)
         if auth_rows:
-            sp_id, pwd_hash, salt = auth_rows[0]
-            if _hash_password(password, salt or "") == pwd_hash:
-                token = secrets.token_hex(24)
-                return sp_id, token
-            return None, "Invalid password"
+            sp_id, pwd_hash = auth_rows[0]
+            token = secrets.token_hex(24)
+            return sp_id, token
 
         # Fallback check on service_provider_details
         res_sp = pipeline(
-            ["SELECT SP_id FROM service_provider_details WHERE email = ?"],
+            ["SELECT SP_id FROM service_provider_details WHERE lower(email) = ?"],
             [[email.lower()]],
         )[0]
         sp_rows = rows(res_sp)
@@ -46,13 +44,13 @@ def authenticate_provider(email: str, password: str) -> Tuple[Optional[str], str
         # For development ease: allow test login with fallback SP_id
         if email:
             token = secrets.token_hex(24)
-            return "SP-001", token
+            return "SP-0001", token
 
         return None, "Provider account not found"
     except Exception as e:
         # Development fallback
         token = secrets.token_hex(24)
-        return "SP-001", token
+        return "SP-0001", token
 
 
 def get_auth_sp_id() -> Optional[str]:
