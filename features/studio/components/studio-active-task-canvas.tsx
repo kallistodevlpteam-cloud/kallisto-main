@@ -112,15 +112,25 @@ export function StudioActiveTaskCanvas({
   const [outputContextChip, setOutputContextChip] = useState<{ id: string; title: string; version: string } | null>(null);
   const [showJumpToLatest, setShowJumpToLatest] = useState<boolean>(false);
   const [composerHeight, setComposerHeight] = useState<number>(120);
-  const [activeGeneratingMsgId, setActiveGeneratingMsgId] = useState<string | null>(null);
+  const [activeGeneratingMsgId, setActiveGeneratingMsgId] = useState<string | null>(() => {
+    if (messages.length > 0) {
+      const latestMsg = messages[messages.length - 1];
+      if (latestMsg && latestMsg.role === "assistant" && latestMsg.kind !== "status") {
+        return latestMsg.id;
+      }
+    }
+    return null;
+  });
   const prevMessagesCountRef = useRef<number>(messages.length);
   const isUserScrolledUpRef = useRef<boolean>(false);
 
   useEffect(() => {
-    if (messages.length > prevMessagesCountRef.current) {
+    if (messages.length > 0) {
       const latestMsg = messages[messages.length - 1];
       if (latestMsg && latestMsg.role === "assistant" && latestMsg.kind !== "status") {
-        setActiveGeneratingMsgId(latestMsg.id);
+        if (messages.length > prevMessagesCountRef.current) {
+          setActiveGeneratingMsgId(latestMsg.id);
+        }
       }
     }
     prevMessagesCountRef.current = messages.length;
