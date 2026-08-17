@@ -14,6 +14,8 @@ export interface ConversationSpineProps {
   className?: string;
 }
 
+const RULER_TICKS_COUNT = 30;
+
 export function ConversationSpine({
   events,
   selectedEventId: externalSelectedEventId,
@@ -23,16 +25,57 @@ export function ConversationSpine({
   className = "",
 }: ConversationSpineProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [internalSelectedId, setInternalSelectedId] = useState<string | null>(null);
+  const [activeSlotIndex, setActiveSlotIndex] = useState<number | null>(null);
+  const [activeEvent, setActiveEvent] = useState<ConversationEvent | null>(null);
   const [isCardOpen, setIsCardOpen] = useState<boolean>(false);
   const [cardTopOffset, setCardTopOffset] = useState<number>(0);
 
-  const selectedEventId = internalSelectedId ?? externalSelectedEventId ?? (events.length > 0 ? events[events.length - 1].id : null);
-  const activeEvent = events.find((e) => e.id === selectedEventId) || null;
+  // Map each conversation event to a slot index along the 30-dash ruler
+  const slotEventMap = React.useMemo(() => {
+    const map = new Map<number, ConversationEvent>();
+    if (!events || events.length === 0) return map;
 
-  const handleSelectEvent = (event: ConversationEvent, eventIndex: number, eventTarget: HTMLElement) => {
-    setInternalSelectedId(event.id);
-    onSelectEvent?.(event);
+    if (events.length === 1) {
+      map.set(10, events[0]);
+      return map;
+    }
+
+    const startSlot = 2;
+    const endSlot = RULER_TICKS_COUNT - 3;
+    const slotSpan = endSlot - startSlot;
+
+    events.forEach((evt, idx) => {
+      const slot = Math.min(
+        RULER_TICKS_COUNT - 1,
+        Math.max(0, Math.round(startSlot + (idx / (events.length - 1)) * slotSpan))
+      );
+      map.set(slot, evt);
+    });
+
+    return map;
+  }, [events]);
+
+  const handleSelectSlot = (slotIndex: number, eventTarget: HTMLElement) => {
+    if (!events || events.length === 0) return;
+
+    // Find direct or closest event for this slot
+    let targetEvent = slotEventMap.get(slotIndex);
+    if (!targetEvent) {
+      let closest: ConversationEvent = events[0];
+      let minDistance = 999;
+      slotEventMap.forEach((evt, mappedSlot) => {
+        const dist = Math.abs(mappedSlot - slotIndex);
+        if (dist < minDistance) {
+          minDistance = dist;
+          closest = evt;
+        }
+      });
+      targetEvent = closest;
+    }
+
+    setActiveSlotIndex(slotIndex);
+    setActiveEvent(targetEvent);
+    onSelectEvent?.(targetEvent);
 
     if (containerRef.current) {
       const containerRect = containerRef.current.getBoundingClientRect();
@@ -40,22 +83,24 @@ export function ConversationSpine({
       const relativeTop = targetRect.top - containerRect.top;
       setCardTopOffset(relativeTop);
     } else {
-      setCardTopOffset(eventIndex * 24);
+      setCardTopOffset(slotIndex * 9);
     }
 
     setIsCardOpen(true);
-    onJumpToMessage(event.messageId);
+    onJumpToMessage(targetEvent.messageId);
   };
 
   const handleCloseCard = () => {
     setIsCardOpen(false);
+    setActiveSlotIndex(null);
+    setActiveEvent(null);
   };
 
   // Keyboard navigation & escape listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isCardOpen) {
-        setIsCardOpen(false);
+        handleCloseCard();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -67,16 +112,12 @@ export function ConversationSpine({
     if (!isCardOpen) return;
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsCardOpen(false);
+        handleCloseCard();
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isCardOpen]);
-
-  if (!events || events.length === 0) {
-    return null;
-  }
 
   return (
     <div
@@ -88,24 +129,25 @@ export function ConversationSpine({
       <div className={styles.spineAxis} aria-hidden="true" />
 
       <div className={styles.spineTicksList} role="list" aria-label="Conversation events">
-        {events.map((evt, idx) => {
-          const isSelected = evt.id === selectedEventId;
-          const isImportant = evt.isImportant || evt.type === "REQUIREMENT" || evt.type === "REVISION" || evt.type === "AI_ACTION";
+        {Array.from({ length: RULER_TICKS_COUNT }, (_, slotIdx) => {
+          const directEvent = slotEventMap.get(slotIdx);
+          const isSelected = isCardOpen && activeSlotIndex === slotIdx;
+
+          const ariaLabel = directEvent
+            ? `${directEvent.title}: ${directEvent.summary} (${directEvent.timestamp})`
+            : `Timeline position ${slotIdx + 1}`;
 
           return (
             <button
-              key={evt.id}
+              key={slotIdx}
               type="button"
-              onClick={(e) => handleSelectEvent(evt, idx, e.currentTarget)}
+              onClick={(e) => handleSelectSlot(slotIdx, e.currentTarget)}
               className={`${styles.tickButton} ${isSelected ? styles.tickButtonActive : ""}`}
-              aria-label={`${evt.title}: ${evt.summary} (${evt.timestamp})`}
+              aria-label={ariaLabel}
               aria-current={isSelected ? "true" : undefined}
-              title={`${evt.title} — ${evt.summary}`}
+              title={directEvent ? `${directEvent.title} — ${directEvent.summary}` : undefined}
             >
-              <span
-                className={`${styles.tickBar} ${isImportant ? styles.tickBarImportant : ""}`}
-                aria-hidden="true"
-              />
+              <span className={styles.tickBar} aria-hidden="true" />
             </button>
           );
         })}
