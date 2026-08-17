@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Check, Copy, Sparkles } from "lucide-react";
+import { Check, Copy } from "lucide-react";
+import { OdinDuotoneIcon } from "@/components/layout/sidebar-icons";
 import styles from "./message.module.css";
 
 export interface MessageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "content"> {
@@ -44,16 +45,16 @@ export function Message({
         width: "28px",
         height: "28px",
         borderRadius: "8px",
-        background: "#f0fdf4",
-        border: "1px solid #bbf7d0",
-        color: "#16a34a",
+        background: "#f7f7f5",
+        border: "none",
+        color: "#0f172a",
         display: "grid",
         placeItems: "center",
         flexShrink: 0,
         marginTop: "2px",
       }}
     >
-      <Sparkles size={14} />
+      <OdinDuotoneIcon size={16} />
     </div>
   );
 
