@@ -63,6 +63,9 @@ export function AssistantTaskResponse({
       return;
     }
 
+    setStage("thinking");
+    setThinkingStatus("Reviewing project scope…");
+
     const timers: NodeJS.Timeout[] = [];
 
     // Stage 1: Dynamic thinking transition (brief ~400ms)

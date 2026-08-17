@@ -67,6 +67,8 @@ export function OutputGlanceCard({
       return;
     }
 
+    setStep("skeleton");
+
     const timers: NodeJS.Timeout[] = [];
 
     // Progressive assembly schedule (80-120ms steps)

@@ -112,6 +112,7 @@ export function StudioActiveTaskCanvas({
   const [outputContextChip, setOutputContextChip] = useState<{ id: string; title: string; version: string } | null>(null);
   const [showJumpToLatest, setShowJumpToLatest] = useState<boolean>(false);
   const [composerHeight, setComposerHeight] = useState<number>(120);
+  const animatedTurnsRef = useRef<Set<string>>(new Set());
   const [activeGeneratingMsgId, setActiveGeneratingMsgId] = useState<string | null>(() => {
     if (messages.length > 0) {
       const latestMsg = messages[messages.length - 1];
@@ -128,7 +129,7 @@ export function StudioActiveTaskCanvas({
     if (messages.length > 0) {
       const latestMsg = messages[messages.length - 1];
       if (latestMsg && latestMsg.role === "assistant" && latestMsg.kind !== "status") {
-        if (messages.length > prevMessagesCountRef.current) {
+        if (!animatedTurnsRef.current.has(latestMsg.id)) {
           setActiveGeneratingMsgId(latestMsg.id);
         }
       }
@@ -389,7 +390,9 @@ export function StudioActiveTaskCanvas({
                   );
                 }
 
-                const isGeneratingThisMsg = activeGeneratingMsgId === msg.id;
+                const isGeneratingThisMsg =
+                  activeGeneratingMsgId === msg.id ||
+                  (!animatedTurnsRef.current.has(msg.id) && msg === messages[messages.length - 1]);
 
                 return (
                   <div key={msg.id} id={`msg-${msg.id}`} className={styles.messageTurnWrap}>
@@ -407,7 +410,10 @@ export function StudioActiveTaskCanvas({
                         budget="₹18L – ₹25L"
                         actions={msg.actions || []}
                         isNewTurn={isGeneratingThisMsg}
-                        onAnimationComplete={() => setActiveGeneratingMsgId(null)}
+                        onAnimationComplete={() => {
+                          animatedTurnsRef.current.add(msg.id);
+                          setActiveGeneratingMsgId((curr) => (curr === msg.id ? null : curr));
+                        }}
                         onActionSelect={onActionSelect}
                         onPreviewClick={(outputRef) =>
                           setPanelState({
