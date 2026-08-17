@@ -178,11 +178,10 @@
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: #ffffff;
-  color: #0f172a;
+  background: #f0fdf4;
+  color: #16a34a;
   border: none;
   flex-shrink: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   transition: all 0.15s ease;
 }
 
@@ -272,16 +271,15 @@
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: #f7f7f5;
-  color: #0f172a;
+  background: #f5f3ff;
+  color: #7c3aed;
   flex-shrink: 0;
   transition: background-color 0.15s ease;
 }
 
 .itemRow:hover .chatIconWrapper,
 .itemRow:focus-visible .chatIconWrapper {
-  background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  background: #ede9fe;
 }
 
 .fileIconWrapper {
@@ -290,17 +288,39 @@
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: #f7f7f5;
-  color: #0f172a;
   border: none;
   flex-shrink: 0;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.itemRow:hover .fileIconWrapper,
-.itemRow:focus-visible .fileIconWrapper {
-  background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+.file_pdf {
+  background: #fef2f2;
+  color: #e11d48;
+}
+
+.file_xlsx {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.file_image {
+  background: #f0f9ff;
+  color: #0284c7;
+}
+
+.itemRow:hover .file_pdf,
+.itemRow:focus-visible .file_pdf {
+  background: #fee2e2;
+}
+
+.itemRow:hover .file_xlsx,
+.itemRow:focus-visible .file_xlsx {
+  background: #dcfce7;
+}
+
+.itemRow:hover .file_image,
+.itemRow:focus-visible .file_image {
+  background: #e0f2fe;
 }
 
 .itemTextCol {

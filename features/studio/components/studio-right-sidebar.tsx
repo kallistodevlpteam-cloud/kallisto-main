@@ -192,7 +192,7 @@ export function StudioRightSidebar({
             className={`${styles.tabBtn} ${internalTab === "outputs" ? styles.activeTabBtn : ""}`}
             onClick={() => setInternalTab("outputs")}
           >
-            <OutputsDuotoneIcon size={14} />
+            <OutputsDuotoneIcon size={14} style={{ color: "#6366f1" }} />
             <span>Outputs</span>
             <span className={styles.tabBadge}>V01</span>
           </button>
@@ -202,7 +202,7 @@ export function StudioRightSidebar({
             className={`${styles.tabBtn} ${internalTab === "chats" ? styles.activeTabBtn : ""}`}
             onClick={() => setInternalTab("chats")}
           >
-            <HistoryDuotoneIcon size={14} />
+            <HistoryDuotoneIcon size={14} style={{ color: "#f59e0b" }} />
             <span>Chat History</span>
           </button>
         </div>
@@ -297,7 +297,15 @@ export function StudioRightSidebar({
                   role="button"
                   tabIndex={0}
                 >
-                  <div className={styles.fileIconWrapper}>
+                  <div
+                    className={`${styles.fileIconWrapper} ${
+                      file.type === "pdf"
+                        ? styles.file_pdf
+                        : file.type === "xlsx"
+                        ? styles.file_xlsx
+                        : styles.file_image
+                    }`}
+                  >
                     {file.type === "pdf" ? (
                       <DocumentsDuotoneIcon size={16} />
                     ) : file.type === "xlsx" ? (
