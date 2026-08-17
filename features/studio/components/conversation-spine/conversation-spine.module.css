@@ -60,7 +60,7 @@
   box-shadow: none;
 }
 
-/* Horizontal Dash Indicator — Exact same thickness across all states */
+/* Horizontal Dash Indicator — Even and same color across the spine */
 .tickBar {
   display: block;
   height: 1.5px;
@@ -68,20 +68,20 @@
   background: #cbd5e1;
   border-radius: 1px;
   transition: width 0.18s cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 0.18s ease;
+              background-color 0.18s ease,
+              height 0.18s ease;
 }
 
-/* Hover State — same thickness */
+/* Hover State */
 .tickButton:hover .tickBar {
   width: 14px;
-  height: 1.5px;
   background: #64748b;
 }
 
-/* Selected / Active State — same thickness, extends horizontally in solid black */
+/* Selected / Active State — Strong extending horizontal bar */
 .tickButtonActive .tickBar {
   width: 24px;
-  height: 1.5px;
+  height: 2px;
   background: #000000;
   border-radius: 1px;
 }
