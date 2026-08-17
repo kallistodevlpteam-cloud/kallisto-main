@@ -635,8 +635,8 @@ export function StudioComposer({
               <button
                 type="button"
                 className="chatgpt-mic-btn"
-                title="Voice input"
-                aria-label="Voice input"
+                title="Voice mode"
+                aria-label="Voice mode"
               >
                 <Mic size={18} strokeWidth={2} />
               </button>

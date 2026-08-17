@@ -386,7 +386,7 @@ export function StudioActiveTaskCanvas({
               }`}
             >
               <StudioComposer
-                variant="active"
+                variant={messages.length > 0 ? "active" : "idle"}
                 prompt={prompt}
                 onPromptChange={onPromptChange}
                 attachments={attachments}
