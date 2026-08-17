@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowDown, ExternalLink, FileText, Globe, Layers, X } from "lucide-react";
+import { ExternalLink, FileText, Globe, Layers, X } from "lucide-react";
 import { ConversationEvent } from "@/types/domain/studio-conversation-event";
 import styles from "./conversation-spine.module.css";
 
@@ -9,7 +9,7 @@ export interface ConversationEventCardProps {
   event: ConversationEvent;
   topOffset: number;
   onClose: () => void;
-  onJumpToMessage: (messageId: string) => void;
+  onJumpToMessage?: (messageId: string) => void;
   onOpenEntity?: (event: ConversationEvent) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -19,7 +19,6 @@ export function ConversationEventCard({
   event,
   topOffset,
   onClose,
-  onJumpToMessage,
   onOpenEntity,
   onMouseEnter,
   onMouseLeave,
@@ -76,18 +75,8 @@ export function ConversationEventCard({
       <div className={styles.cardFooter}>
         <span className={styles.cardTimestamp}>{event.timestamp}</span>
 
-        <div className={styles.cardActions}>
-          <button
-            type="button"
-            onClick={() => onJumpToMessage(event.messageId)}
-            className={styles.cardActionBtn}
-            title="Jump to message in conversation"
-          >
-            <ArrowDown size={11} />
-            <span>Jump to turn</span>
-          </button>
-
-          {event.relatedEntityActionLabel && onOpenEntity && (
+        {event.relatedEntityActionLabel && onOpenEntity && (
+          <div className={styles.cardActions}>
             <button
               type="button"
               onClick={() => onOpenEntity(event)}
@@ -98,8 +87,8 @@ export function ConversationEventCard({
               {getActionIcon()}
               <span>{event.relatedEntityActionLabel}</span>
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
