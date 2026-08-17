@@ -144,33 +144,23 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
       { label: "Virtual Office" },
       { label: "Hive Studio", href: "/studio" },
     ];
-    const promptParam =
-      searchParams.get("prompt") ||
-      searchParams.get("q") ||
-      (typeof window !== "undefined"
-        ? window.localStorage.getItem("kallisto_active_studio_prompt")
-        : null);
     const projectParam =
       searchParams.get("project") ||
       searchParams.get("projectName") ||
       (typeof window !== "undefined"
         ? window.localStorage.getItem("kallisto_active_studio_project")
-        : null) ||
-      "Kallisto Virtual Office";
+        : null);
 
-    if (promptParam) {
+    if (projectParam && projectParam !== "Kallisto Virtual Office") {
       items.push({ label: projectParam });
-      const words = promptParam.trim().split(/\s+/);
-      const snippet = words.length <= 4 ? promptParam.trim() : words.slice(0, 4).join(" ") + "…";
-      items.push({ label: snippet });
-    } else {
-      const parts = currentPath.split("/").filter(Boolean);
-      if (parts.length > 1) {
-        if (parts[1] === "boq") items.push({ label: "BOQ Engine" });
-        else if (parts[1] === "ai-plans") items.push({ label: "AI Plans" });
-        else if (parts[1] === "proposals") items.push({ label: "Proposals" });
-        else if (parts[1] === "tasks" && parts[2]) items.push({ label: "Active Task" });
-      }
+    }
+
+    const parts = currentPath.split("/").filter(Boolean);
+    if (parts.length > 1) {
+      if (parts[1] === "boq") items.push({ label: "BOQ Engine" });
+      else if (parts[1] === "ai-plans") items.push({ label: "AI Plans" });
+      else if (parts[1] === "proposals") items.push({ label: "Proposals" });
+      else if (parts[1] === "tasks" && parts[2]) items.push({ label: "Active Task" });
     }
   } else {
     let meta = ROUTE_BREADCRUMBS[currentPath];
