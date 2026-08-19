@@ -103,6 +103,31 @@ export function buildEnquiriesFromProjects(projects: BackendProject[]): EnquiryR
         requirement_name: requirement.requirement_name,
         items: requirement.items ?? [],
       })),
+      // Map extended context fields from backend project tables
+      accessibilityNeeds: project.projectClients?.accessibility_requirements ?? undefined,
+      workFromHomeUsers: project.projectClients?.work_from_home ?? undefined,
+      entertainingFrequency: project.projectLifestyle?.entertain_guests ?? undefined,
+      outdoorUsage: project.projectLifestyle?.outdoor_activities ?? undefined,
+      privacyNeeds: project.projectLifestyle?.privacy_importance ?? undefined,
+      kitchenPattern: undefined, // not directly mapped in current schema
+      maintenancePreference: undefined, // not directly mapped in current schema
+      decisionMaker: project.projectApprovalProcess?.primary_decision_maker ?? undefined,
+      signOffAuthority: project.projectApprovalProcess?.primary_decision_maker ?? undefined,
+      budgetAuthority: undefined, // not directly mapped
+      revisionExpectations: project.projectApprovalProcess?.expected_revision_rounds ?? undefined,
+      decisionTurnaround: project.projectApprovalProcess?.approval_turnaround_time ?? undefined,
+      primaryChannel: project.projectCommunication?.preferred_contact ?? undefined,
+      reviewFrequency: project.projectCommunication?.meeting_frequency ?? undefined,
+      reviewFormat: undefined, // not directly mapped
+      siteMeetingFrequency: undefined, // not directly mapped
+      responseTurnaround: undefined, // not directly mapped
+      familyMembers: (project.familyMembers ?? []).map((member) => ({
+        familyId: member.familyId,
+        name: member.name,
+        age: member.age,
+        job: member.job,
+        relation: member.relation,
+      })),
       nextAction: { type: "review_enquiry", label: "Review enquiry" },
     };
   });

@@ -51,7 +51,8 @@ async function backendFetch(
 ): Promise<Response> {
   const headers: Record<string, string> = { ...(options.headers as Record<string, string>) };
   if (authToken) {
-    headers["Authorization"] = `Bearer ${authToken}`;
+    const token = authToken.startsWith("Bearer ") ? authToken.slice(7) : authToken;
+    headers["Authorization"] = `Bearer ${token}`;
   }
   return fetch(url, { ...options, headers });
 }

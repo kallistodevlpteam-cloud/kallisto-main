@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { markBackendProjectViewed } from "@/lib/backend/backend-client";
+import { markBackendProjectViewed, BackendError } from "@/lib/backend/backend-client";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,12 +18,12 @@ export async function POST(request: NextRequest, { params }: ViewRouteParams) {
     );
   }
   try {
-    await markBackendProjectViewed(projectId);
+    const token = request.headers.get("Authorization")?.replace("Bearer ", "") ?? undefined;
+    await markBackendProjectViewed(projectId, token);
     return NextResponse.json({ status: "ok", project_id: projectId, view: 1 });
   } catch (error) {
-    return NextResponse.json(
-      { status: "error", message: error instanceof Error ? error.message : "Backend unavailable" },
-      { status: 503 }
-    );
+    const message = error instanceof Error ? error.message : "Backend unavailable";
+    const status = error instanceof BackendError ? error.status : 503;
+    return NextResponse.json({ status: "error", message }, { status });
   }
 }

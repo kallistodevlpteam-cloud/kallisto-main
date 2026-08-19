@@ -236,6 +236,11 @@ PROJECT_ENQ_CHARACTER = "enq"
 def _enrich_and_filter_projects(raw_projects: list[dict[str, Any]], allowed_ids: list[int]) -> list[dict[str, Any]]:
     """Filter projects to allowed ids and enrich with related data."""
     projects = [p for p in raw_projects if p["id"] in allowed_ids]
+    if not projects:
+        return []
+
+    project_ids = [p["id"] for p in projects]
+    id_placeholders = ",".join("?" for _ in project_ids)
 
     # site images
     for project in projects:
@@ -244,14 +249,16 @@ def _enrich_and_filter_projects(raw_projects: list[dict[str, Any]], allowed_ids:
         project["provider_ids"] = _parse_string_list(project.get("provider_id"))
         project.pop("provider_id", None)
 
-    # inspiration images
+    # inspiration images (scoped to allowed project_ids)
     try:
         image_result = pipeline(
             [
-                "SELECT ii.project_id, ii.image_url, ii.alt_text "
-                "FROM inspiration_img ii "
-                "ORDER BY ii.project_id, ii.sort_order, ii.id"
-            ]
+                f"SELECT ii.project_id, ii.image_url, ii.alt_text "
+                f"FROM inspiration_img ii "
+                f"WHERE ii.project_id IN ({id_placeholders}) "
+                f"ORDER BY ii.project_id, ii.sort_order, ii.id"
+            ],
+            [project_ids],
         )[0]
         images_by_project: dict[int, list[dict[str, str | None]]] = {}
         for row in rows(image_result):
@@ -260,15 +267,17 @@ def _enrich_and_filter_projects(raw_projects: list[dict[str, Any]], allowed_ids:
     except Exception:  # noqa: BLE001
         images_by_project = {}
 
-    # docs
+    # docs (scoped)
     try:
         doc_result = pipeline(
             [
-                "SELECT pd.project_id, pd.id, pd.doc_name, pd.doc_img_url, "
-                "pd.DOC_type, pd.status, pd.updated_at "
-                "FROM project_DOC pd "
-                "ORDER BY pd.project_id, pd.sort_order, pd.id"
-            ]
+                f"SELECT pd.project_id, pd.id, pd.doc_name, pd.doc_img_url, "
+                f"pd.DOC_type, pd.status, pd.updated_at "
+                f"FROM project_DOC pd "
+                f"WHERE pd.project_id IN ({id_placeholders}) "
+                f"ORDER BY pd.project_id, pd.sort_order, pd.id"
+            ],
+            [project_ids],
         )[0]
         docs_by_project: dict[int, list[dict[str, Any]]] = {}
         for row in rows(doc_result):
@@ -286,21 +295,27 @@ def _enrich_and_filter_projects(raw_projects: list[dict[str, Any]], allowed_ids:
     except Exception:  # noqa: BLE001
         docs_by_project = {}
 
-    # scopes
+    # scopes (scoped)
     try:
         scope_result = pipeline(
             [
-                "SELECT ps.id, ps.project_id, ps.scope_name "
-                "FROM project_scope ps "
-                "ORDER BY ps.project_id, ps.sort_order, ps.id"
-            ]
+                f"SELECT ps.id, ps.project_id, ps.scope_name "
+                f"FROM project_scope ps "
+                f"WHERE ps.project_id IN ({id_placeholders}) "
+                f"ORDER BY ps.project_id, ps.sort_order, ps.id"
+            ],
+            [project_ids],
         )[0]
+        scope_ids = [row[0] for row in rows(scope_result)]
+        scope_id_placeholders = ",".join("?" for _ in scope_ids) if scope_ids else "0"
         scope_item_result = pipeline(
             [
-                "SELECT si.scope_id, si.item_name "
-                "FROM project_scope_item si "
-                "ORDER BY si.scope_id, si.sort_order, si.id"
-            ]
+                f"SELECT si.scope_id, si.item_name "
+                f"FROM project_scope_item si "
+                f"{'WHERE si.scope_id IN (' + scope_id_placeholders + ')' if scope_ids else 'WHERE 0=1'} "
+                f"ORDER BY si.scope_id, si.sort_order, si.id"
+            ],
+            [scope_ids] if scope_ids else [],
         )[0]
         items_by_scope: dict[int, list[str]] = {}
         for row in rows(scope_item_result):
@@ -319,20 +334,26 @@ def _enrich_and_filter_projects(raw_projects: list[dict[str, Any]], allowed_ids:
         project["project_docs"] = docs_by_project.get(project["id"], [])
         project["project_scopes"] = scopes_by_project.get(project["id"], [])
 
-    # requirements
+    # requirements (scoped)
     try:
         req_result = pipeline(
             [
-                "SELECT id, project_id, requirement_name FROM requirements "
-                "ORDER BY project_id, sort_order, id"
-            ]
+                f"SELECT id, project_id, requirement_name FROM requirements "
+                f"WHERE project_id IN ({id_placeholders}) "
+                f"ORDER BY project_id, sort_order, id"
+            ],
+            [project_ids],
         )[0]
+        req_ids = [row[0] for row in rows(req_result)]
+        req_id_placeholders = ",".join("?" for _ in req_ids) if req_ids else "0"
         req_item_result = pipeline(
             [
-                "SELECT requirement_id, item_value, details, status "
-                "FROM requirement_items "
-                "ORDER BY requirement_id, sort_order, id"
-            ]
+                f"SELECT requirement_id, item_value, details, status "
+                f"FROM requirement_items "
+                f"{'WHERE requirement_id IN (' + req_id_placeholders + ')' if req_ids else 'WHERE 0=1'} "
+                f"ORDER BY requirement_id, sort_order, id"
+            ],
+            [req_ids] if req_ids else [],
         )[0]
         items_by_req: dict[str, list[str]] = {}
         details_by_req: dict[str, list[list[str]]] = {}
@@ -363,21 +384,27 @@ def _enrich_and_filter_projects(raw_projects: list[dict[str, Any]], allowed_ids:
     for project in projects:
         project["requirements"] = reqs_by_project.get(project["id"], [])
 
-    # priorities
+    # priorities (scoped)
     try:
         prio_result = pipeline(
             [
-                "SELECT id, project_id, priority_name "
-                "FROM clientcontext_priorities "
-                "ORDER BY project_id, sort_order, id"
-            ]
+                f"SELECT id, project_id, priority_name "
+                f"FROM clientcontext_priorities "
+                f"WHERE project_id IN ({id_placeholders}) "
+                f"ORDER BY project_id, sort_order, id"
+            ],
+            [project_ids],
         )[0]
+        prio_ids = [row[0] for row in rows(prio_result)]
+        prio_id_placeholders = ",".join("?" for _ in prio_ids) if prio_ids else "0"
         prio_detail_result = pipeline(
             [
-                "SELECT priority_id, detail_value, status, tags "
-                "FROM priority_details "
-                "ORDER BY priority_id, sort_order, id"
-            ]
+                f"SELECT priority_id, detail_value, status, tags "
+                f"FROM priority_details "
+                f"{'WHERE priority_id IN (' + prio_id_placeholders + ')' if prio_ids else 'WHERE 0=1'} "
+                f"ORDER BY priority_id, sort_order, id"
+            ],
+            [prio_ids] if prio_ids else [],
         )[0]
         details_by_prio: dict[str, list[str]] = {}
         statuses_by_prio: dict[str, list[bool | None]] = {}
@@ -408,18 +435,19 @@ def _enrich_and_filter_projects(raw_projects: list[dict[str, Any]], allowed_ids:
     for project in projects:
         project["priorities"] = prios_by_project.get(project["id"], [])
 
-    # family members
+    # family members (scoped)
     try:
         family_result = pipeline(
             [
-                "SELECT cd.project_id, fd.family_id, fd.client_id, fd.name, "
-                "fd.age, fd.job, fd.phone, fd.relation, fd.family_member_img_url, "
-                "fd.description "
-                "FROM family_details fd "
-                "LEFT JOIN client_details cd ON cd.client_id = fd.client_id "
-                "WHERE cd.project_id IS NOT NULL "
-                "ORDER BY cd.project_id"
-            ]
+                f"SELECT cd.project_id, fd.family_id, fd.client_id, fd.name, "
+                f"fd.age, fd.job, fd.phone, fd.relation, fd.family_member_img_url, "
+                f"fd.description "
+                f"FROM family_details fd "
+                f"LEFT JOIN client_details cd ON cd.client_id = fd.client_id "
+                f"WHERE cd.project_id IN ({id_placeholders}) "
+                f"ORDER BY cd.project_id"
+            ],
+            [project_ids],
         )[0]
         family_by_project: dict[int, list[dict[str, Any]]] = {}
         for row in rows(family_result):
@@ -454,7 +482,7 @@ def _enrich_and_filter_projects(raw_projects: list[dict[str, Any]], allowed_ids:
     for project in projects:
         project["family_members"] = family_by_project.get(project["id"], [])
 
-    # Extended project data (clients, lifestyle, approval, communication, technical, regulatory, outdoor, spaces, timeline)
+    # Extended project data (scoped)
     ext_tables = {
         "project_clients": ["about_client", "building_users", "family_or_team_size", "elderly_members", "children", "pets", "work_from_home", "accessibility_requirements"],
         "project_lifestyle": ["daily_routine", "entertain_guests", "host_parties", "relaxation_place", "morning_coffee_location", "outdoor_activities", "hobbies", "privacy_importance"],
@@ -468,7 +496,10 @@ def _enrich_and_filter_projects(raw_projects: list[dict[str, Any]], allowed_ids:
     for tbl, cols in ext_tables.items():
         try:
             col_str = ",".join(cols)
-            ext_result = pipeline([f"SELECT project_id,{col_str} FROM {tbl}"])[0]
+            ext_result = pipeline(
+                [f"SELECT project_id,{col_str} FROM {tbl} WHERE project_id IN ({id_placeholders})"],
+                [project_ids],
+            )[0]
             ext_by_project: dict[int, dict[str, Any]] = {}
             for row in rows(ext_result):
                 pid = row[0]
@@ -479,10 +510,15 @@ def _enrich_and_filter_projects(raw_projects: list[dict[str, Any]], allowed_ids:
             for project in projects:
                 project[tbl] = None
 
-    # project_spaces is a list, not a single row
+    # project_spaces (scoped)
     try:
         spaces_result = pipeline(
-            ["SELECT project_id,space_name,required,priority,approx_area_size,quantity,adjacency_notes FROM project_spaces"]
+            [
+                f"SELECT project_id,space_name,required,priority,approx_area_size,quantity,adjacency_notes "
+                f"FROM project_spaces "
+                f"WHERE project_id IN ({id_placeholders})"
+            ],
+            [project_ids],
         )[0]
         spaces_by_project: dict[int, list[dict[str, Any]]] = {}
         for row in rows(spaces_result):
@@ -503,10 +539,16 @@ def _enrich_and_filter_projects(raw_projects: list[dict[str, Any]], allowed_ids:
         for project in projects:
             project["project_spaces"] = []
 
-    # Proposals (one per project + provider)
+    # Proposals (scoped)
     try:
         prop_result = pipeline(
-            ["SELECT project_id,provider_id,id,status,total_amount,rate_notes,timeline_notes,scope_summary,rejection_reason,negotiation_notes,sent_at,responded_at FROM project_proposals"]
+            [
+                f"SELECT project_id,provider_id,id,status,total_amount,rate_notes,timeline_notes,scope_summary,rejection_reason,negotiation_notes,sent_at,responded_at "
+                f"FROM project_proposals "
+                f"WHERE project_id IN ({id_placeholders}) "
+                f"ORDER BY project_id, id"
+            ],
+            [project_ids],
         )[0]
         prop_by_project: dict[int, dict[str, Any]] = {}
         for row in rows(prop_result):
@@ -534,10 +576,15 @@ def _enrich_and_filter_projects(raw_projects: list[dict[str, Any]], allowed_ids:
         for project in projects:
             project["proposal"] = None
 
-    # Team members (sub-provider assignments)
+    # Team members (scoped)
     try:
         team_result = pipeline(
-            ["SELECT project_id,provider_id,role,status,notes FROM project_team_members"]
+            [
+                f"SELECT project_id,provider_id,role,status,notes "
+                f"FROM project_team_members "
+                f"WHERE project_id IN ({id_placeholders})"
+            ],
+            [project_ids],
         )[0]
         team_by_project: dict[int, list[dict[str, Any]]] = {}
         for row in rows(team_result):
@@ -556,10 +603,15 @@ def _enrich_and_filter_projects(raw_projects: list[dict[str, Any]], allowed_ids:
         for project in projects:
             project["team_members"] = []
 
-    # Messages (provider-client communication)
+    # Messages (scoped)
     try:
         msg_result = pipeline(
-            ["SELECT project_id,sender_type,sender_id,message_type,content,created_at FROM project_messages"]
+            [
+                f"SELECT project_id,sender_type,sender_id,message_type,content,created_at "
+                f"FROM project_messages "
+                f"WHERE project_id IN ({id_placeholders})"
+            ],
+            [project_ids],
         )[0]
         msg_by_project: dict[int, list[dict[str, Any]]] = {}
         for row in rows(msg_result):

@@ -29,8 +29,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ status: "error", message: "Query too long." }, { status: 413 });
   }
 
+  const token = request.headers.get("Authorization")?.replace("Bearer ", "") ?? undefined;
+
   try {
-    const result = await runBackendQuery(sql);
+    const result = await runBackendQuery(sql, token);
     if (result.status !== "ok") {
       return NextResponse.json(
         { status: "error", message: result.message ?? "Backend query failed" },

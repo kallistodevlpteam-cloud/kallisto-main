@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { acceptBackendProject } from "@/lib/backend/backend-client";
+import { acceptBackendProject, BackendError } from "@/lib/backend/backend-client";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,16 +18,16 @@ export async function POST(request: NextRequest, { params }: AcceptRouteParams) 
     );
   }
   try {
-    const projectCharacter = await acceptBackendProject(projectId);
+    const token = request.headers.get("Authorization")?.replace("Bearer ", "") ?? undefined;
+    const projectCharacter = await acceptBackendProject(projectId, token);
     return NextResponse.json({
       status: "ok",
       project_id: projectId,
       project_character: projectCharacter,
     });
   } catch (error) {
-    return NextResponse.json(
-      { status: "error", message: error instanceof Error ? error.message : "Backend unavailable" },
-      { status: 503 }
-    );
+    const message = error instanceof Error ? error.message : "Backend unavailable";
+    const status = error instanceof BackendError ? error.status : 503;
+    return NextResponse.json({ status: "error", message }, { status });
   }
 }

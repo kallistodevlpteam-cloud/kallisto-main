@@ -20,6 +20,7 @@ import { EnquiryRecord } from "../types/enquiry.types";
 import { EnquiryFilterToolbar } from "./enquiry-filter-toolbar";
 import { EnquiryTableRow } from "./enquiry-table-row";
 import { EnquiryMobileCard } from "./enquiry-mobile-card";
+import { authedFetch } from "@/lib/auth/authed-fetch";
 import styles from "./enquiries-workspace.module.css";
 
 interface EnquiriesWorkspaceProps {
@@ -81,7 +82,7 @@ export function EnquiriesWorkspace({ isLoading = false }: EnquiriesWorkspaceProp
 
   useEffect(() => {
     let isMounted = true;
-    fetch("/api/projects?character=enq")
+    authedFetch("/api/projects?character=enq", { cache: "no-store" })
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Projects request failed with status ${response.status}`);

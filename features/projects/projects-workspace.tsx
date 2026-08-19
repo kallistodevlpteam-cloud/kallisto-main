@@ -16,6 +16,7 @@ import { projectsService } from "./services/projects.service";
 import { ProjectListItem, ProjectStatus } from "./types/project.types";
 import type { BackendProject } from "@/types/domain/backend-project";
 import { buildProjectCardsFromBackend } from "./utils/backend-project-cards";
+import { authedFetch } from "@/lib/auth/authed-fetch";
 
 import styles from "./projects.module.css";
 
@@ -30,7 +31,7 @@ const MOCK_TEAM_MEMBERS = [
 /** Server projects (project_character = 'pr') fetched through the API proxy
  * route; the frontend never talks to the database directly. */
 async function fetchProjectsFromBackend(): Promise<BackendProject[]> {
-  const response = await fetch("/api/projects?character=pr");
+  const response = await authedFetch("/api/projects?character=pr", { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`Projects request failed with status ${response.status}`);
   }
