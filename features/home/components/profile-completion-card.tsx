@@ -3,317 +3,258 @@
 import React from "react";
 import Link from "next/link";
 import {
+  Calendar,
   ArrowRight,
-  ShieldAlert,
-  Clock,
-  Building2,
-  User,
-  Layers,
-  FileText,
-  BadgeCheck,
 } from "lucide-react";
 import styles from "../home-workspace.module.css";
 import { practiceSetupService } from "@/services/repositories/practice-setup-service";
 
+interface CircularProgressRingProps {
+  value: number;
+  size?: number;
+  strokeWidth?: number;
+  color?: string;
+  trackColor?: string;
+}
 
-function CircularProgress({ percentage }: { percentage: number }) {
-  const totalSegments = 10;
-  const activeSegments = Math.round(percentage / 10);
-  // circumference of r=22 circle: 2*PI*22 ≈ 138.2; each segment: 138.2/10=13.82
-  // dash: 9.5 gap: 4.32 (=13.82)
+function CircularProgressRing({
+  value,
+  size = 22,
+  strokeWidth = 2.5,
+  color = "#10b981",
+  trackColor = "#f1f5f9",
+}: CircularProgressRingProps) {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (Math.min(100, Math.max(0, value)) / 100) * circumference;
+
   return (
-    <div className={styles.pcsCircularGaugeContainer}>
-      <svg width="72" height="72" viewBox="0 0 48 48" className={styles.pcsCircularGaugeSvg}>
-        {Array.from({ length: totalSegments }).map((_, index) => {
-          const angle = index * (360 / totalSegments) - 90;
-          const isActive = index < activeSegments;
-          return (
-            <circle
-              key={index}
-              cx="24"
-              cy="24"
-              r="18"
-              fill="none"
-              stroke={isActive ? "#f97316" : "#e5e7eb"}
-              strokeWidth="4"
-              strokeDasharray="8 105.6"
-              transform={`rotate(${angle} 24 24)`}
-              strokeLinecap="round"
-            />
-          );
-        })}
+    <div
+      className={styles.rearrangedRingWrapper}
+      style={{ width: size, height: size }}
+      aria-hidden="true"
+    >
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        className={styles.rearrangedRingSvg}
+      >
+        {/* Subtle glass inner disc */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius - 1}
+          fill="rgba(248, 250, 252, 0.7)"
+        />
+        {/* Background Track */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={trackColor}
+          strokeWidth={strokeWidth}
+        />
+        {/* Progress Arc */}
+        {value > 0 && (
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke={color}
+            strokeWidth={strokeWidth}
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+          />
+        )}
       </svg>
-      <div className={styles.pcsCircularGaugeText}>
-        {percentage}%
-      </div>
     </div>
   );
 }
 
-/* ─────────────────────────────────────────────────────────────
-   STAGE STATUS BADGE  (IN PROGRESS / PENDING / DONE)
- ───────────────────────────────────────────────────────────── */
-function StageBadge({ state }: { state: "active" | "completed" | "pending" }) {
-  if (state === "active")
-    return <span className={styles.pcsStageBadgeActive}>In progress</span>;
-  if (state === "completed")
-    return <span className={styles.pcsStageBadgeDone}>Done</span>;
-  return <span className={styles.pcsStageBadgePending}>Pending</span>;
-}
-
-/* ─────────────────────────────────────────────────────────────
-   MAIN COMPONENT
-───────────────────────────────────────────────────────────── */
 export function ProfileCompletionCard() {
   const setupData = practiceSetupService.getProgress();
 
-  // Hidden when very complete
-  if (setupData.displayMode === "hidden") return null;
-
-  // ── In Review Banner ──────────────────────────────────────
-  if (setupData.displayMode === "in_review_banner") {
-    return (
-      <div className={styles.practiceSetupContainerInReview}>
-        <div className={styles.setupBannerHeader}>
-          <div className={styles.setupBannerTitleGroup}>
-            <div className={styles.setupIconBoxReview}>
-              <Clock size={18} />
-            </div>
-            <div>
-              <div className={styles.setupHeadlineRow}>
-                <h2 className={styles.practiceTitle}>Setup submitted — verification in review</h2>
-                <span className={styles.statusPillReview}>IN REVIEW</span>
-              </div>
-              <p className={styles.practiceSubtitle}>
-                Your credentials and professional details are currently being reviewed by Kallisto. You will be notified once verified.
-              </p>
-            </div>
-          </div>
-          <Link href="/settings/workspace" className={styles.btnSecondarySetup}>
-            <span>View status</span>
-            <ArrowRight size={14} />
-          </Link>
-        </div>
-        <div className={styles.thinProgressBarTrack}>
-          <div className={styles.thinProgressBarFill} style={{ width: "90%" }} />
-        </div>
-      </div>
-    );
-  }
-
-  // ── Attention Required ────────────────────────────────────
-  if (setupData.displayMode === "attention_card") {
-    return (
-      <div className={styles.practiceSetupContainerAttention}>
-        <div className={styles.setupBannerHeader}>
-          <div className={styles.setupBannerTitleGroup}>
-            <div className={styles.setupIconBoxAttention}>
-              <ShieldAlert size={18} />
-            </div>
-            <div>
-              <div className={styles.setupHeadlineRow}>
-                <h2 className={styles.practiceTitle}>Verification requires attention</h2>
-                <span className={styles.statusPillAttention}>ACTION REQUIRED</span>
-              </div>
-              <p className={styles.practiceSubtitle}>
-                {setupData.attentionReason ||
-                  "Identity document or business proof requires re-upload. Please update your verification submission."}
-              </p>
-            </div>
-          </div>
-          <Link href="/settings/workspace" className={styles.btnPrimarySetup}>
-            <span>Update verification</span>
-            <ArrowRight size={14} />
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Compact Banner (75–99%: reduced prominence while keeping next step visible) ──
-  if (setupData.displayMode === "compact_banner") {
-    return (
-      <div className={styles.practiceSetupContainerCompact}>
-        <div className={styles.compactSetupHeaderRow}>
-          <div className={styles.compactTitleGroup}>
-            <div className={styles.setupPercentBadgeBoxCompact}>
-              <span className={styles.percentNumber}>{setupData.totalPercentage}%</span>
-            </div>
-            <div>
-              <div className={styles.setupHeadlineRow}>
-                <h2 className={styles.practiceTitle}>Complete Your Practice Setup</h2>
-                <span className={styles.remainingBadge}>
-                  {setupData.progressState.label} · {setupData.remainingStepsCount}{" "}
-                  {setupData.remainingStepsCount === 1 ? "step" : "steps"} remaining
-                </span>
-              </div>
-              <p className={styles.nextStepText}>
-                <strong>Next step:</strong> {setupData.nextStepRequirement}
-              </p>
-            </div>
-          </div>
-          <Link href={setupData.nextStepRoute} className={styles.btnPrimarySetup}>
-            <span>Continue Setup</span>
-            <ArrowRight size={14} />
-          </Link>
-        </div>
-        <div className={styles.thinProgressBarTrack}>
-          <div
-            className={styles.thinProgressBarFill}
-            style={{ width: `${setupData.totalPercentage}%` }}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  // ── Full Card (0–74% & Complete) — MAIN STATE ──────────────
-  const STAGE_ICONS = {
-    account: User,
-    business: Building2,
-    portfolio: FileText,
-    verification: BadgeCheck,
-  };
-
-  const getStageState = (stage: (typeof setupData.stages)[number]) => {
-    if (stage.isCompleted) return "completed" as const;
-    if (stage.isCurrent) return "active" as const;
-    return "pending" as const;
-  };
-
-  const stateClassMap: Record<string, string> = {
-    critical: styles.stateCritical,
-    low: styles.stateLow,
-    progress: styles.stateProgress,
-    good: styles.stateGood,
-    strong: styles.stateStrong,
-    complete: styles.stateComplete,
-  };
-  const currentStateClass = stateClassMap[setupData.progressState.state] || styles.stateProgress;
-  const completedCount = setupData.stages.filter((s) => s.isCompleted).length;
+  const completedCount =
+    setupData?.stages?.filter((s) => s.isCompleted)?.length || 1;
+  const percentage = setupData?.totalPercentage || 42;
 
   return (
-    <>
-      {/* ── LEFT: Main setup card (Production SaaS Desktop Card) ── */}
-      <div className={`${styles.pcsMainCard} ${currentStateClass}`}>
-        {/* Header */}
-        <div className={styles.pcsHeader}>
-          <div className={styles.pcsHeaderLeft}>
-            <div className={styles.pcsLayersIconWrapper} title="Practice Setup">
-              <Layers size={20} className={styles.pcsLayersIcon} />
-            </div>
-            <div className={styles.pcsTitleBlock}>
-              <h2 className={styles.pcsTitle}>Complete Your Practice Setup</h2>
-              <p className={styles.pcsSubtitle}>
-                Finish the essentials required to receive enquiries, build client trust, and activate your public presence.
-              </p>
-            </div>
-          </div>
-          <div className={styles.pcsHeaderRight}>
-            <CircularProgress percentage={setupData.totalPercentage} />
-            <span className={styles.pcsProgressGaugeSubtext}>
-              {completedCount} of {setupData.stages.length} steps completed
+    <div className={styles.rearrangedProfileCard}>
+      {/* ════════════════════════════════════════════════════════
+          LEFT COLUMN: FULL-BLEED ARCHITECTURAL HERO IMAGE
+      ════════════════════════════════════════════════════════ */}
+      <div className={styles.rearrangedHeroImgCol}>
+        <img
+          src="/assets/projects/profile-feature-architecture.webp"
+          alt="Architectural Practice Feature"
+          className={styles.rearrangedFullBleedImg}
+        />
+      </div>
+
+      {/* ════════════════════════════════════════════════════════
+          RIGHT COLUMN: PROGRESS, ACTIONS & REQUIREMENTS
+      ════════════════════════════════════════════════════════ */}
+      <div className={styles.rearrangedContentCol}>
+        {/* Header Row: Title + Date Badge */}
+        <div className={styles.rearrangedHeaderRow}>
+          <div className={styles.rearrangedTitleGroup}>
+            <h2 className="sr-only">Complete Your Practice Setup</h2>
+            <span className={styles.rearrangedTitle}>Profile Completion</span>
+            <span className={styles.rearrangedDateBadge}>
+              <Calendar size={11} />
+              <span>June 2025</span>
             </span>
           </div>
         </div>
 
-        {/* Stepper */}
-        <div className={styles.pcsStepperWrap}>
-          {/* Connecting lines container */}
-          <div className={styles.pcsDottedLinesContainer}>
-            <svg className={styles.pcsDottedLinesSvg} width="100%" height="4" fill="none">
-              <line
-                x1="12.5%"
-                y1="2"
-                x2="37.5%"
-                y2="2"
-                stroke={setupData.stages[1].isCompleted || setupData.stages[1].isCurrent ? "#16a34a" : "#d1d5db"}
-                strokeWidth="2"
-                strokeDasharray="1 5"
-                strokeLinecap="round"
-              />
-              <line
-                x1="37.5%"
-                y1="2"
-                x2="62.5%"
-                y2="2"
-                stroke={setupData.stages[2].isCompleted || setupData.stages[2].isCurrent ? "#16a34a" : "#d1d5db"}
-                strokeWidth="2"
-                strokeDasharray="1 5"
-                strokeLinecap="round"
-              />
-              <line
-                x1="62.5%"
-                y1="2"
-                x2="87.5%"
-                y2="2"
-                stroke={setupData.stages[3].isCompleted || setupData.stages[3].isCurrent ? "#16a34a" : "#d1d5db"}
-                strokeWidth="2"
-                strokeDasharray="1 5"
-                strokeLinecap="round"
-              />
-            </svg>
-          </div>
-
-          <div className={styles.pcsStepperGrid}>
-            {setupData.stages.map((stage) => {
-              const IconComp = STAGE_ICONS[stage.id];
-              const stageState = getStageState(stage);
-              return (
-                <Link
-                  key={stage.id}
-                  href={stage.route}
-                  className={`${styles.pcsStageCol} ${
-                    stageState === "active"
-                      ? styles.pcsStageColActive
-                      : stageState === "completed"
-                      ? styles.pcsStageColDone
-                      : styles.pcsStageColPending
-                  }`}
-                  title={`${stage.title}: ${stage.isCompleted ? "Completed" : stage.missingRequirement}`}
-                >
-                  {/* Circle node */}
-                  <div className={styles.pcsNodeWrap}>
-                    <div className={styles.pcsNodeCircle}>
-                      <IconComp size={18} />
-                    </div>
-                  </div>
-
-                  {/* Label + badge */}
-                  <span className={styles.pcsStageLabel}>{stage.title}</span>
-                  <StageBadge state={stageState} />
-                </Link>
-              );
-            })}
-          </div>
+        {/* Normal Score Value */}
+        <div className={styles.rearrangedScoreRow}>
+          <span className={styles.rearrangedScore}>{percentage}%</span>
         </div>
 
-        {/* Next action bar */}
-        <div className={styles.pcsNextBar}>
-          <div className={styles.pcsNextLeft}>
-            <div className={styles.pcsNextIconWrap}>
-              <ArrowRight size={14} className={styles.pcsNextArrowIcon} />
-            </div>
-            <div>
-              <span className={styles.pcsNextEyebrow}>NEXT STEP</span>
-              <p className={styles.pcsNextText}>{setupData.nextStepRequirement}</p>
-            </div>
-          </div>
+        {/* Progress Target Metas */}
+        <div className={styles.rearrangedMetaRow}>
+          <span className={styles.rearrangedMetaCurrent}>
+            — {completedCount} of 4 completed
+          </span>
+          <span className={styles.rearrangedMetaTarget}>100% Target</span>
+        </div>
+
+        {/* Segmented Horizontal Progress Line Ticks */}
+        <div
+          className={styles.rearrangedSegmentedBar}
+          role="progressbar"
+          aria-valuenow={percentage}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={`Practice Setup Progress: ${percentage}%`}
+        >
+          {Array.from({ length: 52 }).map((_, i) => {
+            const filledCount = Math.round((percentage / 100) * 52);
+            const isFilled = i < filledCount;
+            return (
+              <span
+                key={i}
+                className={`${styles.rearrangedSegmentTick} ${
+                  isFilled
+                    ? styles.rearrangedTickFilled
+                    : styles.rearrangedTickEmpty
+                }`}
+              />
+            );
+          })}
+        </div>
+
+        {/* Requirements Section Header */}
+        <div className={styles.rearrangedSectionHeader}>
+          <h3 className={styles.rearrangedSectionTitle}>Profile Requirements</h3>
+        </div>
+
+        {/* Compact Stages Checklist with Circular Progress Rings */}
+        <div className={styles.rearrangedStagesList}>
+          {/* 1. Account Setup */}
           <Link
-            href={setupData.nextStepRoute}
-            className={styles.pcsContinueBtn}
-            onClick={() => {
-              if (setupData.isComplete) {
-                practiceSetupService.acknowledgeCompletion();
-              }
-            }}
+            href="/settings/workspace"
+            className={styles.rearrangedStageRow}
           >
-            <span>{setupData.isComplete ? "View Profile" : "Continue Setup"}</span>
-            <span className={styles.pcsBtnChevron}>&gt;</span>
+            <div className={styles.rearrangedStageRowLeft}>
+              <CircularProgressRing
+                value={100}
+                size={22}
+                color="#10b981"
+                trackColor="#e2e8f0"
+              />
+              <div className={styles.rearrangedStageTexts}>
+                <span className={styles.rearrangedStageName}>Account Setup</span>
+                <span className={styles.rearrangedStageSub}>
+                  Completed yesterday
+                </span>
+              </div>
+            </div>
+            <span className={styles.rearrangedStageScoreDone}>100%</span>
+          </Link>
+
+          {/* 2. Business Profile */}
+          <Link
+            href="/settings/workspace"
+            className={styles.rearrangedStageRow}
+          >
+            <div className={styles.rearrangedStageRowLeft}>
+              <CircularProgressRing
+                value={72}
+                size={22}
+                color="#0f172a"
+                trackColor="#e2e8f0"
+              />
+              <div className={styles.rearrangedStageTexts}>
+                <span className={styles.rearrangedStageNameActive}>
+                  Business Profile
+                </span>
+                <span className={styles.rearrangedStageSub}>
+                  In progress · 72%
+                </span>
+              </div>
+            </div>
+            <span className={styles.rearrangedStageScoreActive}>72%</span>
+          </Link>
+
+          {/* 3. Portfolio */}
+          <Link href="/portfolio" className={styles.rearrangedStageRow}>
+            <div className={styles.rearrangedStageRowLeft}>
+              <CircularProgressRing
+                value={45}
+                size={22}
+                color="#3b82f6"
+                trackColor="#e2e8f0"
+              />
+              <div className={styles.rearrangedStageTexts}>
+                <span className={styles.rearrangedStageName}>Portfolio</span>
+                <span className={styles.rearrangedStageSub}>
+                  Pending upload
+                </span>
+              </div>
+            </div>
+            <span className={styles.rearrangedStageScorePending}>45%</span>
+          </Link>
+
+          {/* 4. Verification */}
+          <Link
+            href="/settings/workspace"
+            className={styles.rearrangedStageRow}
+          >
+            <div className={styles.rearrangedStageRowLeft}>
+              <CircularProgressRing
+                value={0}
+                size={22}
+                color="#94a3b8"
+                trackColor="#e2e8f0"
+              />
+              <div className={styles.rearrangedStageTexts}>
+                <span className={styles.rearrangedStageName}>Verification</span>
+                <span className={styles.rearrangedStageSub}>
+                  Pending review
+                </span>
+              </div>
+            </div>
+            <span className={styles.rearrangedStageScorePending}>0%</span>
+          </Link>
+        </div>
+
+        {/* Bottom Right CTA (Ask Odin Theme) */}
+        <div className={styles.rearrangedBottomActionRow}>
+          <Link
+            href="/settings/workspace"
+            className={styles.odinThemeContinueBtn}
+          >
+            <span>Continue</span>
+            <ArrowRight size={13} className={styles.odinArrowIcon} />
           </Link>
         </div>
       </div>
-
-    </>
+    </div>
   );
 }

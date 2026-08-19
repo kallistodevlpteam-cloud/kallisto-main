@@ -236,350 +236,227 @@ PROJECT_ENQ_CHARACTER = "enq"
 
 
 def _enrich_and_filter_projects(raw_projects: list[dict[str, Any]], allowed_ids: list[int]) -> list[dict[str, Any]]:
-    """Filter projects to allowed ids and enrich with related data."""
+    """Filter projects to allowed ids and enrich with related data using a single batch query."""
     projects = [p for p in raw_projects if p["id"] in allowed_ids]
 
-    # site images
     for project in projects:
         project["site_images"] = _parse_site_images(project.get("site_img_url"))
         project.pop("site_img_url", None)
         project["provider_ids"] = _parse_string_list(project.get("provider_id"))
         project.pop("provider_id", None)
 
-    # inspiration images
-    try:
-        image_result = pipeline(
-            [
-                "SELECT ii.project_id, ii.image_url, ii.alt_text "
-                "FROM inspiration_img ii "
-                "ORDER BY ii.project_id, ii.sort_order, ii.id"
-            ]
-        )[0]
-        images_by_project: dict[int, list[dict[str, str | None]]] = {}
-        for row in rows(image_result):
-            pid = row[0]
-            images_by_project.setdefault(pid, []).append({"url": row[1], "alt": row[2]})
-    except Exception:  # noqa: BLE001
-        images_by_project = {}
+    statements = [
+        "SELECT ii.project_id, ii.image_url, ii.alt_text FROM inspiration_img ii ORDER BY ii.project_id, ii.sort_order, ii.id",
+        "SELECT pd.project_id, pd.id, pd.doc_name, pd.doc_img_url, pd.DOC_type, pd.status, pd.updated_at FROM project_DOC pd ORDER BY pd.project_id, pd.sort_order, pd.id",
+        "SELECT ps.id, ps.project_id, ps.scope_name FROM project_scope ps ORDER BY ps.project_id, ps.sort_order, ps.id",
+        "SELECT si.scope_id, si.item_name FROM project_scope_item si ORDER BY si.scope_id, si.sort_order, si.id",
+        "SELECT id, project_id, requirement_name FROM requirements ORDER BY project_id, sort_order, id",
+        "SELECT requirement_id, item_value, details, status FROM requirement_items ORDER BY requirement_id, sort_order, id",
+        "SELECT id, project_id, priority_name FROM clientcontext_priorities ORDER BY project_id, sort_order, id",
+        "SELECT priority_id, detail_value, status, tags FROM priority_details ORDER BY priority_id, sort_order, id",
+        "SELECT cd.project_id, fd.family_id, fd.client_id, fd.name, fd.age, fd.job, fd.phone, fd.relation, fd.family_member_img_url, fd.description FROM family_details fd LEFT JOIN client_details cd ON cd.client_id = fd.client_id WHERE cd.project_id IS NOT NULL ORDER BY cd.project_id",
+        "SELECT project_id, about_client, building_users, family_or_team_size, elderly_members, children, pets, work_from_home, accessibility_requirements, client_id FROM project_clients",
+        "SELECT project_id, daily_routine, entertain_guests, host_parties, relaxation_place, morning_coffee_location, outdoor_activities, hobbies, privacy_importance FROM project_lifestyle",
+        "SELECT project_id, primary_decision_maker, other_approval_stakeholders, expected_revision_rounds, design_review_method, approval_turnaround_time FROM project_approval_process",
+        "SELECT project_id, preferred_contact, communication_channel, meeting_frequency, best_time_to_reach, special_instructions FROM project_communication",
+        "SELECT project_id, energy_efficient_design, solar_panels, rainwater_harvesting, smart_home_automation, hvac_preference, backup_power, water_storage_borewell, security_system_requirements, preferred_material_techs FROM project_technical",
+        "SELECT project_id, zoning_restrictions, height_restrictions, home_owner_association_rules, permits_obtained, land_disputes_encumbrances, setback_requirements FROM project_regulatory",
+        "SELECT project_id, garden, swimming_pool, outdoor_deck_patio, bbq_area, parking, driveway_gate_notes, landscape_boundary_fencing, outdoor_lighting, play_area_children, pet_friendly_outdoor FROM project_outdoor",
+        "SELECT project_id, space_name, required, priority, approx_area_size, quantity, adjacency_notes FROM project_spaces",
+        "SELECT project_id, desired_start_date, desired_completion_date, fixed_deadline_notes, phased, phases_description, urgency_level FROM project_timeline",
+        "SELECT id, project_id, provider_id, status, total_amount, rate_notes, timeline_notes, scope_summary, rejection_reason, negotiation_notes, sent_at, responded_at FROM project_proposals",
+        "SELECT project_id, provider_id, role, status, notes FROM project_team_members",
+        "SELECT project_id, sender_type, sender_id, message_type, content, created_at FROM project_messages",
+    ]
 
-    # docs
     try:
-        doc_result = pipeline(
-            [
-                "SELECT pd.project_id, pd.id, pd.doc_name, pd.doc_img_url, "
-                "pd.DOC_type, pd.status, pd.updated_at "
-                "FROM project_DOC pd "
-                "ORDER BY pd.project_id, pd.sort_order, pd.id"
-            ]
-        )[0]
-        docs_by_project: dict[int, list[dict[str, Any]]] = {}
-        for row in rows(doc_result):
-            pid = row[0]
-            docs_by_project.setdefault(pid, []).append(
-                {
-                    "id": row[1],
-                    "name": row[2],
-                    "doc_img_url": row[3],
-                    "doc_type": row[4],
-                    "status": bool(row[5]),
-                    "updated_at": row[6],
-                }
-            )
-    except Exception:  # noqa: BLE001
-        docs_by_project = {}
+        batch_res = pipeline(statements)
+    except Exception:
+        batch_res = []
 
-    # scopes
-    try:
-        scope_result = pipeline(
-            [
-                "SELECT ps.id, ps.project_id, ps.scope_name "
-                "FROM project_scope ps "
-                "ORDER BY ps.project_id, ps.sort_order, ps.id"
-            ]
-        )[0]
-        scope_item_result = pipeline(
-            [
-                "SELECT si.scope_id, si.item_name "
-                "FROM project_scope_item si "
-                "ORDER BY si.scope_id, si.sort_order, si.id"
-            ]
-        )[0]
+    images_by_project: dict[int, list[dict[str, str | None]]] = {}
+    docs_by_project: dict[int, list[dict[str, Any]]] = {}
+    scopes_by_project: dict[int, list[dict[str, Any]]] = {}
+    reqs_by_project: dict[int, list[dict[str, Any]]] = {}
+    prios_by_project: dict[int, list[dict[str, Any]]] = {}
+    family_by_project: dict[int, list[dict[str, Any]]] = {}
+    clients_by_project: dict[int, dict[str, Any]] = {}
+    lifestyle_by_project: dict[int, dict[str, Any]] = {}
+    approval_by_project: dict[int, dict[str, Any]] = {}
+    comm_by_project: dict[int, dict[str, Any]] = {}
+    tech_by_project: dict[int, dict[str, Any]] = {}
+    reg_by_project: dict[int, dict[str, Any]] = {}
+    outdoor_by_project: dict[int, dict[str, Any]] = {}
+    spaces_by_project: dict[int, list[dict[str, Any]]] = {}
+    timeline_by_project: dict[int, dict[str, Any]] = {}
+    prop_by_project: dict[int, dict[str, Any]] = {}
+    team_by_project: dict[int, list[dict[str, Any]]] = {}
+    msg_by_project: dict[int, list[dict[str, Any]]] = {}
+
+    if len(batch_res) >= 21:
+        for row in rows(batch_res[0]):
+            images_by_project.setdefault(row[0], []).append({"url": row[1], "alt": row[2]})
+
+        for row in rows(batch_res[1]):
+            docs_by_project.setdefault(row[0], []).append({
+                "id": row[1], "name": row[2], "doc_img_url": row[3],
+                "doc_type": row[4], "status": bool(row[5]), "updated_at": row[6]
+            })
+
         items_by_scope: dict[int, list[str]] = {}
-        for row in rows(scope_item_result):
+        for row in rows(batch_res[3]):
             items_by_scope.setdefault(row[0], []).append(row[1])
-        scopes_by_project: dict[int, list[dict[str, Any]]] = {}
-        for row in rows(scope_result):
+        for row in rows(batch_res[2]):
             sid, pid, name = row
-            scopes_by_project.setdefault(pid, []).append(
-                {"id": sid, "scope_name": name, "items": items_by_scope.get(sid, [])}
-            )
-    except Exception:  # noqa: BLE001
-        scopes_by_project = {}
+            scopes_by_project.setdefault(pid, []).append({"id": sid, "scope_name": name, "items": items_by_scope.get(sid, [])})
 
-    for project in projects:
-        project["inspiration_images"] = images_by_project.get(project["id"], [])
-        project["project_docs"] = docs_by_project.get(project["id"], [])
-        project["project_scopes"] = scopes_by_project.get(project["id"], [])
-
-    # requirements
-    try:
-        req_result = pipeline(
-            [
-                "SELECT id, project_id, requirement_name FROM requirements "
-                "ORDER BY project_id, sort_order, id"
-            ]
-        )[0]
-        req_item_result = pipeline(
-            [
-                "SELECT requirement_id, item_value, details, status "
-                "FROM requirement_items "
-                "ORDER BY requirement_id, sort_order, id"
-            ]
-        )[0]
         items_by_req: dict[str, list[str]] = {}
         details_by_req: dict[str, list[list[str]]] = {}
         statuses_by_req: dict[str, list[bool | None]] = {}
-        for row in rows(req_item_result):
+        for row in rows(batch_res[5]):
             rid, value, details, status = row
             items_by_req.setdefault(rid, []).append(value)
             details_by_req.setdefault(rid, []).append(_parse_string_list(details))
-            normalized_status: bool | None = None
-            if status is not None:
-                normalized_status = bool(status)
-            statuses_by_req.setdefault(rid, []).append(normalized_status)
-        reqs_by_project: dict[int, list[dict[str, Any]]] = {}
-        for row in rows(req_result):
+            statuses_by_req.setdefault(rid, []).append(bool(status) if status is not None else None)
+        for row in rows(batch_res[4]):
             rid, pid, name = row
-            reqs_by_project.setdefault(pid, []).append(
-                {
-                    "id": rid,
-                    "requirement_name": name,
-                    "items": items_by_req.get(rid, []),
-                    "item_details": details_by_req.get(rid, []),
-                    "statuses": statuses_by_req.get(rid, []),
-                }
-            )
-    except Exception:  # noqa: BLE001
-        reqs_by_project = {}
+            reqs_by_project.setdefault(pid, []).append({
+                "id": rid, "requirement_name": name,
+                "items": items_by_req.get(rid, []),
+                "item_details": details_by_req.get(rid, []),
+                "statuses": statuses_by_req.get(rid, [])
+            })
 
-    for project in projects:
-        project["requirements"] = reqs_by_project.get(project["id"], [])
-
-    # priorities
-    try:
-        prio_result = pipeline(
-            [
-                "SELECT id, project_id, priority_name "
-                "FROM clientcontext_priorities "
-                "ORDER BY project_id, sort_order, id"
-            ]
-        )[0]
-        prio_detail_result = pipeline(
-            [
-                "SELECT priority_id, detail_value, status, tags "
-                "FROM priority_details "
-                "ORDER BY priority_id, sort_order, id"
-            ]
-        )[0]
         details_by_prio: dict[str, list[str]] = {}
         statuses_by_prio: dict[str, list[bool | None]] = {}
         tags_by_prio: dict[str, list[list[str]]] = {}
-        for row in rows(prio_detail_result):
-            pid, detail, status, tags = row
-            details_by_prio.setdefault(pid, []).append(detail)
-            normalized_status: bool | None = None
-            if status is not None:
-                normalized_status = bool(status)
-            statuses_by_prio.setdefault(pid, []).append(normalized_status)
-            tags_by_prio.setdefault(pid, []).append(_parse_string_list(tags))
-        prios_by_project: dict[int, list[dict[str, Any]]] = {}
-        for row in rows(prio_result):
+        for row in rows(batch_res[7]):
+            p_id, value, status, tags = row
+            details_by_prio.setdefault(p_id, []).append(value)
+            statuses_by_prio.setdefault(p_id, []).append(bool(status) if status is not None else None)
+            tags_by_prio.setdefault(p_id, []).append(_parse_string_list(tags))
+        for row in rows(batch_res[6]):
             rid, pid, name = row
-            prios_by_project.setdefault(pid, []).append(
-                {
-                    "id": rid,
-                    "priority_name": name,
-                    "details": details_by_prio.get(rid, []),
-                    "statuses": statuses_by_prio.get(rid, []),
-                    "tags": tags_by_prio.get(rid, []),
-                }
-            )
-    except Exception:  # noqa: BLE001
-        prios_by_project = {}
+            prios_by_project.setdefault(pid, []).append({
+                "id": rid, "priority_name": name,
+                "details": details_by_prio.get(rid, []),
+                "statuses": statuses_by_prio.get(rid, []),
+                "tags": tags_by_prio.get(rid, [])
+            })
 
-    for project in projects:
-        project["priorities"] = prios_by_project.get(project["id"], [])
+        for row in rows(batch_res[8]):
+            pid, family_id, client_id, name, age, job, phone, relation, img_url, desc = row
+            family_by_project.setdefault(pid, []).append({
+                "family_id": family_id, "client_id": client_id, "name": name,
+                "age": age, "job": job, "phone": phone, "relation": relation,
+                "family_member_img_url": img_url, "description": desc
+            })
 
-    # family members
-    try:
-        family_result = pipeline(
-            [
-                "SELECT cd.project_id, fd.family_id, fd.client_id, fd.name, "
-                "fd.age, fd.job, fd.phone, fd.relation, fd.family_member_img_url, "
-                "fd.description "
-                "FROM family_details fd "
-                "LEFT JOIN client_details cd ON cd.client_id = fd.client_id "
-                "WHERE cd.project_id IS NOT NULL "
-                "ORDER BY cd.project_id"
-            ]
-        )[0]
-        family_by_project: dict[int, list[dict[str, Any]]] = {}
-        for row in rows(family_result):
-            (
-                pid,
-                family_id,
-                client_id,
-                name,
-                age,
-                job,
-                phone,
-                relation,
-                img_url,
-                description,
-            ) = row
-            family_by_project.setdefault(pid, []).append(
-                {
-                    "family_id": family_id,
-                    "client_id": client_id,
-                    "name": name,
-                    "age": age,
-                    "job": job,
-                    "phone": phone,
-                    "relation": relation,
-                    "family_member_img_url": img_url,
-                    "description": description,
-                }
-            )
-    except Exception:  # noqa: BLE001
-        family_by_project = {}
-
-    for project in projects:
-        project["family_members"] = family_by_project.get(project["id"], [])
-
-    # Extended project data (clients, lifestyle, approval, communication, technical, regulatory, outdoor, spaces, timeline)
-    ext_tables = {
-        "project_clients": ["about_client", "building_users", "family_or_team_size", "elderly_members", "children", "pets", "work_from_home", "accessibility_requirements"],
-        "project_lifestyle": ["daily_routine", "entertain_guests", "host_parties", "relaxation_place", "morning_coffee_location", "outdoor_activities", "hobbies", "privacy_importance"],
-        "project_approval_process": ["primary_decision_maker", "other_approval_stakeholders", "expected_revision_rounds", "design_review_method", "approval_turnaround_time"],
-        "project_communication": ["preferred_contact", "communication_channel", "meeting_frequency", "best_time_to_reach", "special_instructions"],
-        "project_technical": ["energy_efficient_design", "solar_panels", "rainwater_harvesting", "smart_home_automation", "hvac_preference", "backup_power", "water_storage_borewell", "security_system_requirements", "preferred_material_techs"],
-        "project_regulatory": ["zoning_restrictions", "height_restrictions", "home_owner_association_rules", "permits_obtained", "land_disputes_encumbrances", "setback_requirements"],
-        "project_outdoor": ["garden", "swimming_pool", "outdoor_deck_patio", "bbq_area", "parking", "driveway_gate_notes", "landscape_boundary_fencing", "outdoor_lighting", "play_area_children", "pet_friendly_outdoor"],
-        "project_timeline": ["desired_start_date", "desired_completion_date", "fixed_deadline_notes", "phased", "phases_description", "urgency_level"],
-    }
-    for tbl, cols in ext_tables.items():
-        try:
-            col_str = ",".join(cols)
-            ext_result = pipeline([f"SELECT project_id,{col_str} FROM {tbl}"])[0]
-            ext_by_project: dict[int, dict[str, Any]] = {}
-            for row in rows(ext_result):
-                pid = row[0]
-                ext_by_project[pid] = {cols[i]: row[i + 1] for i in range(len(cols))}
-            for project in projects:
-                project[tbl] = ext_by_project.get(project["id"], None)
-        except Exception:  # noqa: BLE001
-            for project in projects:
-                project[tbl] = None
-
-    # project_spaces is a list, not a single row
-    try:
-        spaces_result = pipeline(
-            ["SELECT project_id,space_name,required,priority,approx_area_size,quantity,adjacency_notes FROM project_spaces"]
-        )[0]
-        spaces_by_project: dict[int, list[dict[str, Any]]] = {}
-        for row in rows(spaces_result):
-            pid, space_name, required, priority, approx_area, quantity, adjacency = row
-            spaces_by_project.setdefault(pid, []).append(
-                {
-                    "space_name": space_name,
-                    "required": required,
-                    "priority": priority,
-                    "approx_area_size": approx_area,
-                    "quantity": quantity,
-                    "adjacency_notes": adjacency,
-                }
-            )
-        for project in projects:
-            project["project_spaces"] = spaces_by_project.get(project["id"], [])
-    except Exception:  # noqa: BLE001
-        for project in projects:
-            project["project_spaces"] = []
-
-    # Proposals (one per project + provider)
-    try:
-        prop_result = pipeline(
-            ["SELECT project_id,provider_id,id,status,total_amount,rate_notes,timeline_notes,scope_summary,rejection_reason,negotiation_notes,sent_at,responded_at FROM project_proposals"]
-        )[0]
-        prop_by_project: dict[int, dict[str, Any]] = {}
-        for row in rows(prop_result):
-            (
-                pid, prov_id, prop_id, status, total_amount, rate_notes,
-                timeline_notes, scope_summary, rejection_reason,
-                negotiation_notes, sent_at, responded_at,
-            ) = row
-            prop_by_project[pid] = {
-                "id": prop_id,
-                "provider_id": prov_id,
-                "status": status,
-                "total_amount": total_amount,
-                "rate_notes": rate_notes,
-                "timeline_notes": timeline_notes,
-                "scope_summary": scope_summary,
-                "rejection_reason": rejection_reason,
-                "negotiation_notes": negotiation_notes,
-                "sent_at": sent_at,
-                "responded_at": responded_at,
+        for row in rows(batch_res[9]):
+            clients_by_project[row[0]] = {
+                "about_client": row[1], "building_users": row[2], "family_or_team_size": row[3],
+                "elderly_members": row[4], "children": row[5], "pets": row[6],
+                "work_from_home": row[7], "accessibility_requirements": row[8], "client_id": row[9]
             }
-        for project in projects:
-            project["proposal"] = prop_by_project.get(project["id"], None)
-    except Exception:  # noqa: BLE001
-        for project in projects:
-            project["proposal"] = None
 
-    # Team members (sub-provider assignments)
-    try:
-        team_result = pipeline(
-            ["SELECT project_id,provider_id,role,status,notes FROM project_team_members"]
-        )[0]
-        team_by_project: dict[int, list[dict[str, Any]]] = {}
-        for row in rows(team_result):
-            pid, prov_id, role, status, notes = row
-            team_by_project.setdefault(pid, []).append(
-                {
-                    "provider_id": prov_id,
-                    "role": role,
-                    "status": status,
-                    "notes": notes,
-                }
-            )
-        for project in projects:
-            project["team_members"] = team_by_project.get(project["id"], [])
-    except Exception:  # noqa: BLE001
-        for project in projects:
-            project["team_members"] = []
+        for row in rows(batch_res[10]):
+            lifestyle_by_project[row[0]] = {
+                "daily_routine": row[1], "entertain_guests": row[2], "host_parties": row[3],
+                "relaxation_place": row[4], "morning_coffee_location": row[5],
+                "outdoor_activities": row[6], "hobbies": row[7], "privacy_importance": row[8]
+            }
 
-    # Messages (provider-client communication)
-    try:
-        msg_result = pipeline(
-            ["SELECT project_id,sender_type,sender_id,message_type,content,created_at FROM project_messages"]
-        )[0]
-        msg_by_project: dict[int, list[dict[str, Any]]] = {}
-        for row in rows(msg_result):
-            pid, sender_type, sender_id, msg_type, content, created_at = row
-            msg_by_project.setdefault(pid, []).append(
-                {
-                    "sender_type": sender_type,
-                    "sender_id": sender_id,
-                    "message_type": msg_type,
-                    "content": content,
-                    "created_at": created_at,
-                }
-            )
-        for project in projects:
-            project["messages"] = msg_by_project.get(project["id"], [])
-    except Exception:  # noqa: BLE001
-        for project in projects:
-            project["messages"] = []
+        for row in rows(batch_res[11]):
+            approval_by_project[row[0]] = {
+                "primary_decision_maker": row[1], "other_approval_stakeholders": row[2],
+                "expected_revision_rounds": row[3], "design_review_method": row[4],
+                "approval_turnaround_time": row[5]
+            }
+
+        for row in rows(batch_res[12]):
+            comm_by_project[row[0]] = {
+                "preferred_contact": row[1], "communication_channel": row[2],
+                "meeting_frequency": row[3], "best_time_to_reach": row[4],
+                "special_instructions": row[5]
+            }
+
+        for row in rows(batch_res[13]):
+            tech_by_project[row[0]] = {
+                "energy_efficient_design": row[1], "solar_panels": row[2],
+                "rainwater_harvesting": row[3], "smart_home_automation": row[4],
+                "hvac_preference": row[5], "backup_power": row[6],
+                "water_storage_borewell": row[7], "security_system_requirements": row[8],
+                "preferred_material_techs": row[9]
+            }
+
+        for row in rows(batch_res[14]):
+            reg_by_project[row[0]] = {
+                "zoning_restrictions": row[1], "height_restrictions": row[2],
+                "home_owner_association_rules": row[3], "permits_obtained": row[4],
+                "land_disputes_encumbrances": row[5], "setback_requirements": row[6]
+            }
+
+        for row in rows(batch_res[15]):
+            outdoor_by_project[row[0]] = {
+                "garden": row[1], "swimming_pool": row[2], "outdoor_deck_patio": row[3],
+                "bbq_area": row[4], "parking": row[5], "driveway_gate_notes": row[6],
+                "landscape_boundary_fencing": row[7], "outdoor_lighting": row[8],
+                "play_area_children": row[9], "pet_friendly_outdoor": row[10]
+            }
+
+        for row in rows(batch_res[16]):
+            spaces_by_project.setdefault(row[0], []).append({
+                "space_name": row[1], "required": row[2], "priority": row[3],
+                "approx_area_size": row[4], "quantity": row[5], "adjacency_notes": row[6]
+            })
+
+        for row in rows(batch_res[17]):
+            timeline_by_project[row[0]] = {
+                "desired_start_date": row[1], "desired_completion_date": row[2],
+                "fixed_deadline_notes": row[3], "phased": row[4],
+                "phases_description": row[5], "urgency_level": row[6]
+            }
+
+        for row in rows(batch_res[18]):
+            prop_by_project[row[1]] = {
+                "id": row[0], "provider_id": row[2], "status": row[3],
+                "total_amount": row[4], "rate_notes": row[5],
+                "timeline_notes": row[6], "scope_summary": row[7],
+                "rejection_reason": row[8], "negotiation_notes": row[9],
+                "sent_at": row[10], "responded_at": row[11]
+            }
+
+        for row in rows(batch_res[19]):
+            team_by_project.setdefault(row[0], []).append({
+                "provider_id": row[1], "role": row[2], "status": row[3], "notes": row[4]
+            })
+
+        for row in rows(batch_res[20]):
+            msg_by_project.setdefault(row[0], []).append({
+                "sender_type": row[1], "sender_id": row[2], "message_type": row[3],
+                "content": row[4], "created_at": row[5]
+            })
+
+    for project in projects:
+        pid = project["id"]
+        project["inspiration_images"] = images_by_project.get(pid, [])
+        project["project_docs"] = docs_by_project.get(pid, [])
+        project["project_scopes"] = scopes_by_project.get(pid, [])
+        project["requirements"] = reqs_by_project.get(pid, [])
+        project["priorities"] = prios_by_project.get(pid, [])
+        project["family_members"] = family_by_project.get(pid, [])
+        project["project_clients"] = clients_by_project.get(pid, None)
+        project["project_lifestyle"] = lifestyle_by_project.get(pid, None)
+        project["project_approval_process"] = approval_by_project.get(pid, None)
+        project["project_communication"] = comm_by_project.get(pid, None)
+        project["project_technical"] = tech_by_project.get(pid, None)
+        project["project_regulatory"] = reg_by_project.get(pid, None)
+        project["project_outdoor"] = outdoor_by_project.get(pid, None)
+        project["project_spaces"] = spaces_by_project.get(pid, [])
+        project["project_timeline"] = timeline_by_project.get(pid, None)
+        project["proposal"] = prop_by_project.get(pid, None)
+        project["team_members"] = team_by_project.get(pid, [])
+        project["messages"] = msg_by_project.get(pid, [])
 
     return projects
 

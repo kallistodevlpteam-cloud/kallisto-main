@@ -4,17 +4,16 @@ import React from "react";
 import {
   Sparkles,
   ChevronDown,
-  HelpCircle,
-  FileText,
-  MessageSquare,
-  AlertTriangle,
-  AlertCircle,
-  CheckCircle2,
-  Info,
-  Tag,
-  Plus,
 } from "lucide-react";
-import { OdinContextualInsight, OdinInsightSeverity } from "@/features/enquiries/services/enquiry-intelligence";
+import {
+  StudioDuotoneIcon,
+  AnalyticsDuotoneIcon,
+  DocumentsDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
+import {
+  OdinContextualInsight,
+  OdinInsightSeverity,
+} from "@/features/enquiries/services/enquiry-intelligence";
 import styles from "./odin-insight-card.module.css";
 
 export interface OdinInsightCardProps {
@@ -32,7 +31,6 @@ export interface OdinInsightCardProps {
 interface SeverityConfig {
   label: string;
   styleClass: string;
-  icon: React.ReactNode;
 }
 
 function getSeverityConfig(severity: OdinInsightSeverity): SeverityConfig {
@@ -40,65 +38,66 @@ function getSeverityConfig(severity: OdinInsightSeverity): SeverityConfig {
     case "blocker":
       return {
         label: "Critical",
-        styleClass: styles.badgeBlocker,
-        icon: <AlertTriangle size={12} className={styles.badgeIcon} />,
+        styleClass: styles.pillRed,
       };
     case "verification":
       return {
-        label: "Needs Verification",
-        styleClass: styles.badgeVerification,
-        icon: <HelpCircle size={12} className={styles.badgeIcon} />,
+        label: "Verification",
+        styleClass: styles.pillAmber,
       };
     case "inferred":
       return {
         label: "Inferred",
-        styleClass: styles.badgeInferred,
-        icon: <Sparkles size={12} className={styles.badgeIcon} />,
+        styleClass: styles.pillPurple,
       };
     case "recommendation":
       return {
         label: "Recommendation",
-        styleClass: styles.badgeRecommendation,
-        icon: <Info size={12} className={styles.badgeIcon} />,
+        styleClass: styles.pillBlue,
       };
     case "risk":
       return {
         label: "Risk",
-        styleClass: styles.badgeRisk,
-        icon: <AlertCircle size={12} className={styles.badgeIcon} />,
+        styleClass: styles.pillRed,
       };
     case "change":
       return {
         label: "Change",
-        styleClass: styles.badgeChange,
-        icon: <Info size={12} className={styles.badgeIcon} />,
+        styleClass: styles.pillGrey,
       };
     case "contradiction":
       return {
         label: "Unresolved",
-        styleClass: styles.badgeContradiction,
-        icon: <AlertCircle size={12} className={styles.badgeIcon} />,
+        styleClass: styles.pillAmber,
       };
     case "strength":
     default:
       return {
         label: "Strength",
-        styleClass: styles.badgeStrength,
-        icon: <CheckCircle2 size={12} className={styles.badgeIcon} />,
+        styleClass: styles.pillGreen,
       };
   }
+}
+
+function getInsightIcon(severity: OdinInsightSeverity) {
+  if (severity === "blocker" || severity === "risk" || severity === "contradiction") {
+    return AnalyticsDuotoneIcon;
+  }
+  if (severity === "verification" || severity === "inferred") {
+    return DocumentsDuotoneIcon;
+  }
+  return StudioDuotoneIcon;
 }
 
 export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
   insight,
   isExpanded,
   onToggleExpand,
-  onMouseEnter,
-  onMouseLeave,
   onAppendToClarification,
   onNavigateToTab,
 }) => {
   const badgeConfig = getSeverityConfig(insight.severity);
+  const IconComponent = getInsightIcon(insight.severity);
 
   const handlePrimaryAction = () => {
     if (!insight.actionPrimary) return;
@@ -122,117 +121,88 @@ export const OdinInsightCard: React.FC<OdinInsightCardProps> = ({
 
   return (
     <div
-      className={`${styles.cardShell} ${isExpanded ? styles.cardShellExpanded : ""}`}
-      onClick={onToggleExpand}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      className={`${styles.cardShell} ${
+        isExpanded ? styles.cardShellExpanded : ""
+      }`}
     >
-      {/* ── 1. LAYER 1: HEADER ROW ────────────────────────────────────────── */}
-      <div className={styles.headerRow}>
-        <div className={styles.headerTitleGroup}>
-          <div className={styles.iconBox}>
-            <Sparkles size={13} className={styles.sparkleIcon} />
+      {/* Clickable Header Row matching Homepage ODIN Studio */}
+      <button
+        type="button"
+        onClick={onToggleExpand}
+        className={styles.cardHeaderBtn}
+        aria-expanded={isExpanded}
+        aria-label={`${insight.title} insight details`}
+      >
+        <div className={styles.cardLeftGroup}>
+          <div className={styles.sidebarThemedIconBox}>
+            <IconComponent size={18} />
           </div>
-          <h4 className={styles.cardTitle}>{insight.title}</h4>
+          <div className={styles.cardTextStack}>
+            <strong className={styles.cardTitle}>{insight.title}</strong>
+            {insight.domainTag && (
+              <span className={styles.cardSubtitle}>{insight.domainTag}</span>
+            )}
+          </div>
         </div>
 
-        <button
-          type="button"
-          className={styles.chevronBtn}
-          aria-label={isExpanded ? "Collapse details" : "Expand details"}
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleExpand();
-          }}
-        >
+        <div className={styles.cardRightGroup}>
+          <span className={`${styles.statusPill} ${badgeConfig.styleClass}`}>
+            {badgeConfig.label}
+          </span>
           <ChevronDown
-            size={14}
-            className={`${styles.chevronIcon} ${isExpanded ? styles.chevronIconExpanded : ""}`}
+            size={13}
+            className={`${styles.chevronIcon} ${
+              isExpanded ? styles.chevronIconExpanded : ""
+            }`}
           />
-        </button>
-      </div>
+        </div>
+      </button>
 
-      {/* ── 2. LAYER 2: SECONDARY INNER CONTENT CARD (#ffffff) — COLLAPSIBLE ── */}
-      <div
-        className={`${styles.collapsibleContainer} ${
-          isExpanded ? styles.collapsibleContainerExpanded : ""
-        }`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className={styles.collapsibleInner}>
-          {/* Summary Paragraph */}
-          <p className={styles.summaryText}>{insight.summary}</p>
+      {/* Expanded Body matching Homepage */}
+      {isExpanded && (
+        <div className={styles.expandedBody}>
+          <p className={styles.expandedDesc}>{insight.summary}</p>
 
-          {/* Expanded Details */}
           {hasExpandedDetails && (
             <div className={styles.detailsGroup}>
               {insight.whyFlagged && (
                 <div className={styles.detailRow}>
-                  <div className={styles.labelCol}>
-                    <div className={styles.rowIconWrap}>
-                      <HelpCircle size={12} className={styles.rowIcon} />
-                    </div>
-                    <span className={styles.labelText}>Why flagged:</span>
-                  </div>
-                  <p className={styles.valueText}>{insight.whyFlagged}</p>
+                  <span className={styles.detailLabel}>Why flagged:</span>
+                  <span className={styles.detailValue}>{insight.whyFlagged}</span>
                 </div>
               )}
-
               {insight.affectedArea && (
                 <div className={styles.detailRow}>
-                  <div className={styles.labelCol}>
-                    <div className={styles.rowIconWrap}>
-                      <FileText size={12} className={styles.rowIcon} />
-                    </div>
-                    <span className={styles.labelText}>Affected area:</span>
-                  </div>
-                  <p className={styles.valueText}>{insight.affectedArea}</p>
+                  <span className={styles.detailLabel}>Affected area:</span>
+                  <span className={styles.detailValue}>{insight.affectedArea}</span>
                 </div>
               )}
-
               {insight.suggestedQuestion && (
                 <div className={styles.detailRow}>
-                  <div className={styles.labelCol}>
-                    <div className={styles.rowIconWrap}>
-                      <MessageSquare size={12} className={styles.rowIcon} />
-                    </div>
-                    <span className={styles.labelText}>Suggested question:</span>
-                  </div>
-                  <p className={styles.valueText}>{insight.suggestedQuestion}</p>
+                  <span className={styles.detailLabel}>Suggested question:</span>
+                  <span className={styles.detailValue}>{insight.suggestedQuestion}</span>
                 </div>
               )}
             </div>
           )}
 
-          {/* Semantic Tags Row */}
-          <div className={styles.tagsRow}>
-            <span className={`${styles.badge} ${badgeConfig.styleClass}`}>
-              {badgeConfig.icon}
-              <span>{badgeConfig.label}</span>
-            </span>
-            {insight.domainTag && (
-              <span className={styles.domainTag}>
-                <Tag size={11} className={styles.tagIcon} />
-                <span>{insight.domainTag}</span>
-              </span>
-            )}
-          </div>
-
-          {/* ── 3. LAYER 3: FOOTER CTA BUTTON ── */}
           {insight.actionPrimary && (
-            <div className={styles.footerCtaWrap} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.expandedCtaRow}>
               <button
                 type="button"
-                className={styles.ctaButton}
-                onClick={handlePrimaryAction}
+                className={styles.expandedCtaBtn}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePrimaryAction();
+                }}
               >
-                <Plus size={13} />
+                <Sparkles size={11} />
                 <span>{insight.actionPrimary.label}</span>
               </button>
             </div>
           )}
         </div>
-      </div>
+      )}
     </div>
   );
 };

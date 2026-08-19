@@ -9,9 +9,15 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const token = request.headers.get("Authorization")?.replace("Bearer ", "") ?? undefined;
+  const authHeader = request.headers.get("authorization") ?? undefined;
+  const token = authHeader
+    ? authHeader.replace(/^Bearer\s+/i, "")
+    : request.cookies.get("kallisto_auth_token")?.value;
+  const providerId =
+    request.headers.get("x-provider-id") ?? request.cookies.get("kallisto_provider_id")?.value;
+
   try {
-    const project = await fetchBackendProjectById(id, token);
+    const project = await fetchBackendProjectById(id, token || providerId);
     return NextResponse.json({ status: "ok", project });
   } catch (error) {
     const status = error instanceof BackendError ? error.status : 503;

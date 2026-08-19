@@ -54,9 +54,30 @@ export function GanttWorkspace({
   const [isExpanded, setIsExpanded] = useState(false);
   const [hoveredActivityId, setHoveredActivityId] = useState<string | null>(null);
 
-  // Sync scroll ref for task table and imperative handle ref for GanttGrid
+  const containerRef = useRef<HTMLDivElement>(null);
   const taskTableRef = useRef<HTMLDivElement>(null);
   const ganttGridRef = useRef<GanttGridHandle>(null);
+
+  // Sync fullscreen state with document.fullscreenElement
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isCurrentlyFullscreen = Boolean(
+        document.fullscreenElement &&
+        containerRef.current &&
+        document.fullscreenElement === containerRef.current
+      );
+      if (!document.fullscreenElement) {
+        setIsExpanded(false);
+      } else if (isCurrentlyFullscreen) {
+        setIsExpanded(true);
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
 
   // Calculate timeline range ONCE from complete unfiltered activities list
   const timelineRange = useMemo(
@@ -78,12 +99,43 @@ export function GanttWorkspace({
     if (!isExpanded) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        }
         setIsExpanded(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isExpanded]);
+
+  const handleToggleExpand = async () => {
+    if (!containerRef.current) {
+      setIsExpanded((prev) => !prev);
+      return;
+    }
+
+    if (document.fullscreenElement) {
+      try {
+        await document.exitFullscreen();
+        setIsExpanded(false);
+      } catch {
+        setIsExpanded(false);
+      }
+    } else {
+      try {
+        if (typeof containerRef.current.requestFullscreen === "function") {
+          await containerRef.current.requestFullscreen();
+          setIsExpanded(true);
+        } else {
+          setIsExpanded((prev) => !prev);
+        }
+      } catch {
+        // Fallback to CSS fullscreen overlay
+        setIsExpanded((prev) => !prev);
+      }
+    }
+  };
 
   const handleNavigateToday = () => {
     ganttGridRef.current?.scrollToToday();
@@ -116,6 +168,7 @@ export function GanttWorkspace({
 
   return (
     <div
+      ref={containerRef}
       className={`${styles.timelineWorkspaceLayout} ${
         isExpanded ? styles.ganttWorkspaceExpanded : ""
       }`}
@@ -129,7 +182,7 @@ export function GanttWorkspace({
           showBaseline={showBaseline}
           onToggleBaseline={onToggleBaseline}
           isExpanded={isExpanded}
-          onToggleExpand={() => setIsExpanded((prev) => !prev)}
+          onToggleExpand={handleToggleExpand}
           searchValue={searchValue}
           onSearchChange={onSearchChange}
           dateRangeLabel={dateRangeLabel}

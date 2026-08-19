@@ -14,47 +14,116 @@
 
 .scopeGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 14px;
   width: 100%;
   box-sizing: border-box;
 }
 
 .scopeCategoryCard {
-  background: #f8fafc;
-  border: 1px solid #f1f5f9;
-  border-radius: 10px;
-  padding: 14px;
+  background: #ffffff;
+  border: none;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  border-radius: 14px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s ease;
+}
+
+.scopeCategoryCard:hover {
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.categoryHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .categoryTitle {
   font-size: 13px;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 10px 0;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #e2e8f0;
+  font-weight: 650;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.itemCountBadge {
+  font-size: 10.5px;
+  font-weight: 650;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: #f1f5f9;
+  color: #64748b;
+  flex-shrink: 0;
 }
 
 .itemList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 9px;
 }
 
 .itemRow {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 9px;
   font-size: 12.5px;
-  color: #475569;
-  line-height: 1.4;
+  color: #334155;
+  line-height: 1.45;
 }
 
 .checkIcon {
-  color: #16a34a;
+  color: #10b981;
   flex-shrink: 0;
   margin-top: 2px;
+}
+
+/* Unconfirmed Scope Card */
+.unconfirmedCard {
+  background: #ffffff;
+  border: none;
+}
+
+.unconfirmedTitle {
+  font-size: 13px;
+  font-weight: 650;
+  color: #c2410c;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.unconfirmedBadge {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+  flex-shrink: 0;
+}
+
+.unconfirmedIcon {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #fff7ed;
+  color: #ea580c;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.unconfirmedText {
+  color: #475569;
 }

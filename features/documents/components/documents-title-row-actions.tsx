@@ -10,19 +10,20 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Building2,
-  CreditCard,
-  FileText,
-  Folder,
-  SquareCheckBig,
-} from "lucide-react";
+  HomeDuotoneIcon,
+  TaskDuotoneIcon,
+  DriveDuotoneIcon,
+  BoqDuotoneIcon,
+  FinanceDuotoneIcon,
+  SiteDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 
 const NAV_CHIPS = [
-  { id: "task", label: "Task", icon: SquareCheckBig, href: "/tasks" },
-  { id: "docs", label: "Drive", icon: Folder, href: "/documents" },
-  { id: "boq", label: "BOQ", icon: FileText, href: "/boq" },
-  { id: "finance", label: "Finance", icon: CreditCard, href: "/finance" },
-  { id: "site", label: "Site", icon: Building2, href: "/site" },
+  { id: "task", label: "Task", icon: TaskDuotoneIcon, color: "#10b981", href: "/tasks" },
+  { id: "docs", label: "Drive", icon: DriveDuotoneIcon, color: "#f59e0b", href: "/documents" },
+  { id: "boq", label: "BOQ", icon: BoqDuotoneIcon, color: "#6366f1", href: "/boq" },
+  { id: "finance", label: "Finance", icon: FinanceDuotoneIcon, color: "#f43f5e", href: "/finance" },
+  { id: "site", label: "Site", icon: SiteDuotoneIcon, color: "#0ea5e9", href: "/site" },
 ] as const;
 
 export function DocumentsTitleRowActions() {
@@ -36,9 +37,30 @@ export function DocumentsTitleRowActions() {
     }
   }
 
+  const homeHref = projectId ? `/projects/${projectId}` : "/projects";
+  const isOverviewPage =
+    projectId !== null
+      ? pathname === `/projects/${projectId}` || pathname === `/projects/${projectId}/`
+      : pathname === "/projects" || pathname === "/" || pathname === "/home";
+
   return (
     <nav className="docs-title-actions" aria-label="Document page navigation">
       <div className="title-status-chips" aria-label="Project Navigation Options">
+        {!isOverviewPage && (
+          <Link
+            href={homeHref}
+            className="title-home-btn"
+            title="Project Overview"
+            aria-label="Back to project overview"
+          >
+            <HomeDuotoneIcon
+              size={18}
+              className="title-chip-icon"
+              style={{ color: "#3b82f6" }}
+              aria-hidden="true"
+            />
+          </Link>
+        )}
         {NAV_CHIPS.map((chip) => {
           const Icon = chip.icon;
 
@@ -63,7 +85,13 @@ export function DocumentsTitleRowActions() {
               href={targetHref}
               className={`title-status-chip ${isActive ? "is-active" : ""}`}
             >
-              <Icon size={18} strokeWidth={1.75} className="title-chip-icon" aria-hidden="true" />
+              <Icon
+                size={18}
+                strokeWidth={1.75}
+                className="title-chip-icon"
+                style={{ color: chip.color }}
+                aria-hidden="true"
+              />
               <span>{chip.label}</span>
             </Link>
           );

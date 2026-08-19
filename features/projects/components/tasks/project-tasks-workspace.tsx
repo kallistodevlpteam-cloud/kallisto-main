@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { Plus, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Project } from "@/types/domain/project";
 import {
   ProjectTask,
@@ -11,7 +11,7 @@ import {
 } from "@/types/domain/project-task";
 import { ProjectTaskPage } from "@/services/repositories/project-task.repository";
 import { projectTaskService } from "@/services/repositories/project-task.service";
-import { ProjectTasksToolbar } from "./project-tasks-toolbar";
+import { TaskListDuotoneIcon, TimelineDuotoneIcon } from "@/components/layout/sidebar-icons";
 import { ProjectTaskGroup } from "./project-task-group";
 import { ProjectTaskBoard } from "./project-task-board";
 import { ProjectTaskPanel } from "./project-task-panel";
@@ -270,87 +270,89 @@ export function ProjectTasksWorkspace({ project }: ProjectTasksWorkspaceProps) {
           t.status !== "cancelled"
       ).length;
 
+  const renderHeaderTabs = (
+    <div className={styles.tabHeadingGroup}>
+      <button
+        type="button"
+        className={`${styles.headerTabBtn} ${activeHeaderTab === "tasks" ? styles.headerTabBtnActive : ""}`}
+        onClick={() => setActiveHeaderTab("tasks")}
+      >
+        <TaskListDuotoneIcon size={15} />
+        <span>List</span>
+      </button>
+      <button
+        type="button"
+        className={`${styles.headerTabBtn} ${activeHeaderTab === "timeline" ? styles.headerTabBtnActive : ""}`}
+        onClick={() => setActiveHeaderTab("timeline")}
+      >
+        <TimelineDuotoneIcon size={15} />
+        <span>Timeline</span>
+      </button>
+    </div>
+  );
+
   return (
     <div className={`${styles.projectTasksWorkspace} projectTasksWorkspace`}>
-      {/* 1. Tasks Workspace Title Card with Primary CTA */}
-      <div className={`${styles.projectTasksHeadingRow} projectTasksHeadingRow`}>
-        <div className={styles.tabHeadingGroup}>
-          <button
-            type="button"
-            className={`${styles.headerTabBtn} ${activeHeaderTab === "tasks" ? styles.headerTabBtnActive : ""}`}
-            onClick={() => setActiveHeaderTab("tasks")}
-          >
-            List
-          </button>
-          <button
-            type="button"
-            className={`${styles.headerTabBtn} ${activeHeaderTab === "timeline" ? styles.headerTabBtnActive : ""}`}
-            onClick={() => setActiveHeaderTab("timeline")}
-          >
-            Timeline
-          </button>
+      {activeHeaderTab !== "timeline" && (
+        <div className={`${styles.projectTasksHeadingRow} projectTasksHeadingRow`}>
+          {renderHeaderTabs}
         </div>
-        {activeHeaderTab === "tasks" && (
-          <button
-            type="button"
-            className={styles.primaryBtn}
-            onClick={() => setPanelState({ type: "create" })}
-          >
-            <Plus size={14} />
-            <span>Add Task</span>
-          </button>
-        )}
-      </div>
+      )}
 
       {activeHeaderTab === "timeline" ? (
-        <div style={{ marginTop: "12px", width: "100%", flex: 1, minHeight: 0, height: "100%", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+        <div style={{ width: "100%", flex: 1, minHeight: 0, height: "100%", overflow: "hidden", display: "flex", flexDirection: "column" }}>
           <ProjectScheduleWorkspace
             projectId={project.id}
             projectName={project.name || "Nila Residence"}
+            headerTabs={renderHeaderTabs}
           />
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, overflowY: "auto", paddingBottom: "32px" }}>
-          <p className={`${styles.projectTasksDescription} projectTasksDescription`} style={{ marginTop: "12px" }}>
-            Track and coordinate project work across teams and phases.
-          </p>
+          <div className={`${styles.taskDescriptionHeaderRow} taskDescriptionHeaderRow`}>
+            <div className={styles.taskDescriptionTextGroup}>
+              <p className={`${styles.projectTasksDescription} projectTasksDescription`}>
+                Track and coordinate project work across teams and phases.
+              </p>
 
-          {/* Restrained Operational Summary Row */}
-          <div className={`${styles.taskOperationalSummaryRow} taskOperationalSummaryRow`}>
-            <span className={styles.summaryMetricTotal}>
-              {summaryTotalCount} {summaryTotalCount === 1 ? "task" : "tasks"}
-            </span>
-            <span className={styles.summaryDot}>·</span>
-            <span className={`${styles.summaryMetricItem} ${summaryOverdueCount > 0 ? styles.summaryMetricOverdue : ""}`}>
-              {summaryOverdueCount} overdue
-            </span>
-            <span className={styles.summaryDot}>·</span>
-            <span className={`${styles.summaryMetricItem} ${summaryBlockedCount > 0 ? styles.summaryMetricBlocked : ""}`}>
-              {summaryBlockedCount} blocked
-            </span>
-            <span className={styles.summaryDot}>·</span>
-            <span className={styles.summaryMetricItem}>
-              {summaryDueThisWeekCount} due this week
-            </span>
+              {/* Restrained Operational Summary Row */}
+              <div className={`${styles.taskOperationalSummaryRow} taskOperationalSummaryRow`}>
+                <span className={styles.summaryMetricTotal}>
+                  {summaryTotalCount} {summaryTotalCount === 1 ? "task" : "tasks"}
+                </span>
+                <span className={styles.summaryDot}>·</span>
+                <span className={`${styles.summaryMetricItem} ${summaryOverdueCount > 0 ? styles.summaryMetricOverdue : ""}`}>
+                  {summaryOverdueCount} overdue
+                </span>
+                <span className={styles.summaryDot}>·</span>
+                <span className={`${styles.summaryMetricItem} ${summaryBlockedCount > 0 ? styles.summaryMetricBlocked : ""}`}>
+                  {summaryBlockedCount} blocked
+                </span>
+                <span className={styles.summaryDot}>·</span>
+                <span className={styles.summaryMetricItem}>
+                  {summaryDueThisWeekCount} due this week
+                </span>
+              </div>
+            </div>
+
+            {/* Scope Toggle Control on the Right */}
+            <div className={styles.taskScopeControl}>
+              <button
+                type="button"
+                className={`${styles.scopeBtn} ${scope === "mine" ? styles.scopeBtnActive : ""}`}
+                onClick={() => updateUrlParams({ scope: "mine" })}
+              >
+                My Tasks
+              </button>
+              <button
+                type="button"
+                className={`${styles.scopeBtn} ${scope === "all" ? styles.scopeBtnActive : ""}`}
+                onClick={() => updateUrlParams({ scope: "all" })}
+              >
+                All Tasks
+              </button>
+            </div>
           </div>
-
-          {/* 2. Unified Continuous Control Toolbar */}
-          <ProjectTasksToolbar
-            searchQuery={searchQuery}
-            onSearchQueryChange={(q) => updateUrlParams({ q })}
-            statusFilter={statusFilter}
-            onStatusFilterChange={(st) => updateUrlParams({ status: st })}
-            priorityFilter={priorityFilter}
-            onPriorityFilterChange={(pr) => updateUrlParams({ priority: pr })}
-            assigneeFilter={assigneeFilter}
-            onAssigneeFilterChange={(as) => updateUrlParams({ assignee: as })}
-            phaseFilter={phaseFilter}
-            onPhaseFilterChange={(ph) => updateUrlParams({ phase: ph })}
-            scope={scope}
-            onScopeChange={(s) => updateUrlParams({ scope: s })}
-            sortBy={sortBy}
-            onSortByChange={(so) => updateUrlParams({ sort: so })}
-          />
 
           {/* Loading / Error States */}
           {loading && !taskPage ? (

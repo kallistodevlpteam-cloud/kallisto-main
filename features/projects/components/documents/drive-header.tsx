@@ -1,6 +1,10 @@
 "use client";
 
-import { Inbox, Star, Users } from "lucide-react";
+import {
+  AllDocumentsDuotoneIcon,
+  SharedWithMeDuotoneIcon,
+  StarredDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 
 import { DriveScope } from "./drive-query-state";
 import styles from "./project-documents-workspace.module.css";
@@ -8,11 +12,11 @@ import styles from "./project-documents-workspace.module.css";
 const scopes: Array<{
   id: DriveScope;
   label: string;
-  icon: typeof Inbox;
+  icon: typeof AllDocumentsDuotoneIcon;
 }> = [
-  { id: "all", label: "All Documents", icon: Inbox },
-  { id: "shared", label: "Shared with me", icon: Users },
-  { id: "starred", label: "Starred", icon: Star },
+  { id: "all", label: "All Documents", icon: AllDocumentsDuotoneIcon },
+  { id: "shared", label: "Shared with me", icon: SharedWithMeDuotoneIcon },
+  { id: "starred", label: "Starred", icon: StarredDuotoneIcon },
 ];
 
 interface DriveScopeTabsProps {
@@ -33,7 +37,7 @@ export function DriveScopeTabs({ scope, onChange, counts }: DriveScopeTabsProps)
           className={scope === id ? styles.scopeTabActive : styles.scopeTab}
           onClick={() => onChange(id)}
         >
-          <Icon size={16} strokeWidth={2} aria-hidden="true" />
+          <Icon size={16} aria-hidden="true" />
           <span>{label}</span>
           {counts?.[id] !== undefined && counts[id]! > 0 ? (
             <span className={styles.scopeCount}>{counts[id]}</span>

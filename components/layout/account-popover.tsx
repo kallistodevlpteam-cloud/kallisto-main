@@ -68,17 +68,17 @@ export function AccountPopover({
   const handleNavigate = (tab: string, sub?: string) => {
     onClose();
     let path = `/settings/${tab}`;
-    
+
     if (tab === "profile") {
       path = "/settings/business-profile";
     }
-    
+
     if (sub) {
       let subParam = sub;
       if (sub === "language") subParam = "region";
       path = `${path}?sub=${subParam}`;
     }
-    
+
     router.push(path);
   };
 

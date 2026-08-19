@@ -9,6 +9,8 @@ import {
 import {
   BellDuotoneIcon,
   FeedbackDuotoneIcon,
+  FullscreenExpandDuotoneIcon,
+  FullscreenExitDuotoneIcon,
   OdinDuotoneIcon,
   SearchDuotoneIcon,
 } from "./sidebar-icons";
@@ -211,6 +213,37 @@ export function TopBar({
 
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  const handleToggleFullscreen = async () => {
+    if (document.fullscreenElement) {
+      try {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      } catch {
+        setIsFullscreen(false);
+      }
+    } else {
+      try {
+        if (typeof document.documentElement.requestFullscreen === "function") {
+          await document.documentElement.requestFullscreen();
+          setIsFullscreen(true);
+        }
+      } catch {
+        // Fullscreen API may be blocked in some browser environments
+      }
+    }
+  };
 
   return (
     <header className="topbar">
@@ -295,6 +328,19 @@ export function TopBar({
         >
           <BellDuotoneIcon size={16} />
           <span className="notification-indicator" />
+        </button>
+        <button
+          className={`topbar-icon-btn${isFullscreen ? " is-active" : ""}`}
+          type="button"
+          aria-label={isFullscreen ? "Exit full screen" : "Enter full screen"}
+          title={isFullscreen ? "Exit full screen" : "Enter full screen"}
+          onClick={handleToggleFullscreen}
+        >
+          {isFullscreen ? (
+            <FullscreenExitDuotoneIcon size={16} />
+          ) : (
+            <FullscreenExpandDuotoneIcon size={16} />
+          )}
         </button>
         <button
           className={`topbar-avatar-btn${accountOpen ? " is-active" : ""}`}

@@ -2,6 +2,10 @@
 
 .container {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
   box-sizing: border-box;
 }
 
@@ -9,33 +13,48 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 0;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.headerIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
 }
 
 .title {
-  font-size: 13.5px;
-  font-weight: 600;
-  color: #1e293b;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #0f172a;
   margin: 0;
-  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 .countBadge {
   font-size: 11px;
   font-weight: 600;
-  color: #64748b;
+  color: #475569;
   background: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(0, 0, 0, 0.04);
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: 9999px;
 }
 
 .tableCard {
   background: #ffffff;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
 }
 
 .tableResponsiveContainer {
@@ -50,20 +69,20 @@
 }
 
 .docTable th {
-  font-size: 10px;
+  font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #94a3b8;
-  padding: 11px 16px;
-  border-bottom: 1px solid #e2e8f0;
-  background: #ffffff;
+  color: #64748b;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #f8fafc;
   white-space: nowrap;
 }
 
 .docTable td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #f1f5f9;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f8fafc;
   vertical-align: middle;
 }
 
@@ -72,11 +91,48 @@
 }
 
 .docTable tbody tr {
-  transition: background-color 0.15s ease;
+  transition: background-color 0.12s ease;
 }
 
 .docTable tbody tr:hover {
+  background: #f7f7f5;
+}
+
+.emptyContainer {
+  padding: 36px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.emptyIconBox {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  margin-bottom: 10px;
+}
+
+.emptyTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  margin: 0 0 4px 0;
+}
+
+.emptySubText {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0;
+  max-width: 340px;
+  line-height: 1.4;
 }
 
 /* File Column */
@@ -88,43 +144,44 @@
 }
 
 .fileIconWrap {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: transform 0.15s ease;
 }
 
 .iconPdf {
   background: #fef2f2;
   color: #dc2626;
-  border: 1px solid #fecaca;
+  border: none;
 }
 
 .iconDwg {
   background: #eff6ff;
   color: #2563eb;
-  border: 1px solid #bfdbfe;
+  border: none;
 }
 
 .iconXlsx {
   background: #f0fdf4;
   color: #16a34a;
-  border: 1px solid #bbf7d0;
+  border: none;
 }
 
 .iconZip {
   background: #fff7ed;
   color: #ea580c;
-  border: 1px solid #ffedd5;
+  border: none;
 }
 
 .iconMissing {
-  background: #f8fafc;
+  background: #f1f5f9;
   color: #94a3b8;
-  border: 1px solid #e2e8f0;
+  border: none;
 }
 
 .fileInfo {
@@ -147,13 +204,13 @@
 }
 
 .newBadge {
-  font-size: 9.5px;
-  font-weight: 700;
-  color: #7c3aed;
-  background: #f3e8ff;
-  border: 1px solid #ddd6fe;
-  padding: 1px 6px;
-  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #2563eb;
+  background: #eff6ff;
+  border: none;
+  padding: 2px 7px;
+  border-radius: 9999px;
   line-height: 1;
 }
 
@@ -173,8 +230,8 @@
 .statusBadge {
   font-size: 11px;
   font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 6px;
+  padding: 3px 9px;
+  border-radius: 9999px;
   display: inline-block;
   line-height: 1.2;
   white-space: nowrap;
@@ -182,14 +239,14 @@
 
 .statusApproved {
   background: #f0fdf4;
-  color: #16a34a;
-  border: 1px solid #bbf7d0;
+  color: #15803d;
+  border: 1px solid #dcfce7;
 }
 
 .statusInReview {
   background: #eff6ff;
   color: #2563eb;
-  border: 1px solid #bfdbfe;
+  border: 1px solid #dbeafe;
 }
 
 .statusDraft {
@@ -199,9 +256,9 @@
 }
 
 .statusMissing {
-  background: #fff7ed;
-  color: #d97706;
-  border: 1px solid #ffedd5;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fee2e2;
 }
 
 /* Revision Column */

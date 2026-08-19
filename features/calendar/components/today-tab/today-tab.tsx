@@ -8,11 +8,13 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  Clock3,
-  MapPin,
   Square,
-  Users,
 } from "lucide-react";
+import {
+  ClockDuotoneIcon,
+  MapPinDuotoneIcon,
+  UserDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import type { CalendarActivityType } from "@/types/domain/calendar";
 import type {
   CalendarScopeId,
@@ -433,17 +435,17 @@ export function TodayTab({
 
                 <dl className={styles.focusMetadata}>
                   <div>
-                    <Clock3 size={15} />
+                    <ClockDuotoneIcon size={15} />
                     <dt>Time</dt>
                     <dd>{formatActivityRange(primaryActivity)}</dd>
                   </div>
                   <div>
-                    <MapPin size={15} />
+                    <MapPinDuotoneIcon size={15} />
                     <dt>Location</dt>
                     <dd>{primaryActivity.location ?? "Project workspace"}</dd>
                   </div>
                   <div>
-                    <Users size={15} />
+                    <UserDuotoneIcon size={15} />
                     <dt>Assigned to</dt>
                     <dd>
                       {primaryActivity.assigneeIds
@@ -565,15 +567,26 @@ export function TodayTab({
           </div>
 
           <div className={styles.miniCalendarWeekdays} aria-hidden="true">
-            {["M", "T", "W", "T", "F", "S", "S"].map((day, index) => (
-              <span key={`${day}-${index}`}>{day}</span>
-            ))}
+            {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map((d, index) => {
+              const selectedDateObj = new Date(`${selectedDate}T12:00:00`);
+              const activeDayOfWeekIdx = (selectedDateObj.getDay() + 6) % 7;
+              return (
+                <span
+                  key={`${d}-${index}`}
+                  className={`${styles.squircleDayNameBadge} ${
+                    index === activeDayOfWeekIdx ? styles.squircleDayNameActive : ""
+                  }`}
+                >
+                  {d}
+                </span>
+              );
+            })}
           </div>
 
           <div className={styles.miniCalendarGrid}>
             {monthCells.map((day, index) => {
               if (!day) {
-                return <span key={`empty-${index}`} aria-hidden="true" />;
+                return <div key={`empty-${index}`} className={styles.squircleDayBlank} aria-hidden="true" />;
               }
 
               const date = new Date(
@@ -590,8 +603,8 @@ export function TodayTab({
                 <button
                   type="button"
                   key={dateString}
-                  className={`${isToday ? styles.miniCalendarToday : ""} ${
-                    isSelected ? styles.miniCalendarSelected : ""
+                  className={`${styles.squircleDayCard} ${
+                    isSelected ? styles.squircleDaySelected : ""
                   }`}
                   aria-label={formatLongDate(dateString)}
                   aria-current={isToday ? "date" : undefined}
@@ -601,9 +614,9 @@ export function TodayTab({
                     onDateChange?.(dateString);
                   }}
                 >
-                  {day}
+                  <span className={styles.squircleDayNumber}>{day}</span>
                   {activityDates.has(dateString) && (
-                    <i aria-label="Activities scheduled" />
+                    <span className={styles.squircleEventDot} aria-label="Activities scheduled" />
                   )}
                 </button>
               );

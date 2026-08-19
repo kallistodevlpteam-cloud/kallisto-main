@@ -1,7 +1,13 @@
 "use client";
 
 import React from "react";
-import { Download, FileText, FileCode, FileSpreadsheet, Archive, MoreHorizontal, AlertCircle } from "lucide-react";
+import { Download, MoreHorizontal, AlertCircle } from "lucide-react";
+import {
+  DocumentsDuotoneIcon,
+  PdfDuotoneIcon,
+  CadDuotoneIcon,
+  SpreadsheetDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import styles from "./enquiry-project-documents-section.module.css";
 
 export interface ProjectDocumentItem {
@@ -146,16 +152,20 @@ function getFileIcon(doc: ProjectDocumentItem) {
   const ext = doc.name.split(".").pop()?.toUpperCase() || "DOC";
   switch (ext) {
     case "DWG":
-      return <FileCode size={15} />;
+    case "CAD":
+    case "DXF":
+      return <CadDuotoneIcon size={16} />;
     case "XLSX":
+    case "XLS":
     case "CSV":
-      return <FileSpreadsheet size={15} />;
+      return <SpreadsheetDuotoneIcon size={16} />;
     case "ZIP":
     case "RAR":
-      return <Archive size={15} />;
+    case "7Z":
+      return <DocumentsDuotoneIcon size={16} />;
     case "PDF":
     default:
-      return <FileText size={15} />;
+      return <PdfDuotoneIcon size={16} />;
   }
 }
 
@@ -199,8 +209,15 @@ export function EnquiryProjectDocumentsSection({
   return (
     <div className={styles.container} aria-label={title}>
       <div className={styles.headerRow}>
-        <h3 className={styles.title}>{title}</h3>
-        <span className={styles.countBadge}>{documents.length} files</span>
+        <div className={styles.titleGroup}>
+          <span className={styles.headerIcon}>
+            <DocumentsDuotoneIcon size={16} />
+          </span>
+          <h3 className={styles.title}>{title}</h3>
+        </div>
+        <span className={styles.countBadge}>
+          {documents.length} {documents.length === 1 ? "file" : "files"}
+        </span>
       </div>
 
       <div className={styles.tableCard}>
@@ -221,9 +238,15 @@ export function EnquiryProjectDocumentsSection({
               {documents.length === 0 ? (
                 <tr>
                   <td colSpan={7}>
-                    <p className={styles.emptyState} aria-label="No documents available">
-                      No documents have been shared yet.
-                    </p>
+                    <div className={styles.emptyContainer} aria-label="No documents available">
+                      <div className={styles.emptyIconBox}>
+                        <DocumentsDuotoneIcon size={24} />
+                      </div>
+                      <p className={styles.emptyTitle}>No documents shared yet</p>
+                      <p className={styles.emptySubText}>
+                        Drawings, site reports, and project specifications uploaded by the client will appear here.
+                      </p>
+                    </div>
                   </td>
                 </tr>
               ) : (

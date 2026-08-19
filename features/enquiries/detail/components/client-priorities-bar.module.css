@@ -3,7 +3,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
 }
 
@@ -68,7 +68,7 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   width: 100%;
-  align-items: start;
+  align-items: stretch;
 }
 
 @media (max-width: 1100px) {
@@ -83,195 +83,152 @@
   }
 }
 
-/* ── 4. Card Shell — matches odin-insight-card shell ─────────────────── */
+/* ── 4. Card Shell (Minimal Pure White Elevated Card) ─────────────────── */
 
 .cardShell {
-  background: #f8fafc;
-  border: none;
-  border-radius: 14px;
-  padding: 8px 10px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
-  cursor: pointer;
-  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 0.25s ease;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.15s ease;
+  box-sizing: border-box;
 }
 
 .cardShell:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
 }
 
-/* Card Shell Accent Background Themes (Frameless Borderless Design) */
-.shellConfirmed {
-  background: #f0fdf4;
-  border: none;
-}
+/* ── 5. Main Card Content (Icon + Text Column) ─────────────────────── */
 
-.shellConfirmed:hover {
-  background: #e6f4ea;
-  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.08);
-}
-
-.shellInferred {
-  background: #f5f3ff;
-  border: none;
-}
-
-.shellInferred:hover {
-  background: #ede9fe;
-  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.08);
-}
-
-/* Color Theme overrides for distinct visual variance */
-.theme_blue {
-  background: #f0f9ff;
-  border: none;
-}
-.theme_blue:hover {
-  background: #e0f2fe;
-}
-
-.theme_green {
-  background: #f0fdf4;
-  border: none;
-}
-.theme_green:hover {
-  background: #e6f4ea;
-}
-
-.theme_purple {
-  background: #f5f3ff;
-  border: none;
-}
-.theme_purple:hover {
-  background: #ede9fe;
-}
-
-.theme_orange {
-  background: #fff7ed;
-  border: none;
-}
-.theme_orange:hover {
-  background: #ffedd5;
-}
-
-.theme_pink {
-  background: #fff1f2;
-  border: none;
-}
-.theme_pink:hover {
-  background: #ffe4e6;
-}
-
-/* ── 5. Header Row ─────────────────────────────────────────────── */
-
-.headerRow {
+.cardMain {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 2px 4px;
-}
-
-.headerTitleGroup {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  flex: 1 1 0;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
 }
 
 .iconBox {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #0f172a;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  margin-top: 1px;
+  transition: transform 0.2s ease;
+}
+
+.cardShell:hover .iconBox {
+  transform: scale(1.05);
 }
 
 .headerIcon {
-  color: #0f172a;
+  color: currentColor;
+}
+
+.contentCol {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
 }
 
 .cardTitle {
-  font-size: 13.5px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   color: #0f172a;
-  line-height: 1.3;
+  line-height: 1.35;
   margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* ── 6. Secondary Inner Content Card (#ffffff) ─────────────────────── */
-
-.innerCard {
-  background: #ffffff;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
+  letter-spacing: -0.01em;
 }
 
 .cardSnippet {
-  font-size: 12.5px;
+  font-size: 12px;
   line-height: 1.45;
-  color: #1e293b;
-  font-weight: 500;
+  color: #475569;
   margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  font-weight: 450;
 }
+
+/* Color Themes for Icon Box Accents */
+.theme_blue .iconBox {
+  background: #f0f9ff;
+  color: #0284c7;
+  border: 1px solid #e0f2fe;
+}
+
+.theme_green .iconBox {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #d1fae5;
+}
+
+.theme_purple .iconBox {
+  background: #f5f3ff;
+  color: #6d28d9;
+  border: 1px solid #ede9fe;
+}
+
+.theme_orange .iconBox {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #ffedd5;
+}
+
+.theme_pink .iconBox {
+  background: #fff1f2;
+  color: #e11d48;
+  border: 1px solid #ffe4e6;
+}
+
+/* ── 6. Tags Row ───────────────────────────────────────────────────── */
 
 .tagsRow {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 2px;
+  gap: 5px;
   flex-wrap: wrap;
+  padding-top: 2px;
 }
 
 .confirmedBadge {
   font-size: 10.5px;
   font-weight: 600;
-  color: #16a34a;
-  background: #f0fdf4;
-  padding: 2.5px 7px;
+  color: #047857;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 2px 6.5px;
   border-radius: 5px;
   line-height: 1.2;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3.5px;
   white-space: nowrap;
 }
 
 .inferredBadge {
   font-size: 10.5px;
   font-weight: 600;
-  color: #7c3aed;
+  color: #6d28d9;
   background: #f5f3ff;
-  padding: 2.5px 7px;
+  border: 1px solid #ddd6fe;
+  padding: 2px 6.5px;
   border-radius: 5px;
   line-height: 1.2;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3.5px;
   white-space: nowrap;
 }
 
@@ -281,16 +238,17 @@
 
 .softTag {
   font-size: 10.5px;
-  font-weight: 600;
+  font-weight: 500;
   color: #475569;
   background: #f8fafc;
-  padding: 2.5px 7px;
+  border: 1px solid #e2e8f0;
+  padding: 2px 6.5px;
   border-radius: 5px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3.5px;
 }
 
 .tagIcon {
-  color: #64748b;
+  color: #94a3b8;
 }

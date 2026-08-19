@@ -105,13 +105,26 @@ export function buildEnquiriesFromProjects(projects: BackendProject[]): EnquiryR
         scope_name: scope.scope_name,
         items: scope.items ?? [],
       })),
-      requirementsList: (project.requirements ?? []).map((requirement) => ({
-        id: requirement.id,
-        requirement_name: requirement.requirement_name,
-        items: requirement.items ?? [],
-        item_details: requirement.item_details ?? [],
-        statuses: requirement.statuses ?? [],
-      })),
+      requirementsList: (project.requirements ?? []).map((requirement) => {
+        const entry: {
+          id: string;
+          requirement_name: string;
+          items: string[];
+          item_details?: string[][];
+          statuses?: (boolean | null)[];
+        } = {
+          id: requirement.id,
+          requirement_name: requirement.requirement_name,
+          items: requirement.items ?? [],
+        };
+        if (requirement.item_details && requirement.item_details.length > 0) {
+          entry.item_details = requirement.item_details;
+        }
+        if (requirement.statuses && requirement.statuses.length > 0) {
+          entry.statuses = requirement.statuses;
+        }
+        return entry;
+      }),
       nextAction: { type: "review_enquiry", label: "Review enquiry" },
     };
   });

@@ -2,9 +2,11 @@ import { ProjectUpdateType } from "@/types/domain/project-update";
 
 export type ProjectDocumentFolderId =
   | "drawings"
+  | "documents"
   | "approvals"
   | "contracts"
   | "site-reports"
+  | "renderings"
   | "boq-estimates"
   | "photos-media"
   | "unfiled";
@@ -55,11 +57,14 @@ export function resolveDocumentFolder(input: ResolveDocumentFolderInput): Projec
   if (nameLower.includes("site report") || nameLower.includes("inspection") || nameLower.includes("audit") || nameLower.includes("feasibility") || nameLower.includes("log")) {
     return "site-reports";
   }
+  if (nameLower.includes("render") || nameLower.includes("3d") || nameLower.includes("perspective") || nameLower.includes("photo") || nameLower.includes("video")) {
+    return "renderings";
+  }
+  if (nameLower.includes("document") || nameLower.includes("spec") || nameLower.includes("manual") || nameLower.includes("checklist") || nameLower.includes("guide")) {
+    return "documents";
+  }
   if (nameLower.includes("boq") || nameLower.includes("estimate") || nameLower.includes("rate analysis") || nameLower.includes("cost summary")) {
     return "boq-estimates";
-  }
-  if (nameLower.includes("render") || nameLower.includes("photo") || nameLower.includes("video")) {
-    return "photos-media";
   }
 
   // 4. Update type precedence
@@ -70,7 +75,7 @@ export function resolveDocumentFolder(input: ResolveDocumentFolderInput): Projec
 
   // 5. MIME type & extension
   if (mimeType?.includes("dwg") || ext === "dwg" || ext === "dxf") return "drawings";
-  if (mimeType?.startsWith("image/") || mimeType?.startsWith("video/") || ext === "png" || ext === "jpg" || ext === "jpeg" || ext === "webp" || ext === "mp4") return "photos-media";
+  if (mimeType?.startsWith("image/") || mimeType?.startsWith("video/") || ext === "png" || ext === "jpg" || ext === "jpeg" || ext === "webp" || ext === "mp4") return "renderings";
 
   // 6. Default fallback
   return "unfiled";
@@ -79,9 +84,11 @@ export function resolveDocumentFolder(input: ResolveDocumentFolderInput): Projec
 function isValidFolderId(val: string): boolean {
   return [
     "drawings",
+    "documents",
     "approvals",
     "contracts",
     "site-reports",
+    "renderings",
     "boq-estimates",
     "photos-media",
     "unfiled",
@@ -91,11 +98,12 @@ function isValidFolderId(val: string): boolean {
 function mapLabelToFolderId(label: string): ProjectDocumentFolderId | null {
   const norm = label.trim().toLowerCase();
   if (norm.includes("drawing")) return "drawings";
+  if (norm.includes("document")) return "documents";
   if (norm.includes("approval")) return "approvals";
   if (norm.includes("contract")) return "contracts";
   if (norm.includes("site") || norm.includes("report")) return "site-reports";
+  if (norm.includes("render") || norm.includes("photo") || norm.includes("media")) return "renderings";
   if (norm.includes("boq") || norm.includes("estimate")) return "boq-estimates";
-  if (norm.includes("photo") || norm.includes("media")) return "photos-media";
   if (norm.includes("unfiled") || norm.includes("uncategorized")) return "unfiled";
   return null;
 }

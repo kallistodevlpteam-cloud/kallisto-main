@@ -259,14 +259,6 @@ export function TasksListView() {
             </button>
           </div>
         </div>
-        {activeHeaderTab === "tasks" && (
-          <div className="tasks-header-right">
-            <button type="button" className="add-task-primary-btn">
-              <Plus size={15} strokeWidth={2.5} />
-              <span>Add Task</span>
-            </button>
-          </div>
-        )}
       </div>
 
       {activeHeaderTab === "timeline" ? (
@@ -320,7 +312,7 @@ export function TasksListView() {
               className={`segmented-btn ${activeTab === "all" ? "is-active" : ""}`}
               onClick={() => setActiveTab("all")}
             >
-              All Project Tasks
+              All Tasks
             </button>
           </div>
         </div>

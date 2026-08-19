@@ -1,121 +1,76 @@
-.glowWrapper {
-  position: relative;
-  border-radius: 12px;
-  isolation: isolate;
-}
-
-.glowWrapper::before,
-.glowWrapper::after {
-  display: none;
-}
-
-/* ── 3. Clean Solid White Surface ── */
-.card {
-  position: relative;
-  z-index: 1;
+.briefCard {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 18px 22px;
-  border-radius: 12px;
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: 14px;
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
-  overflow: hidden;
+  border: none;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  width: 100%;
+  box-sizing: border-box;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s ease;
 }
 
-/* Faint Glossy Top Sheen */
-.card::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 38%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.45) 0%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  pointer-events: none;
-  border-radius: 20px 20px 0 0;
+.briefCard:hover {
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
 }
 
 .headerRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: relative;
-  z-index: 2;
 }
 
 .titleGroup {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
-.sparkleBox {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #f1f5f9;
-  color: #0f172a;
+.sidebarThemedIconBox {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  color: #64748b;
+  transition: color 0.15s ease, transform 0.15s ease;
 }
 
-.sparkleIcon {
+.briefCard:hover .sidebarThemedIconBox {
   color: #0f172a;
+  transform: scale(1.05);
+}
+
+.titleStack {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 
 .title {
   margin: 0;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #0f172a;
+  color: #64748b;
+  line-height: 1.2;
 }
 
 .subtitle {
-  font-size: 11px;
-  color: #64748b;
-  font-weight: 500;
+  font-size: 12px;
+  color: #0f172a;
+  font-weight: 600;
+  line-height: 1.3;
 }
 
 .summaryText {
   margin: 0;
-  font-size: 13.5px;
+  font-size: 13px;
   line-height: 1.6;
   color: #334155;
-  position: relative;
-  z-index: 2;
-}
-
-.chipRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  position: relative;
-  z-index: 2;
-}
-
-.chip {
-  font-size: 11px;
-  font-weight: 600;
-  color: #334155;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 3px 9px;
-  border-radius: 6px;
-}
-
-.primaryChip {
-  color: #0f172a;
-  background: #f1f5f9;
-  border-color: #cbd5e1;
+  font-weight: 450;
 }

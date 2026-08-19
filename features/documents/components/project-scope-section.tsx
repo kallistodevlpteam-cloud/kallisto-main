@@ -46,7 +46,7 @@ const DEFAULT_CATEGORIES: ScopeCategory[] = [
 
 export function ProjectScopeSection({
   title = "PROJECT SCOPE",
-  description = "Comprehensive architectural, civil fit-out, and MEP scope breakdown for the commercial office space.",
+  description = "Comprehensive spatial, fit-out, and infrastructure scope breakdown derived from client requirements.",
   categories = DEFAULT_CATEGORIES,
 }: ProjectScopeSectionProps) {
   const [isExpanded, setIsExpanded] = useState(true);

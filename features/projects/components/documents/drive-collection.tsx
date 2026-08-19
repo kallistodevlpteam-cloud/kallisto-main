@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Archive,
   Eye,
   File,
   FileArchive,
@@ -10,9 +11,10 @@ import {
   ChevronRight,
   MoreHorizontal,
   Star,
+  Trash2,
 } from "lucide-react";
 import Image from "next/image";
-import { KeyboardEvent, MouseEvent, useState } from "react";
+import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from "react";
 
 import {
   ProjectDocument,
@@ -173,8 +175,11 @@ interface DocumentActionsMenuProps {
   open: boolean;
   canStar: boolean;
   onToggle: () => void;
+  onClose: () => void;
   onPreview: () => void;
   onStar: () => void;
+  onArchive?: () => void;
+  onDelete?: () => void;
 }
 
 function DocumentActionsMenu({
@@ -182,12 +187,40 @@ function DocumentActionsMenu({
   open,
   canStar,
   onToggle,
+  onClose,
   onPreview,
   onStar,
+  onArchive,
+  onDelete,
 }: DocumentActionsMenuProps) {
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (event: globalThis.PointerEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open, onClose]);
+
   const stop = (event: MouseEvent) => event.stopPropagation();
   return (
-    <div className={styles.actionsMenuWrap} onClick={stop}>
+    <div ref={menuRef} className={styles.actionsMenuWrap} onClick={stop}>
       <button
         type="button"
         className={styles.moreButton}
@@ -201,15 +234,15 @@ function DocumentActionsMenu({
       {open ? (
         <div className={styles.actionsMenu} role="menu">
           <button type="button" role="menuitem" onClick={onPreview}>
-            <Eye size={16} strokeWidth={1.75} aria-hidden="true" /> Preview / Open
+            <Eye size={15} strokeWidth={1.75} aria-hidden="true" /> Preview / Open
           </button>
           <button type="button" role="menuitem" onClick={onPreview}>
-            <History size={16} strokeWidth={1.75} aria-hidden="true" /> View version history
+            <History size={15} strokeWidth={1.75} aria-hidden="true" /> View version history
           </button>
           {canStar ? (
             <button type="button" role="menuitem" onClick={onStar}>
               <Star
-                size={16}
+                size={15}
                 strokeWidth={1.75}
                 fill={document.isStarred ? "currentColor" : "none"}
                 aria-hidden="true"
@@ -217,8 +250,106 @@ function DocumentActionsMenu({
               {document.isStarred ? "Unstar" : "Star"}
             </button>
           ) : null}
+          {onArchive ? (
+            <button type="button" role="menuitem" onClick={onArchive}>
+              <Archive size={15} strokeWidth={1.75} aria-hidden="true" />
+              {document.status === "archived" ? "Unarchive" : "Archive"}
+            </button>
+          ) : null}
+          {onDelete ? (
+            <button
+              type="button"
+              role="menuitem"
+              className={styles.deleteMenuItem}
+              onClick={onDelete}
+            >
+              <Trash2 size={15} strokeWidth={1.75} aria-hidden="true" />
+              {document.isInBin ? "Restore from Bin" : "Delete"}
+            </button>
+          ) : null}
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function DocumentPreviewDuotone({ extension }: { extension: string }) {
+  const fileKind = getFileKind(extension);
+  const ext = extension.toUpperCase();
+
+  let accentColor = "#64748b";
+  let tintColor = "#f1f5f9";
+  let label = ext;
+
+  if (fileKind === "pdf") {
+    accentColor = "#e11d48";
+    tintColor = "#ffe4e6";
+    label = "PDF";
+  } else if (fileKind === "drawing") {
+    accentColor = "#2563eb";
+    tintColor = "#dbeafe";
+    label = "DWG";
+  } else if (fileKind === "spreadsheet") {
+    accentColor = "#059669";
+    tintColor = "#d1fae5";
+    label = "XLS";
+  } else if (fileKind === "document") {
+    accentColor = "#7c3aed";
+    tintColor = "#ede9fe";
+    label = "DOC";
+  } else if (fileKind === "image") {
+    accentColor = "#0284c7";
+    tintColor = "#e0f2fe";
+    label = ext;
+  } else if (fileKind === "archive") {
+    accentColor = "#475569";
+    tintColor = "#e2e8f0";
+    label = "ZIP";
+  }
+
+  return (
+    <div className={styles.previewIllustration} aria-hidden="true">
+      <svg
+        width="44"
+        height="50"
+        viewBox="0 0 44 50"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {/* Document base */}
+        <path
+          d="M6 3C4.34315 3 3 4.34315 3 6V44C3 45.6569 4.34315 47 6 47H38C39.6569 47 41 45.6569 41 44V15L29 3H6Z"
+          fill="#ffffff"
+          stroke="#e2e8f0"
+          strokeWidth="1.5"
+        />
+        {/* Folded corner */}
+        <path
+          d="M29 3V12C29 13.6569 30.3431 15 32 15H41"
+          fill={tintColor}
+          stroke="#cbd5e1"
+          strokeWidth="1.5"
+        />
+        {/* Decorative content lines */}
+        <rect x="9" y="19" width="16" height="2.5" rx="1.25" fill={accentColor} opacity="0.4" />
+        <rect x="9" y="24" width="22" height="2.5" rx="1.25" fill={accentColor} opacity="0.2" />
+        <rect x="9" y="29" width="18" height="2.5" rx="1.25" fill={accentColor} opacity="0.2" />
+        {/* Extension Pill */}
+        <rect x="8" y="34.5" width="24" height="9" rx="3" fill={accentColor} />
+        <text
+          x="20"
+          y="40"
+          fill="#ffffff"
+          fontSize="6.5"
+          fontWeight="700"
+          fontFamily="system-ui, -apple-system, sans-serif"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          letterSpacing="0.04em"
+        >
+          {label}
+        </text>
+      </svg>
     </div>
   );
 }
@@ -231,6 +362,8 @@ interface DriveCollectionProps {
   canStar: boolean;
   onOpenDocument: (document: ProjectDocument) => void;
   onToggleStar: (document: ProjectDocument) => void;
+  onArchiveDocument?: (document: ProjectDocument) => void;
+  onDeleteDocument?: (document: ProjectDocument) => void;
 }
 
 export function DriveCollection({
@@ -241,6 +374,8 @@ export function DriveCollection({
   canStar,
   onOpenDocument,
   onToggleStar,
+  onArchiveDocument,
+  onDeleteDocument,
 }: DriveCollectionProps) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const folderNames = new Map(folders.map((folder) => [folder.id, folder.name]));
@@ -263,6 +398,7 @@ export function DriveCollection({
       onToggle={() =>
         setOpenMenuId((current) => (current === document.id ? null : document.id))
       }
+      onClose={() => setOpenMenuId(null)}
       onPreview={() => {
         setOpenMenuId(null);
         onOpenDocument(document);
@@ -271,6 +407,22 @@ export function DriveCollection({
         setOpenMenuId(null);
         onToggleStar(document);
       }}
+      onArchive={
+        onArchiveDocument
+          ? () => {
+              setOpenMenuId(null);
+              onArchiveDocument(document);
+            }
+          : undefined
+      }
+      onDelete={
+        onDeleteDocument
+          ? () => {
+              setOpenMenuId(null);
+              onDeleteDocument(document);
+            }
+          : undefined
+      }
     />
   );
 
@@ -279,6 +431,7 @@ export function DriveCollection({
       <div className={styles.documentGrid} aria-label="Documents in grid view">
         {documents.map((document) => {
           const selected = selectedDocumentIds.includes(document.id);
+          const isMenuOpen = openMenuId === document.id;
           const imageFile = ["png", "jpg", "jpeg", "webp"].includes(document.extension);
           const fileKind = getFileKind(document.extension);
           const isNew = isDocumentNew(document);
@@ -288,20 +441,21 @@ export function DriveCollection({
               role="button"
               tabIndex={0}
               aria-pressed={selected}
-              className={`${styles.documentCard} ${selected ? styles.documentCardSelected : ""}`}
+              className={`${styles.documentCard} ${selected ? styles.documentCardSelected : ""} ${isMenuOpen ? styles.documentCardOpen : ""}`}
               onClick={() => onOpenDocument(document)}
               onKeyDown={(event) => handleKeyDown(event, document)}
             >
               <div className={styles.cardHeader}>
                 <div className={styles.cardTitleRow}>
-                  <h3 title={document.name}>{document.name}</h3>
+                  <h3>{document.name}</h3>
                   <DocumentStatusBadge status={document.status} size="compact" />
                 </div>
-                <p>
-                  {folderNames.get(document.folderId ?? "") ?? "Unfiled"} ·{" "}
-                  {formatFileSize(document.sizeBytes)}
+                <div className={styles.cardMetaRow}>
+                  <span>{folderNames.get(document.folderId ?? "") ?? "Unfiled"}</span>
+                  <span className={styles.metaDot}>•</span>
+                  <span>{formatFileSize(document.sizeBytes)}</span>
                   {isNew ? <span className={styles.newBadgeInline}>New</span> : null}
-                </p>
+                </div>
               </div>
               <div className={styles.cardOverflowActions}>{renderActions(document)}</div>
               <div
@@ -317,9 +471,7 @@ export function DriveCollection({
                     unoptimized
                   />
                 ) : (
-                  <div className={styles.previewPlaceholder}>
-                    <FileTypeIcon extension={document.extension} size={24} />
-                  </div>
+                  <DocumentPreviewDuotone extension={document.extension} />
                 )}
               </div>
               <footer className={styles.cardFooter}>
@@ -377,7 +529,7 @@ export function DriveCollection({
                   key={document.id}
                   tabIndex={0}
                   aria-selected={selected}
-                  className={selected ? styles.documentRowSelected : undefined}
+                  className={`${selected ? styles.documentRowSelected : ""} ${openMenuId === document.id ? styles.documentRowOpen : ""}`.trim() || undefined}
                   onClick={() => onOpenDocument(document)}
                   onKeyDown={(event) => handleKeyDown(event, document)}
                 >

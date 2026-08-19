@@ -2,90 +2,97 @@
 
 import React, { useState, useEffect } from "react";
 import styles from "./home-workspace.module.css";
+import { RoutePageContainer } from "@/components/ui/route-page-container";
 import { HomeHeader } from "./home-header";
 import { ProfileCompletionCard } from "./components/profile-completion-card";
 import { ActiveProjectsSection } from "./active-projects-section";
 import { WorkspaceDashboardSection } from "./components/workspace-dashboard-section";
 import { StudioSection } from "./components/studio-section";
+import { HomeIntelligencePanel } from "./components/home-intelligence-panel";
 import { homeWorkspaceService } from "@/services/repositories/home-workspace-service";
-import { ActiveProjectItem } from "@/types/domain/home";
-import { FileText, Layers, Edit3, Wrench } from "lucide-react";
+import {
+  ActiveProjectItem,
+  PriorityPreview,
+} from "@/types/domain/home";
 
 export interface HomeWorkspaceProps {
   userRole?: string;
   userName?: string;
 }
 
-export function HomeWorkspace({ userName = "Arjun", userRole = "owner" }: HomeWorkspaceProps) {
+export function HomeWorkspace({
+  userName = "Arjun",
+  userRole = "owner",
+}: HomeWorkspaceProps) {
   const [projects, setProjects] = useState<ActiveProjectItem[]>([]);
+  const [attentionItems, setAttentionItems] = useState<PriorityPreview[]>([]);
 
   useEffect(() => {
-    homeWorkspaceService.getActiveProjects(userRole).then((data) => {
-      setProjects(data);
-    });
+    let isMounted = true;
+    async function loadData() {
+      const [projs, attention] = await Promise.all([
+        homeWorkspaceService.getActiveProjects(userRole),
+        homeWorkspaceService.getPriorityPreviews(userRole),
+      ]);
+      if (isMounted) {
+        setProjects(projs);
+        setAttentionItems(attention);
+      }
+    }
+    loadData();
+    return () => {
+      isMounted = false;
+    };
   }, [userRole]);
 
   return (
-    <div className="workspace-container">
-      <div className={styles.svgHomeContainer}>
-        {/* Welcome Header */}
-        <HomeHeader userName={userName} />
+    <div className={styles.homeWorkspace}>
+      <RoutePageContainer
+        className="project-dashboard-page"
+        title={`Welcome, ${userName}`}
+        showHeading={false}
+      >
+        <div className={styles.homeLayout}>
+          {/* Left Main Workspace Column */}
+          <main className={styles.homeMain}>
+            {/* Main Scrollable Content Area */}
+            <div className={styles.homeMainScrollArea}>
+              {/* Top Greeting & Operational Header */}
+              <div className={styles.homeHeaderBlock}>
+                <HomeHeader
+                  userName={userName}
+                  attentionCount={attentionItems.length || 5}
+                />
+              </div>
 
-        {/* Profile Completion Stepper Card */}
-        <ProfileCompletionCard />
+              {/* Profile Completion Stepper Card */}
+              <ProfileCompletionCard />
 
-        {/* 4 Cards Row */}
-        <div className={styles.drawingCardsRow} aria-label="Drawing status overview">
-          <div className={styles.drawingCard}>
-            <div className={styles.drawingCardIconWrapper}>
-              <FileText size={15} className={styles.drawingCardIcon} />
-            </div>
-            <div className={styles.drawingCardText}>
-              <h3>MEP Drawings</h3>
-              <p>View 3 new</p>
-            </div>
-          </div>
+              {/* Assigned Projects Section */}
+              <ActiveProjectsSection
+                projects={projects}
+                title="Assigned Projects"
+              />
 
-          <div className={styles.drawingCard}>
-            <div className={styles.drawingCardIconWrapper}>
-              <Layers size={15} className={styles.drawingCardIcon} />
-            </div>
-            <div className={styles.drawingCardText}>
-              <h3>BOQ / Scope</h3>
-              <p>12 items</p>
-            </div>
-          </div>
+              {/* Schedule / Calendar Preview Section */}
+              <WorkspaceDashboardSection />
 
-          <div className={styles.drawingCard}>
-            <div className={styles.drawingCardIconWrapper}>
-              <Edit3 size={15} className={styles.drawingCardIcon} />
+              {/* Studio Section */}
+              <StudioSection />
             </div>
-            <div className={styles.drawingCardText}>
-              <h3>Shop Drawings</h3>
-              <p>5 pending</p>
-            </div>
-          </div>
+          </main>
 
-          <div className={styles.drawingCard}>
-            <div className={styles.drawingCardIconWrapper}>
-              <Wrench size={15} className={styles.drawingCardIcon} />
+          {/* Right Fixed Context & Intelligence Area */}
+          <aside
+            className={styles.homeDetails}
+            aria-label="Practice Intelligence & Actions"
+          >
+            <div className={styles.homeDetailsTop}>
+              <HomeIntelligencePanel attentionItems={attentionItems} />
             </div>
-            <div className={styles.drawingCardText}>
-              <h3>Mockup Drawings</h3>
-              <p>2 ready</p>
-            </div>
-          </div>
+          </aside>
         </div>
-
-        {/* Assigned Projects Section */}
-        <ActiveProjectsSection projects={projects} title="Assigned Projects" />
-
-        {/* Schedule Section */}
-        <WorkspaceDashboardSection />
-
-        {/* Studio Section */}
-        <StudioSection />
-      </div>
+      </RoutePageContainer>
     </div>
   );
 }

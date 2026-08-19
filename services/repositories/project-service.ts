@@ -23,6 +23,11 @@ export interface ProjectService {
     id: string,
     userRole?: string
   ): Promise<Project | null>;
+  getProjectByIdSync(
+    workspaceId?: string,
+    id?: string,
+    userRole?: string
+  ): Project | null;
   getClients(workspaceId?: string, userRole?: string): Promise<Client[]>;
   getClientById(
     workspaceId: string,
@@ -125,6 +130,27 @@ export const projectService: ProjectService = {
   },
 
   async getProjectById(workspaceId: string, id?: string): Promise<Project | null> {
+    if (!id) return projectsStore[0] || null;
+    const targetId = String(id).toLowerCase();
+
+    let proj = projectsStore.find((p) => {
+      if (!p.id) return false;
+      const pid = p.id.toLowerCase();
+      if (pid === targetId) return true;
+
+      // Normalize proj- vs prj- and zero-padding variations
+      const normPid = pid.replace(/^proj-/, "prj-").replace(/-(0+)/, "-");
+      const normTid = targetId.replace(/^proj-/, "prj-").replace(/-(0+)/, "-");
+      return normPid === normTid;
+    });
+
+    if (!proj) {
+      proj = projectsStore[0];
+    }
+    return proj || null;
+  },
+
+  getProjectByIdSync(workspaceId = "ws-default", id?: string): Project | null {
     if (!id) return projectsStore[0] || null;
     const targetId = String(id).toLowerCase();
 

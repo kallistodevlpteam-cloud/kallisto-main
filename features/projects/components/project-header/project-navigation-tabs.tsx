@@ -4,7 +4,7 @@ import styles from "./project-header.module.css";
 interface ProjectNavigationTabsProps {
   activeTab: string;
   items: ProjectNavigationItem[];
-  onSelect: (key: string, label: string) => void;
+  onSelect: (label: string) => void;
 }
 
 export function ProjectNavigationTabs({
@@ -29,7 +29,7 @@ export function ProjectNavigationTabs({
               className={`${styles.navigationButton} ${
                 isActive ? styles.navigationButtonActive : ""
               }`}
-              onClick={() => onSelect(item.key, item.label)}
+              onClick={() => onSelect(item.label)}
               aria-current={isActive ? "page" : undefined}
             >
               {item.label}

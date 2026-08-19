@@ -35,19 +35,23 @@ function stubMatchMedia() {
 // Apply at module scope so any import-time rendering is covered.
 stubMatchMedia();
 
-vi.mock("@/services/repositories/project-service", () => ({
-  projectService: {
-    getProjectById: vi.fn().mockResolvedValue({
-      id: "proj-001",
-      workspaceId: "ws-default",
-      projectCode: "KAL-RES-2026-01",
-      name: "Nila Residence",
-      clientName: "Rahul Sharma",
-      location: "Kochi, Kerala",
-      status: "in_progress",
-    }),
-  },
-}));
+vi.mock("@/services/repositories/project-service", () => {
+  const mockProject = {
+    id: "proj-001",
+    workspaceId: "ws-default",
+    projectCode: "KAL-RES-2026-01",
+    name: "Nila Residence",
+    clientName: "Rahul Sharma",
+    location: "Kochi, Kerala",
+    status: "in_progress",
+  };
+  return {
+    projectService: {
+      getProjectById: vi.fn().mockResolvedValue(mockProject),
+      getProjectByIdSync: vi.fn().mockReturnValue(mockProject),
+    },
+  };
+});
 
 vi.mock("@/services/repositories/project-task.service", () => ({
   projectTaskService: {
@@ -70,6 +74,7 @@ describe("Project title hierarchy and module titles", () => {
   it("maps project module keys to their navigation labels", () => {
     expect(PROJECT_MODULE_TITLES.tasks).toBe("Tasks");
     expect(PROJECT_MODULE_TITLES.timeline).toBe("Timeline");
+    expect(PROJECT_MODULE_TITLES.gantt).toBe("Gantt Chart");
     expect(PROJECT_MODULE_TITLES.documents).toBe("Docs");
     expect(PROJECT_MODULE_TITLES.boq).toBe("Bill of Quantities");
     expect(PROJECT_MODULE_TITLES.finance).toBe("Finance");
@@ -104,6 +109,7 @@ describe("Project title hierarchy and module titles", () => {
   });
 
   it.each([
+    ["gantt", "Gantt Chart"],
     ["boq", "Bill of Quantities"],
     ["finance", "Finance"],
     ["site", "Site"],
@@ -141,5 +147,12 @@ describe("Project title hierarchy and module titles", () => {
     
     const navBars = await screen.findAllByRole("navigation", { name: "Document page navigation" });
     expect(navBars).toHaveLength(1);
+  });
+
+  it("renders the header search box on subpages with accessible search label", async () => {
+    render(<ProjectModuleSubpage projectId="proj-001" module="tasks" />);
+    const searchInput = await screen.findByRole("textbox", { name: "Search Tasks" });
+    expect(searchInput).toBeInTheDocument();
+    expect(searchInput.getAttribute("placeholder")).toBe("Search tasks, assignees or phases");
   });
 });

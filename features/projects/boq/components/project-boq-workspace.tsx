@@ -1,23 +1,24 @@
 "use client";
 
 import {
-  BarChart2,
+  AlertTriangle,
   CheckCircle2,
-  Download,
-  ExternalLink,
   FileSpreadsheet,
-  GitBranch,
-  History,
-  ListFilter,
-  MoreHorizontal,
-  Search,
-  SlidersHorizontal,
-  Upload,
 } from "lucide-react";
-import Link from "next/link";
+import {
+  ImportDuotoneIcon,
+  ExportDuotoneIcon,
+  SortDuotoneIcon,
+  PaymentsDuotoneIcon,
+  LayersDuotoneIcon,
+  ListViewDuotoneIcon,
+  BoqItemsDuotoneIcon,
+  RateAnalysisDuotoneIcon,
+  VariationsDuotoneIcon,
+  VersionsDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ThemeSelect } from "@/components/ui/theme-select";
 import { Project } from "@/types/domain/project";
 import { ProjectBoqSnapshot } from "@/types/domain/project-boq";
 import {
@@ -58,10 +59,10 @@ const BOQ_VIEWS: Array<{
   label: string;
   icon: React.ComponentType<{ size?: number; className?: string }>;
 }> = [
-  { id: "items", label: "BOQ Items", icon: ListFilter },
-  { id: "rates", label: "Rate Analysis", icon: BarChart2 },
-  { id: "variations", label: "Variations", icon: GitBranch },
-  { id: "versions", label: "Versions", icon: History },
+  { id: "items", label: "BOQ Items", icon: BoqItemsDuotoneIcon },
+  { id: "rates", label: "Rate Analysis", icon: RateAnalysisDuotoneIcon },
+  { id: "variations", label: "Variations", icon: VariationsDuotoneIcon },
+  { id: "versions", label: "Versions", icon: VersionsDuotoneIcon },
 ];
 
 function isBoqView(value: string | null): value is BoqView {
@@ -81,13 +82,12 @@ export function ProjectBoqWorkspace({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedVersionId, setSelectedVersionId] = useState("");
-  const [overflowOpen, setOverflowOpen] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [stagedFile, setStagedFile] = useState<File | null>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
 
   // Filter & View Controls State
-  const [searchQuery, setSearchQuery] = useState("");
+  const searchQuery = searchParams.get("q") ?? "";
   const [sectionFilter, setSectionFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [sort, setSort] = useState<SortValue>("code");
@@ -182,7 +182,6 @@ export function ProjectBoqWorkspace({
 
   function handleViewChange(nextView: BoqView) {
     setView(nextView);
-    setOverflowOpen(false);
 
     const url = new URL(window.location.href);
     url.searchParams.set("tab", "boq");
@@ -288,10 +287,6 @@ export function ProjectBoqWorkspace({
     sort !== "code" ||
     visibleColumns.size < 4;
 
-  const studioBuildUrl = `/studio?projectId=${encodeURIComponent(
-    project.id
-  )}&intent=build-boq&versionId=${encodeURIComponent(selectedVersionId)}`;
-
   const hasSelectedItems = selectedItemIds.size > 0;
 
   const activeTotalLabel = selectedSection
@@ -317,29 +312,34 @@ export function ProjectBoqWorkspace({
       )}
 
       <section className={`${styles.workspace} projectBoqWorkspace`} aria-labelledby="boq-workspace-title">
-        {/* Row 1 — metadata header: draft status, project identity, version, actions */}
-        <header className={styles.header}>
-          <div className={styles.headerIdentity}>
-            <div className={styles.headerMeta}>
-              <span className={styles.draftBadge}>{snapshot.status}</span>
-              <span>
-                {snapshot.projectName} · {project.location || "Kochi, Kerala"} · {snapshot.projectCode}
-              </span>
-              <ThemeSelect
-                ariaLabel="BOQ version"
-                value={selectedVersionId}
-                variant="pill"
-                options={snapshot.versions.map((version) => ({
-                  value: version.id,
-                  label: version.label,
-                  sublabel: `${version.status} · ${formatIndianCurrency(version.total)}`,
-                }))}
-                onChange={(nextId) => handleVersionChange(nextId)}
-              />
-            </div>
-          </div>
+        {/* Row 1 — control bar: view tabs + search + filter */}
+        <div className={styles.controlBar}>
+          <nav className={styles.viewTabs} aria-label="BOQ workspace views">
+            {BOQ_VIEWS.map((item) => {
+              const Icon = item.icon;
+              const isActive = view === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={isActive ? styles.tabFlatActive : styles.tabFlat}
+                  aria-current={isActive ? "page" : undefined}
+                  aria-label={item.label}
+                  onClick={() => handleViewChange(item.id)}
+                >
+                  <Icon size={16} aria-hidden="true" />
+                  <span>{item.label}</span>
+                  {item.id === "variations" && (
+                    <span className={styles.tabBadgeMuted}>
+                      {snapshot.variations.length}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
 
-          <div className={styles.headerActions}>
+          <div className={styles.controlBarRight}>
             <input
               ref={importInputRef}
               className={styles.hiddenInput}
@@ -355,15 +355,18 @@ export function ProjectBoqWorkspace({
             />
             <button
               type="button"
-              className={styles.secondaryButton}
+              className={styles.roundIconButton}
+              aria-label="Import BOQ"
+              title="Import BOQ"
               onClick={() => importInputRef.current?.click()}
             >
-              <Upload size={14} aria-hidden="true" />
-              Import
+              <ImportDuotoneIcon size={18} aria-hidden="true" />
             </button>
             <button
               type="button"
-              className={styles.secondaryButton}
+              className={styles.roundIconButton}
+              aria-label={hasSelectedItems ? "Export selected BOQ items" : "Export BOQ"}
+              title={hasSelectedItems ? "Export selected BOQ items" : "Export BOQ"}
               onClick={() => {
                 exportBoqCsv(snapshot, selectedItemIds);
                 setNotice(
@@ -373,122 +376,8 @@ export function ProjectBoqWorkspace({
                 );
               }}
             >
-              <Download size={14} aria-hidden="true" />
-              {hasSelectedItems ? "Export selected" : "Export"}
+              <ExportDuotoneIcon size={18} aria-hidden="true" />
             </button>
-            <Link
-              href={studioBuildUrl}
-              className={styles.primaryButton}
-              aria-label="Open this BOQ in Hive Studio"
-              style={{ textDecoration: "none" }}
-            >
-              <span>Hive Studio</span>
-              <ExternalLink size={14} aria-hidden="true" />
-            </Link>
-            <div className={styles.menuAnchor}>
-              <button
-                type="button"
-                className={styles.iconButton}
-                aria-label="More BOQ actions"
-                aria-expanded={overflowOpen}
-                onClick={() => setOverflowOpen((current) => !current)}
-              >
-                <MoreHorizontal size={16} aria-hidden="true" />
-              </button>
-              {overflowOpen && (
-                <div className={styles.actionMenu} role="menu">
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={() => {
-                      setNotice(
-                        validationIssues === 0
-                          ? "Validation complete. No missing values found."
-                          : `${validationIssues} missing quantity or rate values require attention.`
-                      );
-                      setOverflowOpen(false);
-                    }}
-                  >
-                    Validate BOQ
-                  </button>
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={() => handleViewChange("versions")}
-                  >
-                    Review version history
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </header>
-
-        {/* Row 2 — summary metrics strip */}
-        <dl className={styles.summaryStrip} aria-label="BOQ summary">
-          <div>
-            <dt>Base BOQ</dt>
-            <dd>{formatIndianCurrency(snapshot.baseTotal)}</dd>
-          </div>
-          <div>
-            <dt>Sections</dt>
-            <dd>{snapshot.sectionCount}</dd>
-          </div>
-          <div>
-            <dt>Work Items</dt>
-            <dd>{snapshot.workItemCount}</dd>
-          </div>
-          <div
-            className={validationIssues > 0 ? styles.summaryWarning : undefined}
-          >
-            <dt>Validation Issues</dt>
-            <dd>{validationIssues}</dd>
-          </div>
-          <div>
-            <dt>{activeTotalLabel}</dt>
-            <dd>{formatIndianCurrency(activeTotalValue)}</dd>
-          </div>
-        </dl>
-
-        {/* Row 3 — control bar: view tabs + search + filter */}
-        <div className={styles.controlBar}>
-          <nav className={styles.viewTabs} aria-label="BOQ workspace views">
-            {BOQ_VIEWS.map((item) => {
-              const Icon = item.icon;
-              const isActive = view === item.id;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={isActive ? styles.tabFlatActive : styles.tabFlat}
-                  aria-current={isActive ? "page" : undefined}
-                  aria-label={item.label}
-                  onClick={() => handleViewChange(item.id)}
-                >
-                  <Icon size={15} aria-hidden="true" />
-                  <span>{item.label}</span>
-                  {item.id === "variations" && (
-                    <span className={styles.tabBadgeMuted}>
-                      {snapshot.variations.length}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-
-          <div className={styles.controlBarRight}>
-            <label className={styles.searchControl}>
-              <span className="sr-only">Search BOQ items</span>
-              <Search size={14} className={styles.searchIcon} aria-hidden="true" />
-              <input
-                type="search"
-                placeholder="Search BOQ items…"
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-              />
-            </label>
-
             <button
               ref={filterTriggerRef}
               type="button"
@@ -499,7 +388,7 @@ export function ProjectBoqWorkspace({
               aria-haspopup="dialog"
               onClick={() => setFilterPopoverOpen((prev) => !prev)}
             >
-              <SlidersHorizontal size={15} aria-hidden="true" />
+              <SortDuotoneIcon size={18} aria-hidden="true" />
               {isFilterActive && (
                 <span className={styles.activeFilterDot} aria-hidden="true" />
               )}
@@ -535,7 +424,7 @@ export function ProjectBoqWorkspace({
           </div>
         </div>
 
-        {/* Row 4 — view area: owns table viewport scroll (items) or page scroll
+        {/* Row 2 — view area: owns table viewport scroll (items) or page scroll
             (rates / variations / versions via overflow-y: auto on viewArea). */}
         <div className={styles.viewArea}>
           {notice && (
@@ -553,30 +442,92 @@ export function ProjectBoqWorkspace({
           )}
 
           {view === "items" && (
-            <BoqItemsView
-              snapshot={snapshot}
-              selectedVersionId={selectedVersion.id}
-              searchQuery={searchQuery}
-              sectionFilter={sectionFilter}
-              statusFilter={statusFilter}
-              sort={sort}
-              visibleColumns={visibleColumns}
-              expandedKeys={expandedKeys}
-              onToggleKey={(key) => {
-                setExpandedKeys((current) => {
-                  const next = new Set(current);
-                  if (next.has(key)) {
-                    next.delete(key);
-                  } else {
-                    next.add(key);
-                  }
-                  return next;
-                });
-              }}
-              selectedItemIds={selectedItemIds}
-              onToggleItemSelection={handleToggleItemSelection}
-              onToggleSelectAllVisible={handleToggleSelectAllVisible}
-            />
+            <div className={styles.itemsWorkspace}>
+              {/* Summary metrics strip inside BOQ Items view */}
+              <dl className={styles.summaryStrip} aria-label="BOQ summary">
+                <div className={styles.summaryCard}>
+                  <div className={styles.summaryIconBox} style={{ backgroundColor: "#EEF2FF", color: "#4F46E5" }}>
+                    <PaymentsDuotoneIcon size={15} aria-hidden="true" />
+                  </div>
+                  <div className={styles.summaryCardContent}>
+                    <dt>Base BOQ</dt>
+                    <dd>{formatIndianCurrency(snapshot.baseTotal)}</dd>
+                  </div>
+                </div>
+                <div className={styles.summaryCard}>
+                  <div className={styles.summaryIconBox} style={{ backgroundColor: "#F5F3FF", color: "#7C3AED" }}>
+                    <LayersDuotoneIcon size={15} aria-hidden="true" />
+                  </div>
+                  <div className={styles.summaryCardContent}>
+                    <dt>Phases</dt>
+                    <dd>{snapshot.sectionCount}</dd>
+                  </div>
+                </div>
+                <div className={styles.summaryCard}>
+                  <div className={styles.summaryIconBox} style={{ backgroundColor: "#EFF6FF", color: "#2563EB" }}>
+                    <ListViewDuotoneIcon size={15} aria-hidden="true" />
+                  </div>
+                  <div className={styles.summaryCardContent}>
+                    <dt>Work Items</dt>
+                    <dd>{snapshot.workItemCount}</dd>
+                  </div>
+                </div>
+                <div className={`${styles.summaryCard} ${validationIssues > 0 ? styles.summaryCardWarning : ""}`}>
+                  <div
+                    className={styles.summaryIconBox}
+                    style={
+                      validationIssues > 0
+                        ? { backgroundColor: "#FEF2F2", color: "#DC2626" }
+                        : { backgroundColor: "#F0FDF4", color: "#16A34A" }
+                    }
+                  >
+                    {validationIssues > 0 ? (
+                      <AlertTriangle size={15} aria-hidden="true" />
+                    ) : (
+                      <CheckCircle2 size={15} aria-hidden="true" />
+                    )}
+                  </div>
+                  <div className={styles.summaryCardContent}>
+                    <dt>Validation Issues</dt>
+                    <dd style={validationIssues > 0 ? { color: "#dc2626" } : undefined}>{validationIssues}</dd>
+                  </div>
+                </div>
+                <div className={styles.summaryCard}>
+                  <div className={styles.summaryIconBox} style={{ backgroundColor: "#ECFDF5", color: "#059669" }}>
+                    <PaymentsDuotoneIcon size={15} aria-hidden="true" />
+                  </div>
+                  <div className={styles.summaryCardContent}>
+                    <dt>{activeTotalLabel}</dt>
+                    <dd>{formatIndianCurrency(activeTotalValue)}</dd>
+                  </div>
+                </div>
+              </dl>
+
+              <BoqItemsView
+                snapshot={snapshot}
+                selectedVersionId={selectedVersion.id}
+                searchQuery={searchQuery}
+                sectionFilter={sectionFilter}
+                statusFilter={statusFilter}
+                sort={sort}
+                visibleColumns={visibleColumns}
+                expandedKeys={expandedKeys}
+                onToggleKey={(key) => {
+                  setExpandedKeys((current) => {
+                    const next = new Set(current);
+                    if (next.has(key)) {
+                      next.delete(key);
+                    } else {
+                      next.add(key);
+                    }
+                    return next;
+                  });
+                }}
+                selectedItemIds={selectedItemIds}
+                onToggleItemSelection={handleToggleItemSelection}
+                onToggleSelectAllVisible={handleToggleSelectAllVisible}
+              />
+            </div>
           )}
           {view === "rates" && <RateAnalysisView snapshot={snapshot} />}
           {view === "variations" && <VariationsView snapshot={snapshot} />}

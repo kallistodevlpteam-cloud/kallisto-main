@@ -68,6 +68,16 @@ export interface ProjectDocumentRepository {
     documentId: string,
     isStarred: boolean,
   ): Promise<ProjectDocument>;
+  setDocumentArchived?(
+    projectId: string,
+    documentId: string,
+    isArchived: boolean,
+  ): Promise<ProjectDocument>;
+  setDocumentInBin?(
+    projectId: string,
+    documentId: string,
+    isInBin: boolean,
+  ): Promise<ProjectDocument>;
 }
 
 const MINUTE = 60_000;
@@ -88,9 +98,11 @@ const ownerDirectory = {
 
 const initialFolders: ProjectDocumentFolder[] = [
   { id: "drawings", projectId: "proj-001", name: "Drawings", count: 0, parentId: null },
+  { id: "documents", projectId: "proj-001", name: "Documents", count: 0, parentId: null },
   { id: "approvals", projectId: "proj-001", name: "Approvals", count: 0, parentId: null },
   { id: "contracts", projectId: "proj-001", name: "Contracts", count: 0, parentId: null },
   { id: "site-reports", projectId: "proj-001", name: "Site Reports", count: 0, parentId: null },
+  { id: "renderings", projectId: "proj-001", name: "Renderings", count: 0, parentId: null },
   { id: "boq-estimates", projectId: "proj-001", name: "BOQ & Estimates", count: 0, parentId: null },
   { id: "photos-media", projectId: "proj-001", name: "Photos & Media", count: 0, parentId: null },
   { id: "unfiled", projectId: "proj-001", name: "Unfiled", count: 0, parentId: null },
@@ -98,6 +110,7 @@ const initialFolders: ProjectDocumentFolder[] = [
 
 interface SeedDocumentInput {
   id: string;
+  projectId?: string;
   name: string;
   extension: string;
   folderId: string;
@@ -113,6 +126,7 @@ interface SeedDocumentInput {
 
 function createSeedDocument(input: SeedDocumentInput): ProjectDocument {
   const owner = ownerDirectory[input.owner];
+  const pId = input.projectId ?? "proj-001";
   const updatedAt = new Date(
     seedLoadedAt - input.updatedDaysAgo * DAY - (input.version * 7 + 5) * MINUTE,
   ).toISOString();
@@ -132,7 +146,7 @@ function createSeedDocument(input: SeedDocumentInput): ProjectDocument {
 
   return {
     id: input.id,
-    projectId: "proj-001",
+    projectId: pId,
     name: input.name,
     extension: input.extension,
     categoryId: input.folderId,
@@ -143,7 +157,7 @@ function createSeedDocument(input: SeedDocumentInput): ProjectDocument {
     sourceType: "system",
     publishedAt: createdAt,
     publicationKey: `system:seed:${input.id}`,
-    storageObjectId: `storage://proj-001/seed/${input.id}-${input.name}`,
+    storageObjectId: `storage://${pId}/seed/${input.id}-${input.name}`,
     downloadUrl: `/assets/docs/${input.name}`,
     version: input.version,
     sizeBytes: input.sizeBytes,
@@ -193,9 +207,9 @@ const seedDocuments = [
   ["doc-safety-report", "Safety Inspection Report.pdf", "pdf", "site-reports", "approved", "field", "rahul", 2, 3_709_021, 6, false],
   ["doc-cost-summary", "Cost Summary.xlsx", "xlsx", "boq-estimates", "approved", "team", "arjun", 3, 1_109_021, 3, false],
   ["doc-rate-analysis", "Rate Analysis.xlsx", "xlsx", "boq-estimates", "draft", "team", "arjun", 2, 2_009_021, 11, false],
-  ["doc-kitchen-render", "Kitchen Render.png", "png", "photos-media", "approved", "team", "neha", 1, 8_409_021, 4, true],
-  ["doc-site-photo-set", "Site Photo Set.zip", "zip", "photos-media", "in_review", "field", "rahul", 3, 18_409_021, 2, false],
-  ["doc-handover-checklist", "Handover Checklist.pdf", "pdf", "approvals", "draft", "team", "priya", 1, 809_021, 18, false],
+  ["doc-kitchen-render", "Kitchen Render.png", "png", "renderings", "approved", "team", "neha", 1, 8_409_021, 4, true],
+  ["doc-site-photo-set", "Site Photo Set.zip", "zip", "renderings", "in_review", "field", "rahul", 3, 18_409_021, 2, false],
+  ["doc-handover-checklist", "Handover Checklist.pdf", "pdf", "documents", "draft", "team", "priya", 1, 809_021, 18, false],
 ] as const;
 
 const documents: ProjectDocument[] = seedDocuments.map((entry) =>
@@ -217,6 +231,39 @@ const documents: ProjectDocument[] = seedDocuments.map((entry) =>
 
 const folders: ProjectDocumentFolder[] = initialFolders.map((folder) => ({ ...folder }));
 let mutationSequence = 0;
+
+function ensureProjectDocuments(projectId: string) {
+  if (!folders.some((folder) => folder.projectId === projectId)) {
+    initialFolders.forEach((folder) => {
+      folders.push({
+        ...folder,
+        projectId,
+      });
+    });
+  }
+
+  if (!documents.some((doc) => doc.projectId === projectId)) {
+    seedDocuments.forEach((entry) => {
+      documents.push(
+        createSeedDocument({
+          id: `${entry[0]}-${projectId}`,
+          projectId,
+          name: entry[1],
+          extension: entry[2],
+          folderId: entry[3],
+          status: entry[4],
+          source: entry[5],
+          owner: entry[6],
+          version: entry[7],
+          sizeBytes: entry[8],
+          updatedDaysAgo: entry[9],
+          starred: entry[10],
+          visibility: entry[0] === "doc-client-agreement" ? "restricted" : "client_visible",
+        }),
+      );
+    });
+  }
+}
 
 function cloneDocument(document: ProjectDocument): ProjectDocument {
   return {
@@ -259,6 +306,7 @@ export const projectDocumentRepository: ProjectDocumentRepository = {
   },
 
   async listProjectDocuments(projectId) {
+    ensureProjectDocuments(projectId);
     const projectDocuments = documents
       .filter((document) => document.projectId === projectId)
       .map(cloneDocument);
@@ -523,6 +571,30 @@ export const projectDocumentRepository: ProjectDocumentRepository = {
       throw new Error("Document not found.");
     }
     document.isStarred = isStarred;
+    document.updatedAt = new Date().toISOString();
+    return cloneDocument(document);
+  },
+
+  async setDocumentArchived(projectId, documentId, isArchived) {
+    const document = documents.find(
+      (candidate) => candidate.projectId === projectId && candidate.id === documentId,
+    );
+    if (!document) {
+      throw new Error("Document not found.");
+    }
+    document.status = isArchived ? "archived" : "in_review";
+    document.updatedAt = new Date().toISOString();
+    return cloneDocument(document);
+  },
+
+  async setDocumentInBin(projectId, documentId, isInBin) {
+    const document = documents.find(
+      (candidate) => candidate.projectId === projectId && candidate.id === documentId,
+    );
+    if (!document) {
+      throw new Error("Document not found.");
+    }
+    document.isInBin = isInBin;
     document.updatedAt = new Date().toISOString();
     return cloneDocument(document);
   },

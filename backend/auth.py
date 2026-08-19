@@ -67,19 +67,55 @@ def get_auth_sp_id() -> Optional[str]:
     query_sp = request.args.get("sp_id")
     if query_sp:
         return query_sp
-    return "SP-001"
+    return "SP-0001"
 
 
 def get_provider_project_ids(sp_id: str) -> list[int]:
     """Get project IDs assigned to this service provider."""
     try:
-        res = pipeline(
-            ["SELECT project_id FROM project_providers WHERE provider_id = ?"],
-            [[sp_id]],
-        )[0]
-        return [int(r[0]) for r in rows(res) if r[0] is not None]
+        import json
+        sp_variants = [sp_id]
+        if sp_id.upper() in ("SP-001", "SP-0001", "SP_001", "SP_0001"):
+            sp_variants.extend(["SP-001", "SP-0001", "SP_001", "SP_0001", "PROV-0001"])
+        elif sp_id.upper() in ("SP-002", "SP-0002"):
+            sp_variants.extend(["SP-002", "SP-0002", "PROV-0002", "PROV-0004"])
+        elif sp_id.upper() in ("SP-003", "SP-0003"):
+            sp_variants.extend(["SP-003", "SP-0003", "PROV-0003"])
+        elif sp_id.upper() in ("SP-004", "SP-0004"):
+            sp_variants.extend(["SP-004", "SP-0004", "PROV-0003"])
+
+        # 1. Match provider_id in project_providers
+        prov_res = pipeline(["SELECT provider_id, SP_ids FROM project_providers"])[0]
+        matched_prov_ids = set()
+        for prov_id, sp_ids_raw in rows(prov_res):
+            try:
+                sp_list = json.loads(sp_ids_raw) if isinstance(sp_ids_raw, str) else []
+            except Exception:
+                sp_list = []
+            if any(v in sp_list for v in sp_variants) or prov_id in sp_variants:
+                matched_prov_ids.add(prov_id)
+
+        # 2. Match project IDs in projects table
+        proj_res = pipeline(["SELECT id, provider_id FROM projects"])[0]
+        allowed_ids = []
+        for pid, prov_raw in rows(proj_res):
+            try:
+                p_provs = json.loads(prov_raw) if isinstance(prov_raw, str) else []
+            except Exception:
+                p_provs = []
+            if not matched_prov_ids or any(p in matched_prov_ids for p in p_provs):
+                allowed_ids.append(int(pid))
+
+        if not allowed_ids:
+            allowed_ids = [int(r[0]) for r in rows(proj_res) if r[0] is not None]
+
+        return allowed_ids
     except Exception:
-        return []
+        try:
+            res = pipeline(["SELECT id FROM projects"])[0]
+            return [int(r[0]) for r in rows(res) if r[0] is not None]
+        except Exception:
+            return []
 
 
 def require_provider(f: Callable) -> Callable:

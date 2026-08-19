@@ -4,8 +4,9 @@ import React, {
   useState,
   useSyncExternalStore,
   useMemo,
+  useEffect,
 } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { CalendarRange } from "lucide-react";
 import {
   countActiveFilterGroups,
@@ -56,6 +57,7 @@ export interface ProjectScheduleWorkspaceProps {
   projectName: string;
   initialViewMode?: ScheduleViewMode;
   hideHeader?: boolean;
+  headerTabs?: React.ReactNode;
 }
 
 const PHASES = [
@@ -319,6 +321,7 @@ export function ProjectScheduleWorkspace({
   projectName,
   initialViewMode,
   hideHeader = false,
+  headerTabs,
 }: ProjectScheduleWorkspaceProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -353,9 +356,14 @@ export function ProjectScheduleWorkspace({
       }
     }
   };
+  const searchParams = useSearchParams();
   const [anchorDate, setAnchorDate] = useState("2026-07-24");
   const [selectedDate, setSelectedDate] = useState("2026-07-24");
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState(searchParams?.get("q") ?? "");
+
+  useEffect(() => {
+    setSearchValue(searchParams?.get("q") ?? "");
+  }, [searchParams]);
   const [selectedPhases, setSelectedPhases] = useState<string[]>(PHASES);
   const [selectedWorkstreams, setSelectedWorkstreams] =
     useState<string[]>(WORKSTREAMS);
@@ -504,7 +512,15 @@ export function ProjectScheduleWorkspace({
   };
 
   const handleOpenActivity = (activity: ScheduleActivityItem) => {
-    setSelectedActivity((prev) => (prev?.id === activity.id ? null : activity));
+    setSelectedActivity((prev) => {
+      if (prev?.id === activity.id) {
+        setIsInspectorOpen(false);
+        return null;
+      }
+      setIsInspectorOpen(true);
+      setInspectorMode("view");
+      return activity;
+    });
   };
 
   const handleEditActivity = (activity: ScheduleActivityItem) => {
@@ -629,6 +645,7 @@ export function ProjectScheduleWorkspace({
             setSidebarPreference(isSidebarCollapsed ? "expanded" : "collapsed")
           }
           onAddMilestoneClick={handleOpenMilestone}
+          headerTabs={headerTabs}
         />
       )}
 
@@ -657,6 +674,7 @@ export function ProjectScheduleWorkspace({
               setAnchorDate(nextDate);
               setSelectedDate(nextDate);
             }}
+            onNavigateWeek={(direction) => handleNavigate(direction)}
             onSelectDate={handleSelectDate}
             onTogglePhase={(phase) => toggleValue(phase, setSelectedPhases)}
             onToggleWorkstream={(workstream) =>

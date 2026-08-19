@@ -1,7 +1,13 @@
 "use client";
 
 import React, { type CSSProperties, type ReactNode, type RefObject } from "react";
-import { Building2, Clock, IndianRupee, Layers, User } from "lucide-react";
+import {
+  BuildingDuotoneIcon,
+  ClockDuotoneIcon,
+  LayersDuotoneIcon,
+  PaymentsDuotoneIcon,
+  UserDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import {
   PROJECT_MAIN_MIN_WIDTH,
   PROJECT_UPDATES_GAP,
@@ -57,8 +63,7 @@ export function EnquiryStatCardsBar({ values }: { values?: Partial<EnquiryStatVa
       id: "project-type",
       label: "Project Type",
       value: resolvedValues.projectType || "Commercial Interior",
-      subValue: "Verified offering",
-      icon: Building2,
+      icon: BuildingDuotoneIcon,
       iconBg: "#EEF2FF",
       iconColor: "#4F46E5",
     },
@@ -66,8 +71,7 @@ export function EnquiryStatCardsBar({ values }: { values?: Partial<EnquiryStatVa
       id: "duration",
       label: "Duration",
       value: resolvedValues.duration || "Within 6 Months",
-      subValue: "Target timeline",
-      icon: Clock,
+      icon: ClockDuotoneIcon,
       iconBg: "#F0FDF4",
       iconColor: "#16A34A",
     },
@@ -75,8 +79,7 @@ export function EnquiryStatCardsBar({ values }: { values?: Partial<EnquiryStatVa
       id: "built-up",
       label: "Built-up Area",
       value: resolvedValues.builtUpArea || "2,800 – 3,200 sq ft",
-      subValue: resolvedValues.areaCoverageStatus || "Client supplied",
-      icon: Layers,
+      icon: LayersDuotoneIcon,
       iconBg: "#F5F3FF",
       iconColor: "#7C3AED",
     },
@@ -84,8 +87,7 @@ export function EnquiryStatCardsBar({ values }: { values?: Partial<EnquiryStatVa
       id: "budget",
       label: "Budget",
       value: resolvedValues.budget || "₹40L – ₹60L",
-      subValue: resolvedValues.budgetCoverageStatus || "Coverage partially defined",
-      icon: IndianRupee,
+      icon: PaymentsDuotoneIcon,
       iconBg: "#FEF2F2",
       iconColor: "#E11D48",
     },
@@ -93,8 +95,7 @@ export function EnquiryStatCardsBar({ values }: { values?: Partial<EnquiryStatVa
       id: "client",
       label: "Client",
       value: resolvedValues.client || "Greenleaf Spaces",
-      subValue: "Direct enquiry",
-      icon: User,
+      icon: UserDuotoneIcon,
       iconBg: "#ECFEFF",
       iconColor: "#0891B2",
     },
@@ -122,23 +123,11 @@ export function EnquiryStatCardsBar({ values }: { values?: Partial<EnquiryStatVa
           return (
             <div key={card.id} className="horiz-stat-card">
               <div className="horiz-stat-icon-box" style={{ backgroundColor: card.iconBg, color: card.iconColor }}>
-                <Icon size={18} strokeWidth={2} aria-hidden="true" />
+                <Icon size={18} aria-hidden="true" />
               </div>
               <div className="horiz-stat-info">
                 <span className="horiz-stat-label">{card.label}</span>
                 <span className="horiz-stat-value">{card.value}</span>
-                {card.subValue && (
-                  <span
-                    style={{
-                      fontSize: "10.5px",
-                      color: "var(--muted, #64748b)",
-                      marginTop: "1px",
-                      display: "block",
-                    }}
-                  >
-                    {card.subValue}
-                  </span>
-                )}
               </div>
             </div>
           );

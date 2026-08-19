@@ -691,8 +691,10 @@ export function buildEnquiryDetailViewModel({
 }): EnquiryDetailViewModel {
   const intelligence = deriveEnquiryIntelligence(enquiry, providerContext);
 
-  const formattedDate = enquiry.receivedAt
-    ? new Date(enquiry.receivedAt).toLocaleDateString("en-US", {
+  const rawDate = enquiry.receivedAt ? new Date(enquiry.receivedAt) : null;
+  const isValidDate = rawDate && !isNaN(rawDate.getTime());
+  const formattedDate = isValidDate
+    ? rawDate.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
