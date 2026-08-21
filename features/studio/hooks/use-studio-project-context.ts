@@ -4,6 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { StudioProjectOption } from "@/types/domain/studio";
 import { StudioMockRepository } from "@/services/repositories/studio-mock-repository";
+import { StudioBackendRepository } from "@/services/repositories/studio-backend-repository";
 
 import { MOCK_ENQUIRIES } from "@/features/enquiries/services/enquiries.mock";
 
@@ -55,9 +56,10 @@ export function useStudioProjectContext(): UseStudioProjectContextReturn {
       };
     }
 
-    const repository = new StudioMockRepository();
+    const mockRepo = new StudioMockRepository();
+    const repository = new StudioBackendRepository(mockRepo);
     repository
-      .getProjects()
+      .getAvailableProjects()
       .then((data) => {
         if (isMounted) {
           setProjects(data);
