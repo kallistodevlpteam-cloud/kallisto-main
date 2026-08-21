@@ -61,7 +61,6 @@ import {
   buildBackendRequirementRows,
   EnquiryDetailViewModel,
   ClientHouseholdMember,
-  BackendRequirementRow,
 } from "../services/enquiry-detail-view-model";
 import { RequirementStrengthCard } from "./requirement-strength-card";
 
@@ -204,9 +203,9 @@ function deriveClientInitials(clientName: string): string {
 
 /** Formats project_DOC.updated_at (Unix epoch seconds) as "11 Aug 2026",
  * strictly derived from the backend timestamp. */
-function deriveDocUpdatedLabel(value: string | number | null | undefined): string | undefined {
-  if (value == null || value === "") return undefined;
-  const parsed = typeof value === "number" ? value : Number(value);
+function deriveDocUpdatedLabel(epochSeconds: number | null | undefined): string | undefined {
+  if (epochSeconds == null) return undefined;
+  const parsed = typeof epochSeconds === "number" ? epochSeconds : Number(epochSeconds);
   if (!Number.isFinite(parsed)) return undefined;
   const ms = parsed > 1e11 ? parsed : parsed * 1000;
   return new Date(ms).toLocaleDateString("en-GB", {
@@ -294,7 +293,7 @@ export function buildEnquiriesFromProjects(projects: Array<Record<string, unknow
             : [];
         return raw.map((img: { url?: string; alt?: string | null }) => ({
           url: String(img.url ?? ""),
-          alt: img.alt ?? null,
+          alt: img.alt ?? undefined,
         }));
       })(),
       projectDocuments: (proj.projectDocuments ?? proj.project_documents) as any,
@@ -542,7 +541,7 @@ export function GenericDomainScheduleTable({
   onSelectRequirement,
 }: {
   domainKey: string;
-  requirements: Array<EnquiryRequirement | BackendRequirementRow>;
+  requirements: EnquiryRequirement[];
   selectedRequirementId: string | null;
   onSelectRequirement: (id: string) => void;
 }) {
@@ -568,20 +567,18 @@ export function GenericDomainScheduleTable({
         </thead>
         <tbody>
           {requirements.map((req) => {
-            const id = (req as any).id as string;
-            const isSelected = selectedRequirementId === id;
+            const isSelected = selectedRequirementId === req.id;
             return (
               <tr
-                key={id}
+                key={req.id}
                 className={`${styles.roomScheduleRow} ${
                   isSelected ? styles.roomScheduleRowSelected : ""
                 }`}
-                onClick={() => onSelectRequirement(id)}
+                onClick={() => onSelectRequirement(req.id)}
               >
                 {columns.map((col, idx) => (
                   <td key={idx} style={{ textAlign: col.align || "left" }}>
-                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                    {col.render(req as any)}
+                    {col.render(req)}
                   </td>
                 ))}
               </tr>
@@ -621,6 +618,7 @@ export function EnquiryDetailWorkspace({
     id: requirement.id,
     requirement_name: requirement.requirement_name,
     items: requirement.items ?? [],
+    item_details: requirement.item_details ?? [],
   }));
   const isBackendRequirementMode = backendRequirementGroups.length > 0;
   const backendDomainKeyList = backendRequirementGroups.map((group) => group.id).join("|");

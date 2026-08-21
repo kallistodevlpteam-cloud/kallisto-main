@@ -44,7 +44,7 @@ export class BackendError extends Error {
 
 /** Performs an authenticated fetch to the backend.  The optional token is
  * forwarded in an `Authorization: Bearer` header. */
-async function backendFetch(
+export async function backendFetch(
   url: string,
   options: RequestInit = {},
   authToken?: string
@@ -759,4 +759,242 @@ export async function respondToBackendProposal(
     );
   }
   return payload;
+}
+
+// ── Dashboard ───────────────────────────────────────────────────────────────
+
+export interface DashboardData {
+  status: string;
+  active_projects: Array<{
+    id: number;
+    name: string;
+    type: string;
+    status: string;
+    character: string;
+    coverImageUrl: string | null;
+    clientName: string | null;
+    location: string | null;
+    updatedAt: number | null;
+  }>;
+  needs_attention: Array<{
+    id: number;
+    projectId: number;
+    title: string;
+    status: string;
+    priority: string;
+    dueDate: string | null;
+    phase: string | null;
+    type: string;
+    financialExposure?: number;
+  }>;
+  pipeline: Array<{
+    id: number;
+    name: string;
+    type: string;
+    clientName: string | null;
+    location: string | null;
+    budget: number | string | null;
+    createdAt: number | null;
+  }>;
+  schedule_preview: Array<{
+    id: number;
+    projectId: number;
+    title: string;
+    dueDate: string | null;
+    phase: string | null;
+    status: string;
+    type: string;
+  }>;
+  recent_activities: Array<{
+    id: number;
+    projectId: number;
+    type: string;
+    title: string;
+    actor: string | null;
+    createdAt: string;
+  }>;
+}
+
+export async function fetchBackendDashboard(authToken?: string): Promise<DashboardData> {
+  const response = await backendFetch(`${getBackendUrl()}/api/dashboard`, { cache: "no-store" }, authToken);
+  const payload = (await response.json()) as DashboardData & { message?: string };
+  if (!response.ok || payload.status !== "ok") {
+    throw new BackendError(
+      payload.message ?? `Backend dashboard request failed with status ${response.status}`,
+      response.status
+    );
+  }
+  return payload;
+}
+
+// ── Tasks ───────────────────────────────────────────────────────────────────
+
+export interface BackendTask {
+  id: number;
+  project_id: number;
+  title: string;
+  description: string | null;
+  status: string;
+  priority: string;
+  assignee_id: string | null;
+  assignee_name: string | null;
+  due_date: string | null;
+  completed_at: string | null;
+  phase: string | null;
+  estimated_hours: number | null;
+  actual_hours: number | null;
+  sort_order: number;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function fetchBackendTasks(projectId: number | string, authToken?: string): Promise<{ status: string; tasks: BackendTask[] }> {
+  const response = await backendFetch(`${getBackendUrl()}/api/projects/${projectId}/tasks`, { cache: "no-store" }, authToken);
+  return (await response.json()) as { status: string; tasks: BackendTask[] };
+}
+
+export async function createBackendTask(
+  projectId: number | string,
+  task: Partial<BackendTask>,
+  authToken?: string
+): Promise<{ status: string; task_created: boolean }> {
+  const response = await backendFetch(
+    `${getBackendUrl()}/api/projects/${projectId}/tasks`,
+    { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(task), cache: "no-store" },
+    authToken
+  );
+  return (await response.json()) as { status: string; task_created: boolean };
+}
+
+export async function updateBackendTask(
+  projectId: number | string,
+  taskId: number,
+  updates: Partial<BackendTask>,
+  authToken?: string
+): Promise<{ status: string; updated: boolean }> {
+  const response = await backendFetch(
+    `${getBackendUrl()}/api/projects/${projectId}/tasks/${taskId}`,
+    { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updates), cache: "no-store" },
+    authToken
+  );
+  return (await response.json()) as { status: string; updated: boolean };
+}
+
+// ── Events (Timeline) ───────────────────────────────────────────────────────
+
+export interface BackendProjectEvent {
+  id: number;
+  event_type: string;
+  title: string;
+  description: string | null;
+  status: string | null;
+  due_date: string | null;
+  completed_at: string | null;
+  actor_id: string;
+  actor_name: string | null;
+  metadata: unknown;
+  parent_event_id: number | null;
+  sort_order: number;
+  created_at: string;
+}
+
+export async function fetchBackendEvents(projectId: number | string, authToken?: string): Promise<{ status: string; events: BackendProjectEvent[] }> {
+  const response = await backendFetch(`${getBackendUrl()}/api/projects/${projectId}/events`, { cache: "no-store" }, authToken);
+  return (await response.json()) as { status: string; events: BackendProjectEvent[] };
+}
+
+// ── Milestones ────────────────────────────────────────────────────────────────
+
+export interface BackendMilestone {
+  id: number;
+  title: string;
+  description: string | null;
+  status: string;
+  due_date: string | null;
+  completed_at: string | null;
+  approval_status: string | null;
+  financial_impact: number;
+  actor_id: string | null;
+  actor_name: string | null;
+  sort_order: number;
+  created_at: string;
+}
+
+export async function fetchBackendMilestones(projectId: number | string, authToken?: string): Promise<{ status: string; milestones: BackendMilestone[] }> {
+  const response = await backendFetch(`${getBackendUrl()}/api/projects/${projectId}/milestones`, { cache: "no-store" }, authToken);
+  return (await response.json()) as { status: string; milestones: BackendMilestone[] };
+}
+
+// ── BOQ ───────────────────────────────────────────────────────────────────────
+
+export interface BackendBoqItem {
+  id: number;
+  category: string;
+  item_code: string | null;
+  item_name: string;
+  description: string | null;
+  uom: string | null;
+  quantity: number;
+  rate: number;
+  total: number;
+  status: string;
+  revision: number;
+  vendor: string | null;
+  notes: string | null;
+  sort_order: number;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function fetchBackendBoq(projectId: number | string, authToken?: string): Promise<{ status: string; items: BackendBoqItem[] }> {
+  const response = await backendFetch(`${getBackendUrl()}/api/projects/${projectId}/boq`, { cache: "no-store" }, authToken);
+  return (await response.json()) as { status: string; items: BackendBoqItem[] };
+}
+
+export async function createBackendBoqItem(
+  projectId: number | string,
+  item: Partial<BackendBoqItem>,
+  authToken?: string
+): Promise<{ status: string; boq_item_created: boolean }> {
+  const response = await backendFetch(
+    `${getBackendUrl()}/api/projects/${projectId}/boq`,
+    { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item), cache: "no-store" },
+    authToken
+  );
+  return (await response.json()) as { status: string; boq_item_created: boolean };
+}
+
+export async function updateBackendBoqItem(
+  projectId: number | string,
+  itemId: number,
+  updates: Partial<BackendBoqItem>,
+  authToken?: string
+): Promise<{ status: string; updated: boolean }> {
+  const response = await backendFetch(
+    `${getBackendUrl()}/api/projects/${projectId}/boq/${itemId}`,
+    { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updates), cache: "no-store" },
+    authToken
+  );
+  return (await response.json()) as { status: string; updated: boolean };
+}
+
+// ── Audit ─────────────────────────────────────────────────────────────────────
+
+export interface BackendAuditEntry {
+  id: number;
+  entity_type: string;
+  entity_id: string;
+  action: string;
+  actor_type: string;
+  actor_id: string;
+  metadata: unknown;
+  ip_address: string | null;
+  created_at: string;
+}
+
+export async function fetchBackendAudit(projectId: number | string, authToken?: string): Promise<{ status: string; audit: BackendAuditEntry[] }> {
+  const response = await backendFetch(`${getBackendUrl()}/api/projects/${projectId}/audit`, { cache: "no-store" }, authToken);
+  return (await response.json()) as { status: string; audit: BackendAuditEntry[] };
 }

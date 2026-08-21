@@ -28,6 +28,18 @@ from auth import (
     require_provider,
     _ensure_project_owned,
 )
+from audit import audit_log
+from flows import (
+    accept_enquiry_flow,
+    reject_enquiry_flow,
+    convert_project_flow,
+    create_project_event,
+    create_project_task,
+    create_project_milestone,
+    create_boq_scaffold,
+    send_proposal_flow,
+    respond_proposal_flow,
+)
 
 
 
@@ -623,6 +635,10 @@ def accept_project(project_id: int, sp_id: str):
                     ),
                     409,
                 )
+
+        # Cross-feature flow: create timeline events, tasks, milestones, BOQ scaffold, audit
+        accept_enquiry_flow(project_id, sp_id, actor_name="Provider")
+
         return jsonify({"status": "ok", "project_id": project_id, "project_character": "pr"})
     except Exception as error:  # noqa: BLE001
         return jsonify({"status": "error", "message": str(error)}), 503
@@ -677,6 +693,8 @@ def reject_project(project_id: int, sp_id: str):
                         ],
                         [[project_id]],
                     )
+                # Still run cross-feature flow for audit + timeline
+                reject_enquiry_flow(project_id, sp_id, reason=rejection_reason or notes, actor_name="Provider")
                 return (
                     jsonify(
                         {"status": "ok", "project_id": project_id, "project_character": "rej"}
@@ -693,6 +711,10 @@ def reject_project(project_id: int, sp_id: str):
                     ),
                     409,
                 )
+
+        # Cross-feature flow: timeline event + audit
+        reject_enquiry_flow(project_id, sp_id, reason=rejection_reason or notes, actor_name="Provider")
+
         return jsonify({"status": "ok", "project_id": project_id, "project_character": "rej"})
     except Exception as error:  # noqa: BLE001
         return jsonify({"status": "error", "message": str(error)}), 503
@@ -762,14 +784,9 @@ def convert_project(project_id: int, sp_id: str):
             ],
             [[project_id]],
         )
-        # Record system message for audit trail
-        pipeline(
-            [
-                "INSERT INTO project_messages (project_id, sender_type, sender_id, message_type, content) "
-                "VALUES (?, 'system', 'system', 'approval', 'Project converted from accepted proposal')"
-            ],
-            [[project_id]],
-        )
+        # Run cross-feature conversion flow
+        convert_project_flow(project_id, sp_id, actor_name="Provider")
+
         return jsonify(
             {
                 "status": "ok",
@@ -1110,6 +1127,408 @@ def send_project_message(project_id: int, sp_id: str):
         return jsonify({"status": "error", "message": str(error)}), 503
 
 
+# ─── Cross-Feature Data Endpoints ───────────────────────────────────────────
+
+@app.get("/api/dashboard")
+@require_provider
+def get_dashboard(sp_id: str):
+    """Return home dashboard data: active projects, priorities, pipeline, schedule preview, recent activity."""
+    allowed_ids = get_provider_project_ids(sp_id)
+    if not allowed_ids:
+        return jsonify({"status": "ok", "active_projects": [], "needs_attention": [], "pipeline": [], "schedule_preview": [], "recent_activities": []})
+
+    id_placeholders = ",".join("?" for _ in allowed_ids)
+
+    # Active projects
+    proj_sql = (
+        f"SELECT p.id, p.project_name, p.project_type, p.project_status, p.project_character, "
+        f"p.cover_image_url, p.updated_at, cd.client_name, ps.place "
+        f"FROM projects p "
+        f"LEFT JOIN client_details cd ON cd.project_id = p.id "
+        f"LEFT JOIN project_site ps ON ps.project_id = p.id "
+        f"WHERE p.id IN ({id_placeholders}) AND p.project_character != 'enq' AND p.project_character != 'rej' "
+        f"ORDER BY p.updated_at DESC"
+    )
+    proj_result = pipeline([proj_sql], [allowed_ids])[0]
+    proj_cols = [c["name"] for c in proj_result.get("cols", [])]
+    active_projects = []
+    for row in rows(proj_result):
+        r = {proj_cols[i]: row[i] for i in range(len(proj_cols))}
+        active_projects.append({
+            "id": r.get("id"),
+            "name": r.get("project_name"),
+            "type": r.get("project_type"),
+            "status": r.get("project_status"),
+            "character": r.get("project_character"),
+            "coverImageUrl": r.get("cover_image_url"),
+            "clientName": r.get("client_name"),
+            "location": r.get("place"),
+            "updatedAt": r.get("updated_at"),
+        })
+
+    # Needs attention: overdue tasks + pending milestones
+    task_sql = (
+        f"SELECT pt.id, pt.project_id, pt.title, pt.status, pt.priority, pt.due_date, pt.phase "
+        f"FROM project_tasks pt "
+        f"WHERE pt.project_id IN ({id_placeholders}) AND pt.status IN ('pending','in_progress') "
+        f"ORDER BY pt.due_date ASC"
+    )
+    task_result = pipeline([task_sql], [allowed_ids])[0]
+    task_cols = [c["name"] for c in task_result.get("cols", [])]
+    needs_attention = []
+    for row in rows(task_result):
+        r = {task_cols[i]: row[i] for i in range(len(task_cols))}
+        needs_attention.append({
+            "id": r.get("id"),
+            "projectId": r.get("project_id"),
+            "title": r.get("title"),
+            "status": r.get("status"),
+            "priority": r.get("priority"),
+            "dueDate": r.get("due_date"),
+            "phase": r.get("phase"),
+            "type": "task",
+        })
+
+    # Milestones upcoming
+    ms_sql = (
+        f"SELECT pm.id, pm.project_id, pm.title, pm.status, pm.due_date, pm.financial_impact "
+        f"FROM project_milestones pm "
+        f"WHERE pm.project_id IN ({id_placeholders}) AND pm.status IN ('upcoming','active') "
+        f"ORDER BY pm.due_date ASC"
+    )
+    ms_result = pipeline([ms_sql], [allowed_ids])[0]
+    ms_cols = [c["name"] for c in ms_result.get("cols", [])]
+    for row in rows(ms_result):
+        r = {ms_cols[i]: row[i] for i in range(len(ms_cols))}
+        needs_attention.append({
+            "id": r.get("id"),
+            "projectId": r.get("project_id"),
+            "title": r.get("title"),
+            "status": r.get("status"),
+            "priority": "high",
+            "dueDate": r.get("due_date"),
+            "type": "milestone",
+            "financialExposure": r.get("financial_impact") or 0,
+        })
+
+    # Pipeline (projects in enquiry)
+    pipe_sql = (
+        f"SELECT p.id, p.project_name, p.project_type, p.created_at, cd.client_name, ps.place, pb.estimated_overall_budget "
+        f"FROM projects p "
+        f"LEFT JOIN client_details cd ON cd.project_id = p.id "
+        f"LEFT JOIN project_site ps ON ps.project_id = p.id "
+        f"LEFT JOIN project_budget pb ON pb.project_id = p.id "
+        f"WHERE p.id IN ({id_placeholders}) AND p.project_character = 'enq' "
+        f"ORDER BY p.created_at DESC"
+    )
+    pipe_result = pipeline([pipe_sql], [allowed_ids])[0]
+    pipe_cols = [c["name"] for c in pipe_result.get("cols", [])]
+    pipeline_items = []
+    for row in rows(pipe_result):
+        r = {pipe_cols[i]: row[i] for i in range(len(pipe_cols))}
+        pipeline_items.append({
+            "id": r.get("id"),
+            "name": r.get("project_name"),
+            "type": r.get("project_type"),
+            "clientName": r.get("client_name"),
+            "location": r.get("place"),
+            "budget": r.get("estimated_overall_budget"),
+            "createdAt": r.get("created_at"),
+        })
+
+    # Recent activities: audit_log + project_events
+    audit_sql = (
+        f"SELECT al.id, al.entity_id, al.action, al.actor_id, al.metadata, al.created_at "
+        f"FROM audit_log al "
+        f"WHERE al.entity_type = 'project' AND al.entity_id IN ({','.join(str(i) for i in allowed_ids)}) "
+        f"ORDER BY al.created_at DESC LIMIT 20"
+    )
+    # Fallback since entity_id is TEXT; use event table instead
+    evt_sql = (
+        f"SELECT pe.id, pe.project_id, pe.event_type, pe.title, pe.actor_name, pe.created_at "
+        f"FROM project_events pe "
+        f"WHERE pe.project_id IN ({id_placeholders}) "
+        f"ORDER BY pe.created_at DESC LIMIT 20"
+    )
+    evt_result = pipeline([evt_sql], [allowed_ids])[0]
+    evt_cols = [c["name"] for c in evt_result.get("cols", [])]
+    recent_activities = []
+    for row in rows(evt_result):
+        r = {evt_cols[i]: row[i] for i in range(len(evt_cols))}
+        recent_activities.append({
+            "id": r.get("id"),
+            "projectId": r.get("project_id"),
+            "type": r.get("event_type"),
+            "title": r.get("title"),
+            "actor": r.get("actor_name"),
+            "createdAt": r.get("created_at"),
+        })
+
+    # Schedule preview: upcoming tasks + milestones in next 14 days
+    from datetime import timedelta
+    now = datetime.now(timezone.utc)
+    soon = (now + timedelta(days=14)).isoformat()
+    sched_tasks_sql = (
+        f"SELECT pt.id, pt.project_id, pt.title, pt.due_date, pt.phase, pt.status "
+        f"FROM project_tasks pt "
+        f"WHERE pt.project_id IN ({id_placeholders}) AND pt.due_date IS NOT NULL AND pt.due_date <= ? AND pt.status != 'completed' "
+        f"ORDER BY pt.due_date ASC"
+    )
+    sched_result = pipeline([sched_tasks_sql], [allowed_ids + [soon]])[0]
+    sched_cols = [c["name"] for c in sched_result.get("cols", [])]
+    schedule_preview = []
+    for row in rows(sched_result):
+        r = {sched_cols[i]: row[i] for i in range(len(sched_cols))}
+        schedule_preview.append({
+            "id": r.get("id"),
+            "projectId": r.get("project_id"),
+            "title": r.get("title"),
+            "dueDate": r.get("due_date"),
+            "phase": r.get("phase"),
+            "status": r.get("status"),
+            "type": "task",
+        })
+
+    return jsonify({
+        "status": "ok",
+        "active_projects": active_projects,
+        "needs_attention": needs_attention,
+        "pipeline": pipeline_items,
+        "schedule_preview": schedule_preview,
+        "recent_activities": recent_activities,
+    })
+
+
+@app.get("/api/projects/<int:project_id>/tasks")
+@require_provider
+def get_project_tasks(project_id: int, sp_id: str):
+    err = _ensure_project_owned(project_id, sp_id)
+    if err:
+        return err
+    try:
+        result = pipeline(
+            ["SELECT id, title, description, status, priority, assignee_id, assignee_name, due_date, completed_at, phase, estimated_hours, actual_hours, sort_order, created_by, created_at, updated_at FROM project_tasks WHERE project_id = ? ORDER BY sort_order, created_at"],
+            [[project_id]],
+        )[0]
+        cols = [c["name"] for c in result.get("cols", [])]
+        tasks = []
+        for row in rows(result):
+            r = {cols[i]: row[i] for i in range(len(cols))}
+            tasks.append(r)
+        return jsonify({"status": "ok", "tasks": tasks})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
+@app.post("/api/projects/<int:project_id>/tasks")
+@require_provider
+def create_project_task_endpoint(project_id: int, sp_id: str):
+    err = _ensure_project_owned(project_id, sp_id)
+    if err:
+        return err
+    data = request.get_json(silent=True) or {}
+    title = str(data.get("title", "")).strip()
+    if not title:
+        return jsonify({"status": "error", "message": "title is required"}), 400
+    try:
+        now = _iso_now()
+        pipeline(
+            ["INSERT INTO project_tasks (project_id, title, description, status, priority, assignee_id, assignee_name, due_date, phase, sort_order, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"],
+            [[project_id, title, data.get("description"), data.get("status", "pending"), data.get("priority", "medium"), data.get("assignee_id"), data.get("assignee_name"), data.get("due_date"), data.get("phase", ""), data.get("sort_order", 0), sp_id, now, now]],
+        )
+        audit_log("task", project_id, "CREATE", sp_id, metadata={"title": title})
+        return jsonify({"status": "ok", "project_id": project_id, "task_created": True})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
+@app.patch("/api/projects/<int:project_id>/tasks/<int:task_id>")
+@require_provider
+def update_project_task(project_id: int, task_id: int, sp_id: str):
+    err = _ensure_project_owned(project_id, sp_id)
+    if err:
+        return err
+    data = request.get_json(silent=True) or {}
+    try:
+        fields = []
+        params = []
+        allowed = {"title", "description", "status", "priority", "assignee_id", "assignee_name", "due_date", "completed_at", "phase", "estimated_hours", "actual_hours"}
+        for k, v in data.items():
+            if k in allowed:
+                fields.append(f"{k} = ?")
+                params.append(v)
+        if not fields:
+            return jsonify({"status": "error", "message": "No valid fields to update"}), 400
+        fields.append("updated_at = ?")
+        params.append(_iso_now())
+        params.append(task_id)
+        params.append(project_id)
+        sql = f"UPDATE project_tasks SET {', '.join(fields)} WHERE id = ? AND project_id = ?"
+        pipeline([sql], [params])
+        audit_log("task", task_id, "UPDATE", sp_id, metadata={"fields": list(data.keys())})
+        return jsonify({"status": "ok", "task_id": task_id, "updated": True})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
+@app.get("/api/projects/<int:project_id>/events")
+@require_provider
+def get_project_events(project_id: int, sp_id: str):
+    err = _ensure_project_owned(project_id, sp_id)
+    if err:
+        return err
+    try:
+        result = pipeline(
+            ["SELECT id, event_type, title, description, status, due_date, completed_at, actor_id, actor_name, metadata, parent_event_id, sort_order, created_at FROM project_events WHERE project_id = ? ORDER BY sort_order, created_at"],
+            [[project_id]],
+        )[0]
+        cols = [c["name"] for c in result.get("cols", [])]
+        events = []
+        for row in rows(result):
+            r = {cols[i]: row[i] for i in range(len(cols))}
+            if r.get("metadata"):
+                try:
+                    r["metadata"] = json.loads(r["metadata"])
+                except Exception:
+                    pass
+            events.append(r)
+        return jsonify({"status": "ok", "events": events})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
+@app.get("/api/projects/<int:project_id>/milestones")
+@require_provider
+def get_project_milestones(project_id: int, sp_id: str):
+    err = _ensure_project_owned(project_id, sp_id)
+    if err:
+        return err
+    try:
+        result = pipeline(
+            ["SELECT id, title, description, status, due_date, completed_at, approval_status, financial_impact, actor_id, actor_name, sort_order, created_at FROM project_milestones WHERE project_id = ? ORDER BY sort_order, created_at"],
+            [[project_id]],
+        )[0]
+        cols = [c["name"] for c in result.get("cols", [])]
+        milestones = []
+        for row in rows(result):
+            r = {cols[i]: row[i] for i in range(len(cols))}
+            milestones.append(r)
+        return jsonify({"status": "ok", "milestones": milestones})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
+@app.get("/api/projects/<int:project_id>/boq")
+@require_provider
+def get_project_boq(project_id: int, sp_id: str):
+    err = _ensure_project_owned(project_id, sp_id)
+    if err:
+        return err
+    try:
+        result = pipeline(
+            ["SELECT id, category, item_code, item_name, description, uom, quantity, rate, total, status, revision, vendor, notes, sort_order, created_by, created_at, updated_at FROM boq_items WHERE project_id = ? ORDER BY category, sort_order"],
+            [[project_id]],
+        )[0]
+        cols = [c["name"] for c in result.get("cols", [])]
+        items = []
+        for row in rows(result):
+            r = {cols[i]: row[i] for i in range(len(cols))}
+            items.append(r)
+        return jsonify({"status": "ok", "items": items})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
+@app.post("/api/projects/<int:project_id>/boq")
+@require_provider
+def create_boq_item(project_id: int, sp_id: str):
+    err = _ensure_project_owned(project_id, sp_id)
+    if err:
+        return err
+    data = request.get_json(silent=True) or {}
+    category = str(data.get("category", "")).strip()
+    item_name = str(data.get("item_name", "")).strip()
+    if not category or not item_name:
+        return jsonify({"status": "error", "message": "category and item_name are required"}), 400
+    try:
+        qty = float(data.get("quantity", 0) or 0)
+        rate = float(data.get("rate", 0) or 0)
+        now = _iso_now()
+        pipeline(
+            ["INSERT INTO boq_items (project_id, category, item_code, item_name, description, uom, quantity, rate, total, status, revision, sort_order, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"],
+            [[project_id, category, data.get("item_code"), item_name, data.get("description"), data.get("uom"), qty, rate, qty * rate, data.get("status", "draft"), data.get("revision", 1), data.get("sort_order", 0), sp_id, now, now]],
+        )
+        audit_log("boq", project_id, "CREATE", sp_id, metadata={"category": category, "item_name": item_name})
+        return jsonify({"status": "ok", "project_id": project_id, "boq_item_created": True})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
+@app.patch("/api/projects/<int:project_id>/boq/<int:item_id>")
+@require_provider
+def update_boq_item(project_id: int, item_id: int, sp_id: str):
+    err = _ensure_project_owned(project_id, sp_id)
+    if err:
+        return err
+    data = request.get_json(silent=True) or {}
+    try:
+        fields = []
+        params = []
+        allowed = {"category", "item_code", "item_name", "description", "uom", "quantity", "rate", "status", "revision", "vendor", "notes"}
+        for k, v in data.items():
+            if k in allowed:
+                fields.append(f"{k} = ?")
+                params.append(v)
+        if not fields:
+            return jsonify({"status": "error", "message": "No valid fields to update"}), 400
+        # Recalculate total if quantity or rate changed
+        if "quantity" in data or "rate" in data:
+            current = pipeline(["SELECT quantity, rate FROM boq_items WHERE id = ? AND project_id = ?"], [[item_id, project_id]])[0]
+            cr = rows(current)
+            if cr:
+                old_qty, old_rate = cr[0]
+                qty = float(data.get("quantity", old_qty) or 0)
+                rate = float(data.get("rate", old_rate) or 0)
+                fields.append("total = ?")
+                params.append(qty * rate)
+        fields.append("updated_at = ?")
+        params.append(_iso_now())
+        params.append(item_id)
+        params.append(project_id)
+        sql = f"UPDATE boq_items SET {', '.join(fields)} WHERE id = ? AND project_id = ?"
+        pipeline([sql], [params])
+        audit_log("boq", item_id, "UPDATE", sp_id, metadata={"fields": list(data.keys())})
+        return jsonify({"status": "ok", "item_id": item_id, "updated": True})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
+@app.get("/api/projects/<int:project_id>/audit")
+@require_provider
+def get_project_audit(project_id: int, sp_id: str):
+    err = _ensure_project_owned(project_id, sp_id)
+    if err:
+        return err
+    try:
+        result = pipeline(
+            ["SELECT id, entity_type, entity_id, action, actor_type, actor_id, metadata, ip_address, created_at FROM audit_log WHERE entity_id = ? ORDER BY created_at DESC LIMIT 100"],
+            [[str(project_id)]],
+        )[0]
+        cols = [c["name"] for c in result.get("cols", [])]
+        logs = []
+        for row in rows(result):
+            r = {cols[i]: row[i] for i in range(len(cols))}
+            if r.get("metadata"):
+                try:
+                    r["metadata"] = json.loads(r["metadata"])
+                except Exception:
+                    pass
+            logs.append(r)
+        return jsonify({"status": "ok", "audit": logs})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
 @app.get("/")
 def index():
     return jsonify(
@@ -1122,8 +1541,14 @@ def index():
                 "/api/database/schema",
                 "/api/database/tables",
                 "/api/database/query",
+                "/api/dashboard",
                 "/api/projects",
                 "/api/projects/<id>",
+                "/api/projects/<id>/tasks",
+                "/api/projects/<id>/events",
+                "/api/projects/<id>/milestones",
+                "/api/projects/<id>/boq",
+                "/api/projects/<id>/audit",
             ],
         }
     )

@@ -15,8 +15,74 @@ import {
 
 import { isUserAuthorizedForProject } from "./project-authorization";
 import { DEV_CLIENTS, DEV_PROJECTS } from "@/services/repositories/development-project-adapter";
+import { fetchBackendProjects, type BackendProjectRow } from "@/lib/backend/backend-client";
+import { getStoredAuthToken } from "@/lib/auth/authed-fetch";
 
-// Global Datastore State
+/** Maps a BackendProject to the frontend Project type */
+function mapBackendToProject(bp: any): Project {
+  const statusMap: Record<string, ProjectStatus> = {
+    active: "ACTIVE",
+    upcoming: "UPCOMING",
+    on_hold: "ON_HOLD",
+    completed: "COMPLETED",
+    archived: "ARCHIVED",
+    cancelled: "CANCELLED",
+    converted: "ACTIVE",
+  };
+  const status = statusMap[(bp.projectStatus || "").toLowerCase()] || "ACTIVE";
+  const character = bp.projectCharacter || "";
+  const isEnq = character === "enq";
+
+  return {
+    id: String(bp.id),
+    workspaceId: "ws-default",
+    clientId: "cli-101",
+    name: bp.projectName || "Unnamed Project",
+    code: `PRJ-${bp.id}`,
+    type: bp.projectType || "Project",
+    status,
+    health: status === "ACTIVE" && !isEnq ? "ON_TRACK" : (isEnq ? "NEEDS_ATTENTION" : "ON_TRACK"),
+    phase: (bp.projectStatus === "converted" ? "Execution" : (isEnq ? "Enquiry" : "Feasibility & Kickoff")) as any,
+    phaseProgress: isEnq ? "Awaiting provider response" : undefined,
+    ownerId: "user-current",
+    ownerName: "Arjun",
+    siteLocationId: "loc-1",
+    siteLocation: bp.place || "—",
+    nextActionId: isEnq ? `act-${bp.id}` : null,
+    nextAction: isEnq
+      ? {
+          id: `act-${bp.id}`,
+          projectId: String(bp.id),
+          title: "Review enquiry",
+          type: "CLIENT_APPROVAL" as const,
+          ownerId: "user-current",
+          ownerName: "Arjun",
+          dueAt: new Date(Date.now() + 4 * 24 * 3600 * 1000).toISOString(),
+          status: "PENDING" as const,
+          createdAt: bp.createdAt ? new Date(bp.createdAt * 1000).toISOString() : new Date().toISOString(),
+          updatedAt: bp.updatedAt ? new Date(bp.updatedAt * 1000).toISOString() : new Date().toISOString(),
+        }
+      : null,
+    startDate: bp.createdAt ? new Date(bp.createdAt * 1000).toISOString().split("T")[0] : undefined,
+    targetCompletionDate: undefined,
+    createdAt: bp.createdAt ? new Date(bp.createdAt * 1000).toISOString() : new Date().toISOString(),
+    createdBy: "user-current",
+    updatedAt: bp.updatedAt ? new Date(bp.updatedAt * 1000).toISOString() : new Date().toISOString(),
+  };
+}
+
+/** Attempt to fetch real backend projects, falling back to mock data. */
+async function _fetchRealProjects(): Promise<Project[]> {
+  try {
+    const token = getStoredAuthToken() || undefined;
+    const backendProjects = await fetchBackendProjects(undefined, undefined, token);
+    return backendProjects.map(mapBackendToProject);
+  } catch {
+    return [];
+  }
+}
+
+// Global Datastore State (fallback when backend unavailable)
 const projectsStore: Project[] = [
   ...DEV_PROJECTS.map((p) => {
     let status: ProjectStatus = "ACTIVE";
@@ -185,7 +251,11 @@ export const projectsRepository = {
     context: UserSecurityContext,
     params: ProjectFilterParams
   ): Promise<RepositoryQueryResult> {
-    const workspaceProjects = projectsStore.filter(
+    // Try real backend first
+    const realProjects = await _fetchRealProjects();
+    const projectList = realProjects.length > 0 ? realProjects : projectsStore;
+
+    const workspaceProjects = projectList.filter(
       (p) =>
         p.workspaceId === context.workspaceId &&
         isUserAuthorizedForProject(context, p, membersStore)
@@ -353,6 +423,20 @@ export const projectsRepository = {
     context: UserSecurityContext,
     id: string
   ): Promise<Project | null> {
+    // Try real backend first
+    try {
+      const token = getStoredAuthToken() || undefined;
+      const { fetchBackendProjectById } = await import("@/lib/backend/backend-client");
+      const bp = await fetchBackendProjectById(id, token);
+      if (bp) {
+        const mapped = mapBackendToProject(bp);
+        if (isUserAuthorizedForProject(context, mapped, membersStore)) {
+          return mapped;
+        }
+      }
+    } catch {
+      // Fall through to mock
+    }
     const project = projectsStore.find((p) => p.id === id && p.workspaceId === context.workspaceId);
     if (!project) return null;
 
