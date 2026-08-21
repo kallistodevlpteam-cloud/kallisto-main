@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
+import { X } from "lucide-react";
 import {
-  FileSpreadsheet,
-  FileText,
-  History,
-  Image as ImageIcon,
-  Layers,
-  MessageSquare,
-  X,
-} from "lucide-react";
+  DocumentsDuotoneIcon,
+  FeedbackDuotoneIcon,
+  HistoryDuotoneIcon,
+  OutputsDuotoneIcon,
+  PortfolioDuotoneIcon,
+  SpreadsheetDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import styles from "./studio-right-sidebar.module.css";
 import type { StudioTask } from "@/types/domain/studio";
 
@@ -132,10 +132,13 @@ export function StudioRightSidebar({
           type="button"
           onClick={() => updateState({ mode: "outputs", selectedOutputId: panelState.selectedOutputId, selectedVersionId: panelState.selectedVersionId })}
           className={styles.glassIconBtn}
-          title="View Outputs"
-          aria-label="View Outputs"
+          title="Open Outputs Panel"
+          aria-label="Open Outputs Panel"
         >
-          <FileText size={18} strokeWidth={1.75} />
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="4" width="18" height="16" rx="4" />
+            <line x1="16" y1="8" x2="16" y2="16" />
+          </svg>
         </button>
       </aside>
     );
@@ -189,7 +192,7 @@ export function StudioRightSidebar({
             className={`${styles.tabBtn} ${internalTab === "outputs" ? styles.activeTabBtn : ""}`}
             onClick={() => setInternalTab("outputs")}
           >
-            <Layers size={13} />
+            <OutputsDuotoneIcon size={14} style={{ color: "#6366f1" }} />
             <span>Outputs</span>
             <span className={styles.tabBadge}>V01</span>
           </button>
@@ -199,7 +202,7 @@ export function StudioRightSidebar({
             className={`${styles.tabBtn} ${internalTab === "chats" ? styles.activeTabBtn : ""}`}
             onClick={() => setInternalTab("chats")}
           >
-            <History size={13} />
+            <HistoryDuotoneIcon size={14} style={{ color: "#f59e0b" }} />
             <span>Chat History</span>
           </button>
         </div>
@@ -239,7 +242,7 @@ export function StudioRightSidebar({
               <div className={styles.outputCardHeader}>
                 <div className={styles.outputTitleRow}>
                   <div className={styles.outputIconWrapper}>
-                    <FileText size={15} />
+                    <DocumentsDuotoneIcon size={16} />
                   </div>
                   <div>
                     <div className={styles.outputTitleText}>Villa Design Proposal</div>
@@ -294,13 +297,21 @@ export function StudioRightSidebar({
                   role="button"
                   tabIndex={0}
                 >
-                  <div className={`${styles.fileIconWrapper} ${styles[`file_${file.type}`]}`}>
+                  <div
+                    className={`${styles.fileIconWrapper} ${
+                      file.type === "pdf"
+                        ? styles.file_pdf
+                        : file.type === "xlsx"
+                        ? styles.file_xlsx
+                        : styles.file_image
+                    }`}
+                  >
                     {file.type === "pdf" ? (
-                      <FileText size={14} />
+                      <DocumentsDuotoneIcon size={16} />
                     ) : file.type === "xlsx" ? (
-                      <FileSpreadsheet size={14} />
+                      <SpreadsheetDuotoneIcon size={16} />
                     ) : (
-                      <ImageIcon size={14} />
+                      <PortfolioDuotoneIcon size={16} />
                     )}
                   </div>
                   <div className={styles.itemTextCol}>
@@ -340,7 +351,7 @@ export function StudioRightSidebar({
                 tabIndex={0}
               >
                 <div className={styles.chatIconWrapper}>
-                  <MessageSquare size={13} />
+                  <FeedbackDuotoneIcon size={14} />
                 </div>
                 <div className={styles.itemTextCol}>
                   <span className={styles.itemTitle}>{chat.title}</span>

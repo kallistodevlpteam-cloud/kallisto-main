@@ -1,14 +1,17 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ChevronDown, ChevronRight, FilePlus, Loader2, Mic, Plus, RefreshCw, Send, Sparkles } from "lucide-react";
 import { StudioAgentType, StudioProjectOption, StudioTask, StudioWorkspaceType } from "@/types/domain/studio";
 import { StudioChatMessage, StudioMessageAction, StudioRetryPayload } from "@/types/domain/studio-message";
+import { ConversationEvent } from "@/types/domain/studio-conversation-event";
 import { StudioIntent, StudioSource, StudioWorkspaceMode } from "../types/studio-source";
 import { StudioComposer } from "./studio-composer/studio-composer";
 import { Message } from "@/components/ui/message";
 import { ThinkingIndicator } from "@/components/ui/thinking-indicator";
 import { StudioRightSidebar } from "./studio-right-sidebar";
+import { ConversationSpine } from "./conversation-spine/conversation-spine";
+import { deriveConversationEvents } from "../lib/derive-conversation-events";
 import { AssistantTaskResponse } from "./assistant-task-response/assistant-task-response";
 import { formatRelativeTime } from "@/lib/utils/format-relative-time";
 import { StudioRightPanelMode, StudioRightPanelState } from "@/types/domain/studio-right-panel";
@@ -109,7 +112,30 @@ export function StudioActiveTaskCanvas({
   const [outputContextChip, setOutputContextChip] = useState<{ id: string; title: string; version: string } | null>(null);
   const [showJumpToLatest, setShowJumpToLatest] = useState<boolean>(false);
   const [composerHeight, setComposerHeight] = useState<number>(120);
+  const animatedTurnsRef = useRef<Set<string>>(new Set());
+  const [activeGeneratingMsgId, setActiveGeneratingMsgId] = useState<string | null>(() => {
+    if (messages.length > 0) {
+      const latestMsg = messages[messages.length - 1];
+      if (latestMsg && latestMsg.role === "assistant" && latestMsg.kind !== "status") {
+        return latestMsg.id;
+      }
+    }
+    return null;
+  });
+  const prevMessagesCountRef = useRef<number>(messages.length);
   const isUserScrolledUpRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      const latestMsg = messages[messages.length - 1];
+      if (latestMsg && latestMsg.role === "assistant" && latestMsg.kind !== "status") {
+        if (!animatedTurnsRef.current.has(latestMsg.id)) {
+          setActiveGeneratingMsgId(latestMsg.id);
+        }
+      }
+    }
+    prevMessagesCountRef.current = messages.length;
+  }, [messages]);
 
   // ResizeObserver for container-width responsiveness (safely guarded for SSR/test envs)
   useEffect(() => {
@@ -210,6 +236,46 @@ export function StudioActiveTaskCanvas({
 
   const isProcessing = taskStatus === "validating" || taskStatus === "generating";
 
+  const conversationEvents = useMemo(
+    () => deriveConversationEvents({ messages, task, projectName: project.name }),
+    [messages, task, project.name]
+  );
+
+  const handleJumpToMessage = (messageId: string) => {
+    const viewport = conversationViewportRef.current;
+    const msgElement = document.getElementById(`msg-${messageId}`);
+    if (msgElement && viewport) {
+      const viewportRect = viewport.getBoundingClientRect();
+      const elementRect = msgElement.getBoundingClientRect();
+      const relativeTop = elementRect.top - viewportRect.top + viewport.scrollTop;
+      const targetScrollTop = relativeTop - viewport.clientHeight / 2 + elementRect.height / 2;
+
+      if (typeof viewport.scrollTo === "function") {
+        viewport.scrollTo({
+          top: Math.max(0, targetScrollTop),
+          behavior: "smooth",
+        });
+      } else {
+        viewport.scrollTop = Math.max(0, targetScrollTop);
+      }
+
+      msgElement.classList.add(styles.messageHighlighted);
+      setTimeout(() => {
+        msgElement.classList.remove(styles.messageHighlighted);
+      }, 1200);
+    }
+  };
+
+  const handleOpenEntityFromSpine = (event: ConversationEvent) => {
+    if (event.relatedEntityType === "output" || event.relatedEntityType === "proposal" || event.relatedEntityType === "boq") {
+      setPanelState({
+        mode: "preview",
+        selectedOutputId: event.relatedEntityId || "out-1",
+        selectedVersionId: event.relatedEntityVersion || "V01",
+      });
+    }
+  };
+
   const handleRequestChangesFromPreview = () => {
     // Keep preview visible on supported desktop widths!
     if (containerMode !== "desktop") {
@@ -263,6 +329,15 @@ export function StudioActiveTaskCanvas({
         className={styles.studioTaskPane}
         style={{ "--studio-composer-height": `${composerHeight}px` } as React.CSSProperties}
       >
+        {/* ── Conversation Spine (Vertical Activity Indicator) ── */}
+        {messages.length > 0 && (
+          <ConversationSpine
+            events={conversationEvents}
+            onJumpToMessage={handleJumpToMessage}
+            onOpenEntity={handleOpenEntityFromSpine}
+          />
+        )}
+
         {/* ROW 1: Task Conversation (Vertical Scroll Owner - Full height) */}
         <div
           ref={conversationViewportRef}
@@ -288,12 +363,13 @@ export function StudioActiveTaskCanvas({
               messages.map((msg) => {
                 if (msg.role === "user") {
                   return (
-                    <Message
-                      key={msg.id}
-                      role="user"
-                      content={msg.content}
-                      timestamp={formatRelativeTime(msg.createdAt)}
-                    />
+                    <div key={msg.id} id={`msg-${msg.id}`} className={styles.messageTurnWrap}>
+                      <Message
+                        role="user"
+                        content={msg.content}
+                        timestamp={formatRelativeTime(msg.createdAt)}
+                      />
+                    </div>
                   );
                 }
 
@@ -304,7 +380,7 @@ export function StudioActiveTaskCanvas({
                   msg.content.startsWith("Processing ")
                 ) {
                   return (
-                    <div key={msg.id} style={{ margin: "4px 0" }}>
+                    <div key={msg.id} id={`msg-${msg.id}`} className={styles.messageTurnWrap} style={{ margin: "4px 0" }}>
                       <ThinkingIndicator
                         active={true}
                         variant="shimmer"
@@ -314,40 +390,51 @@ export function StudioActiveTaskCanvas({
                   );
                 }
 
+                const isGeneratingThisMsg =
+                  activeGeneratingMsgId === msg.id ||
+                  (!animatedTurnsRef.current.has(msg.id) && msg === messages[messages.length - 1]);
+
                 return (
-                  <Message
-                    key={msg.id}
-                    role="assistant"
-                    timestamp={formatRelativeTime(msg.createdAt)}
-                  >
-                    <AssistantTaskResponse
-                      content={msg.content}
-                      outputReference={msg.outputReference}
-                      task={task}
-                      projectName={project.name}
-                      clientName="Ananya Builders"
-                      budget="₹18L – ₹25L"
-                      actions={msg.actions || []}
-                      onActionSelect={onActionSelect}
-                      onPreviewClick={(outputRef) =>
-                        setPanelState({
-                          mode: "preview",
-                          selectedOutputId: outputRef?.outputId || "out-1",
-                          selectedVersionId: outputRef?.versionId || "V01",
-                        })
-                      }
-                    />
-                    {msg.kind === "error" && msg.retryPayload && (
-                      <button
-                        type="button"
-                        className={styles.retryBtn}
-                        onClick={() => onRetryMessage(msg.retryPayload!)}
-                      >
-                        <RefreshCw size={13} />
-                        <span>Retry submission</span>
-                      </button>
-                    )}
-                  </Message>
+                  <div key={msg.id} id={`msg-${msg.id}`} className={styles.messageTurnWrap}>
+                    <Message
+                      role="assistant"
+                      status={isGeneratingThisMsg ? "thinking" : "ready"}
+                      timestamp={formatRelativeTime(msg.createdAt)}
+                    >
+                      <AssistantTaskResponse
+                        content={msg.content}
+                        outputReference={msg.outputReference}
+                        task={task}
+                        projectName={project.name}
+                        clientName="Ananya Builders"
+                        budget="₹18L – ₹25L"
+                        actions={msg.actions || []}
+                        isNewTurn={isGeneratingThisMsg}
+                        onAnimationComplete={() => {
+                          animatedTurnsRef.current.add(msg.id);
+                          setActiveGeneratingMsgId((curr) => (curr === msg.id ? null : curr));
+                        }}
+                        onActionSelect={onActionSelect}
+                        onPreviewClick={(outputRef) =>
+                          setPanelState({
+                            mode: "preview",
+                            selectedOutputId: outputRef?.outputId || "out-1",
+                            selectedVersionId: outputRef?.versionId || "V01",
+                          })
+                        }
+                      />
+                      {msg.kind === "error" && msg.retryPayload && (
+                        <button
+                          type="button"
+                          className={styles.retryBtn}
+                          onClick={() => onRetryMessage(msg.retryPayload!)}
+                        >
+                          <RefreshCw size={13} />
+                          <span>Retry submission</span>
+                        </button>
+                      )}
+                    </Message>
+                  </div>
                 );
               })
             )}
@@ -386,7 +473,7 @@ export function StudioActiveTaskCanvas({
               }`}
             >
               <StudioComposer
-                variant="active"
+                variant={messages.length > 0 ? "active" : "idle"}
                 prompt={prompt}
                 onPromptChange={onPromptChange}
                 attachments={attachments}

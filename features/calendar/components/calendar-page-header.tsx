@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Plus, ChevronDown, CalendarDays, CheckSquare, Flag, Search } from "lucide-react";
+import { Plus, ChevronDown, CheckSquare, Flag, Search } from "lucide-react";
+import { CalendarDuotoneIcon } from "@/components/layout/sidebar-icons";
 import { CalendarTabId } from "../hooks/use-calendar-query-state";
 import styles from "./calendar-page-header.module.css";
 
@@ -50,7 +51,7 @@ export function CalendarPageHeader({
         <div className={styles.titleGroup}>
           <h1 className={styles.title}>Schedule</h1>
           <div className={styles.subDateRow}>
-            <CalendarDays size={14} className={styles.subDateIcon} />
+            <CalendarDuotoneIcon size={15} className={styles.subDateIcon} />
             <span>{formattedDate}</span>
           </div>
         </div>
@@ -100,14 +101,6 @@ export function CalendarPageHeader({
             </button>
           </div>
 
-          <button
-            type="button"
-            className={styles.filterIconBtn}
-            aria-label="Filter schedule"
-          >
-            <Plus size={15} style={{ transform: "rotate(45deg)" }} />
-          </button>
-
           <div className={styles.actionGroup} ref={dropdownRef}>
             <button
               type="button"
@@ -141,7 +134,7 @@ export function CalendarPageHeader({
                   role="menuitem"
                   onClick={() => handleSelectCreation("schedule_event")}
                 >
-                  <CalendarDays size={16} className={styles.itemIconEvent} />
+                  <CalendarDuotoneIcon size={16} className={styles.itemIconEvent} />
                   <div className={styles.itemText}>
                     <span className={styles.itemTitle}>Schedule event</span>
                     <span className={styles.itemDesc}>Site visit, meeting, or appointment</span>

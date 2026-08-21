@@ -237,3 +237,15 @@ export function getMinutesInTimeZone(
     Number(parts.find((item) => item.type === type)?.value ?? 0);
   return part("hour") * 60 + part("minute");
 }
+
+export function getWeekOfMonthLabel(dateStr: string, anchorDateStr: string): string {
+  const anchor = parseDateOnly(anchorDateStr);
+  const firstOfMonth = formatDateOnly(
+    new Date(Date.UTC(anchor.getUTCFullYear(), anchor.getUTCMonth(), 1))
+  );
+  const gridStart = startOfMondayWeek(firstOfMonth);
+  const currentWeekStart = startOfMondayWeek(dateStr);
+  const diffDays = differenceInCalendarDays(currentWeekStart, gridStart);
+  const weekNumber = Math.max(1, Math.min(5, Math.floor(diffDays / 7) + 1));
+  return `Week ${weekNumber}`;
+}

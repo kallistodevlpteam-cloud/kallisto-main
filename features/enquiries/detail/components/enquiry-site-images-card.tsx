@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { ChevronUp, ChevronDown } from "lucide-react";
+import { PortfolioDuotoneIcon } from "@/components/layout/sidebar-icons";
 import styles from "./enquiry-site-images-card.module.css";
 
 export interface SiteImageItem {
@@ -36,7 +37,7 @@ export function EnquirySiteImagesCard({
   images = DEFAULT_SITE_IMAGES,
   totalCount = 7,
   extraCount,
-  title = "Site Images Preview",
+  title = "Site Images & Evidence",
   showAll = false,
   onImageClick,
   onViewAll,
@@ -47,33 +48,53 @@ export function EnquirySiteImagesCard({
   const VISIBLE = showAll ? images.length : 4;
   const displayImages = images.slice(0, VISIBLE);
   const overflowThumb = images[4] || images[0];
+  const count = images.length;
   const overflowCount =
     extraCount !== undefined ? extraCount : Math.max(0, totalCount - 4);
 
   return (
     <div className={styles.container}>
-      {/* ── Collapsible Header Row ── */}
-      <button
-        type="button"
-        data-testid="site-images-toggle"
-        className={styles.headerToggle}
-        onClick={() => setExpanded((prev) => !prev)}
-        aria-expanded={expanded}
-        aria-controls="site-images-gallery"
-      >
-        <span className={styles.headerTitle}>{title}</span>
-        {expanded ? (
-          <ChevronUp size={15} className={styles.chevron} />
-        ) : (
-          <ChevronDown size={15} className={styles.chevron} />
-        )}
-      </button>
+      {/* ── Modern Card Header ── */}
+      <div className={styles.headerRow}>
+        <div className={styles.headerTitleGroup}>
+          <span className={styles.headerIcon}>
+            <PortfolioDuotoneIcon size={16} />
+          </span>
+          <h3 className={styles.headerTitle}>{title}</h3>
+        </div>
+        <div className={styles.headerRight}>
+          <span className={styles.countBadge}>
+            {count} {count === 1 ? "image" : "images"}
+          </span>
+          <button
+            type="button"
+            data-testid="site-images-toggle"
+            className={styles.headerToggle}
+            onClick={() => setExpanded((prev) => !prev)}
+            aria-expanded={expanded}
+            aria-controls="site-images-gallery"
+            aria-label={expanded ? "Collapse gallery" : "Expand gallery"}
+          >
+            {expanded ? (
+              <ChevronUp size={15} className={styles.chevron} />
+            ) : (
+              <ChevronDown size={15} className={styles.chevron} />
+            )}
+          </button>
+        </div>
+      </div>
 
       {/* ── 4-Column Image Gallery Grid ── */}
       {expanded && !hasImages && (
-        <p className={styles.emptyState} aria-label="No site images available">
-          No site images have been shared yet.
-        </p>
+        <div className={styles.emptyContainer} aria-label="No site images available">
+          <div className={styles.emptyIconBox}>
+            <PortfolioDuotoneIcon size={24} />
+          </div>
+          <p className={styles.emptyTitle}>No site images shared yet</p>
+          <p className={styles.emptySubText}>
+            Site photographs and contextual media uploaded by the client will appear here.
+          </p>
+        </div>
       )}
       {expanded && hasImages && (
         <div id="site-images-gallery" className={styles.galleryGrid}>

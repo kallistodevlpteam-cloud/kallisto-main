@@ -100,5 +100,11 @@ describe("AppShell", () => {
     fireEvent.click(screen.getByRole("button", { name: /close navigation/i }));
     expect(screen.queryByRole("button", { name: /close navigation/i })).not.toBeInTheDocument();
   });
+
+  it("renders the fullscreen toggle button next to notifications", () => {
+    render(<AppShell />);
+    const fullscreenButton = screen.getByRole("button", { name: /enter full screen/i });
+    expect(fullscreenButton).toBeInTheDocument();
+  });
 });
 

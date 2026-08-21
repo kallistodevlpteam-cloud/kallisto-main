@@ -1717,8 +1717,10 @@
   --calendar-muted: oklch(0.53 0.018 262);
   --calendar-line: oklch(0.9 0.008 262);
   --calendar-surface: oklch(0.995 0.004 95);
-  max-width: 1332px;
-  padding: 20px 40px 36px;
+  width: 100%;
+  max-width: none;
+  padding: 16px 24px 24px;
+  box-sizing: border-box;
 }
 
 .todayWorkspaceContainer {
@@ -2435,25 +2437,36 @@
 }
 
 /* Editorial Today workspace */
-.todayEditorialWorkspace {
+.todayEditorialWorkspace,
+.todayLayout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 288px;
-  gap: 40px;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 28px;
   align-items: start;
   width: 100%;
-  max-width: 1120px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   padding: 0 0 48px;
   color: var(--calendar-ink);
+  box-sizing: border-box;
 }
 
 .todayMainColumn {
   min-width: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .primaryFocus {
-  padding: 0 0 28px;
-  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  padding: 22px 24px;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .primaryFocusHeading {
@@ -2476,18 +2489,18 @@
   color: #64748b;
   font-size: 11px;
   line-height: 16px;
-  font-weight: 600;
-  letter-spacing: 0.03em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .primaryFocus h2 {
   margin: 0;
   color: #0f172a;
-  font-size: 28px;
-  line-height: 34px;
-  font-weight: 650;
-  letter-spacing: -0.02em;
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
 }
 
 .focusConfirmation {
@@ -2495,9 +2508,13 @@
   align-items: center;
   gap: 5px;
   flex: 0 0 auto;
-  color: #166534;
-  font-size: 12px;
-  line-height: 18px;
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #dcfce7;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  line-height: 16px;
   font-weight: 600;
 }
 
@@ -2510,10 +2527,10 @@
 }
 
 .focusDescription {
-  max-width: 600px;
+  max-width: 100%;
   margin: 12px 0 16px;
-  color: #334155;
-  font-size: 14px;
+  color: #475569;
+  font-size: 13.5px;
   line-height: 22px;
   font-weight: 400;
 }
@@ -2521,16 +2538,16 @@
 .focusImage {
   position: relative;
   overflow: hidden;
-  max-height: 300px;
+  max-height: 400px;
   width: 100%;
   background: #f1f5f9;
-  border-radius: 8px;
+  border-radius: 14px;
 }
 
 .focusImage img {
   width: 100%;
   height: 100%;
-  max-height: 300px;
+  max-height: 400px;
   object-fit: cover;
 }
 
@@ -2561,7 +2578,7 @@
   color: #64748b;
   font-size: 10px;
   line-height: 14px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -2572,7 +2589,7 @@
   color: #0f172a;
   font-size: 13px;
   line-height: 19px;
-  font-weight: 500;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -2581,7 +2598,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 16px;
+  margin-top: 18px;
 }
 
 .focusPrimaryAction,
@@ -2591,31 +2608,30 @@
   align-items: center;
   justify-content: center;
   gap: 7px;
-  min-height: 36px;
-  padding: 0 14px;
-  border-radius: 6px;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 9999px;
   font-size: 13px;
-  line-height: 19px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .focusPrimaryAction {
   color: #ffffff;
   background: #0f172a;
-  border: 1px solid #0f172a;
+  border: none;
 }
 
 .focusPrimaryAction:hover {
   background: #1e293b;
-  border-color: #1e293b;
 }
 
 .focusCompleteAction,
 .todayEmptyState button {
   color: #0f172a;
-  background: transparent;
-  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
 }
 
 .focusCompleteAction:hover:not(:disabled),
@@ -2625,42 +2641,48 @@
 
 .focusCompleteAction:disabled {
   color: #94a3b8;
-  border-color: #e2e8f0;
+  border-color: #f1f5f9;
+  background: #f8fafc;
   cursor: default;
 }
 
 .agendaSection {
-  margin-top: 28px;
-  padding-top: 24px;
+  background: #ffffff;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  padding: 20px 24px;
+  box-sizing: border-box;
 }
 
 .sectionHeading {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 18px;
-  padding-bottom: 12px;
+  padding-bottom: 14px;
 }
 
 .sectionHeading h2 {
   margin: 0;
   color: #0f172a;
-  font-size: 20px;
-  line-height: 27px;
-  font-weight: 650;
-  letter-spacing: -0.02em;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
 }
 
 .sectionHeading > span {
-  padding-bottom: 2px;
-  color: #64748b;
-  font-size: 12px;
-  line-height: 18px;
-  font-weight: 400;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #475569;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 9999px;
 }
 
 .agendaList {
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #f1f5f9;
 }
 
 .agendaRow {
@@ -2669,29 +2691,29 @@
   gap: 12px;
   align-items: center;
   width: 100%;
-  min-height: 64px;
-  padding: 12px 0;
+  min-height: 56px;
+  padding: 10px 12px;
+  border-radius: 10px;
   color: inherit;
   text-align: left;
   background: transparent;
   border: 0;
-  border-bottom: 1px solid #f1f5f9;
-  border-radius: 0;
+  border-bottom: 1px solid #f8fafc;
   cursor: pointer;
-  transition: background-color 0.12s ease;
+  transition: background-color 0.15s ease;
 }
 
 .agendaRow:hover {
-  background-color: #fafafa;
+  background-color: #f7f7f5;
 }
 
 .agendaRowActive {
-  border-left: 3px solid #0284c7;
-  padding-left: 10px;
+  background-color: #f7f7f5;
+  border-left: 3px solid #0f172a;
 }
 
 .agendaRowCompleted {
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .agendaTime {
@@ -2718,8 +2740,8 @@
 .agendaActivity strong {
   overflow: hidden;
   color: #0f172a;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 13.5px;
+  line-height: 19px;
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2748,12 +2770,12 @@
   height: 24px;
   place-items: center;
   margin-right: -4px;
-  color: #ffffff;
-  background: #0f172a;
+  color: #475569;
+  background: #f1f5f9;
   border: 2px solid #ffffff;
   border-radius: 50%;
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 9.5px;
+  font-weight: 700;
 }
 
 .agendaAvatarOverflow {
@@ -2828,13 +2850,17 @@
 }
 
 .laterSection {
-  margin-top: 32px;
-  padding-top: 24px;
-  border-top: 1px solid #e2e8f0;
+  background: #ffffff;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  padding: 20px 24px;
+  box-sizing: border-box;
+  margin-top: 0;
 }
 
 .laterList {
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #f1f5f9;
 }
 
 .laterList > button {
@@ -2844,13 +2870,19 @@
   align-items: center;
   width: 100%;
   min-height: 54px;
-  padding: 10px 0;
+  padding: 10px 12px;
+  border-radius: 10px;
   color: inherit;
   text-align: left;
   background: transparent;
   border: 0;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f8fafc;
   cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.laterList > button:hover {
+  background-color: #f7f7f5;
 }
 
 .laterItemCheck {
@@ -2911,46 +2943,54 @@
   position: sticky;
   top: 24px;
   display: flex;
-  width: 288px;
-  min-width: 288px;
+  width: 360px;
+  min-width: 360px;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   padding-top: 0;
   align-self: start;
+  box-sizing: border-box;
 }
 
-.miniCalendarSection,
+.miniCalendarSection {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .utilityControls,
-.daySummary {
-  padding-bottom: 24px;
-  border-bottom: 1px solid #e2e8f0;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
-}
-
+.daySummary,
 .activityLegend {
-  padding-bottom: 0;
-  border-bottom: none;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  padding: 18px 20px;
+  border: none;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .miniCalendarHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 14px;
+  padding: 0 2px;
+  margin-bottom: 6px;
 }
 
 .miniCalendarHeader h2 {
-  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
   color: #0f172a;
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 650;
+  margin: 0;
+  letter-spacing: -0.01em;
 }
 
 .miniCalendarNavButtons {
@@ -2960,96 +3000,120 @@
 }
 
 .miniCalendarNavButtons button {
-  display: grid;
-  width: 30px;
-  height: 30px;
-  place-items: center;
-  padding: 0;
-  color: #0f172a;
-  background: transparent;
-  border: 0;
-  border-radius: 6px;
+  background: #f7f7f5;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: #64748b;
   cursor: pointer;
-  transition: background-color 0.12s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
 }
 
 .miniCalendarNavButtons button:hover {
-  background-color: #f1f5f9;
+  background: #eeeeea;
+  color: #0f172a;
 }
 
 .miniCalendarWeekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  margin-bottom: 6px;
+  gap: 6px;
+  width: 100%;
 }
 
-.miniCalendarWeekdays span {
+.squircleDayNameBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  border-radius: 8px;
+  background: #f7f7f5;
+  border: none;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   color: #64748b;
-  font-size: 11px;
-  line-height: 16px;
-  font-weight: 600;
-  text-align: center;
+  text-transform: uppercase;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.squircleDayNameActive {
+  background: #e8e8e4;
+  color: #0f172a;
+  font-weight: 800;
 }
 
 .miniCalendarGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px 4px;
+  gap: 6px;
+  width: 100%;
 }
 
-.miniCalendarGrid > span,
-.miniCalendarGrid > button {
-  width: 32px;
-  height: 32px;
-  aspect-ratio: 1;
-  margin: 0 auto;
-}
-
-.miniCalendarGrid > button {
-  position: relative;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  color: #334155;
+.squircleDayBlank {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: 50%;
-  font-size: 12px;
-  line-height: 18px;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
+}
+
+.squircleDayCard {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  background: #f7f7f5;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
   cursor: pointer;
-  transition: background-color 0.12s ease;
+  outline: none;
+  transition: transform 0.15s ease, background 0.15s ease;
+  box-sizing: border-box;
 }
 
-.miniCalendarGrid > button:hover {
-  background-color: #f1f5f9;
+.squircleDayCard:hover {
+  background: #eeeeea;
+  transform: translateY(-1px);
 }
 
-.miniCalendarGrid > .miniCalendarToday {
-  border: 1px solid #0284c7;
-  background-color: #f0f9ff;
-  color: #0284c7;
-  font-weight: 600;
+.squircleDaySelected {
+  background: #ffffff !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
-.miniCalendarGrid > .miniCalendarSelected {
-  background-color: #0284c7 !important;
-  color: #ffffff !important;
-  font-weight: 600;
-  border-color: #0284c7 !important;
+.squircleDayNumber {
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  text-align: center;
+  line-height: 1;
 }
 
-.miniCalendarGrid > button > i {
+.squircleDaySelected .squircleDayNumber {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.squircleEventDot {
   position: absolute;
-  right: 50%;
-  bottom: 3px;
-  width: 3px;
-  height: 3px;
-  transform: translateX(50%);
-  background-color: currentColor;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
+  background-color: #3b82f6;
+  pointer-events: none;
 }
 
 .utilityControls {
@@ -3066,32 +3130,44 @@
 }
 
 .utilityControls label > span {
-  color: #0f172a;
+  color: #64748b;
   font-size: 11px;
   line-height: 16px;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .utilityControls select {
   width: 100%;
   height: 36px;
-  padding: 0 24px 0 9px;
+  padding: 0 24px 0 10px;
   color: #0f172a;
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
   font: inherit;
-  font-size: 13px;
+  font-size: 12.5px;
   line-height: 18px;
   font-weight: 500;
+  transition: all 0.15s ease;
 }
 
-.daySummary h2 {
+.utilityControls select:focus {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  outline: none;
+}
+
+.daySummary h2,
+.activityLegend h2 {
   margin: 0 0 12px;
-  color: #0f172a;
-  font-size: 13px;
-  line-height: 20px;
-  font-weight: 650;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .daySummaryGrid {
@@ -3109,9 +3185,9 @@
 
 .daySummaryNumber {
   color: #0f172a;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 20px;
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .daySummaryLabel {
@@ -3236,9 +3312,10 @@
 }
 
 @media (max-width: 1180px) {
-  .todayEditorialWorkspace {
-    grid-template-columns: minmax(0, 1fr) 258px;
-    gap: 32px;
+  .todayEditorialWorkspace,
+  .todayLayout {
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 20px;
   }
 
   .agendaRow {
@@ -3263,10 +3340,11 @@
 }
 
 @media (max-width: 900px) {
-  .todayEditorialWorkspace {
+  .todayEditorialWorkspace,
+  .todayLayout {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 20px;
   }
 
   .todayUtilityRail {
@@ -3365,8 +3443,8 @@
 /* Editorial Month Workspace (Specifications 1–10) */
 .editorialMonthWorkspace {
   width: 100%;
-  max-width: 1120px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   padding: 16px 0 48px;
 }
 

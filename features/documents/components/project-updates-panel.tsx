@@ -431,7 +431,7 @@ export function ProjectUpdatesPanel({
                   <MessageCircle size={15} aria-hidden="true" /><span>Reply</span>
                 </button>
                 <button type="button" className="post-action-btn" aria-label={`Acknowledge ${post.authorName}'s update`}>
-                  <CheckCircle size={15} aria-hidden="true" /><span>Acknowledge</span>
+                  <Check size={15} strokeWidth={2.5} aria-hidden="true" /><span>Acknowledge</span>
                 </button>
               </div>
               {index < state.updatesList.length - 1 ? <div className="post-item-divider" /> : null}

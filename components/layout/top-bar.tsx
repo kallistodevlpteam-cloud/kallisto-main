@@ -2,14 +2,18 @@
 
 import { useState, useEffect, Suspense } from "react";
 import {
-  Bell,
   ChevronLeft,
   ChevronRight,
   Menu,
-  MessageSquareText,
-  Search,
-  Sparkles,
 } from "lucide-react";
+import {
+  BellDuotoneIcon,
+  FeedbackDuotoneIcon,
+  FullscreenExpandDuotoneIcon,
+  FullscreenExitDuotoneIcon,
+  OdinDuotoneIcon,
+  SearchDuotoneIcon,
+} from "./sidebar-icons";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FeedbackPopover } from "./feedback-popover";
 import { NotificationPopover } from "./notification-popover";
@@ -144,33 +148,23 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
       { label: "Virtual Office" },
       { label: "Hive Studio", href: "/studio" },
     ];
-    const promptParam =
-      searchParams.get("prompt") ||
-      searchParams.get("q") ||
-      (typeof window !== "undefined"
-        ? window.localStorage.getItem("kallisto_active_studio_prompt")
-        : null);
     const projectParam =
       searchParams.get("project") ||
       searchParams.get("projectName") ||
       (typeof window !== "undefined"
         ? window.localStorage.getItem("kallisto_active_studio_project")
-        : null) ||
-      "Kallisto Virtual Office";
+        : null);
 
-    if (promptParam) {
+    if (projectParam && projectParam !== "Kallisto Virtual Office") {
       items.push({ label: projectParam });
-      const words = promptParam.trim().split(/\s+/);
-      const snippet = words.length <= 4 ? promptParam.trim() : words.slice(0, 4).join(" ") + "…";
-      items.push({ label: snippet });
-    } else {
-      const parts = currentPath.split("/").filter(Boolean);
-      if (parts.length > 1) {
-        if (parts[1] === "boq") items.push({ label: "BOQ Engine" });
-        else if (parts[1] === "ai-plans") items.push({ label: "AI Plans" });
-        else if (parts[1] === "proposals") items.push({ label: "Proposals" });
-        else if (parts[1] === "tasks" && parts[2]) items.push({ label: "Active Task" });
-      }
+    }
+
+    const parts = currentPath.split("/").filter(Boolean);
+    if (parts.length > 1) {
+      if (parts[1] === "boq") items.push({ label: "BOQ Engine" });
+      else if (parts[1] === "ai-plans") items.push({ label: "AI Plans" });
+      else if (parts[1] === "proposals") items.push({ label: "Proposals" });
+      else if (parts[1] === "tasks" && parts[2]) items.push({ label: "Active Task" });
     }
   } else {
     let meta = ROUTE_BREADCRUMBS[currentPath];
@@ -219,6 +213,37 @@ export function TopBar({
 
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  const handleToggleFullscreen = async () => {
+    if (document.fullscreenElement) {
+      try {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      } catch {
+        setIsFullscreen(false);
+      }
+    } else {
+      try {
+        if (typeof document.documentElement.requestFullscreen === "function") {
+          await document.documentElement.requestFullscreen();
+          setIsFullscreen(true);
+        }
+      } catch {
+        // Fullscreen API may be blocked in some browser environments
+      }
+    }
+  };
 
   return (
     <header className="topbar">
@@ -264,7 +289,7 @@ export function TopBar({
         aria-label="Search Kallisto"
         onClick={onOpenSearch}
       >
-        <Search size={14} className="search-icon" aria-hidden="true" />
+        <SearchDuotoneIcon size={14} className="search-icon" aria-hidden="true" />
         <span className="search-placeholder">Search everything...</span>
       </button>
 
@@ -276,7 +301,7 @@ export function TopBar({
             onClick={() => setFeedbackOpen((prev) => !prev)}
             aria-expanded={feedbackOpen}
           >
-            <MessageSquareText size={14} />
+            <FeedbackDuotoneIcon size={15} />
             <span>Feedback</span>
           </button>
           <FeedbackPopover
@@ -291,7 +316,7 @@ export function TopBar({
           aria-expanded={assistantOpen}
           aria-controls="odin-panel"
         >
-          <Sparkles size={14} className="sparkle-icon" />
+          <OdinDuotoneIcon size={15} className="sparkle-icon" />
           <span>Ask Odin</span>
         </button>
         <button
@@ -301,8 +326,21 @@ export function TopBar({
           title="Notifications"
           onClick={() => setNotificationsOpen((prev) => !prev)}
         >
-          <Bell size={16} strokeWidth={1.8} />
+          <BellDuotoneIcon size={16} />
           <span className="notification-indicator" />
+        </button>
+        <button
+          className={`topbar-icon-btn${isFullscreen ? " is-active" : ""}`}
+          type="button"
+          aria-label={isFullscreen ? "Exit full screen" : "Enter full screen"}
+          title={isFullscreen ? "Exit full screen" : "Enter full screen"}
+          onClick={handleToggleFullscreen}
+        >
+          {isFullscreen ? (
+            <FullscreenExitDuotoneIcon size={16} />
+          ) : (
+            <FullscreenExpandDuotoneIcon size={16} />
+          )}
         </button>
         <button
           className={`topbar-avatar-btn${accountOpen ? " is-active" : ""}`}

@@ -215,7 +215,7 @@ describe("Idempotent Approval & Rejection Workflow Tests", () => {
 });
 
 describe("HomeWorkspace Page Component Tests", () => {
-  it("renders welcome greeting, drawing status cards, assigned projects, and dashboard widgets", async () => {
+  it("renders welcome greeting, assigned projects, and dashboard widgets", async () => {
     render(
       <OdinProvider>
         <HomeWorkspace userRole="owner" userName="Arjun" />
@@ -231,17 +231,11 @@ describe("HomeWorkspace Page Component Tests", () => {
     // Section 1.5: Practice Setup Card
     expect(screen.getByRole("heading", { name: /^complete your practice setup$/i })).toBeInTheDocument();
     expect(screen.getByText("Account Setup")).toBeInTheDocument();
-    expect(screen.getByText("Business Profile")).toBeInTheDocument();
+    expect(screen.getAllByText("Business Profile")[0]).toBeInTheDocument();
     expect(screen.getByText("Portfolio")).toBeInTheDocument();
     expect(screen.getByText("Verification")).toBeInTheDocument();
 
-    // Section 2: Drawing Cards
-    expect(screen.getByText("MEP Drawings")).toBeInTheDocument();
-    expect(screen.getByText("BOQ / Scope")).toBeInTheDocument();
-    expect(screen.getByText("Shop Drawings")).toBeInTheDocument();
-    expect(screen.getByText("Mockup Drawings")).toBeInTheDocument();
-
-    // Section 3: Assigned Projects Heading
+    // Section 2: Assigned Projects Heading
     expect(screen.getByRole("heading", { name: /^assigned projects$/i })).toBeInTheDocument();
 
     // Section 4: Dashboard Widgets
@@ -265,18 +259,7 @@ describe("HomeWorkspace Page Component Tests", () => {
       </OdinProvider>
     );
 
-    // 1. Verify Date is rendered
-    const formattedDate = new Date().toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-    });
-    expect(screen.getByText(formattedDate)).toBeInTheDocument();
-
-    // 2. Verify "5 items need attention" badge is rendered
-    expect(screen.getByText(/5 items need attention/i)).toBeInTheDocument();
-
-    // 3. Verify Service Area label is rendered
+    // 1. Verify Service Area label is rendered
     expect(screen.getByText(/Service area:/i)).toBeInTheDocument();
     expect(screen.getByText(/Kochi, Kerala/i)).toBeInTheDocument();
 
@@ -300,6 +283,37 @@ describe("HomeWorkspace Page Component Tests", () => {
     // Verify dialog is closed and header service area is updated to Bengaluru
     expect(screen.queryByRole("heading", { name: /change primary service area/i })).not.toBeInTheDocument();
     expect(screen.getByText(/Bengaluru, Karnataka/i)).toBeInTheDocument();
+
+    // 5. Verify Service Availability Toggle on the right
+    const availabilitySwitch = screen.getByRole("switch", { name: /toggle service availability/i });
+    expect(availabilitySwitch).toBeInTheDocument();
+    expect(availabilitySwitch).toHaveAttribute("aria-checked", "true");
+    expect(screen.getByText(/available for service/i)).toBeInTheDocument();
+
+    // Toggle switch OFF
+    fireEvent.click(availabilitySwitch);
+    expect(availabilitySwitch).toHaveAttribute("aria-checked", "false");
+    expect(screen.getByText(/service paused/i)).toBeInTheDocument();
+
+    // Toggle switch ON again
+    fireEvent.click(availabilitySwitch);
+    expect(availabilitySwitch).toHaveAttribute("aria-checked", "true");
+    expect(screen.getByText(/available for service/i)).toBeInTheDocument();
+  }, 15000);
+
+  it("renders the 2-section workspace with right-side intelligence panel", async () => {
+    render(
+      <OdinProvider>
+        <HomeWorkspace userRole="owner" userName="Arjun" />
+      </OdinProvider>
+    );
+
+    // 1. Right Sidebar: ODIN Studio Insights
+    expect(screen.getByText(/ODIN STUDIO INSIGHTS/i)).toBeInTheDocument();
+    expect(screen.getByText(/3 Active/i)).toBeInTheDocument();
+
+    // 2. Right Sidebar: Action Required
+    expect(screen.getByText(/ACTION REQUIRED/i)).toBeInTheDocument();
   }, 15000);
 });
 
@@ -352,3 +366,96 @@ describe("Practice Setup Operational Weighting & Visibility Rules", () => {
     expect(progress.attentionReason).toBe("Business proof document illegible");
   });
 });
+
+describe("Calendar Date Indicator Logic Tests", () => {
+  it("evaluates hasActiveOrUpcomingEvents according to exact specification rules", async () => {
+    const { hasActiveOrUpcomingEvents } = await import(
+      "@/features/home/components/workspace-dashboard-section"
+    );
+
+    // 1. If date has 0 events -> false (show no dot)
+    expect(hasActiveOrUpcomingEvents([])).toBe(false);
+    expect(hasActiveOrUpcomingEvents(undefined)).toBe(false);
+
+    // 2. If date has 1 active/upcoming event -> true (show exactly 1 dot)
+    expect(
+      hasActiveOrUpcomingEvents([
+        {
+          id: "ev-1",
+          time: "09:00 AM",
+          title: "Site Inspection",
+          badge: "INSPECTION",
+          location: "Kochi",
+          dotColor: "#0ea5e9",
+          status: "upcoming",
+        },
+      ])
+    ).toBe(true);
+
+    // 3. If date has 5 events -> true (number of events does not change dot presence)
+    expect(
+      hasActiveOrUpcomingEvents([
+        { id: "1", time: "9am", title: "A", badge: "A", location: "K", dotColor: "#000", status: "active" },
+        { id: "2", time: "10am", title: "B", badge: "B", location: "K", dotColor: "#000", status: "upcoming" },
+        { id: "3", time: "11am", title: "C", badge: "C", location: "K", dotColor: "#000", status: "upcoming" },
+        { id: "4", time: "1pm", title: "D", badge: "D", location: "K", dotColor: "#000", status: "upcoming" },
+        { id: "5", time: "2pm", title: "E", badge: "E", location: "K", dotColor: "#000", status: "upcoming" },
+      ])
+    ).toBe(true);
+
+    // 4. Completed events should NOT create the blue indicator
+    expect(
+      hasActiveOrUpcomingEvents([
+        {
+          id: "ev-comp",
+          time: "09:00 AM",
+          title: "Finished Pour",
+          badge: "INSPECTION",
+          location: "Site",
+          dotColor: "#0ea5e9",
+          status: "completed",
+        },
+      ])
+    ).toBe(false);
+
+    // 5. Cancelled events should NOT create the blue indicator
+    expect(
+      hasActiveOrUpcomingEvents([
+        {
+          id: "ev-canc",
+          time: "09:00 AM",
+          title: "Cancelled Meeting",
+          badge: "COORDINATION",
+          location: "Site",
+          dotColor: "#0ea5e9",
+          status: "cancelled",
+        },
+      ])
+    ).toBe(false);
+
+    // 6. Mixed completed and upcoming events -> show dot because active/upcoming > 0
+    expect(
+      hasActiveOrUpcomingEvents([
+        {
+          id: "ev-comp-1",
+          time: "08:00 AM",
+          title: "Morning Safety Drill",
+          badge: "SAFETY",
+          location: "Site",
+          dotColor: "#ef4444",
+          status: "completed",
+        },
+        {
+          id: "ev-up-2",
+          time: "02:00 PM",
+          title: "Client Presentation",
+          badge: "PRESENTATION",
+          location: "Studio",
+          dotColor: "#ec4899",
+          status: "upcoming",
+        },
+      ])
+    ).toBe(true);
+  });
+});
+

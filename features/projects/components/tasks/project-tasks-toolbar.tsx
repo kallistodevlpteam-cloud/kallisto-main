@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Search, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import styles from "../../projects.module.css";
 
 interface ProjectTasksToolbarProps {
@@ -104,19 +104,6 @@ export function ProjectTasksToolbar({
     <div className={`${styles.projectTasksToolbar} projectTasksToolbar`} ref={toolbarRef}>
       {/* Left Continuous Filter Controls */}
       <div className={styles.taskToolbarLeft}>
-        {/* Search Input Box */}
-        <div className={styles.toolbarSearchBox}>
-          <Search size={14} className={styles.searchIcon} />
-          <input
-            type="text"
-            placeholder="Search tasks, assignees or phases"
-            value={searchQuery}
-            onChange={(e) => onSearchQueryChange(e.target.value)}
-            className={styles.toolbarSearchInput}
-            aria-label="Search tasks"
-          />
-        </div>
-
         {/* Clear Active Filters */}
         {hasActiveFilters && (
           <button
@@ -151,7 +138,7 @@ export function ProjectTasksToolbar({
             className={`${styles.scopeBtn} ${scope === "all" ? styles.scopeBtnActive : ""}`}
             onClick={() => onScopeChange("all")}
           >
-            All Project Tasks
+            All Tasks
           </button>
         </div>
       </div>

@@ -48,21 +48,13 @@ afterEach(() => {
 });
 
 describe("ProjectBoqWorkspace (3-Level View-Only Inspection SVG Matching)", () => {
-  it("renders SVG title line and Hive Studio button without View Only pill or Add Item button", async () => {
+  it("renders workspace header actions (Import and Export) without View Only pill or Add Item button", async () => {
     renderWorkspace();
 
-    expect(await screen.findByText("Draft")).toBeInTheDocument();
+    const importBtn = await screen.findByRole("button", { name: /Import/i });
+    expect(importBtn).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Export/i })).toBeInTheDocument();
     expect(screen.queryByText("View only")).not.toBeInTheDocument();
-
-    const hiveStudioLink = screen.getByRole("link", {
-      name: "Open this BOQ in Hive Studio",
-    });
-    expect(hiveStudioLink).toBeInTheDocument();
-    expect(hiveStudioLink).toHaveAttribute(
-      "href",
-      "/studio?projectId=proj-001&intent=build-boq&versionId=version-1-2"
-    );
-
     expect(screen.queryByRole("button", { name: "Add Item" })).not.toBeInTheDocument();
   });
 
@@ -106,7 +98,7 @@ describe("ProjectBoqWorkspace (3-Level View-Only Inspection SVG Matching)", () =
     renderWorkspace();
     await screen.findByText("Bathroom Demolition of Existing Fixtures & Finishes");
 
-    expect(screen.getByRole("button", { name: "Export" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Export/i })).toBeInTheDocument();
     expect(screen.getByText("No items selected")).toBeInTheDocument();
   });
 
@@ -138,21 +130,11 @@ describe("ProjectBoqWorkspace (3-Level View-Only Inspection SVG Matching)", () =
     expect(screen.queryByRole("heading", { name: "Import BOQ Staging Preview" })).not.toBeInTheDocument();
   });
 
-  it("supports filtering using real item code, inspector context, and versions view", async () => {
+  it("supports inspector context and versions view without inline search box", async () => {
     renderWorkspace();
     await screen.findByText("Bathroom Demolition of Existing Fixtures & Finishes");
 
-    // Search by real item code P1.01.01
-    fireEvent.change(
-      screen.getByRole("searchbox", { name: "Search BOQ items" }),
-      { target: { value: "P1.01.01" } }
-    );
-    expect(screen.getByText(/Demolish & remove existing wall tile \/ dado/i)).toBeInTheDocument();
-
-    fireEvent.change(
-      screen.getByRole("searchbox", { name: "Search BOQ items" }),
-      { target: { value: "" } }
-    );
+    expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
 
     // Toggle Item Details by clicking item description
     fireEvent.click(screen.getAllByText(/Demolish & remove existing wall tile \/ dado/i)[0]);
@@ -163,7 +145,7 @@ describe("ProjectBoqWorkspace (3-Level View-Only Inspection SVG Matching)", () =
     expect(
       screen.getByRole("heading", { name: "Version Governance" })
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "View version" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "View" })).toBeInTheDocument();
   });
 
   it("renders tableScroller as internal scroll owner with viewArea container", async () => {

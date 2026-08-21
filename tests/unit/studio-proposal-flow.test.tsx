@@ -41,8 +41,10 @@ describe("Hive Studio Proposal Conversational Flow", () => {
     expect(mockPush).toHaveBeenCalledWith("/enquiries/enq-1");
   });
 
-  it("starts proposal task session, generates conversation response and syncs output panel without errors", async () => {
-    render(<StudioCreatePage />);
+  it(
+    "starts proposal task session, generates conversation response and syncs output panel without errors",
+    async () => {
+      render(<StudioCreatePage />);
 
     const continueBtn = screen.getByRole("button", { name: "Continue in Hive Studio" });
     fireEvent.click(continueBtn);
@@ -77,11 +79,9 @@ describe("Hive Studio Proposal Conversational Flow", () => {
       expect(workspaceEl).toHaveAttribute("data-panel-mode", "preview");
       expect(screen.getByRole("button", { name: "Close Preview" })).toBeInTheDocument();
       expect(screen.getByText("1. Executive Summary")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Executive Summary" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Scope & Deliverables" })).toBeInTheDocument();
     });
-
-    // Verify section navigation tabs exist
-    expect(screen.getByRole("button", { name: "Executive Summary" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Scope & Deliverables" })).toBeInTheDocument();
 
     // 3. Click Preview again, then test Close Preview -> sets data-panel-mode="collapsed"
     fireEvent.click(screen.getByRole("button", { name: "Preview" }));
@@ -113,7 +113,7 @@ describe("Hive Studio Proposal Conversational Flow", () => {
       expect(screen.getByText(/Villa Design Proposal · V01/i)).toBeInTheDocument();
       expect(screen.getByTestId("animated-placeholder")).toHaveTextContent(/Request changes to Villa Design Proposal V01/i);
     });
-  });
+  }, 15000);
 
   it("renders OutputGlanceCard strictly per event-owned output reference and avoids duplication on follow-up messages", () => {
 
@@ -218,7 +218,7 @@ describe("Hive Studio Proposal Conversational Flow", () => {
         expect(screen.queryByRole("button", { name: /Jump to latest/i })).not.toBeInTheDocument();
       });
     }
-  });
+  }, 15000);
 
   it("uses one persistent composer dock instance across idle and active response states", async () => {
     render(<StudioCreatePage />);

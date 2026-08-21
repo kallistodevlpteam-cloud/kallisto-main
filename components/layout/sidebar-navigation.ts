@@ -1,26 +1,26 @@
+import React from "react";
 import {
-  BarChart3,
-  BookOpen,
-  Calendar,
-  CircleEllipsis,
-  Code2,
-  CreditCard,
-  FolderKanban,
-  Handshake,
-  Home,
-  Images,
-  Inbox,
-  Network,
-  Sparkles,
-  Users,
-  type LucideIcon,
-} from "lucide-react";
+  HomeDuotoneIcon,
+  EnquiriesDuotoneIcon,
+  ProjectsDuotoneIcon,
+  StudioDuotoneIcon,
+  CalendarDuotoneIcon,
+  TeamDuotoneIcon,
+  PaymentsDuotoneIcon,
+  AnalyticsDuotoneIcon,
+  PortfolioDuotoneIcon,
+  HubDuotoneIcon,
+  HandsDuotoneIcon,
+  BasicsDuotoneIcon,
+  DeveloperDuotoneIcon,
+  MoreToolsDuotoneIcon,
+} from "./sidebar-icons";
 
 export type SidebarSection = "home" | "work" | "business" | "presence" | "connectors" | "utility";
 export type SidebarBadge = "pending-enquiries";
 
 export interface SidebarNavigationItem {
-  icon: LucideIcon;
+  icon: React.ComponentType<{ size?: number | string; className?: string; [key: string]: any }>;
   label: string;
   href: string;
   section: SidebarSection;
@@ -40,20 +40,20 @@ export const SIDEBAR_SECTIONS: ReadonlyArray<{
 ];
 
 export const SIDEBAR_NAVIGATION: ReadonlyArray<SidebarNavigationItem> = [
-  { icon: Home, label: "Home", href: "/home", section: "home" },
-  { icon: Inbox, label: "Enquiries", href: "/enquiries", section: "work", badge: "pending-enquiries" },
-  { icon: FolderKanban, label: "Projects", href: "/projects", section: "work" },
-  { icon: Sparkles, label: "Hive Studio", href: "/studio", section: "work" },
-  { icon: Calendar, label: "Calendar", href: "/calendar", section: "work" },
-  { icon: Users, label: "Team", href: "/team", section: "work" },
-  { icon: CreditCard, label: "Payments", href: "/payments", section: "business" },
-  { icon: BarChart3, label: "Analytics", href: "/analytics", section: "business" },
-  { icon: Images, label: "Portfolio", href: "/portfolio", section: "presence" },
-  { icon: Network, label: "Hub", href: "/hub", section: "connectors" },
-  { icon: Handshake, label: "Hands", href: "/hands", section: "connectors" },
-  { icon: BookOpen, label: "Basics", href: "/basics", section: "connectors" },
-  { icon: Code2, label: "Developer", href: "/developer", section: "utility" },
-  { icon: CircleEllipsis, label: "More tools", href: "/tools", section: "utility" },
+  { icon: HomeDuotoneIcon, label: "Home", href: "/home", section: "home" },
+  { icon: EnquiriesDuotoneIcon, label: "Enquiries", href: "/enquiries", section: "work", badge: "pending-enquiries" },
+  { icon: ProjectsDuotoneIcon, label: "Projects", href: "/projects", section: "work" },
+  { icon: StudioDuotoneIcon, label: "Hive Studio", href: "/studio", section: "work" },
+  { icon: CalendarDuotoneIcon, label: "Calendar", href: "/calendar", section: "work" },
+  { icon: TeamDuotoneIcon, label: "Team", href: "/team", section: "work" },
+  { icon: PaymentsDuotoneIcon, label: "Payments", href: "/payments", section: "business" },
+  { icon: AnalyticsDuotoneIcon, label: "Analytics", href: "/analytics", section: "business" },
+  { icon: PortfolioDuotoneIcon, label: "Portfolio", href: "/portfolio", section: "presence" },
+  { icon: HubDuotoneIcon, label: "Hub", href: "/hub", section: "connectors" },
+  { icon: HandsDuotoneIcon, label: "Hands", href: "/hands", section: "connectors" },
+  { icon: BasicsDuotoneIcon, label: "Basics", href: "/basics", section: "connectors" },
+  { icon: DeveloperDuotoneIcon, label: "Developer", href: "/developer", section: "utility" },
+  { icon: MoreToolsDuotoneIcon, label: "More tools", href: "/tools", section: "utility" },
 ];
 
 export function isSidebarItemActive(pathname: string, href: string): boolean {

@@ -12,10 +12,17 @@ function getAuthTokenFromCookie(request: NextRequest): string | undefined {
 export async function GET(request: NextRequest) {
   const character = request.nextUrl.searchParams.get("character") ?? undefined;
   const status = request.nextUrl.searchParams.get("status") ?? undefined;
+
   const authHeader = request.headers.get("authorization")
     ?? getAuthTokenFromCookie(request);
+  const token = authHeader
+    ? authHeader.replace(/^Bearer\s+/i, "")
+    : request.cookies.get("kallisto_auth_token")?.value;
+  const providerId =
+    request.headers.get("x-provider-id") ?? request.cookies.get("kallisto_provider_id")?.value;
+
   try {
-    const projects = await fetchBackendProjects(character, status, authHeader);
+    const projects = await fetchBackendProjects(character, status, token || providerId || authHeader);
     return NextResponse.json({ status: "ok", projects });
   } catch (error) {
     const statusCode = error instanceof Error && "status" in error ? (error as any).status : 503;

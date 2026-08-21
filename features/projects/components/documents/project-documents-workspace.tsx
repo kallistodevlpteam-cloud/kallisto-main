@@ -23,7 +23,6 @@ import {
   StorageDialog,
 } from "./drive-dialogs";
 import { DocumentsTitleRowActions } from "@/features/documents/components/documents-title-row-actions";
-import { DriveTopBar } from "./drive-header";
 import { useDriveQueryState } from "./drive-query-state";
 import { DriveSidebar } from "./drive-sidebar";
 import { DriveToolbar } from "./drive-toolbar";
@@ -32,16 +31,23 @@ import {
   useResponsiveDrivePageSize,
 } from "./use-responsive-drive-page-size";
 import styles from "./project-documents-workspace.module.css";
-
 interface ProjectDocumentsWorkspaceProps {
   projectId: string;
   projectCode: string;
   canViewDocuments?: boolean;
   canStarDocuments?: boolean;
+  hideHeaderTitleRow?: boolean;
   repository?: ProjectDocumentRepository;
 }
 
-const primaryFolderIds = ["drawings", "approvals", "contracts", "site-reports"];
+const primaryFolderIds = [
+  "drawings",
+  "documents",
+  "approvals",
+  "contracts",
+  "site-reports",
+  "renderings",
+];
 
 function matchesModifiedRange(updatedAt: string, range: string): boolean {
   if (range === "all") return true;
@@ -53,12 +59,27 @@ function matchesModifiedRange(updatedAt: string, range: string): boolean {
   return elapsed > 30 * day;
 }
 
-function getFolderTitle(folderId: string, folders: ProjectDocumentFolder[]): string {
+function getFolderTitle(folderId: string, scope: string, folders: ProjectDocumentFolder[]): string {
+  if (scope === "starred" && folderId === "all") return "Starred";
+  if (scope === "shared" && folderId === "all") return "Shared with me";
   if (folderId === "all") return "All Documents";
   if (folderId === "more") return "More Folders";
   if (folderId === "archive") return "Archive";
   if (folderId === "bin") return "Bin";
-  return folders.find((folder) => folder.id === folderId)?.name ?? "Documents";
+  if (folderId === "drawings") return "Drawings";
+  if (folderId === "documents") return "Documents";
+  if (folderId === "approvals") return "Approvals";
+  if (folderId === "contracts") return "Contracts";
+  if (folderId === "site-reports") return "Site Reports";
+  if (folderId === "renderings") return "Renderings";
+
+  const found = folders.find((folder) => folder.id === folderId);
+  if (found?.name) return found.name;
+
+  return folderId
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 function getEmptyStateContent(
@@ -95,6 +116,7 @@ export function ProjectDocumentsWorkspace({
   projectCode,
   canViewDocuments = true,
   canStarDocuments,
+  hideHeaderTitleRow = false,
   repository = projectDocumentRepository,
 }: ProjectDocumentsWorkspaceProps) {
   const { query, updateQuery, setFilters } = useDriveQueryState();
@@ -315,7 +337,7 @@ export function ProjectDocumentsWorkspace({
   // canStar is the only remaining capability gate: starring is a personal organisational action.
   const canStar =
     (canStarDocuments ?? true) && repository.capabilities.starDocuments;
-  const selectedFolderTitle = getFolderTitle(query.selectedFolderId, folders);
+  const selectedFolderTitle = getFolderTitle(query.selectedFolderId, query.scope, folders);
 
   const hasActiveFilters =
     query.filters.types.length > 0 ||
@@ -334,6 +356,34 @@ export function ProjectDocumentsWorkspace({
       await repository.setDocumentStarred(projectId, document.id, !document.isStarred);
       setAnnouncement(
         `${document.isStarred ? "Removed" : "Added"} ${document.name} ${document.isStarred ? "from" : "to"} starred documents.`,
+      );
+      setWorkspaceData(await repository.listProjectDocuments(projectId));
+    } catch {
+      setAnnouncement(`${document.name} could not be updated.`);
+    }
+  };
+
+  const toggleArchive = async (document: ProjectDocument) => {
+    if (!repository.setDocumentArchived) return;
+    const isArchived = document.status === "archived";
+    try {
+      await repository.setDocumentArchived(projectId, document.id, !isArchived);
+      setAnnouncement(
+        `${isArchived ? "Restored" : "Archived"} ${document.name}.`,
+      );
+      setWorkspaceData(await repository.listProjectDocuments(projectId));
+    } catch {
+      setAnnouncement(`${document.name} could not be updated.`);
+    }
+  };
+
+  const toggleBin = async (document: ProjectDocument) => {
+    if (!repository.setDocumentInBin) return;
+    const isInBin = !!document.isInBin;
+    try {
+      await repository.setDocumentInBin(projectId, document.id, !isInBin);
+      setAnnouncement(
+        `${isInBin ? "Restored" : "Moved"} ${document.name} ${isInBin ? "from" : "to"} bin.`,
       );
       setWorkspaceData(await repository.listProjectDocuments(projectId));
     } catch {
@@ -402,23 +452,14 @@ export function ProjectDocumentsWorkspace({
     >
       <p className={styles.visuallyHidden}>Project files published through updates</p>
 
-      <header className={styles.compactDriveHeader}>
-        <div className={styles.compactTitleRow}>
-          <h1>Docs</h1>
-          <DocumentsTitleRowActions />
-        </div>
-        <DriveTopBar
-          scope={query.scope}
-          onScopeChange={(scope) =>
-            updateQuery({ scope }, { resetPage: true, replace: false })
-          }
-          counts={{
-            all: documents.length,
-            shared: documents.filter((d) => (d.sharedWith?.length ?? 0) > 0).length,
-            starred: documents.filter((d) => d.isStarred).length,
-          }}
-        />
-      </header>
+      {!hideHeaderTitleRow ? (
+        <header className={styles.compactDriveHeader}>
+          <div className={styles.compactTitleRow}>
+            <h1>Docs</h1>
+            <DocumentsTitleRowActions />
+          </div>
+        </header>
+      ) : null}
 
       {!isOnline ? (
         <div className={styles.offlineBanner} role="status">
@@ -431,11 +472,21 @@ export function ProjectDocumentsWorkspace({
         <DriveSidebar
           folders={folders}
           selectedFolderId={query.selectedFolderId}
+          scope={query.scope}
+          counts={{
+            all: documents.length,
+            shared: documents.filter((d) => (d.sharedWith?.length ?? 0) > 0).length,
+            starred: documents.filter((d) => d.isStarred).length,
+          }}
           searchValue={searchInput}
           isOpen={sidebarOpen}
           onSearchChange={setSearchInput}
+          onSelectScope={(scope) => {
+            updateQuery({ scope, selectedFolderId: "all" }, { resetPage: true, replace: false });
+            setSidebarOpen(false);
+          }}
           onSelectFolder={(selectedFolderId) => {
-            updateQuery({ selectedFolderId }, { resetPage: true, replace: false });
+            updateQuery({ selectedFolderId, scope: "all" }, { resetPage: true, replace: false });
             setSidebarOpen(false);
           }}
           onStorage={() => {
@@ -472,6 +523,8 @@ export function ProjectDocumentsWorkspace({
                 canStar={canStar}
                 onOpenDocument={openDocument}
                 onToggleStar={(document) => void toggleStar(document)}
+                onArchiveDocument={(document) => void toggleArchive(document)}
+                onDeleteDocument={(document) => void toggleBin(document)}
               />
             ) : (
               <div className={styles.emptyState}>

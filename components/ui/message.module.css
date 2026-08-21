@@ -44,7 +44,7 @@
 .messageUser .messageContent {
   max-width: 380px;
   width: fit-content;
-  background: #f3f4f6;
+  background: #f7f7f5;
   border: none;
   border-radius: 18px;
   padding: 10px 18px;
@@ -120,7 +120,7 @@
 
 .copyBtn:hover {
   color: #0f172a;
-  background: #f1f5f9;
+  background: #f7f7f5;
 }
 
 @keyframes chatgptUserBubbleIn {
@@ -155,5 +155,33 @@
     opacity: 1;
     transform: translateY(0);
     filter: blur(0);
+  }
+}
+
+.avatarThinking {
+  animation: aiAvatarPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes aiAvatarPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avatarThinking,
+  .messageContent,
+  .messageParagraph,
+  .messageUser .messageContent {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
   }
 }

@@ -177,14 +177,20 @@ export interface EnquiryRecord {
   /** Site image URLs straight from backend project_site.site_img_url
    * (JSON list). Strictly backend-sourced; empty when the backend has no
    * site images. */
-  /** Inspiration images from backend (inspiration_img). */
-  inspirationImages?: Array<{ url: string; alt: string | null }>;
   siteImages?: string[];
+  /** Inspiration gallery images straight from backend inspiration_img rows. */
+  inspirationImages?: Array<{ url: string; alt?: string | null }>;
   /** Requirement groups straight from backend requirements rows, each
    * with its requirement_items children (requirement_name + item list).
    * Strictly backend-sourced; empty/absent when the backend has no
    * requirement rows. */
-  requirementsList?: Array<{ id: string; requirement_name: string; items: string[] }>;
+  requirementsList?: Array<{
+    id: string;
+    requirement_name: string;
+    items: string[];
+    item_details?: string[][];
+    statuses?: (boolean | null)[];
+  }>;
   /** Project documents straight from backend project_DOC rows (name +
    * doc_img_url preview). Strictly backend-sourced; empty when the backend
    * has no document rows. */
@@ -194,29 +200,9 @@ export interface EnquiryRecord {
     docImageUrl: string | null;
     docType?: string | null;
     status?: boolean;
-    updatedAt?: string | number | null;
+    updatedAt?: number | null;
   }>;
   proposalStatus?: "none" | "draft" | "sent" | "viewed" | "accepted" | "rejected" | "revision_requested";
-  // Context fields used by enquiry-detail view-model (populated from backend when available)
-  accessibilityNeeds?: string;
-  workFromHomeUsers?: string;
-  entertainingFrequency?: string;
-  outdoorUsage?: string;
-  privacyNeeds?: string;
-  kitchenPattern?: string;
-  maintenancePreference?: string;
-  decisionMaker?: string;
-  signOffAuthority?: string;
-  budgetAuthority?: string;
-  revisionExpectations?: string;
-  decisionTurnaround?: string;
-  primaryChannel?: string;
-  reviewFrequency?: string;
-  reviewFormat?: string;
-  siteMeetingFrequency?: string;
-  responseTurnaround?: string;
-  /** Family members straight from backend family_details rows. */
-  familyMembers?: Array<{ familyId: string; name: string | null; age: number | null; job: string | null; relation: string | null }>;
 }
 
 export type EnquiryPriority = "high" | "medium" | "low";

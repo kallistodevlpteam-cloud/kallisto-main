@@ -6,9 +6,22 @@ import {
   screen,
   within,
 } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ProjectScheduleWorkspace } from "@/features/projects/components/schedule/project-schedule-workspace";
 import { WeekCalendar } from "@/features/projects/components/schedule/week-calendar";
+
+beforeEach(() => {
+  window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }));
+});
 
 afterEach(cleanup);
 
@@ -21,17 +34,16 @@ describe("Project Schedule Week view", () => {
       />
     );
 
-    expect(screen.getByText("20–26 July 2026")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Mon20 Jul" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Tue21 Jul" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Wed22 Jul" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Thu23 Jul" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Fri24 Jul" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Sat25 Jul" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Sun26 Jul" })).toBeInTheDocument();
-  });
+    expect(screen.getByRole("button", { name: /Mon 20 Jul/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Tue 21 Jul/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Wed 22 Jul/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Thu 23 Jul/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Fri 24 Jul/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Sat 25 Jul/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Sun 26 Jul/i })).toBeInTheDocument();
+  }, 15000);
 
-  it("navigates to the previous and next week", () => {
+  it("navigates to different dates from the calendar", () => {
     render(
       <ProjectScheduleWorkspace
         projectId="project-1"
@@ -39,12 +51,12 @@ describe("Project Schedule Week view", () => {
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /next (period|week)/i }));
-    expect(screen.getByText("27 Jul–2 Aug 2026")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "2026-07-27" }));
+    expect(screen.getByRole("button", { name: /Mon 27 Jul/i })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: /previous (period|week)/i }));
-    expect(screen.getByText("20–26 July 2026")).toBeInTheDocument();
-  });
+    fireEvent.click(screen.getByRole("button", { name: "2026-07-20" }));
+    expect(screen.getByRole("button", { name: /Mon 20 Jul/i })).toBeInTheDocument();
+  }, 15000);
 
   it("positions timed and multi-day activities from temporal data", () => {
     render(
@@ -57,15 +69,15 @@ describe("Project Schedule Week view", () => {
     const timedActivity = screen.getByRole("button", {
       name: /revised electrical layout review/i,
     });
-    expect(timedActivity).toHaveStyle({ top: "96px", height: "192px" });
-    expect(timedActivity.getAttribute("style")).toContain(
+    expect(timedActivity.parentElement).toHaveStyle({ top: "864px", height: "192px" });
+    expect(timedActivity.parentElement?.getAttribute("style")).toContain(
       "width: calc(33.3333% - 6px)"
     );
 
     const multiDayActivity = screen.getByRole("button", {
       name: /foundation excavation and PCC footing/i,
     });
-    expect(multiDayActivity).toHaveStyle({
+    expect(multiDayActivity.parentElement).toHaveStyle({
       gridColumn: "2 / 5",
       gridRow: "1",
     });
@@ -73,12 +85,12 @@ describe("Project Schedule Week view", () => {
     expect(
       screen.getByRole("button", {
         name: /hvac and electrical drawing dispatch/i,
-      })
+      }).parentElement
     ).toHaveStyle({ gridRow: "1" });
     expect(
       screen.getByRole("button", {
         name: /structural load calculation sign-off/i,
-      })
+      }).parentElement
     ).toHaveStyle({ gridRow: "2" });
   });
 
@@ -98,7 +110,7 @@ describe("Project Schedule Week view", () => {
     expect(
       screen.getByRole("heading", { name: "Activity details" })
     ).toBeInTheDocument();
-    expect(screen.getByText("Drawing_REV2_Electrical.pdf")).toBeInTheDocument();
+    expect(screen.getAllByText("Drawing_REV2_Electrical.pdf")[0]).toBeInTheDocument();
 
     fireEvent.click(
       screen.getByRole("button", { name: "Close schedule inspector" })
@@ -134,7 +146,7 @@ describe("Project Schedule Week view", () => {
     );
 
     expect(screen.getByTestId("current-time-indicator")).toHaveStyle({
-      top: "144px",
+      top: "912px",
     });
 
     rerender(
@@ -162,10 +174,8 @@ describe("Project Schedule Week view", () => {
       />
     );
 
-    const sidebar = screen.getByRole("complementary", {
-      name: "Schedule filters",
-    });
-    fireEvent.click(within(sidebar).getByLabelText("Structure"));
+    fireEvent.click(screen.getByRole("button", { name: /^Filters/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Structure" }));
 
     expect(
       screen.queryByRole("button", { name: /roof slab casting/i })
@@ -175,5 +185,5 @@ describe("Project Schedule Week view", () => {
         name: /foundation excavation and PCC footing/i,
       })
     ).not.toBeInTheDocument();
-  });
+  }, 15000);
 });

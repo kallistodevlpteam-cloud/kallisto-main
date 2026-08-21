@@ -1,39 +1,70 @@
 "use client";
 
+import { X } from "lucide-react";
+
 import {
-  Archive,
-  Folder,
-  FolderOpen,
-  HardDrive,
-  Search,
-  Trash2,
-  X,
-} from "lucide-react";
+  AllDocumentsDuotoneIcon,
+  SharedWithMeDuotoneIcon,
+  StarredDuotoneIcon,
+  DrawingsSectionDuotoneIcon,
+  DocumentsSectionDuotoneIcon,
+  ApprovalsSectionDuotoneIcon,
+  ContractsSectionDuotoneIcon,
+  SiteReportsSectionDuotoneIcon,
+  RenderingsSectionDuotoneIcon,
+  MoreFoldersSectionDuotoneIcon,
+  ArchiveSystemDuotoneIcon,
+  BinSystemDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 
 import { ProjectDocumentFolder } from "@/types/domain/project-document";
+import { DriveScope } from "./drive-query-state";
 
 import styles from "./project-documents-workspace.module.css";
 
 interface DriveSidebarProps {
   folders: ProjectDocumentFolder[];
   selectedFolderId: string;
-  searchValue: string;
+  scope?: DriveScope;
+  counts?: Partial<Record<DriveScope, number>>;
+  searchValue?: string;
   isOpen: boolean;
-  onSearchChange: (value: string) => void;
+  onSearchChange?: (value: string) => void;
   onSelectFolder: (folderId: string) => void;
-  onStorage: () => void;
+  onSelectScope?: (scope: DriveScope) => void;
+  onStorage?: () => void;
   onClose: () => void;
 }
 
-const primaryFolderIds = ["drawings", "approvals", "contracts", "site-reports"];
+const primaryFolderIds = [
+  "drawings",
+  "documents",
+  "approvals",
+  "contracts",
+  "site-reports",
+  "renderings",
+];
+
+const SECTION_ICON_MAP: Record<string, React.ComponentType<{ size?: number | string; className?: string }>> = {
+  drawings: DrawingsSectionDuotoneIcon,
+  documents: DocumentsSectionDuotoneIcon,
+  approvals: ApprovalsSectionDuotoneIcon,
+  contracts: ContractsSectionDuotoneIcon,
+  "site-reports": SiteReportsSectionDuotoneIcon,
+  renderings: RenderingsSectionDuotoneIcon,
+  more: MoreFoldersSectionDuotoneIcon,
+};
 
 export function DriveSidebar({
   folders,
   selectedFolderId,
-  searchValue,
+  scope = "all",
+  counts,
+  searchValue = "",
   isOpen,
   onSearchChange,
   onSelectFolder,
+  onSelectScope,
   onStorage,
   onClose,
 }: DriveSidebarProps) {
@@ -45,18 +76,35 @@ export function DriveSidebar({
   const navigation = [
     ...primaryFolderIds.map((id) => ({
       id,
-      label: folderMap.get(id)?.name ?? (id === "site-reports" ? "Site Reports" : id.charAt(0).toUpperCase() + id.slice(1)),
+      label:
+        folderMap.get(id)?.name ??
+        (id === "site-reports"
+          ? "Site Reports"
+          : id === "renderings"
+          ? "Renderings"
+          : id === "documents"
+          ? "Documents"
+          : id.charAt(0).toUpperCase() + id.slice(1)),
       count: folderMap.get(id)?.count ?? 0,
+      icon: SECTION_ICON_MAP[id] || MoreFoldersSectionDuotoneIcon,
     })),
-    { id: "more", label: "More Folders", count: moreCount },
+    { id: "more", label: "More Folders", count: moreCount, icon: SECTION_ICON_MAP.more },
   ];
+
+  const handleScopeClick = (targetScope: DriveScope) => {
+    if (onSelectScope) {
+      onSelectScope(targetScope);
+    } else {
+      onSelectFolder("all");
+    }
+  };
 
   return (
     <>
       {isOpen ? (
-        <button
-          type="button"
-          aria-label="Close folder navigation"
+        <div
+          role="presentation"
+          aria-hidden="true"
           className={styles.sidebarScrim}
           onClick={onClose}
         />
@@ -71,23 +119,48 @@ export function DriveSidebar({
             <X size={18} />
           </button>
         </div>
-        <label className={styles.sidebarSearch}>
-          <Search size={18} strokeWidth={1.75} aria-hidden="true" className={styles.searchIcon} />
-          <span className={styles.visuallyHidden}>Search documents</span>
-          <input
-            type="search"
-            value={searchValue}
-            placeholder="Search here..."
-            onChange={(event) => onSearchChange(event.target.value)}
-          />
-        </label>
 
         <div className={styles.sidebarSection}>
-          <p className={styles.sidebarLabel}>FOLDERS</p>
+          <nav aria-label="Document scopes" className={styles.sidebarNavigation}>
+            <button
+              type="button"
+              className={scope === "all" && selectedFolderId === "all" ? styles.sidebarItemActive : styles.sidebarItem}
+              aria-current={scope === "all" && selectedFolderId === "all" ? "page" : undefined}
+              onClick={() => handleScopeClick("all")}
+            >
+              <AllDocumentsDuotoneIcon size={17} className={scope === "all" && selectedFolderId === "all" ? styles.sectionIconActive : styles.sectionIcon} aria-hidden="true" />
+              <span>All Documents</span>
+              {counts?.all !== undefined ? <span className={styles.folderCountBadge}>{counts.all}</span> : null}
+            </button>
+            <button
+              type="button"
+              className={scope === "shared" && selectedFolderId === "all" ? styles.sidebarItemActive : styles.sidebarItem}
+              aria-current={scope === "shared" && selectedFolderId === "all" ? "page" : undefined}
+              onClick={() => handleScopeClick("shared")}
+            >
+              <SharedWithMeDuotoneIcon size={17} className={scope === "shared" && selectedFolderId === "all" ? styles.sectionIconActive : styles.sectionIcon} aria-hidden="true" />
+              <span>Shared with me</span>
+              {counts?.shared !== undefined ? <span className={styles.folderCountBadge}>{counts.shared}</span> : null}
+            </button>
+            <button
+              type="button"
+              className={scope === "starred" && selectedFolderId === "all" ? styles.sidebarItemActive : styles.sidebarItem}
+              aria-current={scope === "starred" && selectedFolderId === "all" ? "page" : undefined}
+              onClick={() => handleScopeClick("starred")}
+            >
+              <StarredDuotoneIcon size={17} className={scope === "starred" && selectedFolderId === "all" ? styles.sectionIconActive : styles.sectionIcon} aria-hidden="true" />
+              <span>Starred</span>
+              {counts?.starred !== undefined ? <span className={styles.folderCountBadge}>{counts.starred}</span> : null}
+            </button>
+          </nav>
+        </div>
+
+        <div className={styles.sidebarSection}>
+          <p className={styles.sidebarLabel}>SECTIONS</p>
           <nav aria-label="Project folders" className={styles.sidebarNavigation}>
             {navigation.map((folder) => {
-              const selected = selectedFolderId === folder.id;
-              const Icon = selected ? FolderOpen : Folder;
+              const selected = scope === "all" && selectedFolderId === folder.id;
+              const Icon = folder.icon;
               return (
                 <button
                   key={folder.id}
@@ -96,7 +169,7 @@ export function DriveSidebar({
                   aria-current={selected ? "page" : undefined}
                   onClick={() => onSelectFolder(folder.id)}
                 >
-                  <Icon size={18} strokeWidth={1.75} aria-hidden="true" />
+                  <Icon size={17} className={selected ? styles.sectionIconActive : styles.sectionIcon} aria-hidden="true" />
                   <span>{folder.label}</span>
                   <span className={styles.folderCountBadge}>{folder.count}</span>
                 </button>
@@ -114,7 +187,7 @@ export function DriveSidebar({
               aria-current={selectedFolderId === "archive" ? "page" : undefined}
               onClick={() => onSelectFolder("archive")}
             >
-              <Archive size={18} strokeWidth={1.75} aria-hidden="true" />
+              <ArchiveSystemDuotoneIcon size={17} className={selectedFolderId === "archive" ? styles.sectionIconActive : styles.sectionIcon} aria-hidden="true" />
               <span>Archive</span>
             </button>
             <button
@@ -123,12 +196,8 @@ export function DriveSidebar({
               aria-current={selectedFolderId === "bin" ? "page" : undefined}
               onClick={() => onSelectFolder("bin")}
             >
-              <Trash2 size={18} strokeWidth={1.75} aria-hidden="true" />
+              <BinSystemDuotoneIcon size={17} className={selectedFolderId === "bin" ? styles.sectionIconActive : styles.sectionIcon} aria-hidden="true" />
               <span>Bin</span>
-            </button>
-            <button type="button" className={styles.sidebarItem} onClick={onStorage}>
-              <HardDrive size={18} strokeWidth={1.75} aria-hidden="true" />
-              <span>Storage</span>
             </button>
           </nav>
         </div>
@@ -136,3 +205,4 @@ export function DriveSidebar({
     </>
   );
 }
+

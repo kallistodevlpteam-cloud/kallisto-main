@@ -1,7 +1,13 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowUp, AudioLines, Check, ChevronDown, ChevronRight, FileText, Folder, Mic, Sparkles, X } from "lucide-react";
+import { ArrowUp, Check, ChevronDown, ChevronRight, X } from "lucide-react";
+import {
+  DocumentsDuotoneIcon,
+  EnquiriesDuotoneIcon,
+  MicDuotoneIcon,
+  ProjectsDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import { StudioAgentType, StudioProjectOption } from "@/types/domain/studio";
 import { StudioIntent, StudioSource } from "../../types/studio-source";
 import { STUDIO_INTENTS } from "../../lib/studio-intents";
@@ -98,7 +104,6 @@ export function StudioComposer({
   placeholderOverride,
   focusRef,
 }: StudioComposerProps) {
-  const [showVoiceBanner, setShowVoiceBanner] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
   const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<"projects" | "enquiries" | null>("projects");
@@ -184,76 +189,6 @@ export function StudioComposer({
 
   return (
     <div style={{ width: "100%", position: "relative" }}>
-      {/* Voice Banner Row (Idle mode only) */}
-      {!isActive && showVoiceBanner && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "12px",
-            padding: "10px 14px",
-            border: "1px solid #f1f5f9",
-            borderRadius: "14px",
-            background: "#ffffff",
-            marginBottom: "12px",
-            boxShadow: "0 1px 3px rgba(15, 23, 42, 0.02)",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div
-              style={{
-                width: "32px",
-                height: "32px",
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #a5b4fc 0%, #818cf8 50%, #6366f1 100%)",
-                display: "grid",
-                placeItems: "center",
-                color: "#ffffff",
-                flexShrink: 0,
-              }}
-            >
-              <Sparkles size={16} />
-            </div>
-            <div>
-              <h4 style={{ margin: 0, fontSize: "13px", fontWeight: 650, color: "#0f172a" }}>
-                Try Voice mode
-              </h4>
-              <p style={{ margin: 0, fontSize: "12px", color: "#64748b" }}>
-                Create outputs, review drawings and coordinate project tasks hands-free.
-              </p>
-            </div>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <button
-              type="button"
-              style={{
-                height: "28px",
-                padding: "0 14px",
-                border: "none",
-                borderRadius: "9999px",
-                background: "#0f172a",
-                color: "#ffffff",
-                fontSize: "12px",
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
-              Start Voice
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowVoiceBanner(false)}
-              aria-label="Close voice prompt banner"
-              style={{ border: "none", background: "none", color: "#94a3b8", cursor: "pointer" }}
-            >
-              <X size={14} />
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Dynamic Example Suggestion Chips (Idle mode) */}
       {!isActive && (
         <div style={{ marginBottom: "12px" }}>
@@ -268,13 +203,13 @@ export function StudioComposer({
           style={{
             display: "flex",
             flexDirection: "column",
-            minHeight: isActive ? "90px" : "100px",
-            padding: "12px 16px 8px",
-            border: "1px solid #e2e8f0",
-            borderRadius: isActive ? "16px" : "20px",
+            minHeight: isActive ? "94px" : "106px",
+            padding: "16px 20px 12px 20px",
+            border: "none",
+            borderRadius: "26px",
             background: "#ffffff",
-            boxShadow: isActive ? "0 4px 16px rgba(15, 23, 42, 0.05)" : "0 4px 20px rgba(15, 23, 42, 0.04)",
-            transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+            boxShadow: "0 4px 24px rgba(15, 23, 42, 0.06), 0 1px 4px rgba(15, 23, 42, 0.02)",
+            transition: "box-shadow 0.2s ease",
             position: "relative",
           }}
         >
@@ -287,8 +222,8 @@ export function StudioComposer({
                 gap: "6px",
                 padding: "3px 8px",
                 borderRadius: "6px",
-                background: "#f1f5f9",
-                border: "1px solid #cbd5e1",
+                background: "#f7f7f5",
+                border: "none",
                 fontSize: "12px",
                 fontWeight: 600,
                 color: "#0f172a",
@@ -296,7 +231,7 @@ export function StudioComposer({
                 alignSelf: "flex-start",
               }}
             >
-              <FileText size={13} style={{ color: "#16a34a" }} />
+              <DocumentsDuotoneIcon size={14} style={{ color: "#059669" }} />
               <span>{outputContextChip.title} · {outputContextChip.version}</span>
               <button
                 type="button"
@@ -339,9 +274,9 @@ export function StudioComposer({
                 background: "transparent",
                 color: "#0f172a",
                 fontFamily: "inherit",
-                fontSize: "14px",
-                lineHeight: 1.45,
-                fontWeight: 500,
+                fontSize: "14.5px",
+                lineHeight: 1.5,
+                fontWeight: 450,
                 caretColor: showOverlay ? "transparent" : undefined,
               }}
             />
@@ -356,11 +291,11 @@ export function StudioComposer({
                   left: 0,
                   width: "100%",
                   minHeight: "44px",
-                  fontSize: "14px",
-                  lineHeight: 1.45,
-                  fontWeight: 500,
+                  fontSize: "14.5px",
+                  lineHeight: 1.5,
+                  fontWeight: 400,
                   fontFamily: "inherit",
-                  color: "#94a3b8",
+                  color: "#9ca3af",
                   pointerEvents: "none",
                   userSelect: "none",
                   whiteSpace: "pre-wrap",
@@ -395,7 +330,7 @@ export function StudioComposer({
                 onRemoveAttachment={onRemoveAttachment}
               />
 
-              {/* Project Selector Pill (Black Theme with Dropdown) */}
+              {/* Project Selector Pill (Amber badge theme) */}
               <div style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
                 <button
                   type="button"
@@ -404,9 +339,9 @@ export function StudioComposer({
                   onClick={() => setIsProjectMenuOpen(!isProjectMenuOpen)}
                   className="composer-project-pill"
                 >
-                  <Folder size={13.5} style={{ color: "#0f172a" }} />
+                  <ProjectsDuotoneIcon size={14} style={{ color: "#ea580c", flexShrink: 0 }} />
                   <span>{projectDisplay}</span>
-                  <ChevronDown size={12} style={{ color: "#64748b", marginLeft: "1px" }} />
+                  <ChevronDown size={12} style={{ color: "#ea580c", opacity: 0.8, marginLeft: "1px" }} />
                 </button>
 
                 {isProjectMenuOpen && (
@@ -459,7 +394,7 @@ export function StudioComposer({
                           padding: "8px 10px",
                           border: "none",
                           borderRadius: "8px",
-                          background: hoveredCategory === "projects" ? "#f1f5f9" : "transparent",
+                          background: hoveredCategory === "projects" ? "#f7f7f5" : "transparent",
                           color: "#0f172a",
                           fontSize: "12.5px",
                           fontWeight: 600,
@@ -469,7 +404,7 @@ export function StudioComposer({
                         }}
                       >
                         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                          <Folder size={14} style={{ color: "#7c3aed" }} />
+                          <ProjectsDuotoneIcon size={15} style={{ color: "#7c3aed" }} />
                           <span>Active Projects</span>
                         </div>
                         <ChevronRight size={13} style={{ color: "#64748b" }} />
@@ -487,7 +422,7 @@ export function StudioComposer({
                           padding: "8px 10px",
                           border: "none",
                           borderRadius: "8px",
-                          background: hoveredCategory === "enquiries" ? "#f1f5f9" : "transparent",
+                          background: hoveredCategory === "enquiries" ? "#f7f7f5" : "transparent",
                           color: "#0f172a",
                           fontSize: "12.5px",
                           fontWeight: 600,
@@ -497,7 +432,7 @@ export function StudioComposer({
                         }}
                       >
                         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                          <FileText size={14} style={{ color: "#2563eb" }} />
+                          <EnquiriesDuotoneIcon size={15} style={{ color: "#2563eb" }} />
                           <span>Enquiries</span>
                         </div>
                         <ChevronRight size={13} style={{ color: "#64748b" }} />
@@ -548,7 +483,7 @@ export function StudioComposer({
                                   padding: "7px 10px",
                                   border: "none",
                                   borderRadius: "8px",
-                                  background: isSelected ? "#f1f5f9" : "transparent",
+                                  background: isSelected ? "#f7f7f5" : "transparent",
                                   color: "#0f172a",
                                   fontSize: "12.5px",
                                   fontWeight: isSelected ? 650 : 500,
@@ -558,7 +493,7 @@ export function StudioComposer({
                                 }}
                               >
                                 <div style={{ display: "flex", alignItems: "center", gap: "8px", overflow: "hidden" }}>
-                                  <Folder size={13} style={{ color: "#7c3aed", flexShrink: 0 }} />
+                                  <ProjectsDuotoneIcon size={14} style={{ color: "#7c3aed", flexShrink: 0 }} />
                                   <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                     {proj.name}
                                   </span>
@@ -587,7 +522,7 @@ export function StudioComposer({
                                   padding: "7px 10px",
                                   border: "none",
                                   borderRadius: "8px",
-                                  background: isSelected ? "#f1f5f9" : "transparent",
+                                  background: isSelected ? "#f7f7f5" : "transparent",
                                   color: "#0f172a",
                                   fontSize: "12.5px",
                                   fontWeight: isSelected ? 650 : 500,
@@ -597,7 +532,7 @@ export function StudioComposer({
                                 }}
                               >
                                 <div style={{ display: "flex", alignItems: "center", gap: "8px", overflow: "hidden" }}>
-                                  <FileText size={13} style={{ color: "#2563eb", flexShrink: 0 }} />
+                                  <EnquiriesDuotoneIcon size={14} style={{ color: "#2563eb", flexShrink: 0 }} />
                                   <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                     {enq.name}
                                   </span>
@@ -617,53 +552,23 @@ export function StudioComposer({
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <PromptUsage percentage={Math.min(100, Math.round((prompt.length / 4000) * 100))} />
 
-
               <button
                 type="button"
                 className="chatgpt-mic-btn"
-                title="Voice input"
-                aria-label="Voice input"
-                style={{
-                  display: "grid",
-                  placeItems: "center",
-                  width: "32px",
-                  height: "32px",
-                  border: "none",
-                  borderRadius: "50%",
-                  background: "transparent",
-                  color: "#475569",
-                  cursor: "pointer",
-                  padding: 0,
-                }}
+                title="Voice mode"
+                aria-label="Voice mode"
               >
-                <Mic size={18} strokeWidth={2} />
+                <MicDuotoneIcon size={18} />
               </button>
 
               <button
                 type={canSubmit ? "submit" : "button"}
                 disabled={!canSubmit}
                 className={`chatgpt-voice-wave-btn${canSubmit ? " chatgpt-send-btn" : ""}`}
-                aria-label={canSubmit ? "Send task command" : "Voice mode"}
-                title={canSubmit ? "Send task command" : "Voice mode"}
-                style={{
-                  display: "grid",
-                  placeItems: "center",
-                  width: "34px",
-                  height: "34px",
-                  border: "none",
-                  borderRadius: "50%",
-                  background: canSubmit ? "#0f172a" : "#cbd5e1",
-                  color: "#ffffff",
-                  cursor: canSubmit ? "pointer" : "not-allowed",
-                  boxShadow: canSubmit ? "0 2px 8px rgba(15, 23, 42, 0.25)" : "none",
-                  transition: "transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease",
-                }}
+                aria-label={canSubmit ? "Send task command" : "Submit prompt"}
+                title={canSubmit ? "Send task command" : "Submit prompt"}
               >
-                {canSubmit ? (
-                  <ArrowUp size={18} strokeWidth={2.5} />
-                ) : (
-                  <AudioLines size={18} strokeWidth={2.2} />
-                )}
+                <ArrowUp size={16} strokeWidth={2.4} />
               </button>
             </div>
           </div>

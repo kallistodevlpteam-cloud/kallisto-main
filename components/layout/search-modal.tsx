@@ -2,27 +2,25 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { CornerDownLeft, X } from "lucide-react";
 import {
-  BarChart3,
-  BookOpen,
-  Building2,
-  Calendar,
-  CircleEllipsis,
-  ContactRound,
-  CornerDownLeft,
-  CreditCard,
-  FileText,
-  FolderKanban,
-  Handshake,
-  Home,
-  Images,
-  Inbox,
-  Network,
-  Search,
-  Sparkles,
-  Users,
-  X,
-} from "lucide-react";
+  HomeDuotoneIcon,
+  EnquiriesDuotoneIcon,
+  ProjectsDuotoneIcon,
+  StudioDuotoneIcon,
+  CalendarDuotoneIcon,
+  TeamDuotoneIcon,
+  DocumentsDuotoneIcon,
+  PaymentsDuotoneIcon,
+  AnalyticsDuotoneIcon,
+  PortfolioDuotoneIcon,
+  HubDuotoneIcon,
+  HandsDuotoneIcon,
+  BasicsDuotoneIcon,
+  MoreToolsDuotoneIcon,
+  SearchDuotoneIcon,
+  OdinDuotoneIcon,
+} from "./sidebar-icons";
 import { projectService } from "@/services/repositories/project-service";
 import { Project } from "@/types/domain/project";
 import { Client } from "@/types/domain/client";
@@ -39,7 +37,7 @@ interface CommandItem {
   id: string;
   label: string;
   subtitle: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: React.ComponentType<{ size?: number | string; className?: string }>;
   section: "Quick actions" | "Pages" | "Projects" | "Clients";
   action: (router: AppRouterInstance, onToggleAssistant: () => void, onClose: () => void) => void;
 }
@@ -49,7 +47,7 @@ const COMMAND_ITEMS: CommandItem[] = [
     id: "ask-odin",
     label: "Ask Odin",
     subtitle: "Ask your AI assistant anything about this workspace",
-    icon: Sparkles,
+    icon: OdinDuotoneIcon,
     section: "Quick actions",
     action: (_, onToggleAssistant, onClose) => {
       onToggleAssistant();
@@ -60,7 +58,7 @@ const COMMAND_ITEMS: CommandItem[] = [
     id: "view-projects",
     label: "Projects Directory",
     subtitle: "Track milestones, BOQs, proposals and variations",
-    icon: FolderKanban,
+    icon: ProjectsDuotoneIcon,
     section: "Quick actions",
     action: (router, _, onClose) => {
       router.push("/projects");
@@ -71,7 +69,7 @@ const COMMAND_ITEMS: CommandItem[] = [
     id: "view-studio",
     label: "Hive Studio",
     subtitle: "Create project BOQs, estimates, visualisations and proposals",
-    icon: Sparkles,
+    icon: StudioDuotoneIcon,
     section: "Pages",
     action: (router, _, onClose) => {
       router.push("/studio");
@@ -82,7 +80,7 @@ const COMMAND_ITEMS: CommandItem[] = [
     id: "view-calendar",
     label: "Calendar",
     subtitle: "Schedule site visits, meetings, deliveries and approvals",
-    icon: Calendar,
+    icon: CalendarDuotoneIcon,
     section: "Pages",
     action: (router, _, onClose) => {
       router.push("/calendar");
@@ -93,7 +91,7 @@ const COMMAND_ITEMS: CommandItem[] = [
     id: "view-enquiries",
     label: "Enquiries",
     subtitle: "Review new and pending client enquiries",
-    icon: Inbox,
+    icon: EnquiriesDuotoneIcon,
     section: "Quick actions",
     action: (router, _, onClose) => {
       router.push("/enquiries");
@@ -104,7 +102,7 @@ const COMMAND_ITEMS: CommandItem[] = [
     id: "view-home",
     label: "Home Dashboard",
     subtitle: "Go to workspace overview dashboard",
-    icon: Home,
+    icon: HomeDuotoneIcon,
     section: "Pages",
     action: (router, _, onClose) => {
       router.push("/home");
@@ -115,7 +113,7 @@ const COMMAND_ITEMS: CommandItem[] = [
     id: "view-team",
     label: "Team",
     subtitle: "Configure studio members, roles and details",
-    icon: Users,
+    icon: TeamDuotoneIcon,
     section: "Pages",
     action: (router, _, onClose) => {
       router.push("/team");
@@ -126,7 +124,7 @@ const COMMAND_ITEMS: CommandItem[] = [
     id: "view-documents",
     label: "Documents",
     subtitle: "Manage scope records, contracts and drawing files",
-    icon: FileText,
+    icon: DocumentsDuotoneIcon,
     section: "Pages",
     action: (router, _, onClose) => {
       router.push("/documents");
@@ -137,7 +135,7 @@ const COMMAND_ITEMS: CommandItem[] = [
     id: "view-payments",
     label: "Payments",
     subtitle: "Check transactions and contract payment status",
-    icon: CreditCard,
+    icon: PaymentsDuotoneIcon,
     section: "Pages",
     action: (router, _, onClose) => {
       router.push("/payments");
@@ -148,7 +146,7 @@ const COMMAND_ITEMS: CommandItem[] = [
     id: "view-analytics",
     label: "Analytics",
     subtitle: "Review studio performance indicators and stats",
-    icon: BarChart3,
+    icon: AnalyticsDuotoneIcon,
     section: "Pages",
     action: (router, _, onClose) => {
       router.push("/analytics");
@@ -159,7 +157,7 @@ const COMMAND_ITEMS: CommandItem[] = [
     id: "view-portfolio",
     label: "Portfolio",
     subtitle: "Add images and project references to showcase",
-    icon: Images,
+    icon: PortfolioDuotoneIcon,
     section: "Pages",
     action: (router, _, onClose) => {
       router.push("/portfolio");
@@ -170,7 +168,7 @@ const COMMAND_ITEMS: CommandItem[] = [
     id: "view-hub",
     label: "Hub",
     subtitle: "Centralized hub for ecosystem connections and feasibility tracking",
-    icon: Network,
+    icon: HubDuotoneIcon,
     section: "Pages",
     action: (router, _, onClose) => {
       router.push("/hub");
@@ -181,7 +179,7 @@ const COMMAND_ITEMS: CommandItem[] = [
     id: "view-hands",
     label: "Hands",
     subtitle: "On-site team coordination and field execution services",
-    icon: Handshake,
+    icon: HandsDuotoneIcon,
     section: "Pages",
     action: (router, _, onClose) => {
       router.push("/hands");
@@ -192,7 +190,7 @@ const COMMAND_ITEMS: CommandItem[] = [
     id: "view-basics",
     label: "Basics",
     subtitle: "Standard operating specifications and core service foundations",
-    icon: BookOpen,
+    icon: BasicsDuotoneIcon,
     section: "Pages",
     action: (router, _, onClose) => {
       router.push("/basics");
@@ -203,7 +201,7 @@ const COMMAND_ITEMS: CommandItem[] = [
     id: "view-tools",
     label: "More Tools",
     subtitle: "Check additional workspace custom utilities",
-    icon: CircleEllipsis,
+    icon: MoreToolsDuotoneIcon,
     section: "Pages",
     action: (router, _, onClose) => {
       router.push("/tools");
@@ -219,56 +217,43 @@ export function SearchModal({ isOpen, onClose, onToggleAssistant }: SearchModalP
   const [dynamicClients, setDynamicClients] = useState<
     Array<Client & { linkedProjectsCount: number; activeProject?: Project }>
   >([]);
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
 
+  // Fetch dynamic entities from project service
   useEffect(() => {
-    if (!query.trim()) {
-      setDynamicProjects([]);
-      setDynamicClients([]);
-      return;
-    }
-    let active = true;
+    if (!isOpen) return;
+
     projectService.searchEntities("ws-default", query).then((res) => {
-      if (active) {
-        setDynamicProjects(res.projects);
-        setDynamicClients(res.clients);
-      }
+      setDynamicProjects(res.projects || []);
+      setDynamicClients(res.clients || []);
     });
-    return () => {
-      active = false;
-    };
-  }, [query]);
+  }, [isOpen, query]);
 
-  // Scroll active item into view
+  // Keyboard navigation & scroll-into-view
   useEffect(() => {
-    const listElement = listRef.current;
-    if (!listElement) return;
-
-    const activeItem = listElement.querySelector(".search-item.is-selected") as HTMLElement;
-    if (!activeItem) return;
-
-    const listHeight = listElement.clientHeight;
-    const activeTop = activeItem.offsetTop;
-    const activeHeight = activeItem.clientHeight;
-
-    if (activeTop + activeHeight > listElement.scrollTop + listHeight) {
-      listElement.scrollTop = activeTop + activeHeight - listHeight;
-    } else if (activeTop < listElement.scrollTop) {
-      listElement.scrollTop = activeTop;
+    if (!listRef.current) return;
+    const activeItem = listRef.current.querySelector(".search-item.is-selected") as HTMLElement;
+    if (activeItem) {
+      activeItem.scrollIntoView({ block: "nearest", behavior: "smooth" });
     }
   }, [selectedIndex]);
 
+  // Focus input upon open
   useEffect(() => {
     if (!isOpen) return;
-    document.body.style.overflow = "hidden";
+    setQuery("");
+    setSelectedIndex(0);
     const timeoutId = setTimeout(() => {
       inputRef.current?.focus();
     }, 50);
 
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = prevOverflow;
       clearTimeout(timeoutId);
     };
   }, [isOpen]);
@@ -286,7 +271,7 @@ export function SearchModal({ isOpen, onClose, onToggleAssistant }: SearchModalP
     id: `dynamic-proj-${p.id}`,
     label: p.name,
     subtitle: `${p.projectCode} · Phase: ${p.phase} · Location: ${p.location}`,
-    icon: FolderKanban,
+    icon: ProjectsDuotoneIcon,
     section: "Projects",
     action: (r, _, close) => {
       r.push(`/projects/${p.id}`);
@@ -301,7 +286,7 @@ export function SearchModal({ isOpen, onClose, onToggleAssistant }: SearchModalP
     subtitle: `${c.linkedProjectsCount} linked project(s)${
       c.activeProject ? ` · Active: ${c.activeProject.name}` : ""
     }`,
-    icon: ContactRound,
+    icon: TeamDuotoneIcon,
     section: "Clients",
     action: (r, _, close) => {
       if (c.linkedProjectsCount === 1 && c.activeProject) {
@@ -366,7 +351,7 @@ export function SearchModal({ isOpen, onClose, onToggleAssistant }: SearchModalP
     >
       <div className="search-card" onClick={(e) => e.stopPropagation()}>
         <div className="search-header">
-          <Search size={18} className="search-header-icon" />
+          <SearchDuotoneIcon size={16} className="search-header-icon" />
           <input
             ref={inputRef}
             type="text"
@@ -379,22 +364,14 @@ export function SearchModal({ isOpen, onClose, onToggleAssistant }: SearchModalP
             }}
             onKeyDown={handleKeyDown}
           />
-          {query ? (
-            <button
-              className="search-clear-btn"
-              type="button"
-              onClick={() => {
-                setQuery("");
-                setSelectedIndex(0);
-                inputRef.current?.focus();
-              }}
-              aria-label="Clear search"
-            >
-              <X size={15} />
-            </button>
-          ) : (
-            <kbd className="search-escape-badge">ESC</kbd>
-          )}
+          <button
+            className="search-close-btn"
+            type="button"
+            onClick={onClose}
+            aria-label="Close search"
+          >
+            <X size={16} />
+          </button>
         </div>
 
         <div className="search-body" ref={listRef}>
@@ -425,7 +402,7 @@ export function SearchModal({ isOpen, onClose, onToggleAssistant }: SearchModalP
                         onClick={() => item.action(router, onToggleAssistant, onClose)}
                       >
                         <div className="search-item-icon-wrapper">
-                          <IconComponent size={16} />
+                          <IconComponent size={17} />
                         </div>
                         <div className="search-item-info">
                           <span className="search-item-label">{item.label}</span>
@@ -445,20 +422,7 @@ export function SearchModal({ isOpen, onClose, onToggleAssistant }: SearchModalP
             ))
           )}
         </div>
-
-        <div className="search-footer">
-          <span className="search-footer-hint">
-            <kbd className="footer-kbd">↑↓</kbd> to navigate
-          </span>
-          <span className="search-footer-hint">
-            <kbd className="footer-kbd">↵</kbd> to select
-          </span>
-          <span className="search-footer-hint">
-            <kbd className="footer-kbd">ESC</kbd> to close
-          </span>
-        </div>
       </div>
     </div>
   );
 }
-

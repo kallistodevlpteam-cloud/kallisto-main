@@ -11,6 +11,9 @@ export interface BackendProjectDocument {
   id: number;
   name: string | null;
   docImageUrl: string | null;
+  docType?: string | null;
+  status?: boolean;
+  updatedAt?: number | null;
 }
 
 /** One project scope with its nested sub-list (project_scope_item). */
@@ -26,9 +29,10 @@ export interface BackendProjectRequirement {
   id: string;
   requirement_name: string;
   items: string[];
+  item_details?: string[][];
+  statuses?: (boolean | null)[];
 }
 
-/** One client priority entry. */
 export interface BackendClientPriority {
   id: string;
   priority_name: string;
@@ -37,7 +41,6 @@ export interface BackendClientPriority {
   tags: string[][];
 }
 
-/** One family member entry. */
 export interface BackendFamilyMember {
   familyId: string;
   clientId: string | null;
@@ -50,86 +53,69 @@ export interface BackendFamilyMember {
   description: string | null;
 }
 
-/** Project clients context. */
 export interface BackendProjectClients {
-  about_client?: string | null;
-  building_users?: string | null;
-  family_or_team_size?: string | null;
-  elderly_members?: string | null;
-  children?: string | null;
-  pets?: string | null;
-  work_from_home?: string | null;
-  accessibility_requirements?: string | null;
+  client_id?: string | null;
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  occupation?: string | null;
+  location?: string | null;
+  notes?: string | null;
+  [key: string]: unknown;
 }
 
-/** Project lifestyle context. */
 export interface BackendProjectLifestyle {
-  daily_routine?: string | null;
-  entertain_guests?: string | null;
-  host_parties?: string | null;
-  relaxation_place?: string | null;
-  morning_coffee_location?: string | null;
-  outdoor_activities?: string | null;
+  dietary_preferences?: string | null;
+  pets?: string | null;
   hobbies?: string | null;
-  privacy_importance?: string | null;
+  entertaining_frequency?: string | null;
+  work_from_home?: string | null;
+  special_requirements?: string | null;
+  [key: string]: unknown;
 }
 
-/** Project approval process context. */
 export interface BackendProjectApprovalProcess {
-  primary_decision_maker?: string | null;
-  other_approval_stakeholders?: string | null;
-  expected_revision_rounds?: string | null;
-  design_review_method?: string | null;
-  approval_turnaround_time?: string | null;
+  decision_makers?: string[] | null;
+  approval_stages?: string[] | null;
+  notes?: string | null;
+  [key: string]: unknown;
 }
 
-/** Project communication context. */
 export interface BackendProjectCommunication {
-  preferred_contact?: string | null;
-  communication_channel?: string | null;
-  meeting_frequency?: string | null;
-  best_time_to_reach?: string | null;
-  special_instructions?: string | null;
+  preferred_channel?: string | null;
+  frequency?: string | null;
+  primary_contact?: string | null;
+  notes?: string | null;
+  [key: string]: unknown;
 }
 
-/** Project technical context. */
 export interface BackendProjectTechnical {
-  energy_efficient_design?: string | null;
-  solar_panels?: string | null;
-  rainwater_harvesting?: string | null;
-  smart_home_automation?: string | null;
-  hvac_preference?: string | null;
-  backup_power?: string | null;
-  water_storage_borewell?: string | null;
-  security_system_requirements?: string | null;
-  preferred_material_techs?: string | null;
+  soil_testing_status?: string | null;
+  structural_specifications?: string | null;
+  mep_preferences?: string | null;
+  sustainability_goals?: string | null;
+  notes?: string | null;
+  [key: string]: unknown;
 }
 
-/** Project regulatory context. */
 export interface BackendProjectRegulatory {
+  sanctioning_authority?: string | null;
+  approval_status?: string | null;
   zoning_restrictions?: string | null;
-  height_restrictions?: string | null;
-  home_owner_association_rules?: string | null;
-  permits_obtained?: string | null;
-  land_disputes_encumbrances?: string | null;
-  setback_requirements?: string | null;
+  notes?: string | null;
+  [key: string]: unknown;
 }
 
-/** Project outdoor context. */
 export interface BackendProjectOutdoor {
-  garden?: string | null;
-  swimming_pool?: string | null;
-  outdoor_deck_patio?: string | null;
-  bbq_area?: string | null;
-  parking?: string | null;
-  driveway_gate_notes?: string | null;
-  landscape_boundary_fencing?: string | null;
-  outdoor_lighting?: string | null;
-  play_area_children?: string | null;
-  pet_friendly_outdoor?: string | null;
+  landscape_style?: string | null;
+  hardscaping_elements?: string[] | null;
+  features?: string[] | null;
+  irrigation?: string | null;
+  lighting?: string | null;
+  notes?: string | null;
+  [key: string]: unknown;
 }
 
-/** One project space entry. */
 export interface BackendProjectSpace {
   space_name: string | null;
   required: number | null;
@@ -139,17 +125,14 @@ export interface BackendProjectSpace {
   adjacency_notes: string | null;
 }
 
-/** Project timeline context. */
 export interface BackendProjectTimeline {
-  desired_start_date?: string | null;
-  desired_completion_date?: string | null;
-  fixed_deadline_notes?: string | null;
-  phased?: string | null;
-  phases_description?: string | null;
-  urgency_level?: string | null;
+  expected_start_date?: string | null;
+  expected_handover_date?: string | null;
+  milestones?: Array<{ name: string; date: string; status: string }>;
+  notes?: string | null;
+  [key: string]: unknown;
 }
 
-/** Project proposal entry. */
 export interface BackendProjectProposal {
   id: number;
   provider_id: string | null;
@@ -164,7 +147,6 @@ export interface BackendProjectProposal {
   responded_at: number | null;
 }
 
-/** One team member entry. */
 export interface BackendProjectTeamMember {
   provider_id: string;
   role: string | null;
@@ -172,13 +154,12 @@ export interface BackendProjectTeamMember {
   notes: string | null;
 }
 
-/** One project message entry. */
 export interface BackendProjectMessage {
   sender_type: "provider" | "client" | "system";
-  sender_id: string;
+  sender_id?: string;
   message_type: "general" | "proposal" | "rate" | "negotiation" | "approval" | "rejection";
   content: string;
-  created_at: number;
+  created_at?: number;
 }
 
 export interface BackendProject {
@@ -190,10 +171,8 @@ export interface BackendProject {
   newConstructionOrRenovation: string | null;
   purposeOfProject: string | null;
   briefDescription: string | null;
-  /** Overview / detailed description. */
   overView?: string | null;
-  /** Provider IDs assigned to this project. */
-  providerIds?: string[] | null;
+  providerIds?: string[];
   coverImageUrl: string | null;
   /** Built-up area in square feet (projects.sq_area INTEGER column). */
   sqArea: number | null;
@@ -224,36 +203,21 @@ export interface BackendProject {
   /** Requirement groups with nested sub-lists (requirements +
    * requirement_items). Strictly backend-sourced; an empty list means no
    * requirement rows exist for the project. */
-   requirements: BackendProjectRequirement[];
-  /** Client priorities (clientcontext_priorities + priority_details). */
+  requirements: BackendProjectRequirement[];
   priorities?: BackendClientPriority[];
-  /** Family members (family_details). */
   familyMembers?: BackendFamilyMember[];
-  /** Project clients context. */
   projectClients?: BackendProjectClients | null;
-  /** Project lifestyle context. */
   projectLifestyle?: BackendProjectLifestyle | null;
-  /** Project approval process context. */
   projectApprovalProcess?: BackendProjectApprovalProcess | null;
-  /** Project communication context. */
   projectCommunication?: BackendProjectCommunication | null;
-  /** Project technical context. */
   projectTechnical?: BackendProjectTechnical | null;
-  /** Project regulatory context. */
   projectRegulatory?: BackendProjectRegulatory | null;
-  /** Project outdoor context. */
   projectOutdoor?: BackendProjectOutdoor | null;
-  /** Project spaces (project_spaces). */
   projectSpaces?: BackendProjectSpace[];
-  /** Project timeline context. */
   projectTimeline?: BackendProjectTimeline | null;
-  /** Current project status. */
   projectStatus?: string | null;
-  /** Latest proposal for this project. */
   proposal?: BackendProjectProposal | null;
-  /** Team members (project_team_members). */
   teamMembers?: BackendProjectTeamMember[];
-  /** Messages (project_messages). */
   messages?: BackendProjectMessage[];
 }
 

@@ -2,6 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { Share2, Search, X } from "lucide-react";
+import {
+  MapPinDuotoneIcon,
+  CalendarDuotoneIcon,
+  BuildingDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import { Project } from "@/types/domain/project";
 import { projectService } from "@/services/repositories/project-service";
 import { RoutePageContainer } from "@/components/ui/route-page-container";
@@ -15,10 +22,12 @@ import { ProjectFinanceWorkspace } from "./finance/components/project-finance-wo
 import { ProjectSiteWorkspace } from "./site/components/project-site-workspace";
 import styles from "./projects.module.css";
 import documentStyles from "./components/documents/project-documents-workspace.module.css";
+import enquiryStyles from "@/features/enquiries/detail/components/enquiry-detail-workspace.module.css";
 
 export const PROJECT_MODULE_TITLES: Record<string, string> = {
   tasks: "Tasks",
   timeline: "Timeline",
+  gantt: "Gantt Chart",
   documents: "Docs",
   boq: "Bill of Quantities",
   finance: "Finance",
@@ -26,45 +35,90 @@ export const PROJECT_MODULE_TITLES: Record<string, string> = {
   updates: "Updates",
 };
 
+export const SEARCH_PLACEHOLDERS: Record<string, string> = {
+  tasks: "Search tasks, assignees or phases",
+  timeline: "Search timeline...",
+  gantt: "Search gantt...",
+  documents: "Search files, folders or tags",
+  boq: "Search items, codes or sections",
+  finance: "Search finances or invoices",
+  site: "Search site reports, logs",
+  updates: "Search updates...",
+};
+
 interface ProjectModuleSubpageProps {
   projectId: string;
-  module: "updates" | "tasks" | "timeline" | "documents" | "boq" | "finance" | "site";
+  module: "updates" | "tasks" | "timeline" | "gantt" | "documents" | "boq" | "finance" | "site";
+  customTitle?: string;
 }
 
-export function ProjectModuleSubpage({ projectId, module }: ProjectModuleSubpageProps) {
-  const [project, setProject] = useState<Project | null>(null);
-  const [loading, setLoading] = useState(true);
+export function ProjectModuleSubpage({ projectId, module, customTitle }: ProjectModuleSubpageProps) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const isGantt = module === "gantt" || Boolean(pathname?.endsWith("/timeline/gantt"));
+  const effectiveModule = isGantt ? "gantt" : module;
+  const [searchQuery, setSearchQuery] = useState(searchParams?.get("q") || "");
+  const [project, setProject] = useState<Project | null>(() => {
+    return typeof projectService?.getProjectByIdSync === "function"
+      ? projectService.getProjectByIdSync("ws-default", projectId)
+      : null;
+  });
+  const [loading, setLoading] = useState(!project);
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    setSearchQuery(searchParams?.get("q") || "");
+  }, [searchParams]);
+
+  const handleSearchChange = (val: string) => {
+    setSearchQuery(val);
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : "");
+    if (val.trim()) {
+      params.set("q", val);
+    } else {
+      params.delete("q");
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  useEffect(() => {
+    let active = true;
     async function loadData() {
-      setLoading(true);
-      setError(false);
-      try {
-        const p = await projectService.getProjectById("ws-default", projectId);
-        if (!p) {
-          setError(true);
+      if (typeof projectService?.getProjectByIdSync === "function") {
+        const cached = projectService.getProjectByIdSync("ws-default", projectId);
+        if (cached) {
+          setProject(cached);
+          setLoading(false);
           return;
         }
-        setProject(p);
-      } catch (err) {
-        console.error("Failed to load project for module subpage:", err);
-        setError(true);
+      }
+      try {
+        setLoading(true);
+        setError(false);
+        const data = await projectService.getProjectById("ws-default", projectId);
+        if (!active) return;
+        if (!data) {
+          setError(true);
+        } else {
+          setProject(data);
+        }
+      } catch {
+        if (active) setError(true);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     }
     loadData();
+    return () => {
+      active = false;
+    };
   }, [projectId]);
 
   if (loading) {
     return (
       <div className="workspace-container" style={{ padding: "24px" }}>
-        <div className="route-state-box route-state-loading" aria-label="Loading subpage workspace">
-          <div className="skeleton-bar skeleton-title" />
-          <div className="skeleton-bar skeleton-subtitle" />
-          <div className="skeleton-card" />
-        </div>
+        <div className={styles.loadingSkeleton} />
       </div>
     );
   }
@@ -83,41 +137,118 @@ export function ProjectModuleSubpage({ projectId, module }: ProjectModuleSubpage
     );
   }
 
-  const title = PROJECT_MODULE_TITLES[module] || project.name || "Nila Residence";
+  const title =
+    customTitle ||
+    PROJECT_MODULE_TITLES[effectiveModule] ||
+    PROJECT_MODULE_TITLES[module] ||
+    project.name ||
+    "Nila Residence";
+  const displayTitle = project.name || "Calicut Retail Interior";
 
   return (
     <RoutePageContainer
       title={title}
-      showHeading={module !== "documents"}
-      className={
+      showHeading={false}
+      className={`project-dashboard-page ${
         module === "documents"
           ? `${documentStyles.documentsBoundedRoute} documentsBoundedRoute`
           : module === "boq"
           ? "boqBoundedRoute"
-          : undefined
-      }
+          : ""
+      }`}
       showShareAction={false}
-      titleRowContent={module === "documents" ? undefined : <DocumentsTitleRowActions />}
     >
-      {module === "tasks" ? (
-        <ProjectTasksWorkspace project={project} />
-      ) : module === "timeline" ? (
-        <ProjectTimelineWorkspace project={project} />
-      ) : module === "boq" ? (
-        <ProjectBoqWorkspace project={project} />
-      ) : module === "finance" ? (
-        <ProjectFinanceWorkspace project={project} />
-      ) : module === "site" ? (
-        <ProjectSiteWorkspace project={project} />
-      ) : module === "documents" ? (
-        <ProjectDocumentsWorkspace
-          projectId={project.id}
-          projectCode={project.projectCode}
-        />
-      ) : (
-        <ProjectOverviewCard />
-      )}
+      <div className="project-subpage-root">
+        {/* Persistent Top Header pinned in the EXACT same spot as the Overview page */}
+        <div className="poc-left-header-sticky project-subpage-header-sticky">
+          <div className={enquiryStyles.headerBlock}>
+            <div className={enquiryStyles.titleRow}>
+              <h1 className={enquiryStyles.projectTitle}>{title}</h1>
+              <DocumentsTitleRowActions />
+            </div>
+
+            <div className="project-subpage-meta-search-row">
+              <div className={enquiryStyles.subMetaRow}>
+                <div className={enquiryStyles.subMetaLeft}>
+                  <span className={enquiryStyles.metaItem}>
+                    <strong className={enquiryStyles.metaHighlight}>
+                      {project.name || "Nila Residence"}
+                    </strong>
+                  </span>
+                  <span className={enquiryStyles.metaDivider}>•</span>
+                  <span className={enquiryStyles.metaItem}>
+                    <MapPinDuotoneIcon size={15} className={enquiryStyles.locationPinIcon} />
+                    <span>{project.location || "Calicut, Kerala"}</span>
+                  </span>
+                  <span className={enquiryStyles.metaDivider}>•</span>
+                  <span className={enquiryStyles.metaItem}>
+                    <CalendarDuotoneIcon size={14} className={enquiryStyles.metaIconMuted} />
+                    <span>Received Jul 23, 2026</span>
+                  </span>
+                </div>
+
+                <div className={enquiryStyles.subMetaRight}>
+                  <span className={enquiryStyles.metaItem}>
+                    <BuildingDuotoneIcon size={14} className={enquiryStyles.metaIconMuted} />
+                    <span>{project.projectType || "Residential Design"}</span>
+                  </span>
+                  <span className={enquiryStyles.metaDivider}>•</span>
+                  <span className={`${enquiryStyles.stagePillInline} ${enquiryStyles.stageNew}`}>
+                    <span className={enquiryStyles.stageDot} />
+                    <span>New</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Header Search Box in the right space */}
+              <div className="project-subpage-header-search">
+                <Search size={14} className="subpage-search-icon" aria-hidden="true" />
+                <input
+                  type="text"
+                  placeholder={SEARCH_PLACEHOLDERS[effectiveModule] || SEARCH_PLACEHOLDERS[module] || "Search..."}
+                  value={searchQuery}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  className="subpage-search-input"
+                  aria-label={`Search ${title}`}
+                />
+                {searchQuery ? (
+                  <button
+                    type="button"
+                    onClick={() => handleSearchChange("")}
+                    className="subpage-search-clear"
+                    aria-label="Clear search"
+                  >
+                    <X size={13} aria-hidden="true" />
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Subpage Workspace Body */}
+        <div className="project-subpage-content">
+          {module === "tasks" ? (
+            <ProjectTasksWorkspace project={project} />
+          ) : module === "timeline" || module === "gantt" || isGantt ? (
+            <ProjectTimelineWorkspace project={project} />
+          ) : module === "boq" ? (
+            <ProjectBoqWorkspace project={project} />
+          ) : module === "finance" ? (
+            <ProjectFinanceWorkspace project={project} />
+          ) : module === "site" ? (
+            <ProjectSiteWorkspace project={project} />
+          ) : module === "documents" ? (
+            <ProjectDocumentsWorkspace
+              projectId={project.id}
+              projectCode={project.projectCode}
+              hideHeaderTitleRow={true}
+            />
+          ) : (
+            <ProjectOverviewCard />
+          )}
+        </div>
+      </div>
     </RoutePageContainer>
   );
 }
-

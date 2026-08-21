@@ -8,6 +8,7 @@
   min-width: 0;
   gap: 16px;
   color: var(--ink);
+  padding-bottom: 32px;
 }
 
 .siteHeader {

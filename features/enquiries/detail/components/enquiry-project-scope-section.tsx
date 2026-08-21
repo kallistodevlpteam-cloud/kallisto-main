@@ -86,7 +86,10 @@ export function EnquiryProjectScopeSection({
           <div className={styles.scopeGrid}>
             {categories.map((cat) => (
               <div key={cat.id} className={styles.scopeCategoryCard}>
-                <h4 className={styles.categoryTitle}>{cat.title}</h4>
+                <div className={styles.categoryHeaderRow}>
+                  <h4 className={styles.categoryTitle}>{cat.title}</h4>
+                  <span className={styles.itemCountBadge}>{cat.items.length}</span>
+                </div>
                 <div className={styles.itemList}>
                   {cat.items.map((item, idx) => (
                     <div key={idx} className={styles.itemRow}>
@@ -103,35 +106,18 @@ export function EnquiryProjectScopeSection({
             ))}
 
             {unconfirmedItems && unconfirmedItems.length > 0 && (
-              <div
-                className={styles.scopeCategoryCard}
-                style={{ background: "#fff7ed", borderColor: "#fed7aa" }}
-              >
-                <h4 className={styles.categoryTitle} style={{ color: "#c2410c" }}>
-                  Unconfirmed / Optional Scope
-                </h4>
+              <div className={`${styles.scopeCategoryCard} ${styles.unconfirmedCard}`}>
+                <div className={styles.categoryHeaderRow}>
+                  <h4 className={styles.unconfirmedTitle}>
+                    Unconfirmed Scope
+                  </h4>
+                  <span className={styles.unconfirmedBadge}>Optional</span>
+                </div>
                 <div className={styles.itemList}>
                   {unconfirmedItems.map((item, idx) => (
                     <div key={idx} className={styles.itemRow}>
-                      <span
-                        style={{
-                          width: "14px",
-                          height: "14px",
-                          borderRadius: "50%",
-                          background: "#ffedd5",
-                          color: "#c2410c",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "10px",
-                          fontWeight: 700,
-                          flexShrink: 0,
-                          marginTop: "2px",
-                        }}
-                      >
-                        ?
-                      </span>
-                      <span style={{ color: "#9a3412" }}>{item}</span>
+                      <span className={styles.unconfirmedIcon}>?</span>
+                      <span className={styles.unconfirmedText}>{item}</span>
                     </div>
                   ))}
                 </div>

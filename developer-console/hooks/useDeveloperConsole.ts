@@ -64,6 +64,9 @@ export function useDeveloperConsole() {
   // Sync simulated role/mode with cookies for server components authorization check
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const isAuth = document.cookie.includes("kallisto_auth_token=") || Boolean(localStorage.getItem("kallisto_auth_token"));
+      if (!isAuth) return;
+
       const activeRole = simulationMode ? simulatedRole : (trueUser?.role || "developer");
       
       const match = document.cookie.match(/(?:^|; )kallisto_simulated_role=([^;]*)/);

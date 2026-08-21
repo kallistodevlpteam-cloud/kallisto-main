@@ -8,13 +8,19 @@ import {
   CheckSquare,
   ChevronLeft,
   ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
   Layers,
   PanelLeftClose,
   Users,
 } from "lucide-react";
 import {
+  addDays,
   buildMiniCalendar,
+  formatWeekRange,
   getMonthLabel,
+  getWeekOfMonthLabel,
+  startOfMondayWeek,
 } from "./schedule-date-range";
 import styles from "./schedule.module.css";
 
@@ -32,7 +38,8 @@ export interface ScheduleSidebarProps {
   forceExpanded: boolean;
   activeFilterCount: number;
   onToggleCollapsed: () => void;
-  onNavigateMonth: (direction: -1 | 1) => void;
+  onNavigateMonth: (direction: number) => void;
+  onNavigateWeek?: (direction: -1 | 1) => void;
   onSelectDate: (date: string) => void;
   onTogglePhase: (phase: string) => void;
   onToggleWorkstream: (workstream: string) => void;
@@ -88,6 +95,7 @@ export function ScheduleSidebar({
   activeFilterCount,
   onToggleCollapsed,
   onNavigateMonth,
+  onNavigateWeek,
   onSelectDate,
   onTogglePhase,
   onToggleWorkstream,
@@ -96,6 +104,7 @@ export function ScheduleSidebar({
   onSelectSavedView,
 }: ScheduleSidebarProps) {
   const miniCalendarDays = buildMiniCalendar(anchorDate);
+  const weekOfMonthLabel = getWeekOfMonthLabel(selectedDate || anchorDate, anchorDate);
 
   return (
     <aside
@@ -133,27 +142,77 @@ export function ScheduleSidebar({
         <div className={styles.sidebarScrollableContent}>
         <div className={styles.miniCalCard}>
           <div className={styles.miniCalHeader}>
-            <span className={styles.miniCalTitleText}>
-              {getMonthLabel(anchorDate)}
-            </span>
-            <div className={styles.miniCalNavBtns}>
+            <div className={styles.miniCalNavGroup}>
+              <button
+                type="button"
+                className={styles.miniCalNavBtn}
+                onClick={() => onNavigateMonth(-12)}
+                title="Previous year"
+                aria-label="Previous year"
+              >
+                <ChevronsLeft size={13} />
+              </button>
               <button
                 type="button"
                 className={styles.miniCalNavBtn}
                 onClick={() => onNavigateMonth(-1)}
+                title="Previous month"
                 aria-label="Previous month"
               >
-                <ChevronLeft size={14} />
+                <ChevronLeft size={13} />
               </button>
+            </div>
+
+            <span className={styles.miniCalTitleText}>
+              {getMonthLabel(anchorDate)}
+            </span>
+
+            <div className={styles.miniCalNavGroup}>
               <button
                 type="button"
                 className={styles.miniCalNavBtn}
                 onClick={() => onNavigateMonth(1)}
+                title="Next month"
                 aria-label="Next month"
               >
-                <ChevronRight size={14} />
+                <ChevronRight size={13} />
+              </button>
+              <button
+                type="button"
+                className={styles.miniCalNavBtn}
+                onClick={() => onNavigateMonth(12)}
+                title="Next year"
+                aria-label="Next year"
+              >
+                <ChevronsRight size={13} />
               </button>
             </div>
+          </div>
+
+          <div className={styles.miniCalWeekRow}>
+            <button
+              type="button"
+              className={styles.miniCalWeekBtn}
+              onClick={() => (onNavigateWeek ? onNavigateWeek(-1) : onNavigateMonth(-1))}
+              title="Previous week"
+              aria-label="Previous week"
+            >
+              <ChevronLeft size={13} />
+            </button>
+
+            <span className={styles.miniCalWeekText}>
+              {weekOfMonthLabel}
+            </span>
+
+            <button
+              type="button"
+              className={styles.miniCalWeekBtn}
+              onClick={() => (onNavigateWeek ? onNavigateWeek(1) : onNavigateMonth(1))}
+              title="Next week"
+              aria-label="Next week"
+            >
+              <ChevronRight size={13} />
+            </button>
           </div>
 
           <div className={styles.miniCalGrid}>

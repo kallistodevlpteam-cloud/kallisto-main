@@ -63,7 +63,7 @@ async function renderWorkspace(
       {...props}
     />,
   );
-  await screen.findByRole("heading", { level: 1, name: "Documents" });
+  await screen.findByRole("heading", { level: 1, name: "Docs" });
   return result;
 }
 
@@ -80,10 +80,9 @@ describe("Project documents workspace", () => {
     await renderWorkspace();
 
     expect(screen.getByRole("heading", { level: 2, name: "All Documents" })).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Search here...")).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /All Documents/ })).toHaveAttribute(
-      "aria-selected",
-      "true",
+    expect(screen.getByRole("button", { name: /All Documents/ })).toHaveAttribute(
+      "aria-current",
+      "page",
     );
     expect(within(folderNavigation()).getByRole("button", { name: /Drawings/ })).toHaveTextContent("7");
     // At 1024px, list page size = 8
@@ -151,19 +150,11 @@ describe("Project documents workspace", () => {
     expect(screen.getByText(/Showing 1–.* of /)).toBeInTheDocument();
   });
 
-  it("6. Debounces document search and resets page to 1", async () => {
+  it("6. Filters documents with query parameter and shows results", async () => {
+    window.history.replaceState({}, "", "/projects/proj-001/documents?q=Safety+Inspection");
     await renderWorkspace();
-    const search = screen.getByPlaceholderText("Search here...");
 
-    fireEvent.change(search, { target: { value: "Safety Inspection" } });
-    expect(search).toHaveValue("Safety Inspection");
-    await waitFor(() => {
-      expect(window.location.search).toContain("q=Safety+Inspection");
-      expect(within(desktopTable()).getByText("Safety Inspection Report.pdf")).toBeInTheDocument();
-    });
-
-    fireEvent.change(search, { target: { value: "not-a-real-document" } });
-    expect(await screen.findByRole("heading", { name: "No search results" })).toBeInTheDocument();
+    expect(within(desktopTable()).getByText("Safety Inspection Report.pdf")).toBeInTheDocument();
   });
 
   it("7. Folder selection resets page and heading count matches footer count", async () => {
@@ -232,16 +223,20 @@ describe("Project documents workspace", () => {
     await renderWorkspace();
 
     const drawingsBtn = within(folderNavigation()).getByRole("button", { name: /Drawings/ });
+    const documentsBtn = within(folderNavigation()).getByRole("button", { name: /Documents/ });
     const approvalsBtn = within(folderNavigation()).getByRole("button", { name: /Approvals/ });
     const contractsBtn = within(folderNavigation()).getByRole("button", { name: /Contracts/ });
     const siteReportsBtn = within(folderNavigation()).getByRole("button", { name: /Site Reports/ });
+    const renderingsBtn = within(folderNavigation()).getByRole("button", { name: /Renderings/ });
     const moreBtn = within(folderNavigation()).getByRole("button", { name: /More Folders/ });
 
     expect(within(drawingsBtn).getByText("7")).toBeInTheDocument();
-    expect(within(approvalsBtn).getByText("6")).toBeInTheDocument();
+    expect(within(documentsBtn).getByText("1")).toBeInTheDocument();
+    expect(within(approvalsBtn).getByText("5")).toBeInTheDocument();
     expect(within(contractsBtn).getByText("3")).toBeInTheDocument();
     expect(within(siteReportsBtn).getByText("3")).toBeInTheDocument();
-    expect(within(moreBtn).getByText("5")).toBeInTheDocument();
+    expect(within(renderingsBtn).getByText("2")).toBeInTheDocument();
+    expect(within(moreBtn).getByText("3")).toBeInTheDocument();
   });
 
   it("combines type and people filters with AND logic", async () => {
@@ -286,16 +281,17 @@ describe("Project documents workspace", () => {
     expect(screen.queryByRole("button", { name: /Upload Files/i })).not.toBeInTheDocument();
   });
 
-  it("DriveTopBar renders only scope tabs — no action buttons", async () => {
+  it("DriveSidebar renders scope options (All Documents, Shared with me, Starred) in sidebar navigation", async () => {
     await renderWorkspace();
-    // All three scope tabs present
-    expect(screen.getByRole("tab", { name: /All Documents/ })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /Shared with me/ })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /Starred/ })).toBeInTheDocument();
-    // No upload or folder creation action in the top bar
-    const topBar = screen.getByRole("navigation", { name: "Document scopes" });
-    expect(within(topBar).queryByRole("button", { name: /New Folder/i })).not.toBeInTheDocument();
-    expect(within(topBar).queryByRole("button", { name: /Upload/i })).not.toBeInTheDocument();
+    // All three scope options present in sidebar navigation
+    expect(screen.getByRole("button", { name: /All Documents/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Shared with me/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Starred/ })).toBeInTheDocument();
+    // Top bar scope tab navigation is removed
+    expect(screen.queryByRole("tab", { name: /All Documents/ })).not.toBeInTheDocument();
+    const scopesNav = screen.getByRole("navigation", { name: "Document scopes" });
+    expect(within(scopesNav).queryByRole("button", { name: /New Folder/i })).not.toBeInTheDocument();
+    expect(within(scopesNav).queryByRole("button", { name: /Upload/i })).not.toBeInTheDocument();
   });
 
   it("empty search state shows view-only copy with no CTA", async () => {
@@ -347,10 +343,8 @@ describe("Project documents workspace", () => {
     ).toBeInTheDocument();
   });
 
-  it("storage dialog opens from sidebar storage link", async () => {
+  it("Storage button is not rendered in sidebar navigation", async () => {
     await renderWorkspace();
-    const storageBtn = screen.getByRole("button", { name: /Storage/i });
-    fireEvent.click(storageBtn);
-    expect(await screen.findByRole("dialog", { name: /Drive storage/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Storage$/i })).not.toBeInTheDocument();
   });
 });

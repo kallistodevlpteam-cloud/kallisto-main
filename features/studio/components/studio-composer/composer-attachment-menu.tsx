@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useRef } from "react";
-import { FileText, Image as ImageIcon, Plus } from "lucide-react";
+import {
+  DocumentsDuotoneIcon,
+  DrawingsDuotoneIcon,
+  PlusDuotoneIcon,
+  PortfolioDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import { StudioSource, StudioSourceType } from "../../types/studio-source";
 
 export interface ComposerAttachmentMenuProps {
@@ -57,17 +62,22 @@ export function ComposerAttachmentMenu({
         title="Add attachment"
         aria-label="Add attachment"
         style={{
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
+          display: "grid",
+          placeItems: "center",
+          width: "28px",
+          height: "28px",
           border: "none",
-          background: "none",
+          borderRadius: "50%",
+          background: "transparent",
           color: "#475569",
           cursor: "pointer",
-          padding: "2px",
+          padding: 0,
+          transition: "color 0.15s ease, background-color 0.15s ease",
         }}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)")}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
       >
-        <Plus size={18} strokeWidth={1.8} />
+        <PlusDuotoneIcon size={18} />
       </button>
 
       {attachments.map((source) => (
@@ -76,18 +86,24 @@ export function ComposerAttachmentMenu({
           style={{
             display: "inline-flex",
             alignItems: "center",
-            gap: "4px",
+            gap: "5px",
             height: "26px",
             padding: "0 8px",
-            border: "1px solid #cbd5e1",
+            border: "none",
             borderRadius: "6px",
-            background: "#f8fafc",
+            background: "#f7f7f5",
             color: "#0f172a",
             fontSize: "11.5px",
             fontWeight: 500,
           }}
         >
-          {source.type === "image" ? <ImageIcon size={12} /> : <FileText size={12} />}
+          {source.type === "image" ? (
+            <PortfolioDuotoneIcon size={13} style={{ color: "#0284c7" }} />
+          ) : source.type === "drawing" ? (
+            <DrawingsDuotoneIcon size={13} style={{ color: "#059669" }} />
+          ) : (
+            <DocumentsDuotoneIcon size={13} style={{ color: "#e11d48" }} />
+          )}
           <span style={{ maxWidth: "120px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {source.name}
           </span>

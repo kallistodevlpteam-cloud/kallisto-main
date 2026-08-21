@@ -1,0 +1,1036 @@
+.authCanvas {
+  width: 100%;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  padding: 8px;
+  gap: 8px;
+  background: #eceef1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(380px, 460px);
+  transition: grid-template-columns 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.authCanvasExpanded {
+  grid-template-columns: minmax(0, 1.15fr) minmax(480px, 600px);
+}
+
+/* =========================================================
+   LEFT SHELL: ARCHITECTURAL BRANDING SHELL
+   ========================================================= */
+
+.brandingShell {
+  min-height: calc(100dvh - 16px);
+  box-sizing: border-box;
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 18px;
+  background-color: #ffffff;
+  background-image: url("/auth-branding-bg.webp");
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  padding: 56px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.brandingHero {
+  max-width: 780px;
+  margin: 36px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  z-index: 2;
+}
+
+.brandingKicker {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted, #64748b);
+}
+
+.brandingTitle {
+  font-size: 30px;
+  line-height: 1.25;
+  font-weight: 650;
+  color: var(--ink, #0f172a);
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.brandingTitleSecondary {
+  display: inline-block;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.brandingDesc {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted, #64748b);
+  margin: 0;
+  max-width: 560px;
+}
+
+.brandingBottomSection {
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+  padding-top: 20px;
+  padding-bottom: 0;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.brandingBottomMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 12px;
+  color: var(--soft, #94a3b8);
+}
+
+.brandingFooterNote {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted, #64748b);
+  font-size: 11.5px;
+}
+
+/* =========================================================
+   RIGHT SHELL: APPLICATION FORM SHELL
+   ========================================================= */
+
+.formShell {
+  min-height: calc(100dvh - 16px);
+  box-sizing: border-box;
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  padding: 44px 38px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow-y: auto;
+  transition: padding 0.35s ease;
+}
+
+.formShellExpanded {
+  padding: 44px 40px;
+}
+
+.formContent {
+  width: 100%;
+  max-width: 100%;
+  margin: auto 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.stepContainer {
+  width: 100%;
+  animation: stepFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes stepFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+.logoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.logoWrap {
+  display: inline-flex;
+  align-items: center;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--muted, #64748b);
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.backButton:hover {
+  color: var(--ink, #0f172a);
+  background-color: var(--surface-subtle, #f8fafc);
+}
+
+.title {
+  font-size: 23px;
+  font-weight: 700;
+  color: var(--ink, #0f172a);
+  margin: 0 0 8px 0;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.subtitle {
+  font-size: 13.5px;
+  color: var(--muted, #64748b);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   PROGRESS TRACKER / STEP BAR
+   ========================================================= */
+
+.progressRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 14px;
+  margin-bottom: 6px;
+}
+
+.progressBadge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent, #2563eb);
+}
+
+.progressPills {
+  display: flex;
+  gap: 6px;
+}
+
+.progressPill {
+  width: 24px;
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--line, #e2e8f0);
+  transition: background-color 0.25s ease;
+}
+
+.progressPillActive {
+  background: var(--ink, #0f172a);
+}
+
+/* =========================================================
+   STEP 1: ACCOUNT CREATION (EMAIL & PASSWORD)
+   ========================================================= */
+
+.passwordToggle {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  padding: 4px;
+  color: var(--soft, #94a3b8);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+
+.passwordToggle:hover {
+  color: var(--ink, #0f172a);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 16px 0 14px 0;
+  color: var(--soft, #94a3b8);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid var(--line, #e2e8f0);
+}
+
+.divider span {
+  padding: 0 10px;
+}
+
+.ssoBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 40px;
+  background: #ffffff;
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink, #0f172a);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.ssoBtn:hover {
+  background: var(--surface-subtle, #f8fafc);
+  border-color: var(--line-strong, #cbd5e1);
+}
+
+.ssoIcon {
+  width: 15px;
+  height: 15px;
+}
+
+/* =========================================================
+   STEP 2: EMAIL OTP VERIFICATION
+   ========================================================= */
+
+.otpBoxGrid {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 16px 0 20px 0;
+}
+
+.otpDigitInput {
+  width: 48px;
+  height: 52px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink, #0f172a);
+  background: #ffffff;
+  border: 1.5px solid var(--line, #e2e8f0);
+  border-radius: var(--radius-sm, 8px);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.otpDigitInput:focus {
+  border-color: var(--accent, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.emailBadgeNotice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--surface-subtle, #f8fafc);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 12.5px;
+  color: var(--ink, #0f172a);
+  margin-bottom: 8px;
+}
+
+.changeEmailBtn {
+  font-size: 11.5px;
+  color: var(--accent, #2563eb);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.changeEmailBtn:hover {
+  text-decoration: underline;
+}
+
+.resendContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted, #64748b);
+  margin-top: 14px;
+}
+
+.resendActiveBtn {
+  color: var(--accent, #2563eb);
+  background: none;
+  border: none;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.resendActiveBtn:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+   STEP 3: PRACTICE SELECTION
+   ========================================================= */
+
+.stepSectionHeader {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink, #0f172a);
+  margin: 12px 0 10px 0;
+  letter-spacing: -0.01em;
+}
+
+.typeSelectionGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.typeCard {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 20px;
+  background: #f8fafc;
+  border: 1.5px solid transparent;
+  border-radius: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+  outline: none;
+}
+
+.typeCard:hover {
+  background: #f1f5f9;
+}
+
+.typeCard:focus-visible {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.typeCardSelected {
+  background: #ffffff;
+  border-color: var(--ink, #0f172a);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.typeCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.typeShapeIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.typeCardTitle {
+  font-size: 14.5px;
+  font-weight: 650;
+  color: var(--ink, #0f172a);
+  letter-spacing: -0.015em;
+}
+
+.typeCardDesc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted, #64748b);
+  padding-left: 2px;
+}
+
+.continueBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 44px;
+  border-radius: 9999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.continueBtnDisabled {
+  background: #7a7f85;
+  color: #ffffff;
+  cursor: not-allowed;
+  opacity: 0.9;
+}
+
+.continueBtnActive {
+  background: var(--ink, #0f172a);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2);
+}
+
+.continueBtnActive:hover {
+  background: #000000;
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   STEP 4: 3-STEP FORM STYLING & NAVIGATION
+   ========================================================= */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sectionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionHeader {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--soft, #94a3b8);
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--line, #e2e8f0);
+  margin-top: 6px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink, #0f172a);
+  letter-spacing: -0.01em;
+}
+
+.optionalLabel {
+  font-weight: 400;
+  color: var(--soft, #94a3b8);
+  margin-left: 4px;
+  font-size: 11px;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 12px;
+  color: var(--soft, #94a3b8);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease;
+}
+
+.input,
+.select {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px 0 38px;
+  background: #ffffff;
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 13.5px;
+  color: var(--ink, #0f172a);
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+}
+
+.inputWithToggle {
+  padding-right: 38px;
+}
+
+.input::placeholder {
+  color: var(--soft, #94a3b8);
+  font-weight: 400;
+}
+
+.input:hover {
+  border-color: var(--line-strong, #cbd5e1);
+}
+
+.input:focus {
+  border-color: var(--accent, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.inputWrapper:focus-within .inputIcon {
+  color: var(--accent, #2563eb);
+}
+
+.input[aria-invalid="true"] {
+  border-color: #ef4444;
+}
+
+.input[aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.fieldError {
+  font-size: 11px;
+  color: #dc2626;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* =========================================================
+   VIRTUAL OFFICE ID SELECTION COMPONENT
+   ========================================================= */
+
+.fieldHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.voAvailabilityBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #16a34a;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 1.5px 7px;
+  border-radius: 9999px;
+}
+
+.handleInputWrapper {
+  display: flex;
+  align-items: center;
+  height: 42px;
+  background: #ffffff;
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: var(--radius-sm, 8px);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.handleInputWrapper:focus-within {
+  border-color: var(--accent, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.domainPrefix {
+  padding: 0 10px 0 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--soft, #94a3b8);
+  background: #f8fafc;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  border-right: 1px solid var(--line, #e2e8f0);
+  user-select: none;
+  font-family: ui-monospace, monospace;
+}
+
+.handleInput {
+  flex: 1;
+  height: 100%;
+  border: none;
+  padding: 0 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink, #0f172a);
+  font-family: ui-monospace, monospace;
+  outline: none;
+  background: transparent;
+}
+
+.handleInput::placeholder {
+  color: var(--soft, #94a3b8);
+  font-weight: 400;
+}
+
+.suggestionsWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.suggestionsLabel {
+  font-size: 11px;
+  color: var(--muted, #64748b);
+  margin-right: 2px;
+}
+
+.suggestionChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #ffffff;
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 9999px;
+  padding: 3px 9px;
+  font-size: 11.5px;
+  font-family: ui-monospace, monospace;
+  color: var(--muted, #64748b);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.suggestionChip:hover {
+  background: var(--surface-subtle, #f8fafc);
+  color: var(--ink, #0f172a);
+  border-color: var(--line-strong, #cbd5e1);
+}
+
+.suggestionChipActive {
+  background: #eff6ff;
+  border-color: var(--accent, #2563eb);
+  color: var(--accent, #2563eb);
+  font-weight: 600;
+}
+
+.consentRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 6px;
+  user-select: none;
+}
+
+.checkbox {
+  width: 15px;
+  height: 15px;
+  margin-top: 2px;
+  border-radius: 4px;
+  border: 1px solid var(--line-strong, #cbd5e1);
+  accent-color: var(--accent, #2563eb);
+  cursor: pointer;
+}
+
+.consentLabel {
+  font-size: 11.5px;
+  color: var(--muted, #64748b);
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.formNavRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.navBackBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 42px;
+  padding: 0 16px;
+  background: #ffffff;
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink, #0f172a);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.navBackBtn:hover {
+  background: var(--surface-subtle, #f8fafc);
+  border-color: var(--line-strong, #cbd5e1);
+}
+
+.submitBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 42px;
+  background: var(--ink, #0f172a);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.05s ease, opacity 0.15s ease;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: #1e293b;
+}
+
+.submitBtn:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.submitBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.footer {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--muted, #64748b);
+}
+
+.footerLink {
+  color: var(--accent, #2563eb);
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 4px;
+}
+
+.footerLink:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+   SUCCESS CONFIRMATION STATE
+   ========================================================= */
+
+.successContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px 16px;
+  gap: 18px;
+  margin: auto 0;
+}
+
+.successIconBadge {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #16a34a;
+  display: grid;
+  place-items: center;
+}
+
+.successTitle {
+  font-size: 22px;
+  font-weight: 650;
+  color: var(--ink, #0f172a);
+  margin: 0;
+}
+
+.successDesc {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--muted, #64748b);
+  max-width: 420px;
+  margin: 0;
+}
+
+.appReferenceCard {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface-subtle, #f8fafc);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: var(--radius-sm, 8px);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.appRefLabel {
+  font-size: 10.5px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted, #64748b);
+}
+
+.appRefValue {
+  font-family: ui-monospace, monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink, #0f172a);
+}
+
+.appRefVoUrl {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--accent, #2563eb);
+  font-weight: 600;
+}
+
+.returnBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--ink, #0f172a);
+  color: #ffffff;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+  margin-top: 8px;
+}
+
+.returnBtn:hover {
+  background: #1e293b;
+}
+
+/* =========================================================
+   RESPONSIVE BREAKPOINTS
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .authCanvas {
+    grid-template-columns: minmax(0, 1fr) minmax(380px, 460px);
+  }
+
+  .authCanvasExpanded {
+    grid-template-columns: minmax(0, 1fr) minmax(440px, 520px);
+  }
+}
+
+@media (max-width: 960px) {
+  .authCanvas,
+  .authCanvasExpanded {
+    grid-template-columns: 1fr;
+  }
+
+  .formShell,
+  .formShellExpanded {
+    order: 1;
+    min-height: auto;
+    padding: 32px 24px;
+  }
+
+  .brandingShell {
+    order: 2;
+    min-height: 440px;
+    background-size: contain;
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    padding: 32px 24px;
+  }
+
+  .brandingTitle {
+    font-size: 24px;
+  }
+
+  .brandingTitleSecondary {
+    font-size: 21px;
+  }
+}
+
+@media (max-width: 600px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .formShell,
+  .formShellExpanded {
+    padding: 24px 16px;
+  }
+
+  .brandingBottomMeta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}

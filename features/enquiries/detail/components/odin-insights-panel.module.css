@@ -1,7 +1,7 @@
 .feedContainer {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
   width: 100%;
   height: auto;
   min-height: auto;
@@ -14,69 +14,39 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 6px;
-  margin: 0;
-}
-
-.headerTitleWrap {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.iconWrap {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  background: #f1f5f9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #0f172a;
-  flex-shrink: 0;
-}
-
-.sparkleIcon {
-  color: #0f172a;
+  padding: 0 4px;
+  margin: 0 0 2px 0;
 }
 
 .feedTitle {
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #475569;
+  color: #64748b;
   margin: 0;
-  line-height: 1.2;
-}
-
-.scopeSubtitle {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #0f172a;
-  display: block;
   line-height: 1.2;
 }
 
 .countBadge {
   font-size: 10.5px;
-  font-weight: 600;
-  color: #64748b;
+  font-weight: 650;
+  padding: 2px 7px;
+  border-radius: 9999px;
   background: #f1f5f9;
-  padding: 2px 8px;
-  border-radius: 999px;
+  color: #0f172a;
 }
 
 .cardsStack {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 3px;
 }
 
 .viewAllBtn {
   background: transparent;
   border: none;
-  padding: 4px 2px;
+  padding: 6px 4px;
   font-size: 11.5px;
   font-weight: 600;
   color: #0f172a;

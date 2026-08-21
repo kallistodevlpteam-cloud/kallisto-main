@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { CheckCircle2, FileText, Send, Sparkles, X } from "lucide-react";
+import { CheckCircle2, Send, X } from "lucide-react";
+import { DocumentsDuotoneIcon, OdinDuotoneIcon } from "@/components/layout/sidebar-icons";
 import type { StudioDeliveryRecipient, StudioTask } from "@/types/domain/studio";
 import { useStudioDelivery } from "@/features/studio/hooks/use-studio-delivery";
 import { SendToClientDialog } from "./send-to-client-dialog";
@@ -255,16 +256,16 @@ export function OutputPreviewPanel({
               style={{
                 display: "grid",
                 placeItems: "center",
-                width: "26px",
-                height: "26px",
-                borderRadius: "6px",
+                width: "28px",
+                height: "28px",
+                borderRadius: "8px",
                 background: "#f0fdf4",
                 color: "#16a34a",
-                border: "1px solid #bbf7d0",
+                border: "none",
                 flexShrink: 0,
               }}
             >
-              <FileText size={14} />
+              <DocumentsDuotoneIcon size={16} />
             </div>
             <h2
               ref={headingRef}
@@ -323,11 +324,20 @@ export function OutputPreviewPanel({
               placeItems: "center",
               width: "28px",
               height: "28px",
-              borderRadius: "6px",
-              border: "1px solid #e2e8f0",
-              background: "#ffffff",
+              borderRadius: "8px",
+              border: "none",
+              background: "transparent",
               color: "#64748b",
               cursor: "pointer",
+              transition: "all 0.15s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.04)";
+              e.currentTarget.style.color = "#0f172a";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "#64748b";
             }}
           >
             <X size={15} />
@@ -591,7 +601,7 @@ export function OutputPreviewPanel({
               transition: "all 0.15s ease",
             }}
           >
-            <Sparkles size={13} />
+            <OdinDuotoneIcon size={14} />
             <span>Request changes</span>
           </button>
 

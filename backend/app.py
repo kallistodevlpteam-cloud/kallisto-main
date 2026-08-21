@@ -18,15 +18,17 @@ from typing import Any
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
-
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from turso_client import get_turso_config, is_read_only, pipeline, rows
-
-from auth import (  # noqa: E402
+from auth import (
     authenticate_provider,
     get_auth_sp_id,
     get_provider_project_ids,
     require_provider,
+    _ensure_project_owned,
 )
+
 
 
 def _load_dotenv() -> None:
@@ -78,64 +80,67 @@ def _parse_string_list(raw: Any) -> list[str]:
 
 def _schema_snapshot() -> dict[str, Any]:
     base_url, _ = get_turso_config()
+
+    table_list = pipeline(
+        [
+            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name"
+        ]
+    )[0]
+    table_names = [row[0] for row in rows(table_list)]
+
+    statements: list[str] = []
+    for name in table_names:
+        statements.append(f'PRAGMA table_info("{name}")')
+        statements.append(f'PRAGMA foreign_key_list("{name}")')
+        statements.append(f'SELECT count(*) FROM "{name}"')
+
+    details = pipeline(statements)
+
+    tables: list[dict[str, Any]] = []
+    for index, name in enumerate(table_names):
+        column_rows = rows(details[index * 3])
+        fk_rows = rows(details[index * 3 + 1])
+        count_rows = rows(details[index * 3 + 2])
+
+        columns = [
+            {
+                "name": row[1],
+                "type": row[2],
+                "notNull": bool(row[3]),
+                "pk": int(row[5] or 0),
+                "defaultValue": row[4],
+            }
+            for row in column_rows
+        ]
+        foreign_keys = [
+            {
+                "id": int(row[0]),
+                "column": row[3],
+                "refTable": row[2],
+                "refColumn": row[4],
+                "onUpdate": row[5],
+                "onDelete": row[6],
+            }
+            for row in fk_rows
+        ]
+        row_count = count_rows[0][0] if count_rows else 0
+
+        tables.append(
+            {
+                "name": name,
+                "columns": columns,
+                "foreignKeys": foreign_keys,
+                "rowCount": row_count,
+            }
+        )
+
     return {
-        "status": "ok",
+        "ok": True,
         "connected": True,
-        "database_url": base_url,
-        "tables": _list_tables(),
+        "host": base_url,
+        "fetchedAt": _iso_now(),
+        "tables": tables,
     }
-
-
-def _list_tables() -> list[str]:
-    try:
-        result = pipeline(
-            [
-                "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
-            ]
-        )[0]
-        return [row[0] for row in rows(result)]
-    except Exception:  # noqa: BLE001
-        return []
-
-
-# ── Auth helpers ─────────────────────────────────────────────────────
-
-
-def _ensure_project_owned(project_id: int, sp_id: str):
-    """Return an error response tuple if the provider does not own the project."""
-    allowed = get_provider_project_ids(sp_id)
-    allowed_str = [str(a) for a in allowed]
-    if str(project_id) not in allowed_str:
-        return jsonify({"status": "error", "message": "Forbidden"}), 403
-    return None
-
-
-# ── Public routes ────────────────────────────────────────────────────
-
-
-@app.get("/")
-def index():
-    return jsonify(
-        {
-            "service": "kallisto-backend",
-            "endpoints": [
-                "/api/health",
-                "/api/auth/login",
-                "/api/auth/me",
-                "/api/database/schema",
-                "/api/database/query",
-                "/api/projects",
-                "/api/projects/<id>",
-                "/api/projects/<id>/accept",
-                "/api/projects/<id>/reject",
-                "/api/projects/<id>/convert",
-                "/api/projects/<id>/view",
-                "/api/projects/<id>/proposal",
-                "/api/projects/<id>/proposal/send",
-                "/api/projects/<id>/proposal/respond",
-            ],
-        }
-    )
 
 
 @app.get("/api/health")
@@ -181,12 +186,25 @@ def auth_me(sp_id: str):
         return jsonify({"status": "error", "message": str(error)}), 503
 
 
-# ── Database introspection (protected) ───────────────────────────────
+# ── Database diagnostics (protected; developers only) ────────────────
 
 @app.get("/api/database/schema")
 @require_provider
 def database_schema(sp_id: str):
-    return jsonify(_schema_snapshot())
+    try:
+        return jsonify(_schema_snapshot())
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
+@app.get("/api/database/tables")
+@require_provider
+def database_tables(sp_id: str):
+    try:
+        snapshot = _schema_snapshot()
+        return jsonify({"tables": snapshot["tables"]})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
 
 
 @app.post("/api/database/query")
@@ -217,335 +235,230 @@ def database_query(sp_id: str):
 PROJECT_ENQ_CHARACTER = "enq"
 
 
-# ---------------------------------------------------------------------------
-# Optimised enrichment – batches independent queries into a single Turso
-# pipeline call and only fetches heavy relation data on the detail view.
-# ---------------------------------------------------------------------------
+def _enrich_and_filter_projects(raw_projects: list[dict[str, Any]], allowed_ids: list[int]) -> list[dict[str, Any]]:
+    """Filter projects to allowed ids and enrich with related data using a single batch query."""
+    projects = [p for p in raw_projects if p["id"] in allowed_ids]
 
-def _enrich_list_projects(projects: list[dict[str, Any]], project_ids: list[int]) -> list[dict[str, Any]]:
-    """Lightweight enrichment for list views.
-
-    Only fetches: inspiration images, docs, scopes (without items),
-    requirements (without items), priorities (without details), proposals,
-    team members, messages, project_spaces, and the 8 ext tables.
-    Heavy item/detail tables are skipped to keep latency low.
-    """
-    if not projects:
-        return []
-
-    id_placeholders = ",".join("?" for _ in project_ids)
-
-    # --- Batch 1: All independent single-table queries -------------------
-    batch_sqls: list[str] = []
-    batch_args: list[list[Any]] = []
-
-    # 0. inspiration images
-    batch_sqls.append(
-        f"SELECT project_id, image_url, alt_text FROM inspiration_img "
-        f"WHERE project_id IN ({id_placeholders}) ORDER BY project_id, sort_order, id"
-    )
-    batch_args.append(project_ids)
-
-    # 1. project docs
-    batch_sqls.append(
-        f"SELECT project_id, id, doc_name, doc_img_url, DOC_type, status, updated_at "
-        f"FROM project_DOC WHERE project_id IN ({id_placeholders}) "
-        f"ORDER BY project_id, sort_order, id"
-    )
-    batch_args.append(project_ids)
-
-    # 2. project scopes (parent rows only – no items)
-    batch_sqls.append(
-        f"SELECT id, project_id, scope_name FROM project_scope "
-        f"WHERE project_id IN ({id_placeholders}) ORDER BY project_id, sort_order, id"
-    )
-    batch_args.append(project_ids)
-
-    # 3. requirements (parent rows only – no items)
-    batch_sqls.append(
-        f"SELECT id, project_id, requirement_name FROM requirements "
-        f"WHERE project_id IN ({id_placeholders}) ORDER BY project_id, sort_order, id"
-    )
-    batch_args.append(project_ids)
-
-    # 4. priorities (parent rows only – no details)
-    batch_sqls.append(
-        f"SELECT id, project_id, priority_name FROM clientcontext_priorities "
-        f"WHERE project_id IN ({id_placeholders}) ORDER BY project_id, sort_order, id"
-    )
-    batch_args.append(project_ids)
-
-    # 5. family members
-    batch_sqls.append(
-        f"SELECT cd.project_id, fd.family_id, fd.client_id, fd.name, fd.age, fd.job, "
-        f"fd.phone, fd.relation, fd.family_member_img_url, fd.description "
-        f"FROM family_details fd LEFT JOIN client_details cd ON cd.client_id = fd.client_id "
-        f"WHERE cd.project_id IN ({id_placeholders}) ORDER BY cd.project_id"
-    )
-    batch_args.append(project_ids)
-
-    # 6-13. Extended tables (8 tables)
-    ext_tables = {
-        "project_clients": ["about_client", "building_users", "family_or_team_size", "elderly_members", "children", "pets", "work_from_home", "accessibility_requirements"],
-        "project_lifestyle": ["daily_routine", "entertain_guests", "host_parties", "relaxation_place", "morning_coffee_location", "outdoor_activities", "hobbies", "privacy_importance"],
-        "project_approval_process": ["primary_decision_maker", "other_approval_stakeholders", "expected_revision_rounds", "design_review_method", "approval_turnaround_time"],
-        "project_communication": ["preferred_contact", "communication_channel", "meeting_frequency", "best_time_to_reach", "special_instructions"],
-        "project_technical": ["energy_efficient_design", "solar_panels", "rainwater_harvesting", "smart_home_automation", "hvac_preference", "backup_power", "water_storage_borewell", "security_system_requirements", "preferred_material_techs"],
-        "project_regulatory": ["zoning_restrictions", "height_restrictions", "home_owner_association_rules", "permits_obtained", "land_disputes_encumbrances", "setback_requirements"],
-        "project_outdoor": ["garden", "swimming_pool", "outdoor_deck_patio", "bbq_area", "parking", "driveway_gate_notes", "landscape_boundary_fencing", "outdoor_lighting", "play_area_children", "pet_friendly_outdoor"],
-        "project_timeline": ["desired_start_date", "desired_completion_date", "fixed_deadline_notes", "phased", "phases_description", "urgency_level"],
-    }
-    ext_table_names = list(ext_tables.keys())
-    for tbl, cols in ext_tables.items():
-        col_str = ",".join(cols)
-        batch_sqls.append(
-            f"SELECT project_id,{col_str} FROM {tbl} WHERE project_id IN ({id_placeholders})"
-        )
-        batch_args.append(project_ids)
-
-    # 14. project_spaces
-    batch_sqls.append(
-        f"SELECT project_id, space_name, required, priority, approx_area_size, quantity, adjacency_notes "
-        f"FROM project_spaces WHERE project_id IN ({id_placeholders})"
-    )
-    batch_args.append(project_ids)
-
-    # 15. proposals
-    batch_sqls.append(
-        f"SELECT project_id, provider_id, id, status, total_amount, rate_notes, timeline_notes, "
-        f"scope_summary, rejection_reason, negotiation_notes, sent_at, responded_at "
-        f"FROM project_proposals WHERE project_id IN ({id_placeholders}) ORDER BY project_id, id"
-    )
-    batch_args.append(project_ids)
-
-    # 16. team members
-    batch_sqls.append(
-        f"SELECT project_id, provider_id, role, status, notes FROM project_team_members "
-        f"WHERE project_id IN ({id_placeholders})"
-    )
-    batch_args.append(project_ids)
-
-    # 17. messages
-    batch_sqls.append(
-        f"SELECT project_id, sender_type, sender_id, message_type, content, created_at "
-        f"FROM project_messages WHERE project_id IN ({id_placeholders})"
-    )
-    batch_args.append(project_ids)
-
-    # Execute batch
-    try:
-        batch_results = pipeline(batch_sqls, batch_args)
-    except Exception:  # noqa: BLE001
-        # If batch fails, degrade gracefully – return projects without enrichment
-        return projects
-
-    # Parse batch results by index
-    # idx 0: inspiration images
-    images_by_project: dict[int, list[dict[str, str | None]]] = {}
-    for row in rows(batch_results[0]):
-        images_by_project.setdefault(row[0], []).append({"url": row[1], "alt": row[2]})
-
-    # idx 1: docs
-    docs_by_project: dict[int, list[dict[str, Any]]] = {}
-    for row in rows(batch_results[1]):
-        docs_by_project.setdefault(row[0], []).append({
-            "id": row[1], "name": row[2], "doc_img_url": row[3],
-            "doc_type": row[4], "status": bool(row[5]), "updated_at": row[6],
-        })
-
-    # idx 2: scopes (parent only)
-    scopes_by_project: dict[int, list[dict[str, Any]]] = {}
-    for row in rows(batch_results[2]):
-        scopes_by_project.setdefault(row[1], []).append({"id": row[0], "scope_name": row[2], "items": []})
-
-    # idx 3: requirements (parent only)
-    reqs_by_project: dict[int, list[dict[str, Any]]] = {}
-    for row in rows(batch_results[3]):
-        reqs_by_project.setdefault(row[1], []).append({"id": row[0], "requirement_name": row[2], "items": [], "item_details": [], "statuses": []})
-
-    # idx 4: priorities (parent only)
-    prios_by_project: dict[int, list[dict[str, Any]]] = {}
-    for row in rows(batch_results[4]):
-        prios_by_project.setdefault(row[1], []).append({"id": row[0], "priority_name": row[2], "details": [], "statuses": [], "tags": []})
-
-    # idx 5: family members
-    family_by_project: dict[int, list[dict[str, Any]]] = {}
-    for row in rows(batch_results[5]):
-        family_by_project.setdefault(row[0], []).append({
-            "family_id": row[1], "client_id": row[2], "name": row[3],
-            "age": row[4], "job": row[5], "phone": row[6],
-            "relation": row[7], "family_member_img_url": row[8], "description": row[9],
-        })
-
-    # idx 6-13: extended tables
-    ext_by_project: dict[str, dict[int, dict[str, Any]]] = {}
-    for t_idx, tbl in enumerate(ext_table_names):
-        r_idx = 6 + t_idx
-        cols = ext_tables[tbl]
-        tbl_data: dict[int, dict[str, Any]] = {}
-        for row in rows(batch_results[r_idx]):
-            pid = row[0]
-            tbl_data[pid] = {cols[i]: row[i + 1] for i in range(len(cols))}
-        ext_by_project[tbl] = tbl_data
-
-    # idx 14: project_spaces
-    spaces_by_project: dict[int, list[dict[str, Any]]] = {}
-    for row in rows(batch_results[14]):
-        spaces_by_project.setdefault(row[0], []).append({
-            "space_name": row[1], "required": row[2], "priority": row[3],
-            "approx_area_size": row[4], "quantity": row[5], "adjacency_notes": row[6],
-        })
-
-    # idx 15: proposals
-    prop_by_project: dict[int, dict[str, Any]] = {}
-    for row in rows(batch_results[15]):
-        prop_by_project[row[0]] = {
-            "id": row[2], "provider_id": row[1], "status": row[3],
-            "total_amount": row[4], "rate_notes": row[5], "timeline_notes": row[6],
-            "scope_summary": row[7], "rejection_reason": row[8],
-            "negotiation_notes": row[9], "sent_at": row[10], "responded_at": row[11],
-        }
-
-    # idx 16: team members
-    team_by_project: dict[int, list[dict[str, Any]]] = {}
-    for row in rows(batch_results[16]):
-        team_by_project.setdefault(row[0], []).append({
-            "provider_id": row[1], "role": row[2], "status": row[3], "notes": row[4],
-        })
-
-    # idx 17: messages
-    msg_by_project: dict[int, list[dict[str, Any]]] = {}
-    for row in rows(batch_results[17]):
-        msg_by_project.setdefault(row[0], []).append({
-            "sender_type": row[1], "sender_id": row[2], "message_type": row[3],
-            "content": row[4], "created_at": row[5],
-        })
-
-    # Assemble
     for project in projects:
-        pid = project["id"]
         project["site_images"] = _parse_site_images(project.get("site_img_url"))
         project.pop("site_img_url", None)
         project["provider_ids"] = _parse_string_list(project.get("provider_id"))
         project.pop("provider_id", None)
+
+    statements = [
+        "SELECT ii.project_id, ii.image_url, ii.alt_text FROM inspiration_img ii ORDER BY ii.project_id, ii.sort_order, ii.id",
+        "SELECT pd.project_id, pd.id, pd.doc_name, pd.doc_img_url, pd.DOC_type, pd.status, pd.updated_at FROM project_DOC pd ORDER BY pd.project_id, pd.sort_order, pd.id",
+        "SELECT ps.id, ps.project_id, ps.scope_name FROM project_scope ps ORDER BY ps.project_id, ps.sort_order, ps.id",
+        "SELECT si.scope_id, si.item_name FROM project_scope_item si ORDER BY si.scope_id, si.sort_order, si.id",
+        "SELECT id, project_id, requirement_name FROM requirements ORDER BY project_id, sort_order, id",
+        "SELECT requirement_id, item_value, details, status FROM requirement_items ORDER BY requirement_id, sort_order, id",
+        "SELECT id, project_id, priority_name FROM clientcontext_priorities ORDER BY project_id, sort_order, id",
+        "SELECT priority_id, detail_value, status, tags FROM priority_details ORDER BY priority_id, sort_order, id",
+        "SELECT cd.project_id, fd.family_id, fd.client_id, fd.name, fd.age, fd.job, fd.phone, fd.relation, fd.family_member_img_url, fd.description FROM family_details fd LEFT JOIN client_details cd ON cd.client_id = fd.client_id WHERE cd.project_id IS NOT NULL ORDER BY cd.project_id",
+        "SELECT project_id, about_client, building_users, family_or_team_size, elderly_members, children, pets, work_from_home, accessibility_requirements, client_id FROM project_clients",
+        "SELECT project_id, daily_routine, entertain_guests, host_parties, relaxation_place, morning_coffee_location, outdoor_activities, hobbies, privacy_importance FROM project_lifestyle",
+        "SELECT project_id, primary_decision_maker, other_approval_stakeholders, expected_revision_rounds, design_review_method, approval_turnaround_time FROM project_approval_process",
+        "SELECT project_id, preferred_contact, communication_channel, meeting_frequency, best_time_to_reach, special_instructions FROM project_communication",
+        "SELECT project_id, energy_efficient_design, solar_panels, rainwater_harvesting, smart_home_automation, hvac_preference, backup_power, water_storage_borewell, security_system_requirements, preferred_material_techs FROM project_technical",
+        "SELECT project_id, zoning_restrictions, height_restrictions, home_owner_association_rules, permits_obtained, land_disputes_encumbrances, setback_requirements FROM project_regulatory",
+        "SELECT project_id, garden, swimming_pool, outdoor_deck_patio, bbq_area, parking, driveway_gate_notes, landscape_boundary_fencing, outdoor_lighting, play_area_children, pet_friendly_outdoor FROM project_outdoor",
+        "SELECT project_id, space_name, required, priority, approx_area_size, quantity, adjacency_notes FROM project_spaces",
+        "SELECT project_id, desired_start_date, desired_completion_date, fixed_deadline_notes, phased, phases_description, urgency_level FROM project_timeline",
+        "SELECT id, project_id, provider_id, status, total_amount, rate_notes, timeline_notes, scope_summary, rejection_reason, negotiation_notes, sent_at, responded_at FROM project_proposals",
+        "SELECT project_id, provider_id, role, status, notes FROM project_team_members",
+        "SELECT project_id, sender_type, sender_id, message_type, content, created_at FROM project_messages",
+    ]
+
+    try:
+        batch_res = pipeline(statements)
+    except Exception:
+        batch_res = []
+
+    images_by_project: dict[int, list[dict[str, str | None]]] = {}
+    docs_by_project: dict[int, list[dict[str, Any]]] = {}
+    scopes_by_project: dict[int, list[dict[str, Any]]] = {}
+    reqs_by_project: dict[int, list[dict[str, Any]]] = {}
+    prios_by_project: dict[int, list[dict[str, Any]]] = {}
+    family_by_project: dict[int, list[dict[str, Any]]] = {}
+    clients_by_project: dict[int, dict[str, Any]] = {}
+    lifestyle_by_project: dict[int, dict[str, Any]] = {}
+    approval_by_project: dict[int, dict[str, Any]] = {}
+    comm_by_project: dict[int, dict[str, Any]] = {}
+    tech_by_project: dict[int, dict[str, Any]] = {}
+    reg_by_project: dict[int, dict[str, Any]] = {}
+    outdoor_by_project: dict[int, dict[str, Any]] = {}
+    spaces_by_project: dict[int, list[dict[str, Any]]] = {}
+    timeline_by_project: dict[int, dict[str, Any]] = {}
+    prop_by_project: dict[int, dict[str, Any]] = {}
+    team_by_project: dict[int, list[dict[str, Any]]] = {}
+    msg_by_project: dict[int, list[dict[str, Any]]] = {}
+
+    if len(batch_res) >= 21:
+        for row in rows(batch_res[0]):
+            images_by_project.setdefault(row[0], []).append({"url": row[1], "alt": row[2]})
+
+        for row in rows(batch_res[1]):
+            docs_by_project.setdefault(row[0], []).append({
+                "id": row[1], "name": row[2], "doc_img_url": row[3],
+                "doc_type": row[4], "status": bool(row[5]), "updated_at": row[6]
+            })
+
+        items_by_scope: dict[int, list[str]] = {}
+        for row in rows(batch_res[3]):
+            items_by_scope.setdefault(row[0], []).append(row[1])
+        for row in rows(batch_res[2]):
+            sid, pid, name = row
+            scopes_by_project.setdefault(pid, []).append({"id": sid, "scope_name": name, "items": items_by_scope.get(sid, [])})
+
+        items_by_req: dict[str, list[str]] = {}
+        details_by_req: dict[str, list[list[str]]] = {}
+        statuses_by_req: dict[str, list[bool | None]] = {}
+        for row in rows(batch_res[5]):
+            rid, value, details, status = row
+            items_by_req.setdefault(rid, []).append(value)
+            details_by_req.setdefault(rid, []).append(_parse_string_list(details))
+            statuses_by_req.setdefault(rid, []).append(bool(status) if status is not None else None)
+        for row in rows(batch_res[4]):
+            rid, pid, name = row
+            reqs_by_project.setdefault(pid, []).append({
+                "id": rid, "requirement_name": name,
+                "items": items_by_req.get(rid, []),
+                "item_details": details_by_req.get(rid, []),
+                "statuses": statuses_by_req.get(rid, [])
+            })
+
+        details_by_prio: dict[str, list[str]] = {}
+        statuses_by_prio: dict[str, list[bool | None]] = {}
+        tags_by_prio: dict[str, list[list[str]]] = {}
+        for row in rows(batch_res[7]):
+            p_id, value, status, tags = row
+            details_by_prio.setdefault(p_id, []).append(value)
+            statuses_by_prio.setdefault(p_id, []).append(bool(status) if status is not None else None)
+            tags_by_prio.setdefault(p_id, []).append(_parse_string_list(tags))
+        for row in rows(batch_res[6]):
+            rid, pid, name = row
+            prios_by_project.setdefault(pid, []).append({
+                "id": rid, "priority_name": name,
+                "details": details_by_prio.get(rid, []),
+                "statuses": statuses_by_prio.get(rid, []),
+                "tags": tags_by_prio.get(rid, [])
+            })
+
+        for row in rows(batch_res[8]):
+            pid, family_id, client_id, name, age, job, phone, relation, img_url, desc = row
+            family_by_project.setdefault(pid, []).append({
+                "family_id": family_id, "client_id": client_id, "name": name,
+                "age": age, "job": job, "phone": phone, "relation": relation,
+                "family_member_img_url": img_url, "description": desc
+            })
+
+        for row in rows(batch_res[9]):
+            clients_by_project[row[0]] = {
+                "about_client": row[1], "building_users": row[2], "family_or_team_size": row[3],
+                "elderly_members": row[4], "children": row[5], "pets": row[6],
+                "work_from_home": row[7], "accessibility_requirements": row[8], "client_id": row[9]
+            }
+
+        for row in rows(batch_res[10]):
+            lifestyle_by_project[row[0]] = {
+                "daily_routine": row[1], "entertain_guests": row[2], "host_parties": row[3],
+                "relaxation_place": row[4], "morning_coffee_location": row[5],
+                "outdoor_activities": row[6], "hobbies": row[7], "privacy_importance": row[8]
+            }
+
+        for row in rows(batch_res[11]):
+            approval_by_project[row[0]] = {
+                "primary_decision_maker": row[1], "other_approval_stakeholders": row[2],
+                "expected_revision_rounds": row[3], "design_review_method": row[4],
+                "approval_turnaround_time": row[5]
+            }
+
+        for row in rows(batch_res[12]):
+            comm_by_project[row[0]] = {
+                "preferred_contact": row[1], "communication_channel": row[2],
+                "meeting_frequency": row[3], "best_time_to_reach": row[4],
+                "special_instructions": row[5]
+            }
+
+        for row in rows(batch_res[13]):
+            tech_by_project[row[0]] = {
+                "energy_efficient_design": row[1], "solar_panels": row[2],
+                "rainwater_harvesting": row[3], "smart_home_automation": row[4],
+                "hvac_preference": row[5], "backup_power": row[6],
+                "water_storage_borewell": row[7], "security_system_requirements": row[8],
+                "preferred_material_techs": row[9]
+            }
+
+        for row in rows(batch_res[14]):
+            reg_by_project[row[0]] = {
+                "zoning_restrictions": row[1], "height_restrictions": row[2],
+                "home_owner_association_rules": row[3], "permits_obtained": row[4],
+                "land_disputes_encumbrances": row[5], "setback_requirements": row[6]
+            }
+
+        for row in rows(batch_res[15]):
+            outdoor_by_project[row[0]] = {
+                "garden": row[1], "swimming_pool": row[2], "outdoor_deck_patio": row[3],
+                "bbq_area": row[4], "parking": row[5], "driveway_gate_notes": row[6],
+                "landscape_boundary_fencing": row[7], "outdoor_lighting": row[8],
+                "play_area_children": row[9], "pet_friendly_outdoor": row[10]
+            }
+
+        for row in rows(batch_res[16]):
+            spaces_by_project.setdefault(row[0], []).append({
+                "space_name": row[1], "required": row[2], "priority": row[3],
+                "approx_area_size": row[4], "quantity": row[5], "adjacency_notes": row[6]
+            })
+
+        for row in rows(batch_res[17]):
+            timeline_by_project[row[0]] = {
+                "desired_start_date": row[1], "desired_completion_date": row[2],
+                "fixed_deadline_notes": row[3], "phased": row[4],
+                "phases_description": row[5], "urgency_level": row[6]
+            }
+
+        for row in rows(batch_res[18]):
+            prop_by_project[row[1]] = {
+                "id": row[0], "provider_id": row[2], "status": row[3],
+                "total_amount": row[4], "rate_notes": row[5],
+                "timeline_notes": row[6], "scope_summary": row[7],
+                "rejection_reason": row[8], "negotiation_notes": row[9],
+                "sent_at": row[10], "responded_at": row[11]
+            }
+
+        for row in rows(batch_res[19]):
+            team_by_project.setdefault(row[0], []).append({
+                "provider_id": row[1], "role": row[2], "status": row[3], "notes": row[4]
+            })
+
+        for row in rows(batch_res[20]):
+            msg_by_project.setdefault(row[0], []).append({
+                "sender_type": row[1], "sender_id": row[2], "message_type": row[3],
+                "content": row[4], "created_at": row[5]
+            })
+
+    for project in projects:
+        pid = project["id"]
         project["inspiration_images"] = images_by_project.get(pid, [])
         project["project_docs"] = docs_by_project.get(pid, [])
         project["project_scopes"] = scopes_by_project.get(pid, [])
         project["requirements"] = reqs_by_project.get(pid, [])
         project["priorities"] = prios_by_project.get(pid, [])
         project["family_members"] = family_by_project.get(pid, [])
-        for tbl in ext_table_names:
-            project[tbl] = ext_by_project[tbl].get(pid, None)
+        project["project_clients"] = clients_by_project.get(pid, None)
+        project["project_lifestyle"] = lifestyle_by_project.get(pid, None)
+        project["project_approval_process"] = approval_by_project.get(pid, None)
+        project["project_communication"] = comm_by_project.get(pid, None)
+        project["project_technical"] = tech_by_project.get(pid, None)
+        project["project_regulatory"] = reg_by_project.get(pid, None)
+        project["project_outdoor"] = outdoor_by_project.get(pid, None)
         project["project_spaces"] = spaces_by_project.get(pid, [])
+        project["project_timeline"] = timeline_by_project.get(pid, None)
         project["proposal"] = prop_by_project.get(pid, None)
         project["team_members"] = team_by_project.get(pid, [])
         project["messages"] = msg_by_project.get(pid, [])
 
     return projects
-
-
-def _enrich_detail_project(project: dict[str, Any]) -> dict[str, Any]:
-    """Full enrichment for a single project detail view.
-
-    Fetches scope items, requirement items, and priority details that are
-    skipped in the lightweight list enrichment.
-    """
-    pid = project["id"]
-    id_placeholders = "?"
-    project_ids = [pid]
-
-    # Scope items
-    try:
-        scope_result = pipeline(
-            [f"SELECT id, project_id, scope_name FROM project_scope WHERE project_id IN ({id_placeholders}) ORDER BY project_id, sort_order, id"],
-            [project_ids],
-        )[0]
-        scope_ids = [row[0] for row in rows(scope_result)]
-        if scope_ids:
-            sidp = ",".join("?" for _ in scope_ids)
-            item_result = pipeline(
-                [f"SELECT scope_id, item_name FROM project_scope_item WHERE scope_id IN ({sidp}) ORDER BY scope_id, sort_order, id"],
-                [scope_ids],
-            )[0]
-            items_by_scope: dict[int, list[str]] = {}
-            for row in rows(item_result):
-                items_by_scope.setdefault(row[0], []).append(row[1])
-            scopes = []
-            for row in rows(scope_result):
-                scopes.append({"id": row[0], "scope_name": row[2], "items": items_by_scope.get(row[0], [])})
-            project["project_scopes"] = scopes
-    except Exception:  # noqa: BLE001
-        pass
-
-    # Requirement items
-    try:
-        req_result = pipeline(
-            [f"SELECT id, project_id, requirement_name FROM requirements WHERE project_id IN ({id_placeholders}) ORDER BY project_id, sort_order, id"],
-            [project_ids],
-        )[0]
-        req_ids = [row[0] for row in rows(req_result)]
-        if req_ids:
-            ridp = ",".join("?" for _ in req_ids)
-            item_result = pipeline(
-                [f"SELECT requirement_id, item_value, details, status FROM requirement_items WHERE requirement_id IN ({ridp}) ORDER BY requirement_id, sort_order, id"],
-                [req_ids],
-            )[0]
-            items_by_req: dict[str, list[str]] = {}
-            details_by_req: dict[str, list[list[str]]] = {}
-            statuses_by_req: dict[str, list[bool | None]] = {}
-            for row in rows(item_result):
-                rid, value, details, status = row
-                items_by_req.setdefault(rid, []).append(value)
-                details_by_req.setdefault(rid, []).append(_parse_string_list(details))
-                statuses_by_req.setdefault(rid, []).append(bool(status) if status is not None else None)
-            reqs = []
-            for row in rows(req_result):
-                rid = row[0]
-                reqs.append({
-                    "id": rid, "requirement_name": row[2],
-                    "items": items_by_req.get(rid, []),
-                    "item_details": details_by_req.get(rid, []),
-                    "statuses": statuses_by_req.get(rid, []),
-                })
-            project["requirements"] = reqs
-    except Exception:  # noqa: BLE001
-        pass
-
-    # Priority details
-    try:
-        prio_result = pipeline(
-            [f"SELECT id, project_id, priority_name FROM clientcontext_priorities WHERE project_id IN ({id_placeholders}) ORDER BY project_id, sort_order, id"],
-            [project_ids],
-        )[0]
-        prio_ids = [row[0] for row in rows(prio_result)]
-        if prio_ids:
-            pidp = ",".join("?" for _ in prio_ids)
-            detail_result = pipeline(
-                [f"SELECT priority_id, detail_value, status, tags FROM priority_details WHERE priority_id IN ({pidp}) ORDER BY priority_id, sort_order, id"],
-                [prio_ids],
-            )[0]
-            details_by_prio: dict[str, list[str]] = {}
-            statuses_by_prio: dict[str, list[bool | None]] = {}
-            tags_by_prio: dict[str, list[list[str]]] = {}
-            for row in rows(detail_result):
-                prid, detail, status, tags = row
-                details_by_prio.setdefault(prid, []).append(detail)
-                statuses_by_prio.setdefault(prid, []).append(bool(status) if status is not None else None)
-                tags_by_prio.setdefault(prid, []).append(_parse_string_list(tags))
-            prios = []
-            for row in rows(prio_result):
-                rid = row[0]
-                prios.append({
-                    "id": rid, "priority_name": row[2],
-                    "details": details_by_prio.get(rid, []),
-                    "statuses": statuses_by_prio.get(rid, []),
-                    "tags": tags_by_prio.get(rid, []),
-                })
-            project["priorities"] = prios
-    except Exception:  # noqa: BLE001
-        pass
-
-    return project
 
 
 @app.get("/api/projects")
@@ -554,7 +467,8 @@ def list_projects(sp_id: str):
     """Return projects scoped to the authenticated provider.
 
     Optionally filtered by character (read-only) and project_status.
-    Uses lightweight enrichment (single batched pipeline call).
+    Each project row is enriched with its linked client name
+    (client_details via the project_id link) and site place (project_site).
     """
     allowed_ids = get_provider_project_ids(sp_id)
     if not allowed_ids:
@@ -598,7 +512,7 @@ def list_projects(sp_id: str):
     except Exception as error:  # noqa: BLE001
         return jsonify({"status": "error", "message": str(error)}), 503
 
-    projects = _enrich_list_projects(raw_projects, [p["id"] for p in raw_projects])
+    projects = _enrich_and_filter_projects(raw_projects, allowed_ids)
     return jsonify({"status": "ok", "projects": projects})
 
 
@@ -610,54 +524,64 @@ def get_project(project_id: int, sp_id: str):
     if err:
         return err
     try:
-        result = pipeline(
-            [
-                "SELECT p.id, p.project_name, p.project_type, p.building_type, "
-                "p.project_character, p.new_construction_or_renovation, "
-                "p.purpose_of_project, p.brief_description, p.cover_image_url, "
-                "p.sq_area, p.client_expected_timeline, p.over_view, p.provider_id, "
-                "p.created_at, p.updated_at, p.project_status, "
-                "cd.client_name, ps.place, ps.site_img_url, "
-                "pb.estimated_overall_budget, ed.view "
-                "FROM projects p "
-                "LEFT JOIN client_details cd ON cd.project_id = p.id "
-                "LEFT JOIN project_site ps ON ps.project_id = p.id "
-                "LEFT JOIN project_budget pb ON pb.project_id = p.id "
-                "LEFT JOIN enquiry_details ed ON ed.project_id = p.id "
-                "WHERE p.id = ?",
-            ],
-            [[project_id]],
-        )[0]
+        sql = (
+            "SELECT p.id, p.project_name, p.project_type, p.building_type, "
+            "p.project_character, p.new_construction_or_renovation, "
+            "p.purpose_of_project, p.brief_description, p.cover_image_url, "
+            "p.sq_area, p.client_expected_timeline, p.over_view, p.provider_id, "
+            "p.created_at, p.updated_at, p.project_status, "
+            "cd.client_name, ps.place, ps.site_img_url, "
+            "pb.estimated_overall_budget, ed.view "
+            "FROM projects p "
+            "LEFT JOIN client_details cd ON cd.project_id = p.id "
+            "LEFT JOIN project_site ps ON ps.project_id = p.id "
+            "LEFT JOIN project_budget pb ON pb.project_id = p.id "
+            "LEFT JOIN enquiry_details ed ON ed.project_id = p.id "
+            "WHERE p.id = ?"
+        )
+        result = pipeline([sql], [[project_id]])[0]
         column_names = [col["name"] for col in result.get("cols", [])]
-        row_data = rows(result)
-        if not row_data:
+        raw_projects = [
+            {column_names[i]: row[i] for i in range(len(column_names))}
+            for row in rows(result)
+        ]
+        if not raw_projects:
             return jsonify({"status": "error", "message": "Project not found"}), 404
-        project = {column_names[i]: row_data[0][i] for i in range(len(column_names))}
     except Exception as error:  # noqa: BLE001
         return jsonify({"status": "error", "message": str(error)}), 503
 
-    # Lightweight list enrichment first
-    projects = _enrich_list_projects([project], [project_id])
-    if projects:
-        project = _enrich_detail_project(projects[0])
-    return jsonify({"status": "ok", "project": project})
+    projects = _enrich_and_filter_projects(raw_projects, [project_id])
+    return jsonify({"status": "ok", "project": projects[0]})
+
+
+def _ensure_project_owned(project_id: int, sp_id: str):
+    """Return None if the provider owns the project, otherwise return a
+    Flask (response, status) tuple for the caller to return."""
+    allowed = get_provider_project_ids(sp_id)
+    if project_id not in allowed:
+        return jsonify(
+            {"status": "error", "message": "Project not found or access denied"}
+        ), 403
+    return None
 
 
 @app.post("/api/projects/<int:project_id>/view")
 @require_provider
 def mark_project_viewed(project_id: int, sp_id: str):
-    """Mark a project as viewed (idempotent)."""
     err = _ensure_project_owned(project_id, sp_id)
     if err:
         return err
     try:
-        pipeline(
+        result = pipeline(
             [
-                "UPDATE projects SET view = COALESCE(view, 0) + 1, updated_at = strftime('%s','now') WHERE id = ?"
+                "UPDATE enquiry_details SET view = 1, "
+                "updated_at = strftime('%s','now') WHERE project_id = ?"
             ],
             [[project_id]],
-        )
-        return jsonify({"status": "ok", "project_id": project_id})
+        )[0]
+        if (result.get("affected_row_count") or 0) == 0:
+            return jsonify({"status": "error", "message": "Enquiry not found"}), 404
+        return jsonify({"status": "ok", "project_id": project_id, "view": 1})
     except Exception as error:  # noqa: BLE001
         return jsonify({"status": "error", "message": str(error)}), 503
 
@@ -867,6 +791,7 @@ def convert_project(project_id: int, sp_id: str):
 def create_proposal(project_id: int, sp_id: str):
     """Create or update a proposal for a project.
 
+    Body: { total_amount, rate_notes, timeline_notes, scope_summary }
     Status defaults to 'draft'. On first creation the proposal is saved as draft.
     """
     err = _ensure_project_owned(project_id, sp_id)
@@ -874,9 +799,9 @@ def create_proposal(project_id: int, sp_id: str):
         return err
     data = request.get_json(silent=True) or {}
     total_amount = data.get("total_amount")
-    rate_notes = str(data.get("rate_notes", "")).strip()
-    timeline_notes = str(data.get("timeline_notes", "")).strip()
-    scope_summary = str(data.get("scope_summary", "")).strip()
+    rate_notes = data.get("rate_notes", "")
+    timeline_notes = data.get("timeline_notes", "")
+    scope_summary = data.get("scope_summary", "")
 
     try:
         # Check if a draft proposal already exists for this project + provider
@@ -896,7 +821,7 @@ def create_proposal(project_id: int, sp_id: str):
                 [[total_amount, rate_notes, timeline_notes, scope_summary, prop_id]],
             )
             return jsonify({"status": "ok", "proposal_id": prop_id, "action": "updated"})
-
+        # Insert new draft
         result = pipeline(
             [
                 "INSERT INTO project_proposals (project_id, provider_id, status, total_amount, rate_notes, timeline_notes, scope_summary) "
@@ -904,7 +829,7 @@ def create_proposal(project_id: int, sp_id: str):
             ],
             [[project_id, sp_id, total_amount, rate_notes, timeline_notes, scope_summary]],
         )[0]
-        prop_id = result.get("last_insert_rowid")
+        prop_id = result.get("last_insert_rowid") or 0
         return jsonify({"status": "ok", "proposal_id": prop_id, "action": "created"})
     except Exception as error:  # noqa: BLE001
         return jsonify({"status": "error", "message": str(error)}), 503
@@ -913,7 +838,10 @@ def create_proposal(project_id: int, sp_id: str):
 @app.post("/api/projects/<int:project_id>/proposal/send")
 @require_provider
 def send_proposal(project_id: int, sp_id: str):
-    """Send a draft proposal to the client. Updates status to 'sent' and records sent_at."""
+    """Send a draft proposal to the client. Updates status to 'sent' and records sent_at.
+
+    Also inserts a system message for tracking.
+    """
     err = _ensure_project_owned(project_id, sp_id)
     if err:
         return err
@@ -1010,7 +938,7 @@ def respond_to_proposal(project_id: int):
                     "INSERT INTO project_messages (project_id, sender_type, sender_id, message_type, content) "
                     "VALUES (?, 'client', 'client', 'rejection', ?)"
                 ],
-                [[project_id, reason or "Proposal rejected by client"]],
+                [[project_id, f"Proposal rejected: {reason}"]],
             )
             return jsonify({
                 "status": "ok",
@@ -1023,5 +951,184 @@ def respond_to_proposal(project_id: int):
         return jsonify({"status": "error", "message": str(error)}), 503
 
 
+# ─── Sub-provider Discovery & Assignment ───────────────────────────────────
+
+@app.get("/api/providers/nearby")
+@require_provider
+def list_nearby_providers(sp_id: str):
+    """List other service providers filtered by location.
+
+    Query params: location (partial match on project_providers.location)
+    Returns: list of providers with their SP_ids, location, and specialization.
+    """
+    location = request.args.get("location", type=str) or ""
+    try:
+        # Get the current provider's location for reference
+        my_loc = pipeline(
+            ["SELECT location FROM service_provider_details WHERE SP_id = ?"],
+            [[sp_id]],
+        )[0]
+        my_loc_rows = rows(my_loc)
+        current_location = my_loc_rows[0][0] if my_loc_rows else ""
+
+        # Find other providers, optionally filtered by location
+        if location:
+            where_clause = "sp.SP_id != ? AND (sp.location LIKE ? OR pp.location LIKE ?)"
+            params = [sp_id, f"%{location}%", f"%{location}%"]
+        else:
+            where_clause = "sp.SP_id != ? AND (sp.location = ? OR pp.location = ?)"
+            params = [sp_id, current_location, current_location]
+
+        sql = (
+            f"SELECT DISTINCT sp.SP_id, sp.name, sp.specialization, sp.company_name, "
+            f"sp.location, sp.phone, sp.email "
+            f"FROM service_provider_details sp "
+            f"LEFT JOIN project_providers pp ON pp.provider_id = sp.SP_id "
+            f"WHERE {where_clause}"
+        )
+        result = pipeline([sql], [params])[0]
+        providers = []
+        for row in rows(result):
+            providers.append({
+                "sp_id": row[0],
+                "name": row[1],
+                "specialization": row[2],
+                "company_name": row[3],
+                "location": row[4],
+                "phone": row[5],
+                "email": row[6],
+            })
+        return jsonify({"status": "ok", "providers": providers, "current_location": current_location})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
+@app.post("/api/projects/<int:project_id>/team")
+@require_provider
+def assign_team_member(project_id: int, sp_id: str):
+    """Assign a sub-provider (team member) to a project.
+
+    Body: { provider_id: string, role: string, notes: string }
+    """
+    err = _ensure_project_owned(project_id, sp_id)
+    if err:
+        return err
+    data = request.get_json(silent=True) or {}
+    assignee_id = data.get("provider_id")
+    role = data.get("role", "subcontractor")
+    notes = data.get("notes", "")
+
+    if not assignee_id:
+        return jsonify({"status": "error", "message": "provider_id is required"}), 400
+
+    try:
+        # Insert team member assignment
+        pipeline(
+            [
+                "INSERT INTO project_team_members (project_id, provider_id, assigned_by, role, status, notes) "
+                "VALUES (?, ?, ?, ?, 'pending', ?)"
+            ],
+            [[project_id, assignee_id, sp_id, role, notes]],
+        )
+        # Record system message
+        pipeline(
+            [
+                "INSERT INTO project_messages (project_id, sender_type, sender_id, message_type, content) "
+                "VALUES (?, 'system', ?, 'general', ?)"
+            ],
+            [[project_id, sp_id, f"Provider {assignee_id} assigned as {role}"]],
+        )
+        return jsonify({"status": "ok", "project_id": project_id, "assigned_provider": assignee_id, "role": role})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
+@app.post("/api/projects/<int:project_id>/team/<provider_id>/activate")
+@require_provider
+def activate_team_member(project_id: int, sp_id: str, provider_id: str):
+    """Mark a team member as active (they accepted or started work)."""
+    err = _ensure_project_owned(project_id, sp_id)
+    if err:
+        return err
+    try:
+        result = pipeline(
+            [
+                "UPDATE project_team_members SET status = 'active', activated_at = strftime('%s','now') "
+                "WHERE project_id = ? AND provider_id = ?"
+            ],
+            [[project_id, provider_id]],
+        )[0]
+        if (result.get("affected_row_count") or 0) == 0:
+            return jsonify({"status": "error", "message": "Team member not found"}), 404
+        return jsonify({"status": "ok", "project_id": project_id, "provider_id": provider_id, "status": "active"})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
+@app.post("/api/projects/<int:project_id>/team/<provider_id>/remove")
+@require_provider
+def remove_team_member(project_id: int, sp_id: str, provider_id: str):
+    """Remove a team member from a project."""
+    err = _ensure_project_owned(project_id, sp_id)
+    if err:
+        return err
+    try:
+        pipeline(
+            [
+                "UPDATE project_team_members SET status = 'removed' WHERE project_id = ? AND provider_id = ?"
+            ],
+            [[project_id, provider_id]],
+        )
+        return jsonify({"status": "ok", "project_id": project_id, "provider_id": provider_id})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
+@app.post("/api/projects/<int:project_id>/message")
+@require_provider
+def send_project_message(project_id: int, sp_id: str):
+    """Send a message on a project thread (provider to client or team)."""
+    err = _ensure_project_owned(project_id, sp_id)
+    if err:
+        return err
+    data = request.get_json(silent=True) or {}
+    content = data.get("content", "").strip()
+    message_type = data.get("message_type", "general")
+    if not content:
+        return jsonify({"status": "error", "message": "content is required"}), 400
+    try:
+        result = pipeline(
+            [
+                "INSERT INTO project_messages (project_id, sender_type, sender_id, message_type, content) "
+                "VALUES (?, 'provider', ?, ?, ?)"
+            ],
+            [[project_id, sp_id, message_type, content]],
+        )[0]
+        msg_id = result.get("last_insert_rowid") or 0
+        return jsonify({"status": "ok", "message_id": msg_id, "project_id": project_id})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
+@app.get("/")
+def index():
+    return jsonify(
+        {
+            "service": "kallisto-backend",
+            "endpoints": [
+                "/api/health",
+                "/api/auth/login",
+                "/api/auth/me",
+                "/api/database/schema",
+                "/api/database/tables",
+                "/api/database/query",
+                "/api/projects",
+                "/api/projects/<id>",
+            ],
+        }
+    )
+
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", "8000")), debug=True)
+    port = int(os.getenv("PORT", "8000"))
+    app.run(host="0.0.0.0", port=port, debug=True)

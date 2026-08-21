@@ -30,8 +30,12 @@ function UpdatesDrawerFocusManager({
 }
 
 export function ProjectDetailWorkspace({ projectId }: ProjectDetailWorkspaceProps) {
-  const [project, setProject] = useState<Project | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [project, setProject] = useState<Project | null>(() => {
+    return typeof projectService?.getProjectByIdSync === "function"
+      ? projectService.getProjectByIdSync("ws-default", projectId)
+      : null;
+  });
+  const [loading, setLoading] = useState(!project);
   const [error, setError] = useState(false);
   const [updatesOpen, setUpdatesOpen] = useState(false);
   const updatesPanelRef = useRef<HTMLDivElement>(null);
@@ -47,11 +51,21 @@ export function ProjectDetailWorkspace({ projectId }: ProjectDetailWorkspaceProp
   }, [updatesMode]);
 
   useEffect(() => {
+    let active = true;
     async function loadData() {
+      if (typeof projectService?.getProjectByIdSync === "function") {
+        const cached = projectService.getProjectByIdSync("ws-default", projectId);
+        if (cached) {
+          setProject(cached);
+          setLoading(false);
+          return;
+        }
+      }
       setLoading(true);
       setError(false);
       try {
         const p = await projectService.getProjectById("ws-default", projectId);
+        if (!active) return;
         if (!p) {
           setError(true);
           return;
@@ -59,12 +73,15 @@ export function ProjectDetailWorkspace({ projectId }: ProjectDetailWorkspaceProp
         setProject(p);
       } catch (err) {
         console.error(err);
-        setError(true);
+        if (active) setError(true);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     }
     loadData();
+    return () => {
+      active = false;
+    };
   }, [projectId]);
 
   if (loading) {
@@ -100,14 +117,7 @@ export function ProjectDetailWorkspace({ projectId }: ProjectDetailWorkspaceProp
     <RoutePageContainer
       className="project-dashboard-page"
       title={project.name || "Nila Residence"}
-      titleRowContent={
-        <ProjectDashboardHeaderActions
-          updatesMode={updatesMode}
-          updatesOpen={updatesOpen}
-          updatesTriggerRef={updatesTriggerRef}
-          onOpenUpdates={() => setUpdatesOpen(true)}
-        />
-      }
+      showHeading={false}
     >
       <ProjectOverviewCard
         dashboardRef={dashboardRef}
@@ -116,14 +126,16 @@ export function ProjectDetailWorkspace({ projectId }: ProjectDetailWorkspaceProp
         updatesPanelRef={updatesPanelRef}
         updatesWidth={updatesWidth}
         onUpdatesClose={() => setUpdatesOpen(false)}
+        updatesTriggerRef={updatesTriggerRef}
+        onOpenUpdates={() => setUpdatesOpen(true)}
         projectName={project.name}
         description={project.description}
         statValues={{
-          startDate: "12 Aug 2026",
-          duration: "26 Weeks",
-          builtUpArea: "3,250 sq ft",
-          budget: project.budget && project.budget !== "₹ 12,0000" ? project.budget : "₹1.85 Cr",
-          client: "Arjun Nair",
+          projectType: "Residential Design",
+          duration: "Within 6 Months",
+          builtUpArea: "2,800 – 3,200 sq ft",
+          budget: project.budget && project.budget !== "₹ 12,0000" ? project.budget : "₹40L – ₹60L",
+          client: "Ananya Builders",
         }}
       />
       {updatesMode === "drawer" && updatesOpen ? (

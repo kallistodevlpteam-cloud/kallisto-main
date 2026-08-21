@@ -93,10 +93,12 @@ export function ActiveProjectCard({ project }: ActiveProjectCardProps) {
   const href =
     project.destination.availability === "available"
       ? project.destination.route
-      : "/projects";
+      : `/projects/${project.id}`;
 
   // Image source with fallback
   const imageUrl = project.thumbnailUrl || "/assets/projects/oak-house.png";
+
+  const nextActionContent = project.currentActivity;
 
   return (
     <Link
@@ -104,8 +106,20 @@ export function ActiveProjectCard({ project }: ActiveProjectCardProps) {
       className={styles.projectCardWrapper}
       aria-label={`${project.name}, ${city}. Phase: ${phase}, Health: ${healthInfo.label}, ${clampedPercentage}% complete`}
     >
-      {/* Background Image Frame */}
-      <div className={styles.projectCardImageFrame}>
+      {/* ── Media Section with Photo & Overlays ── */}
+      <div className={styles.projectCardMediaContainer}>
+        {/* Dark Bottom Gradient behind Status Badges */}
+        <div className={styles.projectCardMediaGradient} />
+
+        {/* Bottom Badges Overlay inside Photo Frame */}
+        <div className={styles.projectCardMediaBottomRow}>
+          {phase && <span className={styles.projectPhaseChip}>{phase}</span>}
+          <span className={`${styles.projectHealthChip} ${healthInfo.chipClass}`}>
+            {healthInfo.label}
+          </span>
+        </div>
+
+        {/* Media Photo */}
         <img
           src={imageUrl}
           alt={`${project.name} preview`}
@@ -114,39 +128,36 @@ export function ActiveProjectCard({ project }: ActiveProjectCardProps) {
         />
       </div>
 
-      {/* Restrained Gradient Overlay */}
-      <div className={styles.projectCardGradientOverlay} />
-
-      {/* Top Status Chips */}
-      <div className={styles.projectCardTopChipsRow}>
-        <span className={styles.projectPhaseChip}>{phase}</span>
-        <span className={`${styles.projectHealthChip} ${healthInfo.chipClass}`}>
-          {healthInfo.label}
-        </span>
-      </div>
-
-      {/* Bottom Area (Default Info + Hover Overlay) */}
-      <div className={styles.projectCardBottomArea}>
-        {/* Default Persistent Title & City Row */}
-        <div className={styles.projectCardDefaultRow}>
-          <div className={styles.projectCardTitleCol}>
-            <h3 className={styles.projectCardTitle}>{project.name}</h3>
-            <span className={styles.projectCardCity}>{city}</span>
-          </div>
+      {/* ── Information Section Below Media ── */}
+      <div className={styles.projectCardInfoSection}>
+        {/* Row 1: Title (left) & Percentage (right) */}
+        <div className={styles.projectCardTitleRow}>
+          <h3 className={styles.projectCardTitle} title={project.name}>
+            {project.name}
+          </h3>
           <span className={styles.projectCardPercentNum}>{clampedPercentage}%</span>
         </div>
 
-        {/* Upward Sliding Operational Overlay */}
-        {project.currentActivity && (
-          <div className={styles.projectCardHoverContent}>
-            <div className={styles.hoverRowItem}>
-              <span className={styles.hoverLabelMicro}>Current activity</span>
-              <p className={styles.hoverValueText}>{project.currentActivity}</p>
-            </div>
+        {/* Row 2: Location / City */}
+        <div className={styles.projectCardLocationRow}>
+          <span className={styles.projectCardCity}>{city}</span>
+        </div>
+
+        {/* Divider */}
+        <div className={styles.projectCardDivider} />
+
+        {/* Row 3: Next Action / Current Activity */}
+        {nextActionContent && (
+          <div className={styles.projectCardNextActionRow}>
+            <span className={styles.projectCardNextActionText}>
+              <span className={styles.projectCardNextActionLabel}>Next :</span>
+              <span className={styles.projectCardNextActionVal} title={nextActionContent}>
+                {nextActionContent}
+              </span>
+            </span>
           </div>
         )}
       </div>
     </Link>
   );
 }
-

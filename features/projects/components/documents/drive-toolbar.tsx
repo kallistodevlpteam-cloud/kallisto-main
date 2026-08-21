@@ -3,14 +3,17 @@
 import {
   Check,
   ChevronDown,
-  LayoutGrid,
-  List,
   PanelLeft,
   SlidersHorizontal,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import {
+  ListViewDuotoneIcon,
+  GridViewDuotoneIcon,
+  SortDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import { formatRelativeTime } from "@/lib/utils/format-relative-time";
 import {
   DriveModifiedRange,
@@ -25,7 +28,7 @@ interface FilterOption {
   label: string;
 }
 
-type FilterMenuId = "type" | "people" | "modified" | "source";
+type FilterMenuId = "type" | "people" | "modified" | "source" | "sort";
 
 function toggleValue(values: string[], value: string): string[] {
   return values.includes(value)
@@ -169,6 +172,70 @@ const sortOptions: Array<{ value: DriveSort; label: string }> = [
   { value: "size-asc", label: "Smallest size" },
 ];
 
+interface SortFilterProps {
+  value: DriveSort;
+  isOpen: boolean;
+  onChange: (value: DriveSort) => void;
+  onOpenChange: (open: boolean) => void;
+}
+
+function SortFilter({ value, isOpen, onChange, onOpenChange }: SortFilterProps) {
+  const currentOption =
+    sortOptions.find((opt) => opt.value === value) ?? sortOptions[0];
+
+  return (
+    <details
+      className={styles.filterMenu}
+      data-filter-id="sort"
+      open={isOpen}
+      onKeyDown={(event) => {
+        if (event.key !== "Escape" || !isOpen) return;
+        event.preventDefault();
+        onOpenChange(false);
+        event.currentTarget.querySelector("summary")?.focus();
+      }}
+    >
+      <summary
+        className={styles.sortTrigger}
+        aria-expanded={isOpen}
+        onClick={(event) => {
+          event.preventDefault();
+          onOpenChange(!isOpen);
+        }}
+      >
+        <SortDuotoneIcon size={16} aria-hidden="true" />
+        <span>{currentOption.label}</span>
+        <ChevronDown size={14} strokeWidth={1.75} aria-hidden="true" />
+      </summary>
+      <div
+        className={`${styles.filterPopover} ${styles.sortPopover}`}
+        role="radiogroup"
+        aria-label="Sort documents"
+      >
+        {sortOptions.map((option) => {
+          const checked = option.value === value;
+          return (
+            <label key={option.value} className={styles.filterOption}>
+              <input
+                type="radio"
+                name="drive-sort-filter"
+                value={option.value}
+                checked={checked}
+                onChange={() => {
+                  onChange(option.value);
+                  onOpenChange(false);
+                }}
+              />
+              <span className={styles.filterRadio} aria-hidden="true" />
+              <span>{option.label}</span>
+            </label>
+          );
+        })}
+      </div>
+    </details>
+  );
+}
+
 interface DriveToolbarProps {
   folderTitle: string;
   fileCount: number;
@@ -248,7 +315,7 @@ export function DriveToolbar({
             className={viewMode === "list" ? styles.viewBtnActive : styles.viewBtn}
             onClick={() => onViewChange("list")}
           >
-            <List size={18} strokeWidth={1.75} aria-hidden="true" />
+            <ListViewDuotoneIcon size={18} aria-hidden="true" />
           </button>
           <button
             type="button"
@@ -257,7 +324,7 @@ export function DriveToolbar({
             className={viewMode === "grid" ? styles.viewBtnActive : styles.viewBtn}
             onClick={() => onViewChange("grid")}
           >
-            <LayoutGrid size={18} strokeWidth={1.75} aria-hidden="true" />
+            <GridViewDuotoneIcon size={18} aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -321,20 +388,12 @@ export function DriveToolbar({
           ) : null}
         </div>
         <div className={styles.toolbarDisplayControls}>
-          <label className={styles.sortControl}>
-            <SlidersHorizontal size={16} strokeWidth={1.75} aria-hidden="true" />
-            <select
-              aria-label="Sort documents"
-              value={sort}
-              onChange={(event) => onSortChange(event.target.value as DriveSort)}
-            >
-              {sortOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <SortFilter
+            value={sort}
+            isOpen={openFilter === "sort"}
+            onChange={(nextSort) => onSortChange(nextSort)}
+            onOpenChange={(open) => setOpenFilter(open ? "sort" : null)}
+          />
         </div>
       </div>
     </div>

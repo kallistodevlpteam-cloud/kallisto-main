@@ -3,7 +3,7 @@ import { HomeWorkspace } from "@/features/home";
 
 export default function HomePage() {
   return (
-    <AppShell>
+    <AppShell layoutProfile="project-dashboard">
       <HomeWorkspace />
     </AppShell>
   );

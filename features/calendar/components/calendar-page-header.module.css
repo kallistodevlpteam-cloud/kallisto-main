@@ -54,10 +54,10 @@
   align-items: center;
   gap: 8px;
   height: 36px;
-  padding: 0 12px;
+  padding: 0 14px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 9999px;
   transition: all 0.15s ease;
 }
 
@@ -91,16 +91,16 @@
   align-items: center;
   background: #f1f5f9;
   padding: 3px;
-  border-radius: 8px;
+  border-radius: 9999px;
   gap: 2px;
 }
 
 .viewSwitcherBtn {
-  height: 30px;
+  height: 28px;
   padding: 0 14px;
   border: none;
   background: transparent;
-  border-radius: 6px;
+  border-radius: 9999px;
   font-size: 12.5px;
   font-weight: 600;
   color: #64748b;
@@ -118,24 +118,6 @@
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
-.filterIconBtn {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  color: #64748b;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.filterIconBtn:hover {
-  background: #f8fafc;
-  color: #0f172a;
-}
-
 .actionGroup {
   position: relative;
 }
@@ -145,11 +127,11 @@
   align-items: center;
   gap: 6px;
   height: 36px;
-  padding: 0 14px;
+  padding: 0 16px;
   background: #0f172a;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
+  border-radius: 9999px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;

@@ -1,7 +1,12 @@
 "use client";
 
 import React from "react";
-import { AlertCircle, Compass, Hammer, RotateCw } from "lucide-react";
+import {
+  BuildDuotoneIcon,
+  ExploreDuotoneIcon,
+  ResolveDuotoneIcon,
+  ReviewDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import { StudioIntent } from "../types/studio-source";
 
 export interface StudioIntentGridProps {
@@ -10,10 +15,10 @@ export interface StudioIntentGridProps {
 }
 
 const INTENT_ICONS: Record<StudioIntent, React.ElementType> = {
-  create: Compass,
-  analyse: Hammer,
-  review: RotateCw,
-  resolve: AlertCircle,
+  create: ExploreDuotoneIcon,
+  analyse: BuildDuotoneIcon,
+  review: ReviewDuotoneIcon,
+  resolve: ResolveDuotoneIcon,
 };
 
 const INTENT_ACCENTS: Record<StudioIntent, { color: string }> = {
@@ -89,7 +94,7 @@ export function StudioIntentGrid({
             }}
           >
             <div style={{ color: accents.color }}>
-              <IconComp size={15} strokeWidth={1.8} />
+              <IconComp size={16} />
             </div>
 
             <h3

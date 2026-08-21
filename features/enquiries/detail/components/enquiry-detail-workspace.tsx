@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -40,6 +40,13 @@ import {
   Copy,
   X,
 } from "lucide-react";
+import {
+  MapPinDuotoneIcon,
+  DocumentsDuotoneIcon,
+  CalendarDuotoneIcon,
+  BuildingDuotoneIcon,
+  ClockDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 
 import { RoutePageContainer } from "@/components/ui/route-page-container";
 import {
@@ -67,6 +74,7 @@ import { EnquirySiteImagesCard } from "./enquiry-site-images-card";
 import { EnquiryProjectDocumentsSection } from "./enquiry-project-documents-section";
 import { EnquiryClarificationComposer } from "./enquiry-clarification-composer";
 import { EnquiryDetailTabs, EnquiryTabKey, resolveValidTabKey } from "./enquiry-detail-tabs";
+import { DocumentsTitleRowActions } from "@/features/documents/components/documents-title-row-actions";
 import { OdinInsightsPanel } from "./odin-insights-panel";
 import { deriveContextualOdinInsights } from "@/features/enquiries/services/enquiry-intelligence";
 import { authedFetch } from "@/lib/auth/authed-fetch";
@@ -627,7 +635,7 @@ export function EnquiryDetailWorkspace({
     ? (backendRequirementGroups.find((group) => group.id === resolvedActiveDomainKey) ?? null)
     : null;
   const activeBackendRows = activeBackendGroup
-    ? backendRequirementRows.filter((row) => row.domain === activeBackendGroup.id)
+    ? backendRequirementRows.filter((row) => (row.domain as string) === activeBackendGroup.id)
     : [];
 
   const rawDomain = searchParams.get("domain");
@@ -663,7 +671,7 @@ export function EnquiryDetailWorkspace({
   useEffect(() => {
     let cancelled = false;
     authedFetch("/api/projects?character=enq", { cache: "no-store" })
-      .then(async (response) => {
+      .then(async (response: Response) => {
         const payload = (await response.json()) as {
           status: string;
           projects: Array<Record<string, unknown>>;
@@ -680,7 +688,7 @@ export function EnquiryDetailWorkspace({
         );
         return match ?? null;
       })
-      .then((match) => {
+      .then((match: EnquiryRecord | null) => {
         if (cancelled || !match) return;
         setEnquiry(match);
         if (match.stage) setStage(match.stage);
@@ -738,8 +746,8 @@ export function EnquiryDetailWorkspace({
             {/* Top Project Information Header */}
             <div className={styles.headerBlock}>
               <div className={styles.titleRow}>
-                <h1 className={styles.projectTitle}>{header.title}</h1>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <h1 className={styles.projectTitle}>{header.title}</h1>
                   {header.enquiryRef && (
                     <span className={styles.refCode}>{header.enquiryRef}</span>
                   )}
@@ -752,27 +760,30 @@ export function EnquiryDetailWorkspace({
                     <Share2 size={16} strokeWidth={1.8} />
                   </button>
                 </div>
+                <DocumentsTitleRowActions />
               </div>
 
               <div className={styles.subMetaRow}>
                 <div className={styles.subMetaLeft}>
-                  <span className={styles.metaChip}>
-                    <MapPin size={13} />
-                    <span>{header.location}</span>
+                  <span className={styles.metaItem}>
+                    <MapPinDuotoneIcon size={15} className={styles.locationPinIcon} />
+                    <strong className={styles.metaHighlight}>{header.location}</strong>
                   </span>
-                  <span className={styles.metaChip}>
-                    <Calendar size={13} />
+                  <span className={styles.metaDivider}>•</span>
+                  <span className={styles.metaItem}>
+                    <CalendarDuotoneIcon size={14} className={styles.metaIconMuted} />
                     <span>Received {header.receivedDate}</span>
                   </span>
                 </div>
 
-                <div className={styles.chipsMetaRow}>
-                  <span className={styles.typeChip}>
-                    <Building2 size={13} />
+                <div className={styles.subMetaRight}>
+                  <span className={styles.metaItem}>
+                    <BuildingDuotoneIcon size={14} className={styles.metaIconMuted} />
                     <span>{header.projectType}</span>
                   </span>
+                  <span className={styles.metaDivider}>•</span>
                   <span
-                    className={`${styles.stageChip} ${
+                    className={`${styles.stagePillInline} ${
                       stage === "accepted"
                         ? styles.stageAccepted
                         : stage === "clarification"
@@ -820,8 +831,8 @@ export function EnquiryDetailWorkspace({
                   unconfirmedItems={viewModel.unconfirmedScope}
                 />
                 <EnquirySiteImagesCard
-                  title="CLIENT INSPIRATION IMAGES"
-                  images={enquiry.inspirationImages?.map((img, idx) => ({
+                  title="Client Inspiration Images"
+                  images={enquiry.inspirationImages?.map((img: { url: string; alt?: string | null }, idx: number) => ({
                     id: `inspiration-${idx}`,
                     src: img.url,
                     alt: img.alt || `Inspiration image ${idx + 1}`,
@@ -862,11 +873,8 @@ export function EnquiryDetailWorkspace({
                               onClick={() => handleSelectDomain(group.id)}
                             >
                               <div className={styles.reqDomainNavLabelRow}>
-                                <span
-                                  className={styles.reqDomainNavIconBadge}
-                                  style={{ color: "#2563eb" }}
-                                >
-                                  <FileText size={13} strokeWidth={2.2} />
+                                <span className={styles.reqDomainNavIconBadge}>
+                                  <DocumentsDuotoneIcon size={15} />
                                 </span>
                                 <span className={styles.reqDomainNavLabel}>{group.requirement_name}</span>
                               </div>
@@ -899,10 +907,7 @@ export function EnquiryDetailWorkspace({
                           onClick={() => handleSelectDomain(d.key)}
                         >
                           <div className={styles.reqDomainNavLabelRow}>
-                            <span
-                              className={styles.reqDomainNavIconBadge}
-                              style={{ color: d.iconColor }}
-                            >
+                            <span className={styles.reqDomainNavIconBadge}>
                               {d.icon}
                             </span>
                             <span className={styles.reqDomainNavLabel}>{d.shortTitle}</span>
@@ -928,9 +933,8 @@ export function EnquiryDetailWorkspace({
                             <div className={styles.activeDomainHeaderLeft} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                               <span
                                 className={`${styles.reqDomainNavIconBadge} ${styles.reqDomainNavHeaderIconBadge}`}
-                                style={{ color: "#2563eb" }}
                               >
-                                <FileText size={16} strokeWidth={2.2} />
+                                <DocumentsDuotoneIcon size={18} />
                               </span>
                               <div>
                                 <h3 className={styles.activeDomainTitle}>{activeBackendGroup.requirement_name}</h3>
@@ -942,6 +946,7 @@ export function EnquiryDetailWorkspace({
                             </div>
                             <div className={styles.activeDomainHeaderRight}>
                               <span className={styles.activeDomainCompletenessPill}>
+                                <span className={styles.completenessDot} />
                                 {activeBackendGroup.items.length}/{activeBackendGroup.items.length} clear
                               </span>
                             </div>
@@ -1146,21 +1151,18 @@ export function EnquiryDetailWorkspace({
             {/* —— TAB 3: SITE & EVIDENCE ———————————————————————————————————————————— */}
             {activeTab === "evidence" && (
               <div className={styles.tabSectionGroup}>
-                <div className={styles.sectionCard}>
-                  <h3 className={styles.cardHeading}>SITE IMAGES & EVIDENCE</h3>
-                  <EnquirySiteImagesCard
-                    title="All Site Images"
-                    images={enquiry.siteImages?.map((url, idx) => ({
-                      id: `site-${idx}`,
-                      src: url,
-                      alt: deriveSiteImageAlt(url, idx),
-                    }))}
-                    totalCount={enquiry.siteImages?.length ?? 0}
-                  />
-                </div>
-                <div className={styles.sectionCard} id="enquiry-files">
-                  <h3 className={styles.cardHeading}>PROJECT DOCUMENTS</h3>
+                <EnquirySiteImagesCard
+                  title="Site Images & Evidence"
+                  images={enquiry.siteImages?.map((url, idx) => ({
+                    id: `site-${idx}`,
+                    src: url,
+                    alt: deriveSiteImageAlt(url, idx),
+                  }))}
+                  totalCount={enquiry.siteImages?.length ?? 0}
+                />
+                <div id="enquiry-files" style={{ width: "100%" }}>
                   <EnquiryProjectDocumentsSection
+                    title="Project Documents"
                     documents={enquiry.projectDocuments?.map((doc) => ({
                       id: String(doc.id),
                       name: doc.name,
@@ -1247,8 +1249,8 @@ export function EnquiryDetailWorkspace({
 
                 {/* —— CLIENT INSPIRATION IMAGES —— */}
                 <EnquirySiteImagesCard
-                  title="CLIENT INSPIRATION IMAGES"
-                  images={enquiry.inspirationImages?.map((img, idx) => ({
+                  title="Client Inspiration Images"
+                  images={enquiry.inspirationImages?.map((img: { url: string; alt?: string | null }, idx: number) => ({
                     id: `inspiration-${idx}`,
                     src: img.url,
                     alt: img.alt || `Inspiration image ${idx + 1}`,
@@ -1260,38 +1262,70 @@ export function EnquiryDetailWorkspace({
 
             {/* —— TAB 6: ACTIVITY ——————————————————————————————————————————————————— */}
             {activeTab === "activity" && (
-              <div className={styles.tabSectionGroup}>
-                <div className={styles.sectionCard}>
-                  <h3 className={styles.cardHeading}>ACTIVITY TIMELINE</h3>
-                  <div className={styles.activityTimeline}>
-                    <div className={styles.activityItem}>
-                      <div className={styles.activityIcon}>
-                        <Clock size={14} />
+              <div className={styles.activitySection}>
+                <div className={styles.activityHeaderRow}>
+                  <div className={styles.activityTitleGroup}>
+                    <span className={styles.activityHeaderIcon}>
+                      <ClockDuotoneIcon size={16} />
+                    </span>
+                    <h3 className={styles.activityTitle}>Activity Timeline</h3>
+                  </div>
+                  <span className={styles.countBadge}>
+                    {1 + (stage === "clarification" || stage === "accepted" ? 1 : 0)} events
+                  </span>
+                </div>
+
+                <div className={styles.activityCard}>
+                  <div className={styles.timelineTrack}>
+                    <div className={styles.timelineNode}>
+                      <div className={`${styles.timelineNodeIconBox} ${styles.timelineNodeSuccess}`}>
+                        <CheckCircle2 size={16} />
                       </div>
-                      <div className={styles.activityText}>
-                        <strong>Enquiry Received</strong>
-                        <span>Received via {header.source} on {header.receivedDate}</span>
+                      <div className={styles.timelineNodeContent}>
+                        <div className={styles.timelineNodeHeader}>
+                          <strong className={styles.timelineNodeTitle}>Enquiry Received</strong>
+                          <span className={styles.timelineNodeTimestamp}>
+                            {header.receivedDate && header.receivedDate !== "Recently"
+                              ? header.receivedDate
+                              : "Recently"}
+                          </span>
+                        </div>
+                        <p className={styles.timelineNodeDesc}>
+                          New enquiry submitted via {header.source || "portal"} and logged into Kallisto pipeline.
+                        </p>
                       </div>
                     </div>
+
                     {stage === "clarification" && (
-                      <div className={styles.activityItem}>
-                        <div className={styles.activityIcon}>
-                          <HelpCircle size={14} />
+                      <div className={styles.timelineNode}>
+                        <div className={`${styles.timelineNodeIconBox} ${styles.timelineNodeWarning}`}>
+                          <HelpCircle size={16} />
                         </div>
-                        <div className={styles.activityText}>
-                          <strong>Clarification Requested</strong>
-                          <span>Clarification request sent to client today</span>
+                        <div className={styles.timelineNodeContent}>
+                          <div className={styles.timelineNodeHeader}>
+                            <strong className={styles.timelineNodeTitle}>Clarification Requested</strong>
+                            <span className={styles.timelineNodeTimestamp}>Today</span>
+                          </div>
+                          <p className={styles.timelineNodeDesc}>
+                            Clarification queries shared with client regarding project scope.
+                          </p>
                         </div>
                       </div>
                     )}
+
                     {stage === "accepted" && (
-                      <div className={styles.activityItem}>
-                        <div className={styles.activityIcon}>
-                          <FileCheck2 size={14} />
+                      <div className={styles.timelineNode}>
+                        <div className={`${styles.timelineNodeIconBox} ${styles.timelineNodePrimary}`}>
+                          <FileCheck2 size={16} />
                         </div>
-                        <div className={styles.activityText}>
-                          <strong>Enquiry Accepted</strong>
-                          <span>Moved to accepted stage for proposal preparation</span>
+                        <div className={styles.timelineNodeContent}>
+                          <div className={styles.timelineNodeHeader}>
+                            <strong className={styles.timelineNodeTitle}>Enquiry Accepted</strong>
+                            <span className={styles.timelineNodeTimestamp}>Today</span>
+                          </div>
+                          <p className={styles.timelineNodeDesc}>
+                            Enquiry accepted by service provider; proposal preparation underway.
+                          </p>
                         </div>
                       </div>
                     )}
@@ -1478,7 +1512,7 @@ export function EnquiryActionsCard({
                   return;
                 }
                 authedFetch(`/api/projects/${projectId}/convert`, { method: "POST", cache: "no-store" })
-                  .then((r) => r.json())
+                  .then((r: Response) => r.json())
                   .then((payload: { status: string; converted?: boolean; message?: string }) => {
                     if (payload.status === "ok" && payload.converted) {
                       alert("Project converted successfully! Navigating to Projects...");

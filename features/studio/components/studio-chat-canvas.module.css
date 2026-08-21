@@ -89,7 +89,7 @@
 .userBubbleContent {
   max-width: 380px;
   width: fit-content;
-  background: #f3f4f6;
+  background: #f7f7f5;
   border: none;
   border-radius: 18px;
   padding: 10px 18px;
@@ -546,6 +546,25 @@
   width: min(100%, 720px);
 }
 
+.messageTurnWrap {
+  width: 100%;
+  transition: background-color 0.3s ease, border-radius 0.3s ease;
+}
+
+.messageHighlighted {
+  animation: messagePulseHighlight 1.2s ease-out;
+}
+
+@keyframes messagePulseHighlight {
+  0% {
+    background-color: rgba(241, 245, 249, 0.95);
+    border-radius: 12px;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
 /* ── StudioEdgeOverlay (Unpadded Edge Overlay Layer over Studio Workspace) ── */
 .studioEdgeOverlay {
   position: absolute;
@@ -598,7 +617,7 @@
   width: min(100%, 720px);
 }
 
-/* Floating "Jump to latest" control chip */
+/* Floating "Jump to latest" control chip — Elevated Borderless Pill Theme */
 .jumpToLatestBtn {
   position: absolute;
   left: 50%;
@@ -611,23 +630,29 @@
   gap: 6px;
   height: 32px;
   padding: 0 14px;
-  border: 1px solid #cbd5e1;
+  border: none;
   border-radius: 9999px;
   background: #ffffff;
   color: #0f172a;
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: 550;
   cursor: pointer;
-  box-shadow: none;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
   animation: jumpBtnFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  outline: none;
 }
 
 .jumpToLatestBtn:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
   transform: translateX(-50%) translateY(-2px);
-  box-shadow: none;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12), 0 2px 4px rgba(15, 23, 42, 0.06);
+}
+
+.jumpToLatestBtn:active {
+  transform: translateX(-50%) translateY(0);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
 }
 
 @keyframes jumpBtnFadeIn {
@@ -779,5 +804,89 @@
     transform: none;
     width: 100%;
     padding: 8px 16px 16px;
+  }
+}
+
+/* ── Assistant Suggestion Action Chips (Native Theme) ── */
+.actionChipsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.actionChipBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  text-align: left;
+}
+
+.actionChipBtn:hover {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.14);
+  color: #0f172a;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
+  transform: translateY(-1px);
+}
+
+.actionChipBtn:active {
+  transform: translateY(0);
+  background: #f1f5f9;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.actionChipSparkle {
+  color: #64748b;
+  flex-shrink: 0;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.actionChipBtn:hover .actionChipSparkle {
+  color: #0f172a;
+  transform: scale(1.08);
+}
+
+@keyframes progressiveCardIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes progressiveChipIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actionChipBtn,
+  .messageTurnWrap,
+  .conversationContentColumn {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
   }
 }

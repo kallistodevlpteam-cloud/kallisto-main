@@ -1,6 +1,7 @@
 import {
   EnquiryRecord,
   EnquiryRequirement,
+  EnquiryRequirementDomain,
   ClientPriority,
 } from "../../types/enquiry.types";
 import {
@@ -60,6 +61,53 @@ export interface BackendRequirementGroup {
   items: string[];
 }
 
+export interface BackendRequirementRowItem {
+  id: string;
+  domain: string;
+  category: string;
+  requirement: string;
+  spaceName?: string;
+  confirmed?: boolean;
+  status?: string;
+  items?: string[];
+  itemDetails?: string[];
+}
+
+export function buildBackendRequirementRows(
+  requirements?: Array<{ id: string; requirement_name: string; items?: string[]; item_details?: string[][] }> | null
+): EnquiryRequirement[] {
+  if (!requirements) return [];
+  const rows: EnquiryRequirement[] = [];
+  for (const group of requirements) {
+    if (!group.items || group.items.length === 0) {
+      rows.push({
+        id: group.id,
+        category: "project",
+        domain: group.id as unknown as EnquiryRequirementDomain,
+        label: group.requirement_name,
+        value: group.requirement_name,
+        state: "confirmed",
+        source: "client",
+        priority: "p1",
+      });
+    } else {
+      group.items.forEach((item, idx) => {
+        rows.push({
+          id: `${group.id}-${idx}`,
+          category: "project",
+          domain: group.id as unknown as EnquiryRequirementDomain,
+          label: item,
+          value: item,
+          state: "confirmed",
+          source: "client",
+          priority: "p1",
+        });
+      });
+    }
+  }
+  return rows;
+}
+
 export interface ClientContextItem {
   id: string;
   category: string;
@@ -106,19 +154,90 @@ export interface ProjectOwner {
 export const DEFAULT_PROJECT_OWNERS: ProjectOwner[] = [
   {
     id: "owner-1",
-    idNumber: "KLS-000000001",
-    name: "Primary Contact",
-    email: "contact@client.com",
-    role: "Primary Owner",
-    avatarInitials: "PC",
+    idNumber: "KLS-756872004",
+    name: "Ananya Sharma",
+    email: "ananyasharma@ananyabuilders.com",
+    role: "Primary Owner & Client Lead",
+    avatarInitials: "AS",
     status: "Active",
-    nextReview: "TBD",
-    tag1: "Decision Maker",
-    tag2: "Client",
-    timeOrOrg: "Client Organization",
-    bio: "Primary decision maker for project approvals.",
-    meta: { expOrAge: "N/A", roleScope: "Owner", location: "N/A", channel: "Portal", status: "Confirmed" },
+    nextReview: "21 Sep 2026 (2 yrs)",
+    tag1: "Primary Decision Maker",
+    tag2: "Ananya Group",
+    timeOrOrg: "Ananya Builders • Primary Lead",
+    bio: "Managing Director & Primary Client Lead. Key decision maker for overall architectural direction, layout approvals, and master contract sign-off.",
+    meta: {
+      expOrAge: "12+ yrs",
+      roleScope: "Managing Director",
+      location: "Kochi, Kerala",
+      channel: "Kallisto Portal",
+      status: "Confirmed",
+    },
+    unreadCount: 3,
     isPrimary: true,
+  },
+  {
+    id: "owner-2",
+    idNumber: "KLS-756872005",
+    name: "David Langston",
+    email: "davidlangston@ananyabuilders.com",
+    role: "Co-Owner & Design Lead",
+    avatarInitials: "DL",
+    status: "Active",
+    nextReview: "15 Oct 2026 (2 yrs)",
+    tag1: "Design Lead",
+    tag2: "Aesthetic Preference",
+    timeOrOrg: "Author • Updated Friday 3:12 PM",
+    bio: "Focuses on interior aesthetic preferences, custom teak joinery selections, lighting scenes, and residential lifestyle requirements.",
+    meta: {
+      expOrAge: "8+ yrs",
+      roleScope: "Interior Lead",
+      location: "Bengaluru, KA",
+      channel: "WhatsApp / Email",
+      status: "Confirmed",
+    },
+  },
+  {
+    id: "owner-3",
+    idNumber: "KLS-756872006",
+    name: "Siddharth Kumar",
+    email: "siddharth.k@siteops.com",
+    role: "Technical & Site Operations",
+    avatarInitials: "SK",
+    status: "Active",
+    nextReview: "05 Nov 2026 (2 yrs)",
+    tag1: "Site Operations",
+    tag2: "Civil Coordination",
+    timeOrOrg: "Client Representative • Site Lead",
+    bio: "Oversees site readiness, municipal setbacks, structural survey coordination, and civil contractor milestone reviews.",
+    meta: {
+      expOrAge: "10+ yrs",
+      roleScope: "Site Representative",
+      location: "Kochi, Kerala",
+      channel: "Site Inspections",
+      status: "Confirmed",
+    },
+    unreadCount: 1,
+  },
+  {
+    id: "owner-4",
+    idNumber: "KLS-756872007",
+    name: "Radhika Kulkarni",
+    email: "radhikakulkarni@ananyabuilders.com",
+    role: "Commercial & Budget Director",
+    avatarInitials: "RK",
+    status: "Active",
+    nextReview: "12 Dec 2026 (2 yrs)",
+    tag1: "Commercial Director",
+    tag2: "Financial Approver",
+    timeOrOrg: "Financial Stakeholder • Ananya Group",
+    bio: "Manages financial allocations, stage milestone disbursements, variation approvals, and overall ₹40L–₹60L budget governance.",
+    meta: {
+      expOrAge: "15+ yrs",
+      roleScope: "Finance Director",
+      location: "Bengaluru, KA",
+      channel: "Kallisto Portal",
+      status: "Confirmed",
+    },
   },
 ];
 
@@ -140,48 +259,156 @@ export interface ClientHouseholdMember {
   bedroomRequirement?: string;
   accessibilityNeeds?: string;
   specialNotes?: string;
-  /** Optional description from backend family_details.description. */
-  description?: string | null;
-}
-
-/** Row for backend requirement grid display. */
-export interface BackendRequirementRow {
-  id: string;
-  domain: string;
-  requirement_name: string;
-  value: string;
-  confirmed: boolean;
-  source?: string;
-  evidence?: string;
+  description?: string;
 }
 
 export const DEFAULT_RESIDENTIAL_HOUSEHOLD: ClientHouseholdMember[] = [
   {
     id: "mem-1",
-    name: "Primary Contact",
-    relationship: "Owner",
-    avatarInitials: "PC",
-    age: "N/A",
-    occupation: "N/A",
-    residenceStatus: "N/A",
+    name: "Ananya Sharma",
+    relationship: "Mother",
+    avatarInitials: "AS",
+    photoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
+    age: "38",
+    occupation: "Managing Director",
+    residenceStatus: "Kochi",
     isPrimaryClient: true,
     decisionRole: "Primary Decision Maker",
-    keyNeeds: ["Contact for project decisions"],
+    keyNeeds: ["Regular WFH", "High privacy", "Master suite (garden view)"],
+    workPattern: "Regular WFH (Dedicated Study)",
+    privacyLevel: "High Privacy",
+    bedroomRequirement: "Master Suite (Garden View)",
+    accessibilityNeeds: "Ground-floor & Courtyard Access",
+    specialNotes: "Final layout sign-off authority",
+  },
+  {
+    id: "mem-2",
+    name: "Rahul Sharma",
+    relationship: "Spouse · Father",
+    avatarInitials: "RS",
+    photoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
+    age: "40",
+    occupation: "Entrepreneur",
+    residenceStatus: "Full-time resident",
+    isPrimaryClient: false,
+    decisionRole: "Co-decision Maker",
+    keyNeeds: ["Occasional WFH", "Outdoor entertaining", "Shared master suite"],
+    workPattern: "Occasional WFH (Shared Study)",
+    privacyLevel: "Medium Privacy",
+    bedroomRequirement: "Master Suite (Shared)",
+    accessibilityNeeds: "No special requirement",
+    specialNotes: "Outdoor deck & entertainment space priority",
+  },
+  {
+    id: "mem-3",
+    name: "Nila Sharma",
+    relationship: "Daughter",
+    avatarInitials: "NS",
+    photoUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80",
+    age: "12",
+    occupation: "Student",
+    residenceStatus: "Full-time resident",
+    isPrimaryClient: false,
+    decisionRole: "Household Member",
+    keyNeeds: ["Private bedroom", "Study desk required", "Reading & art"],
+    workPattern: "Bedroom Study Desk Required",
+    privacyLevel: "Medium Privacy",
+    bedroomRequirement: "Private Bedroom + Built-in Study",
+    accessibilityNeeds: "No special requirement",
+    specialNotes: "Reading & art corner nook",
+  },
+  {
+    id: "mem-4",
+    name: "Meera Menon",
+    relationship: "Grandmother",
+    avatarInitials: "MM",
+    photoUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80",
+    age: "68",
+    occupation: "Retired",
+    residenceStatus: "Frequent visitor",
+    isPrimaryClient: false,
+    decisionRole: "Influencer",
+    keyNeeds: ["Ground-floor bedroom", "Attached bathroom", "Avoid stair dependency"],
+    workPattern: "No WFH",
+    privacyLevel: "High Privacy",
+    bedroomRequirement: "Ground-Floor Guest Bedroom",
+    accessibilityNeeds: "Avoid stair dependency",
+    specialNotes: "Attached bathroom required",
   },
 ];
 
 export const DEFAULT_COMMERCIAL_STAKEHOLDERS: ClientHouseholdMember[] = [
   {
     id: "comm-1",
-    name: "Primary Contact",
-    relationship: "Managing Partner",
-    avatarInitials: "PC",
-    age: "N/A",
-    occupation: "N/A",
-    residenceStatus: "N/A",
+    name: "Ananya Sharma",
+    relationship: "Primary Contact · Managing Partner",
+    avatarInitials: "AS",
+    photoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
+    age: "38",
+    occupation: "Managing Director",
+    residenceStatus: "Kochi HQ",
     isPrimaryClient: true,
     decisionRole: "Primary Decision Maker",
-    keyNeeds: ["Contact for project decisions"],
+    keyNeeds: ["Executive corner cabin", "High acoustic privacy", "Fit-out sign-off authority"],
+    workPattern: "Executive Corner Cabin",
+    privacyLevel: "High Privacy",
+    bedroomRequirement: "Executive Suite / Conference",
+    accessibilityNeeds: "Barrier-free access",
+    specialNotes: "Full lease & fit-out sign-off authority",
+  },
+  {
+    id: "comm-2",
+    name: "David Langston",
+    relationship: "Design & Style Lead",
+    avatarInitials: "DL",
+    photoUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80",
+    age: "34",
+    occupation: "Creative Director",
+    residenceStatus: "Kochi Office",
+    isPrimaryClient: false,
+    decisionRole: "Co-decision Maker",
+    keyNeeds: ["Open-plan collaborative zone", "Breakout studio space", "Teak finish approval"],
+    workPattern: "Open-plan Collaborative Zone",
+    privacyLevel: "Medium Privacy",
+    bedroomRequirement: "Breakout & Studio Space",
+    accessibilityNeeds: "Flexible workstations",
+    specialNotes: "Teak finish & acoustic approval",
+  },
+  {
+    id: "comm-3",
+    name: "Siddharth Kumar",
+    relationship: "Operations & Facilities",
+    avatarInitials: "SK",
+    photoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
+    age: "42",
+    occupation: "Facilities Head",
+    residenceStatus: "Kochi Office",
+    isPrimaryClient: false,
+    decisionRole: "Influencer",
+    keyNeeds: ["Site inspection access", "Server & storage trunking", "MEP coordination"],
+    workPattern: "Site Inspection & Server Room",
+    privacyLevel: "Standard",
+    bedroomRequirement: "Server & Storage Trunking",
+    accessibilityNeeds: "Service entrance access",
+    specialNotes: "MEP & civil setback coordination",
+  },
+  {
+    id: "comm-4",
+    name: "Radhika Kulkarni",
+    relationship: "Finance & Commercial",
+    avatarInitials: "RK",
+    photoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80",
+    age: "45",
+    occupation: "Finance Director",
+    residenceStatus: "Bengaluru Regional HQ",
+    isPrimaryClient: false,
+    decisionRole: "Co-decision Maker",
+    keyNeeds: ["Finance cabin", "High privacy", "Milestone disbursement approval"],
+    workPattern: "Financial Governance",
+    privacyLevel: "High Privacy",
+    bedroomRequirement: "Finance Cabin",
+    accessibilityNeeds: "Standard",
+    specialNotes: "Milestone disbursement approval",
   },
 ];
 
@@ -209,17 +436,12 @@ export function buildClientContextSections(
   requirements: EnquiryRequirement[],
   enquiry: EnquiryRecord
 ): ClientContextSection[] {
-  // Derive client context from actual backend data when present.
-  // Use backend requirements to infer household composition.
-  const hasBackendRequirements = (requirements ?? []).length > 0;
-  const householdSize = enquiry.familyMembers?.length || 1;
-
   const userProfileItems: ClientContextItem[] = [
     {
       id: "cc-prof-users",
       category: "client",
       label: "Client / User Profile",
-      value: enquiry.clientName || "Not specified",
+      value: "Family of 4 (Parents + 2 School-age Children) + Elderly Grandparents visiting",
       state: "confirmed",
       priority: "p1",
       source: "client",
@@ -228,17 +450,26 @@ export function buildClientContextSections(
       id: "cc-prof-decision-maker",
       category: "client",
       label: "Primary Decision Maker",
-      value: enquiry.decisionMaker || enquiry.clientName || "Not specified",
+      value: "Ananya Builders (Managing Partner / Key Stakeholder)",
       state: "confirmed",
       priority: "p1",
       source: "client",
     },
     {
-      id: "cc-prof-household",
+      id: "cc-prof-children",
       category: "client",
-      label: "Household / Stakeholders",
-      value: `${householdSize} registered member(s)`,
-      state: hasBackendRequirements ? "confirmed" : "needs_clarification",
+      label: "Children",
+      value: "2 school-age children (require bedroom study desks)",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+    {
+      id: "cc-prof-elderly",
+      category: "client",
+      label: "Elderly Usage",
+      value: "Grandparents visiting regularly (prefer ground floor access)",
+      state: "confirmed",
       priority: "p1",
       source: "client",
     },
@@ -246,67 +477,76 @@ export function buildClientContextSections(
       id: "cc-prof-access",
       category: "client",
       label: "Accessibility Needs",
-      value: enquiry.accessibilityNeeds || "Not specified",
-      state: enquiry.accessibilityNeeds ? "confirmed" : "needs_clarification",
+      value: "Level entry & wide doorways preferred for ground floor",
+      state: "needs_clarification",
       priority: "p2",
-      source: enquiry.accessibilityNeeds ? "client" : "odin",
+      source: "odin",
     },
     {
       id: "cc-prof-wfh-users",
       category: "client",
       label: "Work-from-home Users",
-      value: enquiry.workFromHomeUsers || "Not specified",
-      state: enquiry.workFromHomeUsers ? "confirmed" : "needs_clarification",
+      value: "1 dedicated primary user + occasional study user",
+      state: "confirmed",
       priority: "p1",
-      source: enquiry.workFromHomeUsers ? "client" : "odin",
+      source: "client",
     },
   ];
 
   const lifestyleItems: ClientContextItem[] = [
     {
+      id: "cc-life-wfh",
+      category: "lifestyle",
+      label: "Work From Home",
+      value: "Regular work-from-home use required (quiet acoustic workspace)",
+      state: "confirmed",
+      priority: "p1",
+      source: "client",
+    },
+    {
       id: "cc-life-entertaining",
       category: "lifestyle",
       label: "Entertaining Frequency",
-      value: enquiry.entertainingFrequency || "Not specified",
-      state: enquiry.entertainingFrequency ? "confirmed" : "needs_clarification",
+      value: "Occasional family gatherings & weekend dinners for 8–12 guests",
+      state: "confirmed",
       priority: "p2",
-      source: enquiry.entertainingFrequency ? "client" : "odin",
+      source: "client",
     },
     {
       id: "cc-life-outdoor",
       category: "lifestyle",
       label: "Outdoor Usage",
-      value: enquiry.outdoorUsage || "Not specified",
-      state: enquiry.outdoorUsage ? "confirmed" : "needs_clarification",
+      value: "Garden & courtyard frequently used for morning tea and sit-out relaxation",
+      state: "confirmed",
       priority: "p1",
-      source: enquiry.outdoorUsage ? "client" : "odin",
+      source: "client",
     },
     {
       id: "cc-life-privacy",
       category: "lifestyle",
       label: "Privacy Needs",
-      value: enquiry.privacyNeeds || "Not specified",
-      state: enquiry.privacyNeeds ? "confirmed" : "needs_clarification",
+      value: "High street-facing privacy towards front road via vertical louvers",
+      state: "confirmed",
       priority: "p1",
-      source: enquiry.privacyNeeds ? "client" : "odin",
+      source: "client",
     },
     {
       id: "cc-life-cooking",
       category: "lifestyle",
       label: "Cooking & Kitchen Pattern",
-      value: enquiry.kitchenPattern || "Not specified",
-      state: enquiry.kitchenPattern ? "confirmed" : "needs_clarification",
+      value: "Open kitchen with breakfast island & tall pantry preferred",
+      state: "confirmed",
       priority: "p2",
-      source: enquiry.kitchenPattern ? "client" : "odin",
+      source: "client",
     },
     {
       id: "cc-life-maintenance",
       category: "lifestyle",
       label: "Maintenance Preference",
-      value: enquiry.maintenancePreference || "Not specified",
-      state: enquiry.maintenancePreference ? "confirmed" : "needs_clarification",
+      value: "Low-maintenance finishes & durable floor materials",
+      state: "confirmed",
       priority: "p1",
-      source: enquiry.maintenancePreference ? "client" : "odin",
+      source: "client",
     },
   ];
 
@@ -315,7 +555,7 @@ export function buildClientContextSections(
       id: "cc-dec-maker",
       category: "decision",
       label: "Primary Decision Maker",
-      value: enquiry.decisionMaker || enquiry.clientName || "Not specified",
+      value: "Ananya Builders (Single point of contact)",
       state: "confirmed",
       priority: "p1",
       source: "client",
@@ -324,37 +564,37 @@ export function buildClientContextSections(
       id: "cc-dec-signoff",
       category: "decision",
       label: "Final Sign-off Authority",
-      value: enquiry.signOffAuthority || enquiry.clientName || "Not specified",
-      state: enquiry.signOffAuthority ? "confirmed" : "needs_clarification",
+      value: "Single decision-maker approval required for phase transitions",
+      state: "confirmed",
       priority: "p1",
-      source: enquiry.signOffAuthority ? "client" : "odin",
+      source: "client",
     },
     {
       id: "cc-dec-budget-auth",
       category: "decision",
       label: "Budget Approval Authority",
-      value: enquiry.budgetAuthority || enquiry.clientName || "Not specified",
-      state: enquiry.budgetAuthority ? "confirmed" : "needs_clarification",
+      value: "Budget approval aligned with primary decision maker",
+      state: "confirmed",
       priority: "p1",
-      source: enquiry.budgetAuthority ? "client" : "odin",
+      source: "client",
     },
     {
       id: "cc-dec-revisions",
       category: "decision",
       label: "Revision Expectations",
-      value: enquiry.revisionExpectations || "Not specified",
-      state: enquiry.revisionExpectations ? "confirmed" : "needs_clarification",
+      value: "2–3 major design review rounds expected before GFC release",
+      state: "odin_inferred",
       priority: "p2",
-      source: enquiry.revisionExpectations ? "client" : "odin",
+      source: "odin",
     },
     {
       id: "cc-dec-turnaround",
       category: "decision",
       label: "Decision Turnaround",
-      value: enquiry.decisionTurnaround || "Not specified",
-      state: enquiry.decisionTurnaround ? "confirmed" : "needs_clarification",
+      value: "2–3 business days per milestone review",
+      state: "needs_clarification",
       priority: "p2",
-      source: enquiry.decisionTurnaround ? "client" : "odin",
+      source: "odin",
     },
   ];
 
@@ -363,7 +603,7 @@ export function buildClientContextSections(
       id: "cc-comm-channel",
       category: "communication",
       label: "Primary Channel",
-      value: enquiry.primaryChannel || "Kallisto Portal",
+      value: "Kallisto Ecosystem Platform & WhatsApp summary updates",
       state: "confirmed",
       priority: "p1",
       source: "client",
@@ -372,37 +612,37 @@ export function buildClientContextSections(
       id: "cc-comm-reviews",
       category: "communication",
       label: "Design Reviews",
-      value: enquiry.reviewFrequency || "Not specified",
-      state: enquiry.reviewFrequency ? "confirmed" : "needs_clarification",
+      value: "Weekly milestone-based review meetings",
+      state: "confirmed",
       priority: "p1",
-      source: enquiry.reviewFrequency ? "client" : "odin",
+      source: "client",
     },
     {
       id: "cc-comm-format",
       category: "communication",
       label: "Review Format",
-      value: enquiry.reviewFormat || "Not specified",
-      state: enquiry.reviewFormat ? "confirmed" : "needs_clarification",
+      value: "2D Drawings + 3D Visual Walkthrough previews",
+      state: "confirmed",
       priority: "p1",
-      source: enquiry.reviewFormat ? "client" : "odin",
+      source: "client",
     },
     {
       id: "cc-comm-site",
       category: "communication",
       label: "Site Meetings",
-      value: enquiry.siteMeetingFrequency || "Not specified",
-      state: enquiry.siteMeetingFrequency ? "confirmed" : "needs_clarification",
+      value: "Bi-weekly site inspection meetings during construction",
+      state: "needs_clarification",
       priority: "p2",
-      source: enquiry.siteMeetingFrequency ? "client" : "odin",
+      source: "odin",
     },
     {
       id: "cc-comm-response",
       category: "communication",
       label: "Response Turnaround",
-      value: enquiry.responseTurnaround || "Not specified",
-      state: enquiry.responseTurnaround ? "confirmed" : "needs_clarification",
+      value: "24-hour response expected for urgent queries",
+      state: "confirmed",
       priority: "p2",
-      source: enquiry.responseTurnaround ? "client" : "odin",
+      source: "client",
     },
   ];
 
@@ -451,8 +691,10 @@ export function buildEnquiryDetailViewModel({
 }): EnquiryDetailViewModel {
   const intelligence = deriveEnquiryIntelligence(enquiry, providerContext);
 
-  const formattedDate = enquiry.receivedAt
-    ? new Date(enquiry.receivedAt).toLocaleDateString("en-US", {
+  const rawDate = enquiry.receivedAt ? new Date(enquiry.receivedAt) : null;
+  const isValidDate = rawDate && !isNaN(rawDate.getTime());
+  const formattedDate = isValidDate
+    ? rawDate.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -605,39 +847,4 @@ export function buildEnquiryDetailViewModel({
     unconfirmedScope,
     intelligence,
   };
-}
-
-/** Build backend requirement rows for the detail workspace grid.
- *  Maps each backend requirement item into a displayable row. */
-export function buildBackendRequirementRows(
-  requirementsList: Array<{ id: string; requirement_name: string; items: string[] }> | undefined
-): BackendRequirementRow[] {
-  if (!requirementsList || requirementsList.length === 0) return [];
-  const rows: BackendRequirementRow[] = [];
-  for (const group of requirementsList) {
-    if (!group.items || group.items.length === 0) {
-      rows.push({
-        id: group.id,
-        domain: group.id,
-        requirement_name: group.requirement_name,
-        value: "—",
-        confirmed: false,
-        source: "backend",
-        evidence: "",
-      });
-      continue;
-    }
-    for (const item of group.items) {
-      rows.push({
-        id: `${group.id}-${item}`,
-        domain: group.id,
-        requirement_name: group.requirement_name,
-        value: item,
-        confirmed: true,
-        source: "backend",
-        evidence: "",
-      });
-    }
-  }
-  return rows;
 }
