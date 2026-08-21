@@ -44,3 +44,5 @@ next-env.d.ts
 backend/.venv/
 __pycache__/
 *.pyc
+GITHUB_TOKEN.md
+
