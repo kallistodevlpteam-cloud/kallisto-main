@@ -99,7 +99,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
 
   if (!crew) {
     return (
-      <div className={`workspace-container ${styles.detailContainer}`}>
+      <div className={styles.detailContainer}>
         <div className={styles.backNavRow}>
           <Link href="/hands/trades" className={styles.backLink}>
             <ArrowLeft size={16} />
@@ -125,7 +125,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
   const estimatedCost = workerCount * crew.dailyRate * durationDays;
 
   return (
-    <div className={`workspace-container ${styles.detailContainer}`}>
+    <div className={styles.detailContainer}>
       {/* Back Navigation & Breadcrumbs */}
       <nav className={styles.backNavRow} aria-label="Breadcrumb navigation">
         <Link href="/hands/trades" className={styles.backLink}>
