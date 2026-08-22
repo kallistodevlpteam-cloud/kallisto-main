@@ -62,7 +62,7 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 22px;
+  gap: 0;
 }
 
 .overviewPage {
@@ -2485,15 +2485,6 @@
   flex-direction: column !important;
 }
 
-.page {
-  height: 100%;
-  min-height: 100%;
-  max-height: 100%;
-  width: 100%;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
 
 .overviewPage {
   display: flex;
