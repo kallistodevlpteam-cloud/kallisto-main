@@ -639,9 +639,18 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
 
             {/* Deployment Timeline */}
             <div className={styles.fieldGroup}>
-              <label htmlFor="req-start-date" className={styles.fieldLabel}>
-                Deployment Timeline
-              </label>
+              <div className={styles.fieldLabelRow}>
+                <label htmlFor="req-start-date" className={styles.fieldLabel}>
+                  Deployment Timeline
+                </label>
+                <button
+                  type="button"
+                  className={styles.quickPresetLink}
+                  onClick={() => setStartDate("2026-08-28")}
+                >
+                  Earliest: 28 Aug
+                </button>
+              </div>
               <div className={styles.dateRangePickerWrap}>
                 <input
                   id="req-start-date"
@@ -656,11 +665,14 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
               </div>
             </div>
 
-            {/* Duration Stepper */}
+            {/* Duration Selector with Input & Quick Presets */}
             <div className={styles.fieldGroup}>
-              <label className={styles.fieldLabel}>
-                Duration (Days)
-              </label>
+              <div className={styles.fieldLabelRow}>
+                <label htmlFor="req-duration-input" className={styles.fieldLabel}>
+                  Duration (Days)
+                </label>
+                <span className={styles.fieldHelperHint}>Standard 8h Shift</span>
+              </div>
               <div className={styles.stepperRow}>
                 <button
                   type="button"
@@ -670,7 +682,22 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                 >
                   <Minus size={14} />
                 </button>
-                <div className={styles.stepperDisplay}>{durationDays} days</div>
+                <div className={styles.stepperInputWrap}>
+                  <input
+                    id="req-duration-input"
+                    type="number"
+                    min="1"
+                    max="180"
+                    className={styles.stepperNumberInput}
+                    value={durationDays}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      setDurationDays(isNaN(val) ? 1 : Math.max(1, Math.min(180, val)));
+                    }}
+                    aria-label="Duration in days"
+                  />
+                  <span className={styles.stepperUnitLabel}>days</span>
+                </div>
                 <button
                   type="button"
                   className={styles.stepperBtn}
@@ -680,12 +707,29 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                   <Plus size={14} />
                 </button>
               </div>
+              <div className={styles.quickPresetsRow} role="group" aria-label="Duration quick presets">
+                {[
+                  { days: 6, label: "6d (1 Wk)" },
+                  { days: 12, label: "12d (2 Wks)" },
+                  { days: 15, label: "15d" },
+                  { days: 24, label: "24d (1 Mo)" },
+                ].map((item) => (
+                  <button
+                    key={item.days}
+                    type="button"
+                    className={`${styles.presetChip} ${durationDays === item.days ? styles.presetChipActive : ""}`}
+                    onClick={() => setDurationDays(item.days)}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Crew Size Stepper */}
+            {/* Crew Size Selector with Input & Gang Presets */}
             <div className={styles.fieldGroup}>
               <div className={styles.fieldLabelRow}>
-                <label className={styles.fieldLabel}>
+                <label htmlFor="req-crew-size-input" className={styles.fieldLabel}>
                   Crew Size
                 </label>
                 <span className={styles.fieldHelperHint}>Min {crew.crewSizeMin} · Max {crew.crewSizeMax}</span>
@@ -699,7 +743,22 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                 >
                   <Minus size={14} />
                 </button>
-                <div className={styles.stepperDisplay}>{workerCount} workers</div>
+                <div className={styles.stepperInputWrap}>
+                  <input
+                    id="req-crew-size-input"
+                    type="number"
+                    min={crew.crewSizeMin}
+                    max={crew.crewSizeMax}
+                    className={styles.stepperNumberInput}
+                    value={workerCount}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      setWorkerCount(isNaN(val) ? crew.crewSizeMin : Math.max(crew.crewSizeMin, Math.min(crew.crewSizeMax, val)));
+                    }}
+                    aria-label="Crew size in workers"
+                  />
+                  <span className={styles.stepperUnitLabel}>workers</span>
+                </div>
                 <button
                   type="button"
                   className={styles.stepperBtn}
@@ -708,6 +767,23 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                 >
                   <Plus size={14} />
                 </button>
+              </div>
+              <div className={styles.quickPresetsRow} role="group" aria-label="Crew size quick presets">
+                {[
+                  { count: 4, label: "4 (Min)" },
+                  { count: 8, label: "8 (Std Gang)" },
+                  { count: 12, label: "12 (Squad)" },
+                  { count: 16, label: "16 (Double)" },
+                ].map((item) => (
+                  <button
+                    key={item.count}
+                    type="button"
+                    className={`${styles.presetChip} ${workerCount === item.count ? styles.presetChipActive : ""}`}
+                    onClick={() => setWorkerCount(item.count)}
+                  >
+                    {item.label}
+                  </button>
+                ))}
               </div>
               <span className={styles.fieldSubHelper}>
                 Minimum gang: {crew.crewSizeMin} masons/helpers · Scalable up to {crew.crewSizeMax} workers per shift
