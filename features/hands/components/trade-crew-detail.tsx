@@ -269,7 +269,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                   aria-label={isSaved ? "Remove from shortlist" : "Add to shortlist"}
                   title={isSaved ? "Remove from shortlist" : "Add to shortlist"}
                 >
-                  <Bookmark size={14} fill={isSaved ? "#0f172a" : "none"} aria-hidden="true" />
+                  <Bookmark size={13} strokeWidth={2.2} fill={isSaved ? "currentColor" : "none"} aria-hidden="true" />
                 </button>
 
                 <Link
@@ -278,7 +278,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                   aria-label="Compare with other trade crews"
                   title="Compare with other trade crews"
                 >
-                  <Columns3 size={14} aria-hidden="true" />
+                  <Columns3 size={13} strokeWidth={2.2} aria-hidden="true" />
                 </Link>
               </div>
             </div>
