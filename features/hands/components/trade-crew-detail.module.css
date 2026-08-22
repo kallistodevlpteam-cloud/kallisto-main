@@ -86,16 +86,6 @@
   overflow: hidden;
 }
 
-.identityCard::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #0f172a 0%, #0284c7 50%, #10b981 100%);
-}
-
 .identityMainRow {
   display: flex;
   align-items: flex-start;

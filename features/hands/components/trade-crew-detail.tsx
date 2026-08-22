@@ -208,15 +208,6 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                 <div className={styles.actionButtonsRow}>
                   <button
                     type="button"
-                    className={styles.dominantCtaBtn}
-                    onClick={() => setDrawerOpen(true)}
-                  >
-                    <Send size={15} aria-hidden="true" />
-                    <span>Request Crew</span>
-                  </button>
-
-                  <button
-                    type="button"
                     className={`${styles.secondaryActionBtn} ${isSaved ? styles.secondaryActionBtnActive : ""}`}
                     onClick={handleToggleSave}
                     aria-pressed={isSaved}
