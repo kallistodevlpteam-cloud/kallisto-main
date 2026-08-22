@@ -72,18 +72,17 @@
   min-width: 0;
 }
 
-/* Crew Identity Card */
+/* Crew Identity Header (Frameless / Natural layout) */
 .identityCard {
   position: relative;
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  padding: 22px 24px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 4px 0 8px 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-  overflow: hidden;
+  box-shadow: none;
 }
 
 .identityMainRow {
