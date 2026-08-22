@@ -3,8 +3,16 @@
 import React from "react";
 import {
   Bookmark,
-  Columns2,
+  Building2,
+  Columns3,
+  Compass,
+  Droplets,
+  Grid3X3,
+  Layers,
+  ShieldCheck,
+  Sparkles,
   Star,
+  Zap,
 } from "lucide-react";
 import type { TradeCrew } from "../services/trade-crews.mock";
 import styles from "./hands-overview.module.css";
@@ -16,10 +24,33 @@ interface TradeCardProps {
   onToggleSave?: (crewId: string) => void;
 }
 
-// Derive clean brand moniker from crew name (e.g. "Circuit MEP Design" -> "circuit", "Master Masons" -> "master", etc.)
-function getBrandSlug(name: string): string {
-  const firstWord = name.split(" ")[0].toLowerCase();
-  return firstWord.replace(/[^a-z0-9]/g, "") || "kallisto";
+function getBrandInfo(crew: TradeCrew): { name: string; icon: React.ElementType; color: string } {
+  const tradeLower = crew.trade.toLowerCase() + " " + crew.category.toLowerCase();
+
+  if (tradeLower.includes("electric") || tradeLower.includes("mep")) {
+    return { name: "circuit", icon: Zap, color: "#06b6d4" };
+  }
+  if (tradeLower.includes("plumb") || tradeLower.includes("sanitary")) {
+    return { name: "hydro", icon: Droplets, color: "#38bdf8" };
+  }
+  if (tradeLower.includes("wood") || tradeLower.includes("carpenter") || tradeLower.includes("formwork")) {
+    return { name: "forma", icon: Layers, color: "#10b981" };
+  }
+  if (tradeLower.includes("steel") || tradeLower.includes("rebar") || tradeLower.includes("reinforce")) {
+    return { name: "struct", icon: Grid3X3, color: "#a855f7" };
+  }
+  if (tradeLower.includes("paint") || tradeLower.includes("finish") || tradeLower.includes("coat")) {
+    return { name: "chroma", icon: Sparkles, color: "#f43f5e" };
+  }
+  if (tradeLower.includes("supervisor") || tradeLower.includes("qa") || tradeLower.includes("manage")) {
+    return { name: "siteguard", icon: ShieldCheck, color: "#eab308" };
+  }
+  if (tradeLower.includes("survey") || tradeLower.includes("qs")) {
+    return { name: "geoscan", icon: Compass, color: "#818cf8" };
+  }
+
+  // Default Civil / Masonry
+  return { name: "apex", icon: Building2, color: "#f97316" };
 }
 
 export function TradeCard({
@@ -28,106 +59,107 @@ export function TradeCard({
   isSaved = false,
   onToggleSave,
 }: TradeCardProps) {
-  const brandSlug = getBrandSlug(crew.name);
-  const city = crew.location.split(",")[0].trim();
+  const brand = getBrandInfo(crew);
+  const BrandIcon = brand.icon;
+
+  // Extract clean city name
+  const cityOnly = crew.location.split(",")[0].trim();
 
   return (
     <article className={styles.tradeCard} aria-label={`${crew.name} - ${crew.trade}`}>
-      {/* 1. Top Graphic Media Banner */}
-      <div className={styles.tradeCardBanner}>
-        {/* Floating Rating Pill (Top Right) */}
-        <div
-          className={styles.tradeRatingPill}
-          title={`${crew.rating} stars from ${crew.reviewCount} reviews`}
-        >
-          <Star size={12} className={styles.tradeRatingStar} aria-hidden="true" />
+      {/* 1. Top Media / Dark Graphic Cover */}
+      <div className={styles.tradeCoverArea}>
+        <div className={styles.tradeCoverGrid} aria-hidden="true" />
+
+        {/* Top-Right Floating Rating Badge */}
+        <div className={styles.tradeRatingBadge}>
+          <Star size={11} className={styles.tradeStarIcon} aria-hidden="true" />
           <span>{crew.rating.toFixed(1)}</span>
         </div>
 
-        {/* Center Brand / Circuit Graphic */}
-        <div className={styles.tradeBrandGraphic}>
-          <svg
-            width="34"
-            height="18"
-            viewBox="0 0 34 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className={styles.tradeCircuitIcon}
-            aria-hidden="true"
+        {/* Centered Brand Emblem */}
+        <div className={styles.tradeBrandMark}>
+          <div
+            className={styles.tradeBrandIconWrap}
+            style={{ color: brand.color, filter: `drop-shadow(0 0 8px ${brand.color}66)` }}
           >
-            <circle cx="9" cy="9" r="6" stroke="#22d3ee" strokeWidth="2.5" />
-            <circle cx="9" cy="9" r="2.5" fill="#22d3ee" />
-            <path
-              d="M15 9H24L29 4H34"
-              stroke="#22d3ee"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span className={styles.tradeBrandText}>{brandSlug}</span>
-          <span className={styles.tradeBrandDot}>°</span>
+            <BrandIcon size={22} strokeWidth={2.4} aria-hidden="true" />
+          </div>
+          <span className={styles.tradeBrandText}>
+            {brand.name}
+            <span className={styles.tradeBrandDot}>°</span>
+          </span>
         </div>
       </div>
 
-      {/* 2. Middle Title & Category Section */}
+      {/* 2. Title & Trade Subtitle with Bookmark */}
       <div className={styles.tradeCardBody}>
         <div className={styles.tradeCardTitleRow}>
-          <h3 className={styles.tradeCardTitle}>{crew.name}</h3>
+          <div className={styles.tradeCardTitleWrap}>
+            <h3 className={styles.tradeCardTitle} title={crew.name}>
+              {crew.name}
+            </h3>
+            <p className={styles.tradeCardSubtitle}>{crew.trade || crew.category}</p>
+          </div>
+
+          {/* Bookmark Button */}
           <button
             type="button"
-            className={`${styles.tradeWishlistBtn} ${isSaved ? styles.tradeWishlistBtnActive : ""}`}
+            className={`${styles.tradeBookmarkBtn} ${isSaved ? styles.tradeBookmarkBtnActive : ""}`}
             onClick={() => onToggleSave?.(crew.id)}
             title={isSaved ? "Remove from saved crews" : "Save this crew"}
             aria-label={isSaved ? `Remove ${crew.name} from saved` : `Save ${crew.name}`}
             aria-pressed={isSaved}
           >
             <Bookmark
-              size={16}
-              strokeWidth={1.8}
+              size={18}
+              strokeWidth={1.9}
               fill={isSaved ? "currentColor" : "none"}
               aria-hidden="true"
             />
           </button>
         </div>
-        <p className={styles.tradeCardSubtitle}>{crew.category || crew.trade}</p>
-      </div>
 
-      {/* 3. Three-column Stats Strip */}
-      <div className={styles.tradeStatsStrip}>
-        <div className={styles.tradeStatCol}>
-          <strong className={styles.tradeStatValue}>{crew.experienceYears} yrs</strong>
-          <span className={styles.tradeStatLabel}>experience</span>
-        </div>
-        <div className={`${styles.tradeStatCol} ${styles.tradeStatColDivider}`}>
-          <strong className={styles.tradeStatValue}>{crew.completedJobs}+</strong>
-          <span className={styles.tradeStatLabel}>consults</span>
-        </div>
-        <div className={`${styles.tradeStatCol} ${styles.tradeStatColDivider}`}>
-          <strong className={styles.tradeStatValue}>{city}</strong>
-          <span className={styles.tradeStatLabel}>location</span>
-        </div>
-      </div>
+        {/* 3. 3-Column Stat Metric Strip */}
+        <div className={styles.tradeMetricsRow}>
+          {/* Column 1: Experience */}
+          <div className={styles.tradeMetricCol}>
+            <strong className={styles.tradeMetricValue}>{crew.experienceYears} yrs</strong>
+            <span className={styles.tradeMetricLabel}>experience</span>
+          </div>
 
-      {/* 4. Bottom Price & Action Row */}
-      <div className={styles.tradeCardFooter}>
-        <div className={styles.tradePriceBox}>
-          <strong className={styles.tradePriceAmount}>
-            ₹{crew.dailyRate.toLocaleString("en-IN")}
-          </strong>
-          <span className={styles.tradePriceUnit}>Per sq ft</span>
+          {/* Column 2: Deployments / Consults */}
+          <div className={styles.tradeMetricCol}>
+            <strong className={styles.tradeMetricValue}>{crew.completedJobs}+</strong>
+            <span className={styles.tradeMetricLabel}>deployments</span>
+          </div>
+
+          {/* Column 3: Location */}
+          <div className={styles.tradeMetricCol}>
+            <strong className={styles.tradeMetricValue}>{cityOnly}</strong>
+            <span className={styles.tradeMetricLabel}>location</span>
+          </div>
         </div>
 
-        <button
-          type="button"
-          className={styles.tradeCompareBtn}
-          onClick={() => onRequestCrew(crew)}
-          aria-label={`Request ${crew.name}`}
-          title={`Request ${crew.name}`}
-        >
-          <Columns2 size={13} aria-hidden="true" />
-          <span>Compare</span>
-        </button>
+        {/* 4. Bottom Rate & Compare Action Button */}
+        <div className={styles.tradeCardBottomRow}>
+          <div className={styles.tradePriceWrap}>
+            <strong className={styles.tradePriceAmount}>
+              ₹{crew.dailyRate.toLocaleString("en-IN")}
+            </strong>
+            <span className={styles.tradePricePeriod}>Per day</span>
+          </div>
+
+          <button
+            type="button"
+            className={styles.tradeCompareBtn}
+            onClick={() => onRequestCrew(crew)}
+            aria-label={`Request ${crew.name}`}
+          >
+            <Columns3 size={13} aria-hidden="true" />
+            <span>Compare</span>
+          </button>
+        </div>
       </div>
     </article>
   );
