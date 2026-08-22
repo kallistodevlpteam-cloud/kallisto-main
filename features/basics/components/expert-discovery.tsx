@@ -210,7 +210,7 @@ export function ExpertDiscovery() {
   }, [filters, savedFilterOnly]);
 
   return (
-    <div className={`workspace-container ${styles.discoveryStack}`}>
+    <div className={styles.discoveryStack}>
       {/* 1. Integrated Sticky Top Navbar: Logo | Search Box | Round Wishlist Option */}
       <header className={styles.discoveryStickyHeader}>
         <div className={styles.discoveryTopNavRow}>

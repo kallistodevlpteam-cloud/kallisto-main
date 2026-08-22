@@ -160,7 +160,7 @@ export function HandsTradeDiscovery() {
   }, [query, categoryFilter, verifiedOnly, savedOnly, minRating, maxRate, locationFilter]);
 
   return (
-    <div className={`workspace-container ${styles.discoveryStack}`}>
+    <div className={styles.discoveryStack}>
       {/* 1. Integrated Sticky Top Header: Logo | Search Box | Round Wishlist Option & Category Filters */}
       <header className={styles.discoveryStickyHeader}>
         <div className={styles.discoveryTopNavRow}>
