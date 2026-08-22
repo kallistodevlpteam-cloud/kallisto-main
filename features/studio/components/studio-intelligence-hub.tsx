@@ -12,8 +12,8 @@ import {
   FileText,
   Lightbulb,
   Sparkles,
-  Zap,
 } from "lucide-react";
+import { ZapDuotoneIcon } from "@/components/layout/sidebar-icons";
 import { StudioTask } from "@/types/domain/studio";
 import styles from "./studio-chat-canvas.module.css";
 
@@ -36,7 +36,7 @@ export function StudioIntelligenceHub({
       <div className={styles.nextActionCard}>
         <div className={styles.nextActionLeft}>
           <div className={styles.nextActionIconWrap}>
-            <Zap size={16} aria-hidden="true" />
+            <ZapDuotoneIcon size={16} aria-hidden="true" />
           </div>
           <div className={styles.nextActionMeta}>
             <span className={styles.nextActionBadge}>Recommended Next Action</span>

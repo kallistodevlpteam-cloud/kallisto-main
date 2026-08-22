@@ -2569,3 +2569,33 @@ export function StarDuotoneIcon({ size = 16, className = "", ...props }: Sidebar
     </svg>
   );
 }
+
+/**
+ * Quick Action / Lightning (Zap) — Solid precision bolt with tinted energy layer
+ */
+export function ZapDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted background energy overlay */}
+      <path
+        d="M13 2L3 14H12L11 22L21 10H12L13 2Z"
+        fill="currentColor"
+        opacity="0.32"
+      />
+      {/* Solid precision lightning bolt */}
+      <path
+        d="M12.5 3L4.5 13H11.5L10.5 21L18.5 11H11.5L12.5 3Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+

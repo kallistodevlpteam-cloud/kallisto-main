@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowRight, ArrowUp, Check, ChevronDown, ChevronRight, X, Zap } from "lucide-react";
+import { ArrowRight, ArrowUp, Check, ChevronDown, ChevronRight, X } from "lucide-react";
 import {
   DocumentsDuotoneIcon,
   EnquiriesDuotoneIcon,
   MicDuotoneIcon,
   ProjectsDuotoneIcon,
+  ZapDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 import { StudioAgentType, StudioProjectOption } from "@/types/domain/studio";
 import { StudioIntent, StudioSource } from "../../types/studio-source";
@@ -190,7 +191,7 @@ export function StudioComposer({
           <div className={canvasStyles.nextActionCard}>
             <div className={canvasStyles.nextActionLeft}>
               <div className={canvasStyles.nextActionIconWrap}>
-                <Zap size={16} aria-hidden="true" />
+                <ZapDuotoneIcon size={16} aria-hidden="true" />
               </div>
               <div className={canvasStyles.nextActionMeta}>
                 <span className={canvasStyles.nextActionBadge}>Recommended Next Action</span>
