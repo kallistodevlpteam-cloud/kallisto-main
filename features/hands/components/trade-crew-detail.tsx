@@ -240,34 +240,23 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
               <div className={styles.headerActionGroup}>
                 <button
                   type="button"
-                  className={styles.primaryRequestBtn}
-                  onClick={() => setDrawerOpen(true)}
+                  className={`${styles.secondaryGhostBtn} ${isSaved ? styles.secondaryGhostBtnActive : ""}`}
+                  onClick={handleToggleSave}
+                  aria-pressed={isSaved}
+                  title={isSaved ? "Remove from shortlist" : "Add to shortlist"}
                 >
-                  <Send size={13} aria-hidden="true" />
-                  <span>Request This Team</span>
+                  <Bookmark size={13} fill={isSaved ? "currentColor" : "none"} aria-hidden="true" />
+                  <span>{isSaved ? "Shortlisted" : "Add to Shortlist"}</span>
                 </button>
 
-                <div className={styles.secondaryActionsRow}>
-                  <button
-                    type="button"
-                    className={`${styles.secondaryGhostBtn} ${isSaved ? styles.secondaryGhostBtnActive : ""}`}
-                    onClick={handleToggleSave}
-                    aria-pressed={isSaved}
-                    title={isSaved ? "Remove from shortlist" : "Add to shortlist"}
-                  >
-                    <Bookmark size={13} fill={isSaved ? "currentColor" : "none"} aria-hidden="true" />
-                    <span>{isSaved ? "Shortlisted" : "Add to Shortlist"}</span>
-                  </button>
-
-                  <Link
-                    href={`/hands/trades?compare=${crew.id}`}
-                    className={styles.secondaryGhostBtn}
-                    title="Compare with other trade crews"
-                  >
-                    <Columns3 size={13} aria-hidden="true" />
-                    <span>Compare</span>
-                  </Link>
-                </div>
+                <Link
+                  href={`/hands/trades?compare=${crew.id}`}
+                  className={styles.secondaryGhostBtn}
+                  title="Compare with other trade crews"
+                >
+                  <Columns3 size={13} aria-hidden="true" />
+                  <span>Compare</span>
+                </Link>
               </div>
             </div>
 
