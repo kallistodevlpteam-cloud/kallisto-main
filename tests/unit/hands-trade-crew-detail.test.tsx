@@ -17,9 +17,9 @@ describe("TradeCrewDetail Component", () => {
     render(<TradeCrewDetail crewId="crew-masons-01" />);
 
     // Identity
-    expect(screen.getByRole("heading", { level: 1, name: "Master Masons & Brickwork Team" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: /Master Masons & Brickwork Team/i })).toBeInTheDocument();
     expect(screen.getAllByText("Civil & Masonry").length).toBeGreaterThan(0);
-    expect(screen.getByText("Verified")).toBeInTheDocument();
+    expect(screen.getByText("Verified Crew")).toBeInTheDocument();
     expect(screen.getByText("14 yrs")).toBeInTheDocument();
     expect(screen.getByText("64+")).toBeInTheDocument();
     expect(screen.getByText("₹950")).toBeInTheDocument();

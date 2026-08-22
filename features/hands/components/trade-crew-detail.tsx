@@ -5,22 +5,25 @@ import Link from "next/link";
 import {
   ArrowLeft,
   Bookmark,
+  Briefcase,
   Building2,
   Check,
   CheckCircle2,
   ChevronRight,
+  Clock,
   Columns3,
   Compass,
   Droplets,
   Grid3X3,
+  IndianRupee,
   Layers,
   MapPin,
   Minus,
   Plus,
-  Send,
   ShieldCheck,
   Sparkles,
   Star,
+  Users,
   Zap,
 } from "lucide-react";
 import { getTradeCrewById, type TradeCrew } from "../services/trade-crews.mock";
@@ -177,123 +180,123 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
 
       {/* Two Primary Sections Layout: Left Section & Right Section */}
       <div className={styles.twoColLayout}>
-        {/* ─── LEFT SECTION: Identity, Tabs & Detailed Profiles ─── */}
-        <div className={styles.leftStack}>
-          {/* 1. Crew Identity Header Card */}
-          <header className={styles.identityCard} aria-label={`${crew.name} identity overview`}>
-            <div className={styles.identityMainRow}>
-              <div className={styles.identityLeft}>
-                {/* Wide Horizontal Dark Brand Emblem Card */}
-                <div className={styles.brandEmblemBox} aria-hidden="true">
-                  <div className={styles.brandCoverGrid} />
-                  <div className={styles.brandMarkContent}>
-                    <div
-                      className={styles.brandIconWrap}
-                      style={{
-                        color: brand?.color || "#06b6d4",
-                        filter: `drop-shadow(0 0 8px ${brand?.color || "#06b6d4"}66)`,
-                      }}
-                    >
-                      <BrandIcon size={20} strokeWidth={2.4} />
-                    </div>
-                    <span className={styles.brandText}>
-                      {brand?.name}
-                      <span className={styles.brandDot}>°</span>
-                    </span>
+        {/* ─── LEFT SECTION: Review the Provider (Hero, Tabs & Details) ─── */}
+        <main className={styles.leftStack}>
+          {/* 1. Basics-style Reference Hero Section */}
+          <section className={styles.referenceHero}>
+            <div className={styles.referenceHeroTop}>
+              {/* Brand Logo Tile */}
+              <div className={styles.profileBrandTileWrapper} aria-hidden="true">
+                <div className={styles.brandCoverGrid} />
+                <div className={styles.brandMarkContent}>
+                  <div
+                    className={styles.brandIconWrap}
+                    style={{
+                      color: brand?.color || "#06b6d4",
+                      filter: `drop-shadow(0 0 8px ${brand?.color || "#06b6d4"}66)`,
+                    }}
+                  >
+                    <BrandIcon size={22} strokeWidth={2.4} />
                   </div>
-                </div>
-
-                <div className={styles.identityInfo}>
-                  <div className={styles.crewTitleRow}>
-                    <h1 className={styles.crewName}>{crew.name}</h1>
-                    <div className={styles.ratingBadge}>
-                      <Star size={13} fill="#eab308" color="#eab308" aria-hidden="true" />
-                      <span>{crew.rating.toFixed(1)}</span>
-                    </div>
-                    {crew.verified && (
-                      <div className={styles.verifiedBadge}>
-                        <CheckCircle2 size={13} aria-hidden="true" />
-                        <span>Verified</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className={styles.crewSubtitleRow}>
-                    <span>{crew.category}</span>
-                    <span className={styles.subtitleDot}>•</span>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
-                      <MapPin size={13} aria-hidden="true" />
-                      {crew.location}
-                    </span>
-                  </div>
-
-                  {/* 3-metric strip */}
-                  <div className={styles.metricsStrip}>
-                    <div className={styles.metricItem}>
-                      <strong>{crew.experienceYears} yrs</strong> experience
-                    </div>
-                    <div className={styles.metricDivider} aria-hidden="true" />
-                    <div className={styles.metricItem}>
-                      <strong>{crew.completedJobs}+</strong> deployments
-                    </div>
-                    <div className={styles.metricDivider} aria-hidden="true" />
-                    <div className={styles.metricItem}>
-                      <strong>{crew.crewSizeMin}–{crew.crewSizeMax}</strong> workers
-                    </div>
-                  </div>
+                  <span className={styles.brandText}>
+                    {brand?.name}
+                    <span className={styles.brandDot}>°</span>
+                  </span>
                 </div>
               </div>
 
-              {/* Right: Rate & Action Buttons inside Header */}
-              <div className={styles.identityRight}>
-                <div className={styles.rateBlock}>
-                  <div className={styles.ratePrice}>
-                    ₹{crew.dailyRate.toLocaleString("en-IN")}
-                  </div>
-                  <div className={styles.rateUnit}>/ day / worker</div>
-                </div>
-
-                <div className={styles.actionButtonsRow}>
-                  <button
-                    type="button"
-                    className={`${styles.secondaryActionBtn} ${isSaved ? styles.secondaryActionBtnActive : ""}`}
-                    onClick={handleToggleSave}
-                    aria-pressed={isSaved}
-                    title={isSaved ? "Remove from shortlist" : "Add to shortlist"}
-                  >
-                    <Bookmark size={15} fill={isSaved ? "currentColor" : "none"} aria-hidden="true" />
-                    <span>{isSaved ? "Shortlisted" : "Add to Shortlist"}</span>
-                  </button>
-
-                  <Link
-                    href={`/hands/trades?compare=${crew.id}`}
-                    className={styles.secondaryActionBtn}
-                    title="Compare with other trade crews"
-                  >
-                    <Columns3 size={15} aria-hidden="true" />
-                    <span>Compare</span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </header>
-
-          {/* 2. Horizontal Sticky Section Navigation Tab Strip */}
-          <nav className={styles.sectionNavWrapper} aria-label="Profile section navigation">
-            <div className={styles.sectionNavList} role="tablist">
-              {SECTION_TABS.map((tab) => (
+              {/* Action Buttons: Shortlist & Compare */}
+              <div className={styles.detailActions}>
                 <button
-                  key={tab.id}
                   type="button"
-                  role="tab"
-                  aria-selected={activeTab === tab.id}
-                  className={`${styles.navTabBtn} ${activeTab === tab.id ? styles.navTabBtnActive : ""}`}
-                  onClick={() => scrollToSection(tab.id)}
+                  className={`${styles.secondaryButton} ${isSaved ? styles.secondaryButtonActive : ""}`}
+                  onClick={handleToggleSave}
+                  aria-pressed={isSaved}
+                  title={isSaved ? "Remove from shortlist" : "Add to shortlist"}
                 >
-                  {tab.label}
+                  <Bookmark size={14} fill={isSaved ? "currentColor" : "none"} aria-hidden="true" />
+                  <span>{isSaved ? "Shortlisted" : "Add to Shortlist"}</span>
                 </button>
-              ))}
+
+                <Link
+                  href={`/hands/trades?compare=${crew.id}`}
+                  className={styles.secondaryButton}
+                  title="Compare with other trade crews"
+                >
+                  <Columns3 size={14} aria-hidden="true" />
+                  <span>Compare</span>
+                </Link>
+              </div>
             </div>
+
+            {/* Hero Title with Category and Location */}
+            <h1 className={styles.referenceHeroTitle}>
+              {crew.name} — we specialize in {crew.skills[0] || crew.trade} in {crew.category}.{" "}
+              <span className={styles.referenceHeroMuted}>
+                Based in {crew.location}.
+              </span>
+            </h1>
+
+            {/* Hero Bio */}
+            <p className={styles.referenceHeroBio}>{crew.about}</p>
+
+            {/* Badges Row */}
+            <div className={styles.heroBadgesRow}>
+              {crew.verified && (
+                <div className={styles.verifiedBadge}>
+                  <CheckCircle2 size={13} aria-hidden="true" />
+                  <span>Verified Crew</span>
+                </div>
+              )}
+              <div className={styles.availabilityBadge}>
+                <Clock size={13} aria-hidden="true" />
+                <span>{crew.availabilityLabel || "Available Tomorrow"}</span>
+              </div>
+            </div>
+
+            {/* Profile Statistics Strip with Icons */}
+            <div className={styles.profileStats}>
+              <span className={styles.profileStat}>
+                <MapPin size={14} aria-hidden="true" />
+                <strong>{crew.location}</strong>
+              </span>
+              <span className={styles.profileStat}>
+                <Clock size={14} aria-hidden="true" />
+                <strong>{crew.experienceYears} yrs</strong> experience
+              </span>
+              <span className={styles.profileStat}>
+                <Star size={14} fill="#eab308" color="#eab308" aria-hidden="true" />
+                <strong>{crew.rating.toFixed(1)}</strong> ({crew.reviewCount} reviews)
+              </span>
+              <span className={styles.profileStat}>
+                <Briefcase size={14} aria-hidden="true" />
+                <strong>{crew.completedJobs}+</strong> deployments
+              </span>
+              <span className={styles.profileStat}>
+                <Users size={14} aria-hidden="true" />
+                <strong>{crew.crewSizeMin}–{crew.crewSizeMax}</strong> workers
+              </span>
+              <span className={styles.profileStat}>
+                <IndianRupee size={14} aria-hidden="true" />
+                <strong>₹{crew.dailyRate.toLocaleString("en-IN")}</strong> / day / worker
+              </span>
+            </div>
+          </section>
+
+          {/* 2. Horizontal Section Navigation Tabs */}
+          <nav className={styles.profileTabs} aria-label="Crew profile sections">
+            {SECTION_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                className={`${styles.profileTab} ${activeTab === tab.id ? styles.profileTabActive : ""}`}
+                onClick={() => scrollToSection(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
           </nav>
 
           {/* 3. Section: Overview */}
@@ -586,7 +589,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
               </span>
               <button
                 type="button"
-                className={styles.secondaryActionBtn}
+                className={styles.secondaryButton}
                 onClick={() => setDrawerOpen(true)}
               >
                 <ShieldCheck size={14} aria-hidden="true" />
@@ -594,7 +597,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
               </button>
             </div>
           </section>
-        </div>
+        </main>
 
         {/* ─── RIGHT SECTION: Sticky Deployment Request Panel ─── */}
         <aside className={styles.stickyPanelWrap} aria-label="Deployment Request Calculator">

@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════════════════════════════════════════
    Kallisto Hands — Trade Crew Detail / Workforce Profile Page Styles
-   Two-Section Layout (Left Profile Stack | Right Sticky Deployment Calculator)
+   Matching the approved Basics Workspace Provider Profile Layout
    ══════════════════════════════════════════════════════════════════════════════ */
 
 .detailContainer {
@@ -48,12 +48,12 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   2. Two Primary Sections Layout (Left Section & Right Section)
+   2. Two-Column Layout (Left Content 68% | Right Sticky 32%)
    ───────────────────────────────────────────────────────────────────────────── */
 .twoColLayout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 350px;
-  gap: 24px;
+  gap: 28px;
   align-items: flex-start;
   width: 100%;
 }
@@ -64,56 +64,54 @@
   }
 }
 
-/* ─── LEFT SECTION: Identity, Nav & Detail Stack ─── */
 .leftStack {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 0;
   min-width: 0;
 }
 
-/* Crew Identity Header (Frameless / Natural layout) */
-.identityCard {
-  position: relative;
+/* ─────────────────────────────────────────────────────────────────────────────
+   3. Basics-Style Reference Hero Section
+   ───────────────────────────────────────────────────────────────────────────── */
+.referenceHero {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0;
   background: transparent;
   border: none;
   border-radius: 0;
-  padding: 4px 0 8px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
   box-shadow: none;
 }
 
-.identityMainRow {
+.referenceHeroTop {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.identityLeft {
-  display: flex;
-  align-items: flex-start;
   gap: 16px;
-  min-width: 0;
-  flex: 1;
 }
 
-.brandEmblemBox {
+.profileBrandTileWrapper {
   position: relative;
-  width: 146px;
-  height: 64px;
+  width: 154px;
+  max-width: 100%;
+  height: 68px;
   border-radius: 12px;
+  overflow: hidden;
   background: linear-gradient(145deg, #090d16 0%, #111726 100%);
+  border: 1px solid #1e293b;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.16);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1px solid #1e293b;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.16);
-  overflow: hidden;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.profileBrandTileWrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.22);
 }
 
 .brandCoverGrid {
@@ -132,7 +130,7 @@
   z-index: 2;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   color: #ffffff;
 }
 
@@ -143,8 +141,8 @@
 }
 
 .brandText {
-  font-size: 15px;
-  font-weight: 800;
+  font-size: 16px;
+  font-weight: 850;
   color: #ffffff;
   letter-spacing: -0.02em;
   text-transform: lowercase;
@@ -155,44 +153,77 @@
 
 .brandDot {
   color: #06b6d4;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   margin-left: 1px;
 }
 
-.identityInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  min-width: 0;
-}
-
-.crewTitleRow {
+.detailActions {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.crewName {
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 140ms ease;
+  line-height: 1;
+}
+
+.secondaryButton:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.secondaryButtonActive {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #0f172a !important;
+}
+
+.referenceHeroTitle {
   font-size: 20px;
   font-weight: 750;
+  line-height: 1.35;
   color: #0f172a;
   letter-spacing: -0.02em;
   margin: 0;
 }
 
-.ratingBadge {
-  display: inline-flex;
+.referenceHeroMuted {
+  color: #64748b;
+  font-weight: 450;
+}
+
+.referenceHeroBio {
+  font-size: 13.5px;
+  font-weight: 400;
+  color: #475569;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 90ch;
+}
+
+.heroBadgesRow {
+  display: flex;
   align-items: center;
-  gap: 4px;
-  background: #fefce8;
-  border: 1px solid #fef08a;
-  color: #854d0e;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 9999px;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 2px;
 }
 
 .verifiedBadge {
@@ -202,197 +233,100 @@
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
   color: #15803d;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 650;
-  padding: 2px 7px;
+  padding: 3px 9px;
   border-radius: 9999px;
 }
 
-.crewSubtitleRow {
-  font-size: 13px;
-  font-weight: 500;
-  color: #64748b;
-  display: flex;
+.availabilityBadge {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 9999px;
 }
 
-.subtitleDot {
-  color: #cbd5e1;
-}
-
-/* 3-metric strip */
-.metricsStrip {
+.profileStats {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-top: 4px;
+  gap: 22px;
   flex-wrap: wrap;
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 4px;
 }
 
-.metricItem {
-  display: flex;
+.profileStat {
+  display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 12.5px;
-  color: #334155;
 }
 
-.metricItem strong {
+.profileStat strong {
   font-weight: 700;
   color: #0f172a;
 }
 
-.metricDivider {
-  width: 1px;
-  height: 12px;
-  background: #cbd5e1;
-}
-
-/* Rate & Actions */
-.identityRight {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 12px;
-  flex-shrink: 0;
-}
-
-.rateBlock {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1px;
-}
-
-.ratePrice {
-  font-size: 24px;
-  font-weight: 800;
-  color: #0f172a;
-  letter-spacing: -0.03em;
-}
-
-.rateUnit {
-  font-size: 11.5px;
-  font-weight: 500;
-  color: #64748b;
-}
-
-.actionButtonsRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.dominantCtaBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  background: #0f172a;
-  color: #ffffff;
-  border: 1px solid #0f172a;
-  font-size: 13.5px;
-  font-weight: 650;
-  padding: 8px 18px;
-  border-radius: 9999px;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2);
-  transition: all 160ms ease;
-}
-
-.dominantCtaBtn:hover {
-  background: #1e293b;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25);
-}
-
-.secondaryActionBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  background: #ffffff;
-  color: #334155;
-  border: 1px solid #cbd5e1;
-  font-size: 12.5px;
-  font-weight: 600;
-  padding: 8px 14px;
-  border-radius: 9999px;
-  cursor: pointer;
-  transition: all 150ms ease;
-}
-
-.secondaryActionBtn:hover {
-  background: #f8fafc;
-  border-color: #94a3b8;
-  color: #0f172a;
-}
-
-.secondaryActionBtnActive {
-  background: #0f172a !important;
-  color: #ffffff !important;
-  border-color: #0f172a !important;
-}
-
 /* ─────────────────────────────────────────────────────────────────────────────
-   3. Horizontal Section Navigation Tab Strip
+   4. Basics-Style Profile Tabs Bar
    ───────────────────────────────────────────────────────────────────────────── */
-.sectionNavWrapper {
+.profileTabs {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin: 18px 0 24px 0;
+  border-bottom: 1px solid #e2e8f0;
+  overflow-x: auto;
+  scrollbar-width: none;
   position: sticky;
   top: 0;
   z-index: 30;
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid #e2e8f0;
-  padding: 2px 0 0 0;
 }
 
-.sectionNavList {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.sectionNavList::-webkit-scrollbar {
+.profileTabs::-webkit-scrollbar {
   display: none;
 }
 
-.navTabBtn {
+.profileTab {
+  position: relative;
   background: transparent;
   border: none;
-  padding: 10px 12px;
-  font-size: 13px;
-  font-weight: 550;
+  padding: 10px 0 12px 0;
   color: #64748b;
+  font-size: 14px;
+  font-weight: 550;
   cursor: pointer;
   white-space: nowrap;
-  position: relative;
   transition: color 150ms ease;
 }
 
-.navTabBtn:hover {
+.profileTab:hover {
   color: #0f172a;
 }
 
-.navTabBtnActive {
-  color: #0f172a;
+.profileTabActive {
+  color: #0f172a !important;
   font-weight: 700;
 }
 
-.navTabBtnActive::after {
-  content: "";
+.profileTabActive::after {
   position: absolute;
-  bottom: 0;
-  left: 10px;
-  right: 10px;
-  height: 2.5px;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
   background: #0f172a;
-  border-radius: 2px 2px 0 0;
+  border-radius: 2px;
+  content: "";
 }
 
 /* ─── Detail Cards in Left Section ─── */
@@ -405,6 +339,7 @@
   flex-direction: column;
   gap: 14px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  margin-bottom: 20px;
 }
 
 .sectionHeaderRow {
@@ -947,7 +882,7 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   4. RIGHT SECTION: Sticky Deployment Request Panel
+   5. RIGHT SECTION: Sticky Deployment Request Panel
    ───────────────────────────────────────────────────────────────────────────── */
 .stickyPanelWrap {
   position: sticky;
