@@ -49,7 +49,8 @@ describe("Hive Studio: 3-Layer Project Intelligence Workspace", () => {
 
       expect(screen.getByText("KL-COK-2026")).toBeInTheDocument();
       expect(screen.getByText("Design Development")).toBeInTheDocument();
-      expect(screen.getByText("12 files · 4 active tasks")).toBeInTheDocument();
+      expect(screen.getByText("12 files")).toBeInTheDocument();
+      expect(screen.getByText("4 active tasks")).toBeInTheDocument();
       expect(screen.getByText("Living Space & Terrace")).toBeInTheDocument();
 
       // Connected project resource indicators

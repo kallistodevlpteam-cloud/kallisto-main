@@ -63,7 +63,15 @@ export function StudioProjectContextCard({
               {selectedProject.phase || "Design Development"}
             </span>
             <span className={styles.projectScopeMeta}>
-              {fileCount} files · {taskCount} active tasks
+              <span className={styles.scopeMetaItem}>
+                <DocumentsDuotoneIcon size={13} style={{ color: "#0f172a" }} aria-hidden="true" />
+                <span>{fileCount} files</span>
+              </span>
+              <span className={styles.scopeMetaDot}>·</span>
+              <span className={styles.scopeMetaItem}>
+                <ReviewDuotoneIcon size={13} style={{ color: "#0f172a" }} aria-hidden="true" />
+                <span>{taskCount} active tasks</span>
+              </span>
             </span>
           </div>
 
@@ -94,7 +102,7 @@ export function StudioProjectContextCard({
               }
             }}
           >
-            <DrawingsDuotoneIcon size={14} style={{ color: "#2563eb" }} aria-hidden="true" />
+            <DrawingsDuotoneIcon size={14} style={{ color: "#0f172a" }} aria-hidden="true" />
             <span>Drawings (Rev 04)</span>
           </div>
 
@@ -110,7 +118,7 @@ export function StudioProjectContextCard({
               }
             }}
           >
-            <DocumentsDuotoneIcon size={14} style={{ color: "#7c3aed" }} aria-hidden="true" />
+            <DocumentsDuotoneIcon size={14} style={{ color: "#0f172a" }} aria-hidden="true" />
             <span>Documents ({fileCount})</span>
           </div>
 
@@ -126,7 +134,7 @@ export function StudioProjectContextCard({
               }
             }}
           >
-            <SpreadsheetDuotoneIcon size={14} style={{ color: "#16a34a" }} aria-hidden="true" />
+            <SpreadsheetDuotoneIcon size={14} style={{ color: "#0f172a" }} aria-hidden="true" />
             <span>BOQ (Preliminary)</span>
           </div>
 
@@ -142,7 +150,7 @@ export function StudioProjectContextCard({
               }
             }}
           >
-            <ReviewDuotoneIcon size={14} style={{ color: "#ea580c" }} aria-hidden="true" />
+            <ReviewDuotoneIcon size={14} style={{ color: "#0f172a" }} aria-hidden="true" />
             <span>Tasks ({taskCount})</span>
           </div>
 
@@ -158,7 +166,7 @@ export function StudioProjectContextCard({
               }
             }}
           >
-            <HistoryDuotoneIcon size={14} style={{ color: "#f59e0b" }} aria-hidden="true" />
+            <HistoryDuotoneIcon size={14} style={{ color: "#0f172a" }} aria-hidden="true" />
             <span>Project history</span>
           </div>
 
@@ -174,7 +182,7 @@ export function StudioProjectContextCard({
               }
             }}
           >
-            <MapPinDuotoneIcon size={14} style={{ color: "#e11d48" }} aria-hidden="true" />
+            <MapPinDuotoneIcon size={14} style={{ color: "#0f172a" }} aria-hidden="true" />
             <span>Site Feasibility</span>
           </div>
         </div>
