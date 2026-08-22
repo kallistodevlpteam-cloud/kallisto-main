@@ -27,10 +27,9 @@ describe("TradeCrewDetail Component", () => {
     // Section nav
     expect(screen.getByRole("tab", { name: "Overview" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Capabilities" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Reviews" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Availability" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Request Deployment" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Request Crew" })).toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Request Deployment" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Request Crew" })).toHaveAttribute("href", "/hands/trades/crew-masons-01/request");
     expect(screen.queryByRole("tab", { name: "Crew" })).not.toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "Deployments" })).not.toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "Documents" })).not.toBeInTheDocument();
@@ -65,29 +64,6 @@ describe("TradeCrewDetail Component", () => {
     expect(screen.getByText("August 2026")).toBeInTheDocument();
     expect(screen.getByText("Next available:")).toBeInTheDocument();
     expect(screen.getByText("28 August 2026")).toBeInTheDocument();
-  });
-
-  it("calculates live dynamic cost estimate in the request deployment tab and opens deployment request drawer", () => {
-    render(<TradeCrewDetail crewId="crew-masons-01" />);
-
-    // Switch to Request Deployment tab
-    fireEvent.click(screen.getByRole("tab", { name: "Request Deployment" }));
-    expect(screen.getByRole("heading", { level: 2, name: "Request Workforce Deployment" })).toBeInTheDocument();
-    expect(screen.getByText("₹1,14,000")).toBeInTheDocument();
-
-    // Increase duration by 1 day
-    const increaseDurationBtn = screen.getByRole("button", { name: "Increase duration by 1 day" });
-    fireEvent.click(increaseDurationBtn);
-
-    // 8 workers × ₹950 × 16 days = ₹121,600
-    expect(screen.getByText("₹1,21,600")).toBeInTheDocument();
-
-    // Click Request Deployment
-    const requestBtn = screen.getByRole("button", { name: "Request Deployment" });
-    fireEvent.click(requestBtn);
-
-    // Verify WorkforceRequestDrawer opened
-    expect(screen.getByRole("heading", { level: 2, name: "Request workforce" })).toBeInTheDocument();
   });
 
   it("renders friendly fallback for non-existent crew ID", () => {
