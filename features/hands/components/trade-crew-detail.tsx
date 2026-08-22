@@ -221,21 +221,6 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                       {crew.skills?.slice(0, 2).join(" & ") || "RCC Brickwork & Plastering"}
                     </span>
                   </div>
-
-                  {/* Location & Availability Line */}
-                  <div className={styles.locationAvailabilityRow}>
-                    <span className={styles.locationText}>
-                      <MapPin size={13} aria-hidden="true" />
-                      <span>{crew.location}</span>
-                    </span>
-                    <span className={styles.bulletSeparator}>·</span>
-                    <div className={styles.availabilityPill}>
-                      <span className={styles.availDot} />
-                      <span>
-                        {crew.availabilityLabel || "Available Tomorrow"} · {crew.crewSizeMin}–{crew.crewSizeMax} workers
-                      </span>
-                    </div>
-                  </div>
                 </div>
               </div>
 

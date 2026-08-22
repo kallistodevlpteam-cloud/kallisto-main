@@ -187,43 +187,6 @@
   font-weight: 700;
 }
 
-.locationAvailabilityRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 1px;
-}
-
-.locationText {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12.5px;
-  font-weight: 550;
-  color: #64748b;
-}
-
-.availabilityPill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  color: #15803d;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 2.5px 8px;
-  border-radius: 9999px;
-}
-
-.availDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #16a34a;
-}
-
 /* Action Group */
 .headerActionGroup {
   display: flex;
