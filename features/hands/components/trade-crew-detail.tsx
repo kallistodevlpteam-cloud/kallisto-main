@@ -389,47 +389,22 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
           {activeTab === "capabilities" && (
             <section id="capabilities" className={styles.sectionCard} aria-labelledby="heading-capabilities">
               <div className={styles.capabilitiesStepGrid}>
-                {crew.capabilityRatings?.map((cap, idx) => {
-                  const icons = [Building2, Layers, Sparkles, Grid3X3, Compass, Droplets, Zap];
-                  const CapIcon = icons[idx % icons.length];
-                  return (
-                    <article key={cap.name} className={styles.capabilityStepCard}>
-                      <div>
-                        <div className={styles.capCardTopRow}>
-                          <div className={styles.capIconBox} aria-hidden="true">
-                            <CapIcon size={16} />
-                          </div>
-                          <span className={styles.capStepBadge}>{cap.step || `STEP ${idx + 1}`}</span>
-                        </div>
+                {crew.capabilityRatings?.map((cap, idx) => (
+                  <article key={cap.name} className={styles.capabilityStepCard}>
+                    <div className={styles.capCardTopRow}>
+                      <span className={styles.capMetricTimeline}>
+                        {cap.timelineOrMetric || (cap.verifiedSites ? `${cap.verifiedSites} verified sites` : "Standard shift")}
+                      </span>
+                      <span className={styles.capStepBadge}>{cap.step || `STEP ${idx + 1}`}</span>
+                    </div>
 
-                        <div className={styles.capMetricTimeline}>
-                          {cap.timelineOrMetric || (cap.verifiedSites ? `${cap.verifiedSites} verified sites` : "Standard shift")}
-                        </div>
+                    <h3 className={styles.capStepTitle}>{cap.name}</h3>
 
-                        <h3 className={styles.capStepTitle}>{cap.name}</h3>
-
-                        {cap.description && (
-                          <p className={styles.capStepDescription}>{cap.description}</p>
-                        )}
-                      </div>
-
-                      <div className={styles.capCardFooterRow}>
-                        <span className={styles.capToolsTag}>TOOLS</span>
-                        <div className={styles.capToolsList}>
-                          {cap.tools && cap.tools.length > 0 ? (
-                            cap.tools.map((tool) => (
-                              <span key={tool} className={styles.capToolItemBadge}>
-                                {tool}
-                              </span>
-                            ))
-                          ) : (
-                            <span className={styles.capToolItemBadge}>IS Standards</span>
-                          )}
-                        </div>
-                      </div>
-                    </article>
-                  );
-                })}
+                    {cap.description && (
+                      <p className={styles.capStepDescription}>{cap.description}</p>
+                    )}
+                  </article>
+                ))}
               </div>
 
               <h3 className={styles.bulletListTitle}>Specializations</h3>

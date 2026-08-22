@@ -613,68 +613,52 @@
 .capabilityStepCard {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 18px;
+  border-radius: 10px;
+  padding: 13px 15px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 16px;
-  min-height: 220px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  gap: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
   transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
   box-sizing: border-box;
 }
 
 .capabilityStepCard:hover {
   border-color: #cbd5e1;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
-  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05);
+  transform: translateY(-1px);
 }
 
 .capCardTopRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-}
-
-.capIconBox {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: #eff6ff;
-  border: 1px solid #bae6fd;
-  color: #0284c7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  gap: 8px;
 }
 
 .capStepBadge {
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 700;
   color: #475569;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  padding: 2px 7px;
-  border-radius: 6px;
-  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 5px;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .capMetricTimeline {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
   color: #0284c7;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-top: 14px;
-  margin-bottom: 2px;
+  margin: 0;
 }
 
 .capStepTitle {
-  font-size: 14.5px;
+  font-size: 14px;
   font-weight: 750;
   color: #0f172a;
   line-height: 1.25;
@@ -684,49 +668,8 @@
 .capStepDescription {
   font-size: 12.5px;
   color: #475569;
-  line-height: 1.55;
-  margin: 6px 0 0 0;
-}
-
-.capCardFooterRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding-top: 14px;
-  border-top: 1px solid #f1f5f9;
-}
-
-.capToolsTag {
-  font-size: 9.5px;
-  font-weight: 750;
-  color: #64748b;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  padding: 2px 6px;
-  border-radius: 4px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  flex-shrink: 0;
-}
-
-.capToolsList {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.capToolItemBadge {
-  font-size: 10px;
-  font-weight: 600;
-  color: #334155;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 2px 6px;
-  border-radius: 4px;
-  white-space: nowrap;
+  line-height: 1.5;
+  margin: 2px 0 0 0;
 }
 
 .rateCardHighlightTag {
