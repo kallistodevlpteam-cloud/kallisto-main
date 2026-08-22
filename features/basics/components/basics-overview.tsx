@@ -101,6 +101,7 @@ export function BasicsOverview({ projectId }: { projectId?: string }) {
             height={42}
             className={styles.grokBasicsLogoImg}
             priority
+            unoptimized
           />
           <p className={styles.grokTagline}>
             Find verified specialists, scope requirements, and build your project with precision.
