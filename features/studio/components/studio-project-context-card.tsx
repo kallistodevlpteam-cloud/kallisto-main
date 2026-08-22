@@ -2,11 +2,7 @@
 
 import {
   DocumentsDuotoneIcon,
-  DrawingsDuotoneIcon,
-  HistoryDuotoneIcon,
-  MapPinDuotoneIcon,
   ReviewDuotoneIcon,
-  SpreadsheetDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 import { StudioProjectOption } from "@/types/domain/studio";
 import { ProjectSelector } from "./project-selector";
@@ -23,7 +19,6 @@ export function StudioProjectContextCard({
   selectedProjectId,
   projects,
   onSelectProject,
-  onSelectPrompt,
 }: StudioProjectContextCardProps) {
   const selectedProject = projects.find((p) => p.id === selectedProjectId) || projects[0] || {
     id: "proj-001",
@@ -44,12 +39,6 @@ export function StudioProjectContextCard({
 
   const fileCount = selectedProject.name.includes("Horizon") ? 12 : 8;
   const taskCount = selectedProject.name.includes("Horizon") ? 4 : 3;
-
-  const handlePillClick = (promptText: string) => {
-    if (onSelectPrompt) {
-      onSelectPrompt(promptText);
-    }
-  };
 
   return (
     <div className={styles.projectContextCard} aria-label="Active project context">
@@ -84,107 +73,6 @@ export function StudioProjectContextCard({
             />
           </h1>
           <p className={styles.projectSubScopeSubtitle}>{subScope}</p>
-        </div>
-      </div>
-
-      {/* Connected Project Resources Strip */}
-      <div className={styles.odinAccessStrip} aria-label="Connected project data">
-        <div className={styles.odinAccessPills}>
-          <div
-            className={styles.odinAccessPill}
-            role="button"
-            tabIndex={0}
-            onClick={() => handlePillClick(`Review and analyse drawing revision Rev 04 for ${selectedProject.name}.`)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                handlePillClick(`Review and analyse drawing revision Rev 04 for ${selectedProject.name}.`);
-              }
-            }}
-          >
-            <DrawingsDuotoneIcon size={14} style={{ color: "#0f172a" }} aria-hidden="true" />
-            <span>Drawings (Rev 04)</span>
-          </div>
-
-          <div
-            className={styles.odinAccessPill}
-            role="button"
-            tabIndex={0}
-            onClick={() => handlePillClick(`Summarise the ${fileCount} uploaded documents for ${selectedProject.name}.`)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                handlePillClick(`Summarise the ${fileCount} uploaded documents for ${selectedProject.name}.`);
-              }
-            }}
-          >
-            <DocumentsDuotoneIcon size={14} style={{ color: "#0f172a" }} aria-hidden="true" />
-            <span>Documents ({fileCount})</span>
-          </div>
-
-          <div
-            className={styles.odinAccessPill}
-            role="button"
-            tabIndex={0}
-            onClick={() => handlePillClick(`Check and validate the preliminary BOQ for ${selectedProject.name}.`)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                handlePillClick(`Check and validate the preliminary BOQ for ${selectedProject.name}.`);
-              }
-            }}
-          >
-            <SpreadsheetDuotoneIcon size={14} style={{ color: "#0f172a" }} aria-hidden="true" />
-            <span>BOQ (Preliminary)</span>
-          </div>
-
-          <div
-            className={styles.odinAccessPill}
-            role="button"
-            tabIndex={0}
-            onClick={() => handlePillClick(`List and prioritize the ${taskCount} active tasks for ${selectedProject.name}.`)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                handlePillClick(`List and prioritize the ${taskCount} active tasks for ${selectedProject.name}.`);
-              }
-            }}
-          >
-            <ReviewDuotoneIcon size={14} style={{ color: "#0f172a" }} aria-hidden="true" />
-            <span>Tasks ({taskCount})</span>
-          </div>
-
-          <div
-            className={styles.odinAccessPill}
-            role="button"
-            tabIndex={0}
-            onClick={() => handlePillClick(`Provide a timeline summary of project history and recent decisions for ${selectedProject.name}.`)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                handlePillClick(`Provide a timeline summary of project history and recent decisions for ${selectedProject.name}.`);
-              }
-            }}
-          >
-            <HistoryDuotoneIcon size={14} style={{ color: "#0f172a" }} aria-hidden="true" />
-            <span>Project history</span>
-          </div>
-
-          <div
-            className={styles.odinAccessPill}
-            role="button"
-            tabIndex={0}
-            onClick={() => handlePillClick(`Show me the site feasibility report and field findings for ${selectedProject.name}.`)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                handlePillClick(`Show me the site feasibility report and field findings for ${selectedProject.name}.`);
-              }
-            }}
-          >
-            <MapPinDuotoneIcon size={14} style={{ color: "#0f172a" }} aria-hidden="true" />
-            <span>Site Feasibility</span>
-          </div>
         </div>
       </div>
     </div>

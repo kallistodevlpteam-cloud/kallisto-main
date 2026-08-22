@@ -52,14 +52,6 @@ describe("Hive Studio: 3-Layer Project Intelligence Workspace", () => {
       expect(screen.getByText("12 files")).toBeInTheDocument();
       expect(screen.getByText("4 active tasks")).toBeInTheDocument();
       expect(screen.getByText("Living Space & Terrace")).toBeInTheDocument();
-
-      // Connected project resource indicators
-      expect(screen.getByText("Drawings (Rev 04)")).toBeInTheDocument();
-      expect(screen.getByText("Documents (12)")).toBeInTheDocument();
-      expect(screen.getByText("BOQ (Preliminary)")).toBeInTheDocument();
-      expect(screen.getByText("Tasks (4)")).toBeInTheDocument();
-      expect(screen.getByText("Project history")).toBeInTheDocument();
-      expect(screen.getByText("Site Feasibility")).toBeInTheDocument();
     });
   });
 
@@ -159,7 +151,7 @@ describe("Hive Studio: 3-Layer Project Intelligence Workspace", () => {
 
       // Layer 1
       expect(screen.getByText("KL-COK-2026")).toBeInTheDocument();
-      expect(screen.getByText("Drawings (Rev 04)")).toBeInTheDocument();
+      expect(screen.getByText("Luxury Villa Horizon")).toBeInTheDocument();
 
       // Layer 2
       expect(screen.getByText("What do you want to accomplish?")).toBeInTheDocument();
