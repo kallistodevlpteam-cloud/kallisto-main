@@ -124,6 +124,76 @@
   margin-left: 1px;
 }
 
+.referenceHeroIdentity {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-width: 0;
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .referenceHeroIdentity {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.heroIdentityInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.heroTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.heroTitle {
+  font-size: 21px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.heroCategorySub {
+  font-size: 14px;
+  font-weight: 550;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.subDot {
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.heroLocationAvailRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.heroLocation {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+}
+
 .detailActions {
   display: flex;
   align-items: center;
@@ -159,20 +229,6 @@
   background: #0f172a !important;
   color: #ffffff !important;
   border-color: #0f172a !important;
-}
-
-.referenceHeroTitle {
-  font-size: 20px;
-  font-weight: 750;
-  line-height: 1.35;
-  color: #0f172a;
-  letter-spacing: -0.02em;
-  margin: 0;
-}
-
-.referenceHeroMuted {
-  color: #64748b;
-  font-weight: 450;
 }
 
 .referenceHeroBio {

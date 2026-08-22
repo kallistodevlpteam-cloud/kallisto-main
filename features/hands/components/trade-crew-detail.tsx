@@ -174,23 +174,54 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
           {/* 1. Basics-style Reference Hero Section */}
           <section className={styles.referenceHero}>
             <div className={styles.referenceHeroTop}>
-              {/* Brand Logo Tile */}
-              <div className={styles.profileBrandTileWrapper} aria-hidden="true">
-                <div className={styles.brandCoverGrid} />
-                <div className={styles.brandMarkContent}>
-                  <div
-                    className={styles.brandIconWrap}
-                    style={{
-                      color: brand?.color || "#06b6d4",
-                      filter: `drop-shadow(0 0 8px ${brand?.color || "#06b6d4"}66)`,
-                    }}
-                  >
-                    <BrandIcon size={22} strokeWidth={2.4} />
+              <div className={styles.referenceHeroIdentity}>
+                {/* Brand Logo Tile */}
+                <div className={styles.profileBrandTileWrapper} aria-hidden="true">
+                  <div className={styles.brandCoverGrid} />
+                  <div className={styles.brandMarkContent}>
+                    <div
+                      className={styles.brandIconWrap}
+                      style={{
+                        color: brand?.color || "#06b6d4",
+                        filter: `drop-shadow(0 0 8px ${brand?.color || "#06b6d4"}66)`,
+                      }}
+                    >
+                      <BrandIcon size={24} strokeWidth={2.4} />
+                    </div>
+                    <span className={styles.brandText}>
+                      {brand?.name}
+                      <span className={styles.brandDot}>°</span>
+                    </span>
                   </div>
-                  <span className={styles.brandText}>
-                    {brand?.name}
-                    <span className={styles.brandDot}>°</span>
-                  </span>
+                </div>
+
+                {/* Identity Info next to image card */}
+                <div className={styles.heroIdentityInfo}>
+                  <div className={styles.heroTitleRow}>
+                    <h1 className={styles.heroTitle}>{crew.name}</h1>
+                    {crew.verified && (
+                      <div className={styles.verifiedBadge}>
+                        <CheckCircle2 size={13} aria-hidden="true" />
+                        <span>Verified</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className={styles.heroCategorySub}>
+                    <span>{crew.category}</span>
+                    <span className={styles.subDot}>•</span>
+                    <span>{crew.skills?.slice(0, 2).join(" & ") || crew.trade}</span>
+                  </div>
+
+                  <div className={styles.heroLocationAvailRow}>
+                    <span className={styles.heroLocation}>
+                      <MapPin size={13} aria-hidden="true" />
+                      <span>{crew.location}</span>
+                    </span>
+                    <span className={styles.availabilityBadge}>
+                      {crew.availabilityLabel || "Available for deployment"}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -218,30 +249,8 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
               </div>
             </div>
 
-            {/* Hero Title with Category and Location */}
-            <h1 className={styles.referenceHeroTitle}>
-              {crew.name} — we specialize in {crew.skills[0] || crew.trade} in {crew.category}.{" "}
-              <span className={styles.referenceHeroMuted}>
-                Based in {crew.location}.
-              </span>
-            </h1>
-
             {/* Hero Bio */}
             <p className={styles.referenceHeroBio}>{crew.about}</p>
-
-            {/* Badges Row */}
-            <div className={styles.heroBadgesRow}>
-              {crew.verified && (
-                <div className={styles.verifiedBadge}>
-                  <CheckCircle2 size={13} aria-hidden="true" />
-                  <span>Verified Crew</span>
-                </div>
-              )}
-              <div className={styles.availabilityBadge}>
-                <Clock size={13} aria-hidden="true" />
-                <span>{crew.availabilityLabel || "Available Tomorrow"}</span>
-              </div>
-            </div>
 
             {/* Profile Statistics Strip with Icons */}
             <div className={styles.profileStats}>
