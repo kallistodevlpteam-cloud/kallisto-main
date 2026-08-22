@@ -197,11 +197,38 @@ export function StudioRightSidebar({
   // ── PROJECT INTELLIGENCE, OUTPUTS & CHAT HISTORY MODE ──
   return (
     <aside className={`${styles.sidebarContainer} ${className}`}>
-      {/* Top Header & Title Bar */}
+      {/* Top Header & Tab Switcher Bar */}
       <div className={styles.sidebarTopBar}>
-        <div className={styles.sidebarHeaderLabelWrap}>
-          <OdinDuotoneIcon size={15} style={{ color: "#7c3aed" }} />
-          <span className={styles.sidebarHeaderLabel}>Project</span>
+        <div className={styles.tabsRow}>
+          <button
+            type="button"
+            className={`${styles.tabBtn} ${internalTab === "intelligence" ? styles.activeTabBtn : ""}`}
+            onClick={() => setInternalTab("intelligence")}
+            title="Project Intelligence"
+          >
+            <OdinDuotoneIcon size={14} style={{ color: "#7c3aed" }} />
+            <span>Project</span>
+          </button>
+
+          <button
+            type="button"
+            className={`${styles.tabBtn} ${internalTab === "outputs" ? styles.activeTabBtn : ""}`}
+            onClick={() => setInternalTab("outputs")}
+            title="Outputs & Deliverables"
+          >
+            <OutputsDuotoneIcon size={14} style={{ color: "#6366f1" }} />
+            <span>Outputs</span>
+          </button>
+
+          <button
+            type="button"
+            className={`${styles.tabBtn} ${internalTab === "chats" ? styles.activeTabBtn : ""}`}
+            onClick={() => setInternalTab("chats")}
+            title="Chat History"
+          >
+            <HistoryDuotoneIcon size={14} style={{ color: "#f59e0b" }} />
+            <span>History</span>
+          </button>
         </div>
 
         <button
@@ -218,57 +245,7 @@ export function StudioRightSidebar({
       {/* TAB 1: PROJECT INTELLIGENCE & SIDEBAR MENUS */}
       {internalTab === "intelligence" && (
         <div className={styles.intelligenceSidebarMenu}>
-          {/* Section 1: Project Scope Header Card */}
-          <div className={styles.sidebarProjectCard}>
-            <div className={styles.sidebarBadgeRow}>
-              <span className={styles.sidebarCodeBadge}>KAL-RES-2026-01</span>
-              <span className={styles.sidebarPhaseBadge}>
-                <span className={styles.sidebarPhaseDot} />
-                Design Development
-              </span>
-            </div>
-            <h3 className={styles.sidebarProjectTitle}>{projectName}</h3>
-            <p className={styles.sidebarSubScope}>Living Space & Terrace · 12 files · 4 tasks</p>
-          </div>
-
-          {/* Section 2: Odin Connected Knowledge Base */}
-          <div className={styles.sidebarSection}>
-            <div className={styles.sidebarSectionHeader}>
-              <div className={styles.sidebarHeaderTitle}>
-                <Sparkles size={13} style={{ color: "#7c3aed" }} />
-                <span>Odin has access to</span>
-              </div>
-            </div>
-
-            <div className={styles.sidebarPillsGrid}>
-              <div className={styles.sidebarAccessPill}>
-                <Layers size={12} />
-                <span>Drawings (Rev 04)</span>
-              </div>
-              <div className={styles.sidebarAccessPill}>
-                <FileText size={12} />
-                <span>Documents (12)</span>
-              </div>
-              <div className={styles.sidebarAccessPill}>
-                <FileCheck size={12} />
-                <span>BOQ (Preliminary)</span>
-              </div>
-              <div className={styles.sidebarAccessPill}>
-                <CheckCircle2 size={12} />
-                <span>Tasks (4)</span>
-              </div>
-              <div className={styles.sidebarAccessPill}>
-                <Clock size={12} />
-                <span>Project history</span>
-              </div>
-              <div className={styles.sidebarAccessPill}>
-                <MapPin size={12} />
-                <span>Site Feasibility</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Section 3: Recent Project Work */}
+          {/* Section 1: Recent Project Work */}
           <div className={styles.sidebarSection}>
             <div className={styles.sidebarSectionHeader}>
               <div className={styles.sidebarHeaderTitle}>
