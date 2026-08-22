@@ -60,6 +60,28 @@ describe("Hive Studio: 3-Layer Project Intelligence Workspace", () => {
       expect(screen.getByText("Project history")).toBeInTheDocument();
       expect(screen.getByText("Site Feasibility")).toBeInTheDocument();
     });
+
+    it("triggers prompt action when clicking a resource pill", () => {
+      const handleSelectPrompt = vi.fn();
+      render(
+        <StudioProjectContextCard
+          selectedProjectId="proj-001"
+          projects={MOCK_PROJECTS}
+          onSelectProject={vi.fn()}
+          onSelectPrompt={handleSelectPrompt}
+        />
+      );
+
+      fireEvent.click(screen.getByText("Drawings (Rev 04)"));
+      expect(handleSelectPrompt).toHaveBeenCalledWith(
+        expect.stringContaining("Review and inspect architectural drawings (Rev 04)"),
+      );
+
+      fireEvent.click(screen.getByText("BOQ (Preliminary)"));
+      expect(handleSelectPrompt).toHaveBeenCalledWith(
+        expect.stringContaining("Open and audit the preliminary BOQ breakdown"),
+      );
+    });
   });
 
   describe("Layer 2: Action-Oriented Pathways", () => {

@@ -24,6 +24,7 @@ export function StudioIdleContent({
   onSelectProject,
   selectedIntent,
   onSelectIntent,
+  onSelectPrompt,
 }: StudioIdleContentProps) {
   return (
     <div className={styles.studioIdleContainer}>
@@ -32,6 +33,7 @@ export function StudioIdleContent({
         selectedProjectId={selectedProjectId}
         projects={projects}
         onSelectProject={onSelectProject}
+        onSelectPrompt={onSelectPrompt}
       />
 
       {/* Layer 2: Action-Oriented Pathways */}
