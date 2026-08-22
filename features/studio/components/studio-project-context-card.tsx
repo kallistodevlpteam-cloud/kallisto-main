@@ -1,17 +1,16 @@
 "use client";
 
 import React from "react";
+import { Sparkles } from "lucide-react";
 import {
-  Building2,
-  CheckCircle2,
-  Clock,
-  FileCheck,
-  FileText,
-  Folder,
-  Layers,
-  MapPin,
-  Sparkles,
-} from "lucide-react";
+  DocumentsDuotoneIcon,
+  DrawingsDuotoneIcon,
+  HistoryDuotoneIcon,
+  MapPinDuotoneIcon,
+  OdinDuotoneIcon,
+  ReviewDuotoneIcon,
+  SpreadsheetDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import { StudioProjectOption } from "@/types/domain/studio";
 import { ProjectSelector } from "./project-selector";
 import styles from "./studio-chat-canvas.module.css";
@@ -78,33 +77,33 @@ export function StudioProjectContextCard({
       {/* Subtle "Odin has access to..." Connection Strip */}
       <div className={styles.odinAccessStrip} aria-label="Odin connected project data">
         <div className={styles.odinAccessLabel}>
-          <Sparkles size={13} className={styles.odinAccessIcon} aria-hidden="true" />
+          <OdinDuotoneIcon size={14} className={styles.odinAccessIcon} aria-hidden="true" />
           <span>Odin has access to:</span>
         </div>
 
         <div className={styles.odinAccessPills}>
           <div className={styles.odinAccessPill}>
-            <Layers size={12} aria-hidden="true" />
+            <DrawingsDuotoneIcon size={14} style={{ color: "#2563eb" }} aria-hidden="true" />
             <span>Drawings (Rev 04)</span>
           </div>
           <div className={styles.odinAccessPill}>
-            <FileText size={12} aria-hidden="true" />
+            <DocumentsDuotoneIcon size={14} style={{ color: "#7c3aed" }} aria-hidden="true" />
             <span>Documents ({fileCount})</span>
           </div>
           <div className={styles.odinAccessPill}>
-            <FileCheck size={12} aria-hidden="true" />
+            <SpreadsheetDuotoneIcon size={14} style={{ color: "#16a34a" }} aria-hidden="true" />
             <span>BOQ (Preliminary)</span>
           </div>
           <div className={styles.odinAccessPill}>
-            <CheckCircle2 size={12} aria-hidden="true" />
+            <ReviewDuotoneIcon size={14} style={{ color: "#ea580c" }} aria-hidden="true" />
             <span>Tasks ({taskCount})</span>
           </div>
           <div className={styles.odinAccessPill}>
-            <Clock size={12} aria-hidden="true" />
+            <HistoryDuotoneIcon size={14} style={{ color: "#f59e0b" }} aria-hidden="true" />
             <span>Project history</span>
           </div>
           <div className={styles.odinAccessPill}>
-            <MapPin size={12} aria-hidden="true" />
+            <MapPinDuotoneIcon size={14} style={{ color: "#e11d48" }} aria-hidden="true" />
             <span>Site Feasibility</span>
           </div>
         </div>

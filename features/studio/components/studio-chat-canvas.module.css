@@ -1029,22 +1029,27 @@
 .odinAccessPill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  font-weight: 500;
-  color: #475569;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 3px 8px;
-  border-radius: 6px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
-  transition: all 0.15s ease;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 550;
+  color: #334155;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  padding: 4px 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: default;
 }
 
 .odinAccessPill:hover {
-  background: #ffffff;
-  border-color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(203, 213, 225, 0.9);
   color: #0f172a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 /* ── Layer 2: Action-Oriented Pathways ── */
