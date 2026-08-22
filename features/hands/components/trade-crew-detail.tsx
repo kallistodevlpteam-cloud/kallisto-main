@@ -344,36 +344,6 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
 
               <p className={styles.aboutParagraph}>{crew.about}</p>
 
-              {/* Trade Rate Cards Grid */}
-              {crew.rateCards && crew.rateCards.length > 0 && (
-                <div className={styles.rateCardsSection}>
-                  <h3 className={styles.bulletListTitle}>Trade Rate Cards & Deployment Pricing</h3>
-                  <div className={styles.rateCardsGrid}>
-                    {crew.rateCards.map((rc) => (
-                      <div
-                        key={rc.id}
-                        className={`${styles.rateCardItem} ${rc.highlight ? styles.rateCardItemHighlight : ""}`}
-                      >
-                        <div className={styles.rateCardHeader}>
-                          <span className={styles.rateCardTitle}>{rc.title}</span>
-                          {rc.highlight && <span className={styles.rateCardHighlightTag}>Standard Lead</span>}
-                        </div>
-
-                        <div className={styles.rateCardValueRow}>
-                          <div className={styles.rateCardPrice}>
-                            <IndianRupee size={17} strokeWidth={2.6} className={styles.rateCardRupeeIcon} aria-hidden="true" />
-                            <span className={styles.rateCardAmount}>{rc.rate.toLocaleString("en-IN")}</span>
-                          </div>
-                          <span className={styles.rateCardUnit}>{rc.unit}</span>
-                        </div>
-
-                        <p className={styles.rateCardDescription}>{rc.description}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               <h3 className={styles.bulletListTitle}>Core capabilities</h3>
               <ul className={styles.coreCapabilitiesList}>
                 {crew.coreCapabilities?.map((item, idx) => (
