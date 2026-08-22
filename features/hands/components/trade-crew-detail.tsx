@@ -8,17 +8,13 @@ import {
   Check,
   CheckCircle2,
   ChevronRight,
-  Clock,
   Columns3,
-  ExternalLink,
   MapPin,
   Minus,
   Plus,
   Send,
   ShieldCheck,
-  Sparkles,
   Star,
-  Users,
 } from "lucide-react";
 import { getTradeCrewById, type TradeCrew } from "../services/trade-crews.mock";
 import { WorkforceRequestDrawer } from "./workforce-request-drawer";
@@ -130,7 +126,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
 
   return (
     <div className={`workspace-container ${styles.detailContainer}`}>
-      {/* 1. Back Navigation & Breadcrumbs */}
+      {/* Back Navigation & Breadcrumbs */}
       <nav className={styles.backNavRow} aria-label="Breadcrumb navigation">
         <Link href="/hands/trades" className={styles.backLink}>
           <ArrowLeft size={16} aria-hidden="true" />
@@ -141,130 +137,127 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
         </span>
       </nav>
 
-      {/* 2. Top Identity Hero Header */}
-      <header className={styles.identityCard} aria-label={`${crew.name} identity overview`}>
-        <div className={styles.identityMainRow}>
-          <div className={styles.identityLeft}>
-            {/* Brand Emblem */}
-            <div className={styles.brandEmblemBox} aria-hidden="true">
-              <span className={styles.brandEmblemIcon}>
-                <crew.icon size={26} color={crew.accentColor} />
-              </span>
-              <span className={styles.brandEmblemName}>
-                {crew.trade.slice(0, 5)}
-              </span>
-            </div>
-
-            <div className={styles.identityInfo}>
-              <div className={styles.crewTitleRow}>
-                <h1 className={styles.crewName}>{crew.name}</h1>
-                <div className={styles.ratingBadge}>
-                  <Star size={13} fill="#eab308" color="#eab308" aria-hidden="true" />
-                  <span>{crew.rating.toFixed(1)}</span>
-                </div>
-                {crew.verified && (
-                  <div className={styles.verifiedBadge}>
-                    <CheckCircle2 size={13} aria-hidden="true" />
-                    <span>Verified</span>
-                  </div>
-                )}
-              </div>
-
-              <div className={styles.crewSubtitleRow}>
-                <span>{crew.category}</span>
-                <span className={styles.subtitleDot}>•</span>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
-                  <MapPin size={13} aria-hidden="true" />
-                  {crew.location}
-                </span>
-              </div>
-
-              {/* 3-metric strip */}
-              <div className={styles.metricsStrip}>
-                <div className={styles.metricItem}>
-                  <strong>{crew.experienceYears} yrs</strong> experience
-                </div>
-                <div className={styles.metricDivider} aria-hidden="true" />
-                <div className={styles.metricItem}>
-                  <strong>{crew.completedJobs}+</strong> deployments
-                </div>
-                <div className={styles.metricDivider} aria-hidden="true" />
-                <div className={styles.metricItem}>
-                  <strong>{crew.crewSizeMin}–{crew.crewSizeMax}</strong> workers
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Rate & Action Buttons */}
-          <div className={styles.identityRight}>
-            <div className={styles.rateBlock}>
-              <div className={styles.ratePrice}>
-                ₹{crew.dailyRate.toLocaleString("en-IN")}
-              </div>
-              <div className={styles.rateUnit}>/ day / worker</div>
-            </div>
-
-            <div className={styles.actionButtonsRow}>
-              {/* Dominant Primary CTA */}
-              <button
-                type="button"
-                className={styles.dominantCtaBtn}
-                onClick={() => setDrawerOpen(true)}
-              >
-                <Send size={15} aria-hidden="true" />
-                <span>Request Crew</span>
-              </button>
-
-              {/* Shortlist / Bookmark Button */}
-              <button
-                type="button"
-                className={`${styles.secondaryActionBtn} ${isSaved ? styles.secondaryActionBtnActive : ""}`}
-                onClick={handleToggleSave}
-                aria-pressed={isSaved}
-                title={isSaved ? "Remove from shortlist" : "Add to shortlist"}
-              >
-                <Bookmark size={15} fill={isSaved ? "currentColor" : "none"} aria-hidden="true" />
-                <span>{isSaved ? "Shortlisted" : "Add to Shortlist"}</span>
-              </button>
-
-              {/* Compare Button */}
-              <Link
-                href={`/hands/trades?compare=${crew.id}`}
-                className={styles.secondaryActionBtn}
-                title="Compare with other trade crews"
-              >
-                <Columns3 size={15} aria-hidden="true" />
-                <span>Compare</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* 3. Horizontal Sticky Section Navigation */}
-      <nav className={styles.sectionNavWrapper} aria-label="Profile section navigation">
-        <div className={styles.sectionNavList} role="tablist">
-          {SECTION_TABS.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={activeTab === tab.id}
-              className={`${styles.navTabBtn} ${activeTab === tab.id ? styles.navTabBtnActive : ""}`}
-              onClick={() => scrollToSection(tab.id)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </nav>
-
-      {/* 4. Two-Column Main Content Layout */}
+      {/* Two Primary Sections Layout: Left Section & Right Section */}
       <div className={styles.twoColLayout}>
-        {/* Left Column — 70% Detailed Sections */}
-        <main className={styles.leftStack}>
-          {/* Section: Overview */}
+        {/* ─── LEFT SECTION: Identity, Tabs & Detailed Profiles ─── */}
+        <div className={styles.leftStack}>
+          {/* 1. Crew Identity Header Card */}
+          <header className={styles.identityCard} aria-label={`${crew.name} identity overview`}>
+            <div className={styles.identityMainRow}>
+              <div className={styles.identityLeft}>
+                {/* Brand Emblem */}
+                <div className={styles.brandEmblemBox} aria-hidden="true">
+                  <span className={styles.brandEmblemIcon}>
+                    <crew.icon size={26} color={crew.accentColor} />
+                  </span>
+                  <span className={styles.brandEmblemName}>
+                    {crew.trade.slice(0, 5)}
+                  </span>
+                </div>
+
+                <div className={styles.identityInfo}>
+                  <div className={styles.crewTitleRow}>
+                    <h1 className={styles.crewName}>{crew.name}</h1>
+                    <div className={styles.ratingBadge}>
+                      <Star size={13} fill="#eab308" color="#eab308" aria-hidden="true" />
+                      <span>{crew.rating.toFixed(1)}</span>
+                    </div>
+                    {crew.verified && (
+                      <div className={styles.verifiedBadge}>
+                        <CheckCircle2 size={13} aria-hidden="true" />
+                        <span>Verified</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className={styles.crewSubtitleRow}>
+                    <span>{crew.category}</span>
+                    <span className={styles.subtitleDot}>•</span>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
+                      <MapPin size={13} aria-hidden="true" />
+                      {crew.location}
+                    </span>
+                  </div>
+
+                  {/* 3-metric strip */}
+                  <div className={styles.metricsStrip}>
+                    <div className={styles.metricItem}>
+                      <strong>{crew.experienceYears} yrs</strong> experience
+                    </div>
+                    <div className={styles.metricDivider} aria-hidden="true" />
+                    <div className={styles.metricItem}>
+                      <strong>{crew.completedJobs}+</strong> deployments
+                    </div>
+                    <div className={styles.metricDivider} aria-hidden="true" />
+                    <div className={styles.metricItem}>
+                      <strong>{crew.crewSizeMin}–{crew.crewSizeMax}</strong> workers
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Rate & Action Buttons inside Header */}
+              <div className={styles.identityRight}>
+                <div className={styles.rateBlock}>
+                  <div className={styles.ratePrice}>
+                    ₹{crew.dailyRate.toLocaleString("en-IN")}
+                  </div>
+                  <div className={styles.rateUnit}>/ day / worker</div>
+                </div>
+
+                <div className={styles.actionButtonsRow}>
+                  <button
+                    type="button"
+                    className={styles.dominantCtaBtn}
+                    onClick={() => setDrawerOpen(true)}
+                  >
+                    <Send size={15} aria-hidden="true" />
+                    <span>Request Crew</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`${styles.secondaryActionBtn} ${isSaved ? styles.secondaryActionBtnActive : ""}`}
+                    onClick={handleToggleSave}
+                    aria-pressed={isSaved}
+                    title={isSaved ? "Remove from shortlist" : "Add to shortlist"}
+                  >
+                    <Bookmark size={15} fill={isSaved ? "currentColor" : "none"} aria-hidden="true" />
+                    <span>{isSaved ? "Shortlisted" : "Add to Shortlist"}</span>
+                  </button>
+
+                  <Link
+                    href={`/hands/trades?compare=${crew.id}`}
+                    className={styles.secondaryActionBtn}
+                    title="Compare with other trade crews"
+                  >
+                    <Columns3 size={15} aria-hidden="true" />
+                    <span>Compare</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          {/* 2. Horizontal Sticky Section Navigation Tab Strip */}
+          <nav className={styles.sectionNavWrapper} aria-label="Profile section navigation">
+            <div className={styles.sectionNavList} role="tablist">
+              {SECTION_TABS.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTab === tab.id}
+                  className={`${styles.navTabBtn} ${activeTab === tab.id ? styles.navTabBtnActive : ""}`}
+                  onClick={() => scrollToSection(tab.id)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </nav>
+
+          {/* 3. Section: Overview */}
           <section id="overview" className={styles.sectionCard} aria-labelledby="heading-overview">
             <div className={styles.sectionHeaderRow}>
               <h2 id="heading-overview" className={styles.sectionTitle}>Overview</h2>
@@ -281,7 +274,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
             </ul>
           </section>
 
-          {/* Section: Capabilities */}
+          {/* 4. Section: Capabilities */}
           <section id="capabilities" className={styles.sectionCard} aria-labelledby="heading-capabilities">
             <div className={styles.sectionHeaderRow}>
               <h2 id="heading-capabilities" className={styles.sectionTitle}>Capabilities</h2>
@@ -315,7 +308,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
             </div>
           </section>
 
-          {/* Section: Crew Composition */}
+          {/* 5. Section: Crew Composition */}
           <section id="crew" className={styles.sectionCard} aria-labelledby="heading-crew">
             <div className={styles.sectionHeaderRow}>
               <h2 id="heading-crew" className={styles.sectionTitle}>Crew Composition</h2>
@@ -362,7 +355,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
             </div>
           </section>
 
-          {/* Section: Recent Deployments */}
+          {/* 6. Section: Recent Deployments */}
           <section id="deployments" className={styles.sectionCard} aria-labelledby="heading-deployments">
             <div className={styles.sectionHeaderRow}>
               <h2 id="heading-deployments" className={styles.sectionTitle}>Recent Deployments</h2>
@@ -398,7 +391,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
             </div>
           </section>
 
-          {/* Section: Client Reviews */}
+          {/* 7. Section: Client Reviews */}
           <section id="reviews" className={styles.sectionCard} aria-labelledby="heading-reviews">
             <div className={styles.sectionHeaderRow}>
               <h2 id="heading-reviews" className={styles.sectionTitle}>Client Reviews</h2>
@@ -450,7 +443,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
             </div>
           </section>
 
-          {/* Section: Availability */}
+          {/* 8. Section: Availability */}
           <section id="availability" className={styles.sectionCard} aria-labelledby="heading-availability">
             <div className={styles.sectionHeaderRow}>
               <h2 id="heading-availability" className={styles.sectionTitle}>Availability</h2>
@@ -514,7 +507,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
             </div>
           </section>
 
-          {/* Section: Kallisto Verification & Documents */}
+          {/* 9. Section: Kallisto Verification & Documents */}
           <section id="documents" className={styles.sectionCard} aria-labelledby="heading-documents">
             <div className={styles.sectionHeaderRow}>
               <h2 id="heading-documents" className={styles.sectionTitle}>Kallisto Verification</h2>
@@ -562,9 +555,9 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
               </button>
             </div>
           </section>
-        </main>
+        </div>
 
-        {/* Right Column — 30% Sticky Deployment Request Panel */}
+        {/* ─── RIGHT SECTION: Sticky Deployment Request Panel ─── */}
         <aside className={styles.stickyPanelWrap} aria-label="Deployment Request Calculator">
           <div className={styles.stickyRequestPanel}>
             <h2 className={styles.requestPanelTitle}>Request This Crew</h2>
@@ -694,7 +687,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
         </aside>
       </div>
 
-      {/* 5. Interactive Workforce Request Drawer Modal */}
+      {/* Interactive Workforce Request Drawer Modal */}
       {drawerOpen && (
         <WorkforceRequestDrawer
           initialTrade={crew.trade as any}
