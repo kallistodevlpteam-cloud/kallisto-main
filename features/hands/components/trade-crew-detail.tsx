@@ -1,20 +1,25 @@
-"use client";
-
 import React, { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
   Bookmark,
+  Building2,
   Check,
   CheckCircle2,
   ChevronRight,
   Columns3,
+  Compass,
+  Droplets,
+  Grid3X3,
+  Layers,
   MapPin,
   Minus,
   Plus,
   Send,
   ShieldCheck,
+  Sparkles,
   Star,
+  Zap,
 } from "lucide-react";
 import { getTradeCrewById, type TradeCrew } from "../services/trade-crews.mock";
 import { WorkforceRequestDrawer } from "./workforce-request-drawer";
@@ -23,6 +28,35 @@ import styles from "./trade-crew-detail.module.css";
 interface TradeCrewDetailProps {
   crewId: string;
   projectId?: string;
+}
+
+function getBrandInfo(crew: TradeCrew): { name: string; icon: React.ElementType; color: string } {
+  const tradeLower = crew.trade.toLowerCase() + " " + crew.category.toLowerCase();
+
+  if (tradeLower.includes("electric") || tradeLower.includes("mep")) {
+    return { name: "circuit", icon: Zap, color: "#06b6d4" };
+  }
+  if (tradeLower.includes("plumb") || tradeLower.includes("sanitary")) {
+    return { name: "hydro", icon: Droplets, color: "#38bdf8" };
+  }
+  if (tradeLower.includes("wood") || tradeLower.includes("carpenter") || tradeLower.includes("formwork")) {
+    return { name: "forma", icon: Layers, color: "#10b981" };
+  }
+  if (tradeLower.includes("steel") || tradeLower.includes("rebar") || tradeLower.includes("reinforce")) {
+    return { name: "struct", icon: Grid3X3, color: "#a855f7" };
+  }
+  if (tradeLower.includes("paint") || tradeLower.includes("finish") || tradeLower.includes("coat")) {
+    return { name: "chroma", icon: Sparkles, color: "#f43f5e" };
+  }
+  if (tradeLower.includes("supervisor") || tradeLower.includes("qa") || tradeLower.includes("manage")) {
+    return { name: "siteguard", icon: ShieldCheck, color: "#eab308" };
+  }
+  if (tradeLower.includes("survey") || tradeLower.includes("qs")) {
+    return { name: "geoscan", icon: Compass, color: "#818cf8" };
+  }
+
+  // Default Civil / Masonry
+  return { name: "apex", icon: Building2, color: "#f97316" };
 }
 
 const SECTION_TABS = [
@@ -39,6 +73,8 @@ const SAVED_CREWS_STORAGE_KEY = "kallisto_hands_saved_crews";
 
 export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
   const crew: TradeCrew | null = useMemo(() => getTradeCrewById(crewId), [crewId]);
+  const brand = useMemo(() => (crew ? getBrandInfo(crew) : null), [crew]);
+  const BrandIcon = brand?.icon || Building2;
 
   // Section nav state
   const [activeTab, setActiveTab] = useState<string>("overview");
@@ -145,14 +181,24 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
           <header className={styles.identityCard} aria-label={`${crew.name} identity overview`}>
             <div className={styles.identityMainRow}>
               <div className={styles.identityLeft}>
-                {/* Brand Emblem */}
+                {/* Wide Horizontal Dark Brand Emblem Card */}
                 <div className={styles.brandEmblemBox} aria-hidden="true">
-                  <span className={styles.brandEmblemIcon}>
-                    <crew.icon size={26} color={crew.accentColor} />
-                  </span>
-                  <span className={styles.brandEmblemName}>
-                    {crew.trade.slice(0, 5)}
-                  </span>
+                  <div className={styles.brandCoverGrid} />
+                  <div className={styles.brandMarkContent}>
+                    <div
+                      className={styles.brandIconWrap}
+                      style={{
+                        color: brand?.color || "#06b6d4",
+                        filter: `drop-shadow(0 0 8px ${brand?.color || "#06b6d4"}66)`,
+                      }}
+                    >
+                      <BrandIcon size={20} strokeWidth={2.4} />
+                    </div>
+                    <span className={styles.brandText}>
+                      {brand?.name}
+                      <span className={styles.brandDot}>°</span>
+                    </span>
+                  </div>
                 </div>
 
                 <div className={styles.identityInfo}>
