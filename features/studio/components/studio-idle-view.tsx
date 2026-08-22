@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import { StudioAgentType, StudioProjectOption, StudioTask } from "@/types/domain/studio";
-import { StudioIntent, StudioSource } from "../types/studio-source";
-import { ContinueWorkingRow } from "./continue-working-row";
-import { StudioComposer } from "./studio-composer/studio-composer";
+import { StudioProjectOption, StudioTask } from "@/types/domain/studio";
+import { StudioIntent } from "../types/studio-source";
+import { StudioProjectContextCard } from "./studio-project-context-card";
 import { StudioIntentGrid } from "./studio-intent-grid";
-import { StudioWelcome } from "./studio-welcome";
+import { StudioIntelligenceHub } from "./studio-intelligence-hub";
+import styles from "./studio-chat-canvas.module.css";
 
 export interface StudioIdleContentProps {
   selectedProjectId: string | null;
@@ -16,6 +16,7 @@ export interface StudioIdleContentProps {
   onSelectIntent: (intent: StudioIntent) => void;
   recentTasks: StudioTask[];
   onReopenTask: (taskId: string) => void;
+  onSelectPrompt?: (promptText: string) => void;
 }
 
 export function StudioIdleContent({
@@ -26,37 +27,31 @@ export function StudioIdleContent({
   onSelectIntent,
   recentTasks,
   onReopenTask,
+  onSelectPrompt = () => {},
 }: StudioIdleContentProps) {
+  const selectedProject = projects.find((p) => p.id === selectedProjectId) || projects[0];
+  const projectName = selectedProject?.name || "Luxury Villa Horizon";
+
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100%",
-        gap: "24px",
-        paddingTop: "24px",
-        marginInline: "auto",
-        boxSizing: "border-box",
-      }}
-    >
-      {/* 1. Welcome Context */}
-      <StudioWelcome
+    <div className={styles.studioIdleContainer}>
+      {/* Layer 1: Project Context & Knowledge Foundation */}
+      <StudioProjectContextCard
         selectedProjectId={selectedProjectId}
         projects={projects}
         onSelectProject={onSelectProject}
       />
 
-      {/* 2. Primary Intent Cards */}
+      {/* Layer 2: Action-Oriented Pathways */}
       <StudioIntentGrid
         selectedIntent={selectedIntent}
         onSelectIntent={onSelectIntent}
       />
 
-      {/* 3. Continue Working (only rendered if recent draft exists) */}
-      <ContinueWorkingRow
-        tasks={recentTasks}
+      {/* Layer 3: Active Work & Project Intelligence */}
+      <StudioIntelligenceHub
+        projectName={projectName}
+        onSelectPrompt={onSelectPrompt}
+        recentTasks={recentTasks}
         onReopenTask={onReopenTask}
       />
     </div>

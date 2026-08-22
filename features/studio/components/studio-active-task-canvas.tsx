@@ -358,6 +358,7 @@ export function StudioActiveTaskCanvas({
                 onSelectIntent={onSelectIntent}
                 recentTasks={recentTasks}
                 onReopenTask={onReopenTask}
+                onSelectPrompt={onPromptChange}
               />
             ) : (
               messages.map((msg) => {
@@ -512,6 +513,8 @@ export function StudioActiveTaskCanvas({
           panelState={panelState}
           onStateChange={setPanelState}
           onRequestChanges={handleRequestChangesFromPreview}
+          projectName={project.name}
+          onSelectPrompt={onPromptChange}
           recipient={{
             clientId: "client-101",
             name: "Ananya Builders",

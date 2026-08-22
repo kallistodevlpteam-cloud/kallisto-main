@@ -73,7 +73,7 @@ export function ProjectSelector({
           paddingBottom: "2px",
         }}
       >
-        {displayName || "a project"}&thinsp;?
+        {displayName || "Select project"}
       </span>
     );
   }
