@@ -2497,9 +2497,9 @@
 }
 
 .discoveryTopNavCenter {
-  margin-left: auto;
-  width: 480px;
-  max-width: 100%;
+  flex: 1;
+  max-width: 580px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
 }
