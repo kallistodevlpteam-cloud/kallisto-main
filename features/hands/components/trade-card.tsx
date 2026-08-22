@@ -3,13 +3,8 @@
 import React from "react";
 import {
   Bookmark,
-  CheckCircle2,
-  Clock,
-  HardHat,
-  MapPin,
-  ShieldCheck,
+  Columns2,
   Star,
-  Users,
 } from "lucide-react";
 import type { TradeCrew } from "../services/trade-crews.mock";
 import styles from "./hands-overview.module.css";
@@ -21,113 +16,118 @@ interface TradeCardProps {
   onToggleSave?: (crewId: string) => void;
 }
 
+// Derive clean brand moniker from crew name (e.g. "Circuit MEP Design" -> "circuit", "Master Masons" -> "master", etc.)
+function getBrandSlug(name: string): string {
+  const firstWord = name.split(" ")[0].toLowerCase();
+  return firstWord.replace(/[^a-z0-9]/g, "") || "kallisto";
+}
+
 export function TradeCard({
   crew,
   onRequestCrew,
   isSaved = false,
   onToggleSave,
 }: TradeCardProps) {
-  const IconComponent = crew.icon;
+  const brandSlug = getBrandSlug(crew.name);
+  const city = crew.location.split(",")[0].trim();
 
   return (
     <article className={styles.tradeCard} aria-label={`${crew.name} - ${crew.trade}`}>
-      {/* Card Header: Icon/Avatar, Trade Info, Wishlist Button */}
-      <div className={styles.tradeCardHeader}>
-        <div className={styles.tradeCardHeaderLeft}>
-          <div
-            className={styles.tradeCardIconWrap}
-            style={{ background: crew.bgTint, color: crew.accentColor }}
-          >
-            <IconComponent size={24} aria-hidden="true" />
-          </div>
-          <div className={styles.tradeCardMeta}>
-            <div className={styles.tradeCardCategoryRow}>
-              <span className={styles.tradeCategoryTag}>{crew.category}</span>
-              {crew.verified && (
-                <span className={styles.tradeVerifiedBadge} title="Kallisto Verified Workforce">
-                  <ShieldCheck size={12} aria-hidden="true" />
-                  <span>Verified</span>
-                </span>
-              )}
-            </div>
-            <h3 className={styles.tradeCardTitle}>{crew.name}</h3>
-            <p className={styles.tradeLeadName}>
-              Lead: <strong>{crew.leadName}</strong> · {crew.leadRole}
-            </p>
-          </div>
-        </div>
-
-        {/* Wishlist Button */}
-        <button
-          type="button"
-          className={`${styles.tradeWishlistBtn} ${isSaved ? styles.tradeWishlistBtnActive : ""}`}
-          onClick={() => onToggleSave?.(crew.id)}
-          title={isSaved ? "Remove from saved crews" : "Save this crew"}
-          aria-label={isSaved ? `Remove ${crew.name} from saved` : `Save ${crew.name}`}
-          aria-pressed={isSaved}
+      {/* 1. Top Graphic Media Banner */}
+      <div className={styles.tradeCardBanner}>
+        {/* Floating Rating Pill (Top Right) */}
+        <div
+          className={styles.tradeRatingPill}
+          title={`${crew.rating} stars from ${crew.reviewCount} reviews`}
         >
-          <Bookmark size={15} fill={isSaved ? "currentColor" : "none"} aria-hidden="true" />
-        </button>
+          <Star size={12} className={styles.tradeRatingStar} aria-hidden="true" />
+          <span>{crew.rating.toFixed(1)}</span>
+        </div>
+
+        {/* Center Brand / Circuit Graphic */}
+        <div className={styles.tradeBrandGraphic}>
+          <svg
+            width="34"
+            height="18"
+            viewBox="0 0 34 18"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={styles.tradeCircuitIcon}
+            aria-hidden="true"
+          >
+            <circle cx="9" cy="9" r="6" stroke="#22d3ee" strokeWidth="2.5" />
+            <circle cx="9" cy="9" r="2.5" fill="#22d3ee" />
+            <path
+              d="M15 9H24L29 4H34"
+              stroke="#22d3ee"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span className={styles.tradeBrandText}>{brandSlug}</span>
+          <span className={styles.tradeBrandDot}>°</span>
+        </div>
       </div>
 
-      {/* Badges Row: Rating, Experience, Crew Size */}
-      <div className={styles.tradeStatsRow}>
-        <div className={styles.tradeStatBadge}>
-          <Star size={13} className={styles.tradeStarIcon} aria-hidden="true" />
-          <strong>{crew.rating}</strong>
-          <span className={styles.tradeReviewCount}>({crew.reviewCount})</span>
-        </div>
-
-        <div className={styles.tradeStatBadge}>
-          <Clock size={13} aria-hidden="true" />
-          <span>{crew.experienceYears}+ yrs exp</span>
-        </div>
-
-        <div className={styles.tradeStatBadge}>
-          <Users size={13} aria-hidden="true" />
-          <span>{crew.crewSizeMin}–{crew.crewSizeMax} workers</span>
-        </div>
-
-        <div className={styles.tradeStatBadge}>
-          <CheckCircle2 size={13} aria-hidden="true" />
-          <span>{crew.completedJobs} shifts</span>
-        </div>
-      </div>
-
-      {/* Skills Chips */}
-      <div className={styles.tradeSkillsWrap} aria-label="Trade skills">
-        {crew.skills.map((skill) => (
-          <span key={skill} className={styles.tradeSkillPill}>
-            {skill}
-          </span>
-        ))}
-      </div>
-
-      {/* Card Footer: Rate, Location, and Action Buttons */}
-      <div className={styles.tradeCardFooter}>
-        <div className={styles.tradePriceColumn}>
-          <span className={styles.tradePriceLabel}>Daily Shift Rate</span>
-          <div className={styles.tradePriceValue}>
-            <strong>₹{crew.dailyRate.toLocaleString("en-IN")}</strong>
-            <span className={styles.tradePriceUnit}>/ day</span>
-          </div>
-          <div className={styles.tradeLocationRow}>
-            <MapPin size={11} aria-hidden="true" />
-            <span>{crew.location}</span>
-          </div>
-        </div>
-
-        <div className={styles.tradeActionGroup}>
+      {/* 2. Middle Title & Category Section */}
+      <div className={styles.tradeCardBody}>
+        <div className={styles.tradeCardTitleRow}>
+          <h3 className={styles.tradeCardTitle}>{crew.name}</h3>
           <button
             type="button"
-            className={styles.tradeRequestBtn}
-            onClick={() => onRequestCrew(crew)}
-            aria-label={`Request ${crew.name}`}
+            className={`${styles.tradeWishlistBtn} ${isSaved ? styles.tradeWishlistBtnActive : ""}`}
+            onClick={() => onToggleSave?.(crew.id)}
+            title={isSaved ? "Remove from saved crews" : "Save this crew"}
+            aria-label={isSaved ? `Remove ${crew.name} from saved` : `Save ${crew.name}`}
+            aria-pressed={isSaved}
           >
-            <HardHat size={14} aria-hidden="true" />
-            <span>Request Crew</span>
+            <Bookmark
+              size={16}
+              strokeWidth={1.8}
+              fill={isSaved ? "currentColor" : "none"}
+              aria-hidden="true"
+            />
           </button>
         </div>
+        <p className={styles.tradeCardSubtitle}>{crew.category || crew.trade}</p>
+      </div>
+
+      {/* 3. Three-column Stats Strip */}
+      <div className={styles.tradeStatsStrip}>
+        <div className={styles.tradeStatCol}>
+          <strong className={styles.tradeStatValue}>{crew.experienceYears} yrs</strong>
+          <span className={styles.tradeStatLabel}>experience</span>
+        </div>
+        <div className={`${styles.tradeStatCol} ${styles.tradeStatColDivider}`}>
+          <strong className={styles.tradeStatValue}>{crew.completedJobs}+</strong>
+          <span className={styles.tradeStatLabel}>consults</span>
+        </div>
+        <div className={`${styles.tradeStatCol} ${styles.tradeStatColDivider}`}>
+          <strong className={styles.tradeStatValue}>{city}</strong>
+          <span className={styles.tradeStatLabel}>location</span>
+        </div>
+      </div>
+
+      {/* 4. Bottom Price & Action Row */}
+      <div className={styles.tradeCardFooter}>
+        <div className={styles.tradePriceBox}>
+          <strong className={styles.tradePriceAmount}>
+            ₹{crew.dailyRate.toLocaleString("en-IN")}
+          </strong>
+          <span className={styles.tradePriceUnit}>Per sq ft</span>
+        </div>
+
+        <button
+          type="button"
+          className={styles.tradeCompareBtn}
+          onClick={() => onRequestCrew(crew)}
+          aria-label={`Request ${crew.name}`}
+          title={`Request ${crew.name}`}
+        >
+          <Columns2 size={13} aria-hidden="true" />
+          <span>Compare</span>
+        </button>
       </div>
     </article>
   );

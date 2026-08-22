@@ -2920,251 +2920,242 @@
 
 .tradeCard {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 18px;
-  padding: 18px 20px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.02);
+  border: 1px solid #eef2f6;
+  border-radius: 20px;
+  padding: 12px;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03), 0 1px 2px rgba(15, 23, 42, 0.02);
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  transition: all 180ms ease;
+  gap: 10px;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease, border-color 0.18s ease;
   position: relative;
+  box-sizing: border-box;
 }
 
 .tradeCard:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-color: #cbd5e1;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 10px 28px -4px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
 }
 
-.tradeCardHeader {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.tradeCardHeaderLeft {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  min-width: 0;
-}
-
-.tradeCardIconWrap {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+.tradeCardBanner {
+  height: 145px;
+  background-color: #0b0f19;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 20px 20px;
+  border-radius: 14px;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
 }
 
-.tradeCardMeta {
+.tradeRatingPill {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 750;
+  display: inline-flex;
+  align-items: center;
+  gap: 3.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+  z-index: 2;
+}
+
+.tradeRatingStar {
+  color: #f59e0b;
+  fill: #f59e0b;
+}
+
+.tradeBrandGraphic {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  user-select: none;
+}
+
+.tradeCircuitIcon {
+  filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.6));
+}
+
+.tradeBrandText {
+  font-size: 24px;
+  font-weight: 850;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+}
+
+.tradeBrandDot {
+  font-size: 16px;
+  color: #22d3ee;
+  font-weight: 700;
+  margin-top: -10px;
+  filter: drop-shadow(0 0 4px rgba(34, 211, 238, 0.8));
+}
+
+.tradeCardBody {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-width: 0;
+  padding: 4px 4px 0;
 }
 
-.tradeCardCategoryRow {
+.tradeCardTitleRow {
   display: flex;
   align-items: center;
-  gap: 6px;
-}
-
-.tradeCategoryTag {
-  font-size: 11px;
-  font-weight: 650;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.tradeVerifiedBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 1px 6px;
-  border-radius: 6px;
-  background: #ecfdf5;
-  color: #059669;
-  font-size: 10px;
-  font-weight: 700;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .tradeCardTitle {
-  margin: 2px 0 0;
-  font-size: 15px;
+  margin: 0;
+  font-size: 16px;
   font-weight: 750;
   color: #0f172a;
   line-height: 1.25;
-}
-
-.tradeLeadName {
-  margin: 2px 0 0;
-  font-size: 11.5px;
-  color: #64748b;
+  letter-spacing: -0.01em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.tradeLeadName strong {
-  color: #334155;
+.tradeCardSubtitle {
+  margin: 0;
+  font-size: 12.5px;
+  color: #64748b;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tradeWishlistBtn {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  color: #64748b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
   cursor: pointer;
-  transition: all 140ms ease;
+  padding: 4px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  transition: color 0.15s ease, transform 0.15s ease;
   flex-shrink: 0;
 }
 
 .tradeWishlistBtn:hover {
-  background: #f1f5f9;
   color: #0f172a;
+  transform: scale(1.1);
 }
 
 .tradeWishlistBtnActive {
-  background: #0f172a !important;
-  border-color: #0f172a !important;
-  color: #ffffff !important;
+  color: #0f172a !important;
 }
 
-.tradeStatsRow {
+.tradeStatsStrip {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+  margin: 4px 0 2px;
+}
+
+.tradeStatCol {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+  gap: 2px;
+  padding: 0 4px;
 }
 
-.tradeStatBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  background: #f8fafc;
-  border-radius: 6px;
+.tradeStatColDivider {
+  border-left: 1px solid #f1f5f9;
+}
+
+.tradeStatValue {
+  font-size: 13.5px;
+  font-weight: 750;
+  color: #0f172a;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.tradeStatLabel {
   font-size: 11px;
-  color: #475569;
-  font-weight: 550;
-}
-
-.tradeStarIcon {
-  color: #f59e0b;
-  fill: #f59e0b;
-}
-
-.tradeReviewCount {
   color: #94a3b8;
-  font-weight: 450;
-}
-
-.tradeSkillsWrap {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  flex-wrap: wrap;
-}
-
-.tradeSkillPill {
-  font-size: 10.5px;
   font-weight: 500;
-  color: #475569;
-  background: #f1f5f9;
-  padding: 2px 8px;
-  border-radius: 6px;
+  line-height: 1.2;
 }
 
 .tradeCardFooter {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  border-top: 1px solid #f1f5f9;
-  padding-top: 14px;
+  gap: 10px;
+  padding: 2px 4px 4px;
   margin-top: auto;
 }
 
-.tradePriceColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.tradePriceLabel {
-  font-size: 10px;
-  font-weight: 600;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.tradePriceValue {
+.tradePriceBox {
   display: flex;
   align-items: baseline;
-  gap: 3px;
+  gap: 4px;
+  min-width: 0;
 }
 
-.tradePriceValue strong {
-  font-size: 18px;
+.tradePriceAmount {
+  font-size: 16.5px;
   font-weight: 800;
   color: #0f172a;
   letter-spacing: -0.02em;
 }
 
 .tradePriceUnit {
-  font-size: 11px;
+  font-size: 11.5px;
   color: #64748b;
   font-weight: 500;
+  white-space: nowrap;
 }
 
-.tradeLocationRow {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 11px;
-  color: #64748b;
-  margin-top: 2px;
-}
-
-.tradeActionGroup {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.tradeRequestBtn {
+.tradeCompareBtn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
+  gap: 5px;
+  padding: 6px 14px;
   border-radius: 9999px;
-  background: #0f172a;
-  color: #ffffff;
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
   font-size: 12px;
   font-weight: 650;
-  border: none;
   cursor: pointer;
-  transition: all 140ms ease;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
 }
 
-.tradeRequestBtn:hover {
-  background: #0284c7;
+.tradeCompareBtn:hover {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.12);
 }
 
 .emptyTradesCard {
