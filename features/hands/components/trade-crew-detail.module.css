@@ -352,29 +352,35 @@
   font-style: normal;
 }
 
-/* 3. Strong Scannable Proof Metrics Row (Full Width Equal Grid like Project Page) */
+/* 3. Strong Scannable Proof Metrics Row (Kallisto Clean Architectural Theme) */
 .proofMetricsGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   width: 100%;
   box-sizing: border-box;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 14px 0;
-  margin-top: 4px;
+  background: transparent;
+  border: none;
+  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 12px 0;
+  margin-top: 6px;
 }
 
 .metricTile {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 0 20px;
-  border-right: 1px solid #e2e8f0;
+  padding: 0 18px;
+  border-right: 1px solid #f1f5f9;
   min-width: 0;
 }
 
+.metricTile:first-child {
+  padding-left: 0;
+}
+
 .metricTile:last-child {
+  padding-right: 0;
   border-right: none;
 }
 
@@ -397,18 +403,18 @@
 }
 
 .metricBigValue {
-  font-size: 20px;
-  font-weight: 800;
+  font-size: 22px;
+  font-weight: 850;
   color: #0f172a;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
 }
 
 @media (max-width: 768px) {
   .proofMetricsGrid {
     grid-template-columns: repeat(2, 1fr);
     gap: 14px 0;
-    padding: 12px 0;
+    padding: 10px 0;
   }
 
   .metricTile:nth-child(2) {
@@ -417,8 +423,8 @@
 
   .metricTile:nth-child(3),
   .metricTile:nth-child(4) {
-    border-top: 1px solid #e2e8f0;
-    padding-top: 12px;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 10px;
   }
 }
 
