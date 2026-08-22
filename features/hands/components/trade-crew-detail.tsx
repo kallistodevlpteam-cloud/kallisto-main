@@ -21,6 +21,7 @@ import {
   MapPin,
   Minus,
   Plus,
+  Radar,
   Send,
   ShieldCheck,
   Sparkles,
@@ -260,21 +261,18 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
               </div>
             </div>
 
-            {/* Service Area Strip */}
+            {/* Service Area & Radius Strip */}
             <div className={styles.serviceAreaSubRow}>
               <div className={styles.serviceAreaWrapper}>
                 <MapPin size={15} className={styles.locationPinIcon} aria-hidden="true" />
                 <span>
-                  Service Area: <strong className={styles.serviceAreaText}>Greater Kochi & Ernakulam District (Up to 45 km radius)</strong>
+                  Service Area: <strong className={styles.serviceAreaText}>{crew.location}</strong>
                 </span>
-                <span className={styles.bulletSeparator}>·</span>
-                <button
-                  type="button"
-                  className={styles.coverageMapTrigger}
-                  onClick={() => scrollToSection("deployments")}
-                >
-                  View Coverage Map
-                </button>
+              </div>
+
+              <div className={styles.serviceRadiusBadge}>
+                <Radar size={13} className={styles.radiusIcon} aria-hidden="true" />
+                <span>45 km service radius</span>
               </div>
             </div>
 
