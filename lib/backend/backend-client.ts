@@ -210,6 +210,8 @@ export interface BackendProjectRow {
   project_spaces: BackendProjectSpaceRow[] | null;
   project_timeline: BackendProjectTimeline | null;
   project_status: string | null;
+  /** 0-100 completion percentage computed by backend from tasks + milestones. */
+  completion_percent: number | null;
   proposal: BackendProjectProposalRow | null;
   team_members: BackendProjectTeamMemberRow[] | null;
   messages: BackendProjectMessageRow[] | null;
@@ -470,6 +472,7 @@ function mapBackendProjectRow(row: BackendProjectRow): BackendProject {
     projectSpaces: mapBackendProjectSpaces(row.project_spaces),
     projectTimeline: row.project_timeline ?? null,
     projectStatus: row.project_status ?? null,
+    completionPercent: row.completion_percent ?? null,
     proposal: row.proposal ?? null,
     teamMembers: (row.team_members ?? []).map((t) => ({
       provider_id: t.provider_id ?? "",
@@ -980,7 +983,55 @@ export async function updateBackendBoqItem(
   return (await response.json()) as { status: string; updated: boolean };
 }
 
-// ── Audit ─────────────────────────────────────────────────────────────────────
+// ── AI Insights (ODIN) ──────────────────────────────────────────────────────
+
+export interface OdinInsight {
+  id: string;
+  title: string;
+  scopeLabel: string;
+  summary: string;
+  severity: string;
+  domainTag?: string;
+  whyFlagged?: string;
+  affectedArea?: string;
+  suggestedQuestion?: string;
+  actionPrimary?: {
+    label: string;
+    type: string;
+    payload?: string;
+    targetTab?: string;
+  };
+}
+
+export async function fetchBackendInsights(
+  projectId: number | string,
+  analysisType?: "completeness" | "missing" | "conflict" | "ambiguity",
+  authToken?: string
+): Promise<{ status: string; insights: OdinInsight[]; message?: string }> {
+  const response = await backendFetch(
+    `${getBackendUrl()}/api/projects/${projectId}/insights`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ analysis_type: analysisType ?? null }),
+      cache: "no-store",
+    },
+    authToken
+  );
+  const payload = (await response.json()) as {
+    status: string;
+    insights: OdinInsight[];
+    message?: string;
+  };
+  if (!response.ok || payload.status !== "ok") {
+    throw new BackendError(
+      payload.message ?? `Backend insights request failed with status ${response.status}`,
+      response.status
+    );
+  }
+  return payload;
+}
+
 
 export interface BackendAuditEntry {
   id: number;

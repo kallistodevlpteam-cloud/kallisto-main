@@ -50,7 +50,7 @@ describe("buildProjectCardsFromBackend", () => {
       type: "Residential",
       location: "Thiruvananthapuram",
       clientDisplayName: "Rajan & Preethi Pillai",
-      phase: ACCEPTED_PROJECT_PHASE_LABEL,
+      phase: "Accepted — awaiting kickoff",
       status: "UPCOMING",
       image: "/assets/nila-thumb1.jpg",
     });
@@ -90,13 +90,31 @@ describe("buildProjectCardsFromBackend", () => {
     expect(noMedia[0].image).toBe("");
   });
 
-  it("derives the phase pill label only for the accepted character", () => {
-    const prCard = buildProjectCardsFromBackend([makeProject()]);
-    expect(prCard[0].phase).toBe(ACCEPTED_PROJECT_PHASE_LABEL);
-
-    const nonPrCard = buildProjectCardsFromBackend([
-      makeProject({ projectCharacter: "enq" }),
+  it("maps backend completionPercent to card phaseProgress", () => {
+    const card = buildProjectCardsFromBackend([
+      makeProject({ completionPercent: 62 }),
     ]);
-    expect(nonPrCard[0].phase).toBeNull();
+    expect(card[0].phaseProgress).toBe(62);
+  });
+
+  it("falls back to undefined when completionPercent is null or missing", () => {
+    const card = buildProjectCardsFromBackend([makeProject()]);
+    expect(card[0].phaseProgress).toBeUndefined();
+  });
+
+  it("derives the phase pill label based on backend status", () => {
+    const prCard = buildProjectCardsFromBackend([makeProject({ projectStatus: null })]);
+
+    const activeCard = buildProjectCardsFromBackend([
+      makeProject({ projectStatus: "active" }),
+    ]);
+    expect(activeCard[0].phase).toBe("In progress");
+    expect(activeCard[0].status).toBe("ACTIVE");
+
+    const completedCard = buildProjectCardsFromBackend([
+      makeProject({ projectStatus: "completed" }),
+    ]);
+    expect(completedCard[0].phase).toBe("Completed");
+    expect(completedCard[0].status).toBe("COMPLETED");
   });
 });

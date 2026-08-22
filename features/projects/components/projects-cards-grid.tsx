@@ -343,7 +343,9 @@ export function ProjectCard({ project }: { project: SampleProjectCard }) {
             {project.name}
           </h3>
           <span className={styles.pcPercent}>
-            {project.phaseProgress !== undefined && project.phaseProgress !== null
+            {project.status === "UPCOMING"
+              ? "0%"
+              : project.phaseProgress !== undefined && project.phaseProgress !== null
               ? `${project.phaseProgress}%`
               : "—"}
           </span>

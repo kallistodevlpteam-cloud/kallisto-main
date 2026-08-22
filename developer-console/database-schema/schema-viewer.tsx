@@ -319,14 +319,14 @@ export function DatabaseSchemaViewer() {
   }, [fetchSnapshot]);
 
   const totalColumns = useMemo(
-    () => snapshot?.tables.reduce((sum, table) => sum + table.columns.length, 0) ?? 0,
+    () => (snapshot?.tables ?? []).reduce((sum, table) => sum + (table.columns?.length ?? 0), 0),
     [snapshot],
   );
 
   const relationships = useMemo(() => collectRelationships(snapshot?.tables ?? []), [snapshot]);
 
   const totalRows = useMemo(
-    () => snapshot?.tables.reduce((sum, table) => sum + table.rowCount, 0) ?? 0,
+    () => (snapshot?.tables ?? []).reduce((sum, table) => sum + (table.rowCount ?? 0), 0),
     [snapshot],
   );
 

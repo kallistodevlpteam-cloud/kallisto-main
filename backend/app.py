@@ -40,6 +40,7 @@ from flows import (
     send_proposal_flow,
     respond_proposal_flow,
 )
+from ai_insights import analyze_requirements
 
 
 
@@ -88,6 +89,68 @@ def _parse_string_list(raw: Any) -> list[str]:
     if not isinstance(parsed, list):
         return []
     return [item for item in parsed if isinstance(item, str)]
+
+
+def _calculate_project_completion_percent(project_id: int) -> int:
+    """Calculate a 0-100 completion percentage for a project.
+
+    Derives progress from tasks and milestones:
+    - Tasks weight 60% (status = 'completed' counts as done)
+    - Milestones weight 40% (status = 'completed' counts as done)
+    - If neither table has rows, falls back to project_status:
+        completed/done/closed → 100, active/converted → 10, otherwise 0.
+
+    Returns an integer clamped to 0-100.
+    """
+    try:
+        task_result = pipeline(
+            [
+                "SELECT COUNT(*) as total, SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed FROM project_tasks WHERE project_id = ?"
+            ],
+            [[project_id]],
+        )[0]
+        task_rows = rows(task_result)
+        task_total = task_rows[0][0] if task_rows else 0
+        task_completed = task_rows[0][1] if task_rows else 0
+
+        ms_result = pipeline(
+            [
+                "SELECT COUNT(*) as total, SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed FROM project_milestones WHERE project_id = ?"
+            ],
+            [[project_id]],
+        )[0]
+        ms_rows = rows(ms_result)
+        ms_total = ms_rows[0][0] if ms_rows else 0
+        ms_completed = ms_rows[0][1] if ms_rows else 0
+
+        # Fallback when no tasks or milestones exist yet
+        if task_total == 0 and ms_total == 0:
+            status_result = pipeline(
+                ["SELECT project_status FROM projects WHERE id = ?"],
+                [[project_id]],
+            )[0]
+            status_rows = rows(status_result)
+            if status_rows:
+                status = (status_rows[0][0] or "").lower()
+                if status in ("completed", "done", "closed"):
+                    return 100
+                if status in ("active", "converted"):
+                    return 10
+            return 0
+
+        task_pct = (task_completed / task_total * 100) if task_total > 0 else 0
+        ms_pct = (ms_completed / ms_total * 100) if ms_total > 0 else 0
+
+        if task_total > 0 and ms_total > 0:
+            total = int(round(task_pct * 0.6 + ms_pct * 0.4))
+        elif task_total > 0:
+            total = int(round(task_pct))
+        else:
+            total = int(round(ms_pct))
+
+        return max(0, min(100, total))
+    except Exception:  # noqa: BLE001
+        return 0
 
 
 def _schema_snapshot() -> dict[str, Any]:
@@ -469,6 +532,7 @@ def _enrich_and_filter_projects(raw_projects: list[dict[str, Any]], allowed_ids:
         project["proposal"] = prop_by_project.get(pid, None)
         project["team_members"] = team_by_project.get(pid, [])
         project["messages"] = msg_by_project.get(pid, [])
+        project["completion_percent"] = _calculate_project_completion_percent(pid)
 
     return projects
 
@@ -1364,9 +1428,48 @@ def update_project_task(project_id: int, task_id: int, sp_id: str):
         params.append(task_id)
         params.append(project_id)
         sql = f"UPDATE project_tasks SET {', '.join(fields)} WHERE id = ? AND project_id = ?"
+        # Capture old completion before update
+        old_percent = _calculate_project_completion_percent(project_id)
         pipeline([sql], [params])
+        new_percent = _calculate_project_completion_percent(project_id)
+        if new_percent != old_percent:
+            audit_log("project", project_id, "PROGRESS_UPDATE", sp_id, metadata={"old_percent": old_percent, "new_percent": new_percent, "task_id": task_id, "source": "task_update"})
         audit_log("task", task_id, "UPDATE", sp_id, metadata={"fields": list(data.keys())})
         return jsonify({"status": "ok", "task_id": task_id, "updated": True})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
+@app.patch("/api/projects/<int:project_id>/milestones/<int:milestone_id>")
+@require_provider
+def update_project_milestone(project_id: int, milestone_id: int, sp_id: str):
+    """Update a milestone. If status is set to 'completed', records completion_percent change in audit."""
+    err = _ensure_project_owned(project_id, sp_id)
+    if err:
+        return err
+    data = request.get_json(silent=True) or {}
+    try:
+        fields = []
+        params = []
+        allowed = {"title", "description", "status", "due_date", "completed_at", "approval_status", "financial_impact", "actor_id", "actor_name"}
+        for k, v in data.items():
+            if k in allowed:
+                fields.append(f"{k} = ?")
+                params.append(v)
+        if not fields:
+            return jsonify({"status": "error", "message": "No valid fields to update"}), 400
+        fields.append("updated_at = ?")
+        params.append(_iso_now())
+        params.append(milestone_id)
+        params.append(project_id)
+        sql = f"UPDATE project_milestones SET {', '.join(fields)} WHERE id = ? AND project_id = ?"
+        old_percent = _calculate_project_completion_percent(project_id)
+        pipeline([sql], [params])
+        new_percent = _calculate_project_completion_percent(project_id)
+        if new_percent != old_percent:
+            audit_log("project", project_id, "PROGRESS_UPDATE", sp_id, metadata={"old_percent": old_percent, "new_percent": new_percent, "milestone_id": milestone_id, "source": "milestone_update"})
+        audit_log("milestone", milestone_id, "UPDATE", sp_id, metadata={"fields": list(data.keys())})
+        return jsonify({"status": "ok", "milestone_id": milestone_id, "updated": True})
     except Exception as error:  # noqa: BLE001
         return jsonify({"status": "error", "message": str(error)}), 503
 
@@ -1525,6 +1628,68 @@ def get_project_audit(project_id: int, sp_id: str):
                     pass
             logs.append(r)
         return jsonify({"status": "ok", "audit": logs})
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+
+# ─── AI Insights (ODIN) ───────────────────────────────────────────────────
+
+@app.post("/api/projects/<int:project_id>/insights")
+@require_provider
+def get_project_insights(project_id: int, sp_id: str):
+    """Generate AI-powered requirement insights for an enquiry/project.
+
+    Body: { analysis_type?: "completeness" | "missing" | "conflict" | "ambiguity" }
+    If analysis_type is omitted, runs all analyses and returns merged results.
+    """
+    err = _ensure_project_owned(project_id, sp_id)
+    if err:
+        return err
+
+    data = request.get_json(silent=True) or {}
+    analysis_type = data.get("analysis_type") or None
+
+    # Fetch the full enriched project data
+    try:
+        sql = (
+            "SELECT p.id, p.project_name, p.project_type, p.building_type, "
+            "p.project_character, p.new_construction_or_renovation, "
+            "p.purpose_of_project, p.brief_description, p.cover_image_url, "
+            "p.sq_area, p.client_expected_timeline, p.over_view, p.provider_id, "
+            "p.created_at, p.updated_at, p.project_status, "
+            "cd.client_name, ps.place, ps.site_img_url, "
+            "pb.estimated_overall_budget, ed.view "
+            "FROM projects p "
+            "LEFT JOIN client_details cd ON cd.project_id = p.id "
+            "LEFT JOIN project_site ps ON ps.project_id = p.id "
+            "LEFT JOIN project_budget pb ON pb.project_id = p.id "
+            "LEFT JOIN enquiry_details ed ON ed.project_id = p.id "
+            "WHERE p.id = ?"
+        )
+        result = pipeline([sql], [[project_id]])[0]
+        column_names = [col["name"] for col in result.get("cols", [])]
+        raw_projects = [
+            {column_names[i]: row[i] for i in range(len(column_names))}
+            for row in rows(result)
+        ]
+        if not raw_projects:
+            return jsonify({"status": "error", "message": "Project not found"}), 404
+    except Exception as error:  # noqa: BLE001
+        return jsonify({"status": "error", "message": str(error)}), 503
+
+    projects = _enrich_and_filter_projects(raw_projects, [project_id])
+    project = projects[0] if projects else {}
+
+    try:
+        insights = analyze_requirements(project, analysis_type=analysis_type)
+        audit_log(
+            "project",
+            project_id,
+            "AI_INSIGHTS",
+            sp_id,
+            metadata={"analysis_type": analysis_type, "insight_count": len(insights)},
+        )
+        return jsonify({"status": "ok", "project_id": project_id, "insights": insights})
     except Exception as error:  # noqa: BLE001
         return jsonify({"status": "error", "message": str(error)}), 503
 

@@ -133,6 +133,8 @@ export interface ClientPriority {
   id: string;
   label: string;
   type: "confirmed" | "inferred";
+  details?: string[];
+  tags?: string[];
 }
 
 export interface EnquiryRecord {

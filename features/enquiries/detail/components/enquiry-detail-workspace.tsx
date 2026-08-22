@@ -75,7 +75,8 @@ import { EnquiryClarificationComposer } from "./enquiry-clarification-composer";
 import { EnquiryDetailTabs, EnquiryTabKey, resolveValidTabKey } from "./enquiry-detail-tabs";
 import { DocumentsTitleRowActions } from "@/features/documents/components/documents-title-row-actions";
 import { OdinInsightsPanel } from "./odin-insights-panel";
-import { deriveContextualOdinInsights } from "@/features/enquiries/services/enquiry-intelligence";
+import { useOdinInsights } from "../hooks/use-odin-insights";
+import { deriveContextualOdinInsights, OdinContextualInsight } from "@/features/enquiries/services/enquiry-intelligence";
 import { authedFetch } from "@/lib/auth/authed-fetch";
 
 export function EnquiryDetailSkeleton() {
@@ -609,6 +610,38 @@ export function EnquiryDetailWorkspace({
   const [detailHouseholdMember, setDetailHouseholdMember] = useState<ClientHouseholdMember | null>(null);
 
   const activeTab: EnquiryTabKey = resolveValidTabKey(searchParams.get("tab"));
+
+  // Extract numeric project ID from enquiry.id (e.g. "prj-1" → "1")
+  const numericProjectId = enquiry.id.startsWith("prj-") ? enquiry.id.replace(/^prj-/, "") : "";
+  const isRealProjectId = numericProjectId.length > 0 && /^\d+$/.test(numericProjectId);
+  const {
+    insights: aiInsights,
+    loading: aiInsightsLoading,
+    error: aiInsightsError,
+  } = useOdinInsights({
+    projectId: numericProjectId,
+    analysisType:
+      activeTab === "requirements"
+        ? "missing"
+        : activeTab === "overview"
+        ? undefined
+        : undefined,
+  });
+
+  // Merge AI insights with local static insights (AI first, then fallback)
+  const resolvedInsights = aiInsights.length > 0
+    ? aiInsights.map((insight) => ({
+        id: insight.id,
+        title: insight.title,
+        scopeLabel: insight.scopeLabel,
+        summary: insight.summary,
+        severity: insight.severity as import("@/features/enquiries/services/enquiry-intelligence").OdinInsightSeverity,
+        domainTag: insight.domainTag as OdinContextualInsight["domainTag"],
+        whyFlagged: insight.whyFlagged,
+        affectedArea: insight.affectedArea,
+        suggestedQuestion: insight.suggestedQuestion,
+      }))
+    : deriveContextualOdinInsights(enquiry, activeTab);
 
   // Backend-driven requirement mode: when the project carries backend
   // requirements rows (requirement_name + requirement_items), the
@@ -1343,11 +1376,12 @@ export function EnquiryDetailWorkspace({
                   enquiry={enquiry}
                   onAppendToClarification={handleAppendToClarification}
                   onNavigateToIntelligence={handleViewAllFiles}
+                  insights={resolvedInsights}
                 />
               ) : (
                 <OdinInsightsPanel
                   scope={activeTab as "requirements" | "evidence" | "client" | "intelligence" | "activity"}
-                  insights={deriveContextualOdinInsights(enquiry, activeTab)}
+                  insights={resolvedInsights}
                   onAppendToClarification={handleAppendToClarification}
                   onNavigateToTab={(tab) => {
                     const params = new URLSearchParams(searchParams.toString());
@@ -1731,13 +1765,16 @@ export function GlobalEnquiryIntelligenceCard({
   viewModel,
   enquiry,
   onAppendToClarification,
+  insights: propInsights,
 }: {
   viewModel: EnquiryDetailViewModel;
   enquiry: EnquiryRecord;
   onAppendToClarification: (text: string) => void;
   onNavigateToIntelligence: () => void;
+  insights?: OdinContextualInsight[];
 }) {
   const { intelligence } = viewModel;
+  const insights = propInsights ?? deriveContextualOdinInsights(enquiry, "overview");
 
   return (
     <div className={styles.globalIntelCard}>
@@ -1796,7 +1833,7 @@ export function GlobalEnquiryIntelligenceCard({
       {/* 2. ODIN Insights Panel */}
       <OdinInsightsPanel
         scope="overview"
-        insights={deriveContextualOdinInsights(enquiry, "overview")}
+        insights={insights}
         onAppendToClarification={onAppendToClarification}
       />
     </div>
