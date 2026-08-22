@@ -286,25 +286,35 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
             {/* 3. Strong Scannable Metrics Row */}
             <div className={styles.proofMetricsGrid}>
               <div className={styles.metricTile}>
+                <div className={styles.metricTileHeader}>
+                  <Briefcase size={15} className={styles.metricCardIcon} aria-hidden="true" />
+                  <span className={styles.metricSubLabel}>Experience</span>
+                </div>
                 <span className={styles.metricBigValue}>{crew.experienceYears} yrs</span>
-                <span className={styles.metricSubLabel}>Experience</span>
               </div>
-              <div className={styles.metricDivider} />
+
               <div className={styles.metricTile}>
-                <span className={styles.metricBigValue}>
-                  {crew.rating.toFixed(1)} <Star size={13} fill="#eab308" color="#eab308" style={{ display: "inline", verticalAlign: "-1px" }} />
-                </span>
-                <span className={styles.metricSubLabel}>{crew.reviewCount} Reviews</span>
+                <div className={styles.metricTileHeader}>
+                  <Star size={15} fill="#eab308" color="#eab308" className={styles.metricCardIcon} aria-hidden="true" />
+                  <span className={styles.metricSubLabel}>{crew.reviewCount} Reviews</span>
+                </div>
+                <span className={styles.metricBigValue}>{crew.rating.toFixed(1)}</span>
               </div>
-              <div className={styles.metricDivider} />
+
               <div className={styles.metricTile}>
+                <div className={styles.metricTileHeader}>
+                  <Building2 size={15} className={styles.metricCardIcon} aria-hidden="true" />
+                  <span className={styles.metricSubLabel}>Projects Completed</span>
+                </div>
                 <span className={styles.metricBigValue}>{crew.completedJobs}+</span>
-                <span className={styles.metricSubLabel}>Projects Completed</span>
               </div>
-              <div className={styles.metricDivider} />
+
               <div className={styles.metricTile}>
+                <div className={styles.metricTileHeader}>
+                  <Users size={15} className={styles.metricCardIcon} aria-hidden="true" />
+                  <span className={styles.metricSubLabel}>Deployable Crew / Site</span>
+                </div>
                 <span className={styles.metricBigValue}>{crew.crewSizeMin}–{crew.crewSizeMax}</span>
-                <span className={styles.metricSubLabel}>Deployable Crew / Site</span>
               </div>
             </div>
 
