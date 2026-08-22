@@ -283,11 +283,6 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
               </div>
             </div>
 
-            {/* 2. High-Impact Value Proposition Tagline */}
-            <p className={styles.conciseDescription}>
-              “Specialized structural masonry, AAC blockwork, and high-tolerance RCC plastering with a verified zero-lost-time safety record across {crew.completedJobs}+ completed sites.”
-            </p>
-
             {/* 3. Strong Scannable Metrics Row */}
             <div className={styles.proofMetricsGrid}>
               <div className={styles.metricTile}>
