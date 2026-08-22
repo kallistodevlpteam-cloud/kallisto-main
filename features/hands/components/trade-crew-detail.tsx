@@ -71,10 +71,8 @@ const SECTION_TABS = [
   { id: "overview", label: "Overview" },
   { id: "capabilities", label: "Capabilities" },
   { id: "crew", label: "Crew" },
-  { id: "deployments", label: "Deployments" },
   { id: "reviews", label: "Reviews" },
   { id: "availability", label: "Availability" },
-  { id: "documents", label: "Documents" },
 ];
 
 const SAVED_CREWS_STORAGE_KEY = "kallisto_hands_saved_crews";
@@ -458,45 +456,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
             </section>
           )}
 
-          {/* 6. Section: Recent Deployments */}
-          {activeTab === "deployments" && (
-            <section id="deployments" className={styles.sectionCard} aria-labelledby="heading-deployments">
-              <div className={styles.sectionHeaderRow}>
-                <h2 id="heading-deployments" className={styles.sectionTitle}>Recent Deployments</h2>
-                <span className={styles.sectionSubtitle}>Verified project delivery record</span>
-              </div>
-
-              <div className={styles.deploymentsList}>
-                {crew.recentDeployments?.map((dep) => (
-                  <div key={dep.id} className={styles.deploymentCard}>
-                    <div className={styles.deploymentTopRow}>
-                      <h3 className={styles.deploymentProjectName}>{dep.projectName}</h3>
-                      <div className={styles.deploymentRating}>
-                        <Star size={11} fill="#eab308" color="#eab308" aria-hidden="true" />
-                        <span>{dep.rating.toFixed(1)}</span>
-                      </div>
-                    </div>
-
-                    <div className={styles.deploymentScopeRow}>
-                      {dep.scopeTags.map((tag) => (
-                        <span key={tag} className={styles.scopeTag}>{tag}</span>
-                      ))}
-                    </div>
-
-                    <div className={styles.deploymentMetaRow}>
-                      <span>{dep.workerCount} workers</span>
-                      <span>•</span>
-                      <span>{dep.durationDays} days</span>
-                      <span>•</span>
-                      <span style={{ color: "#15803d", fontWeight: 600 }}>{dep.status}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* 7. Section: Client Reviews */}
+          {/* 6. Section: Client Reviews */}
           {activeTab === "reviews" && (
             <section id="reviews" className={styles.sectionCard} aria-labelledby="heading-reviews">
               <div className={styles.sectionHeaderRow}>
@@ -588,7 +548,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
             </section>
           )}
 
-          {/* 8. Section: Availability */}
+          {/* 7. Section: Availability */}
           {activeTab === "availability" && (
             <section id="availability" className={styles.sectionCard} aria-labelledby="heading-availability">
               <div className={styles.sectionHeaderRow}>
@@ -650,57 +610,6 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                     </div>
                   </div>
                 </div>
-              </div>
-            </section>
-          )}
-
-          {/* 9. Section: Kallisto Verification & Documents */}
-          {activeTab === "documents" && (
-            <section id="documents" className={styles.sectionCard} aria-labelledby="heading-documents">
-              <div className={styles.sectionHeaderRow}>
-                <h2 id="heading-documents" className={styles.sectionTitle}>Kallisto Verification</h2>
-                <span className={styles.sectionSubtitle}>Trust & safety credential checks</span>
-              </div>
-
-              <div className={styles.verificationList}>
-                <div className={styles.verificationItem}>
-                  <Check size={16} className={styles.checkIcon} aria-hidden="true" />
-                  <span>Identity verified</span>
-                </div>
-                <div className={styles.verificationItem}>
-                  <Check size={16} className={styles.checkIcon} aria-hidden="true" />
-                  <span>Crew lead verified</span>
-                </div>
-                <div className={styles.verificationItem}>
-                  <Check size={16} className={styles.checkIcon} aria-hidden="true" />
-                  <span>Experience verified</span>
-                </div>
-                <div className={styles.verificationItem}>
-                  <Check size={16} className={styles.checkIcon} aria-hidden="true" />
-                  <span>Previous deployments verified</span>
-                </div>
-                <div className={styles.verificationItem}>
-                  <Check size={16} className={styles.checkIcon} aria-hidden="true" />
-                  <span>Skill assessment completed</span>
-                </div>
-                <div className={styles.verificationItem}>
-                  <Check size={16} className={styles.checkIcon} aria-hidden="true" />
-                  <span>Documents verified</span>
-                </div>
-              </div>
-
-              <div className={styles.verificationFooterRow}>
-                <span className={styles.lastVerifiedText}>
-                  Last verification: {crew.verification?.lastVerificationDate || "18 Aug 2026"}
-                </span>
-                <button
-                  type="button"
-                  className={styles.secondaryButton}
-                  onClick={() => setDrawerOpen(true)}
-                >
-                  <ShieldCheck size={14} aria-hidden="true" />
-                  <span>View Verification Details</span>
-                </button>
               </div>
             </section>
           )}

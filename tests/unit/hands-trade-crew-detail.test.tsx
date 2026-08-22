@@ -28,10 +28,10 @@ describe("TradeCrewDetail Component", () => {
     expect(screen.getByRole("tab", { name: "Overview" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Capabilities" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Crew" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Deployments" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Reviews" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Availability" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Documents" })).toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Deployments" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Documents" })).not.toBeInTheDocument();
   });
 
   it("renders structured crew composition and capabilities with specializations", () => {
@@ -50,13 +50,8 @@ describe("TradeCrewDetail Component", () => {
     expect(screen.getByText(/AAC & Solid Concrete Blockwork/i)).toBeInTheDocument();
   });
 
-  it("renders evidence-based recent deployments and client reviews breakdown", () => {
+  it("renders client reviews breakdown with verified testimonials", () => {
     render(<TradeCrewDetail crewId="crew-masons-01" />);
-
-    // Switch to Recent Deployments tab
-    fireEvent.click(screen.getByRole("tab", { name: "Deployments" }));
-    expect(screen.getByText("Residential Villa — Kakkanad")).toBeInTheDocument();
-    expect(screen.getByText("Commercial Building — Kochi")).toBeInTheDocument();
 
     // Switch to Client Reviews tab
     fireEvent.click(screen.getByRole("tab", { name: "Reviews" }));
@@ -67,7 +62,7 @@ describe("TradeCrewDetail Component", () => {
     expect(screen.getByText("5 Reviews")).toBeInTheDocument();
   });
 
-  it("renders availability calendar and verification trust checklist", () => {
+  it("renders availability calendar and schedule", () => {
     render(<TradeCrewDetail crewId="crew-masons-01" />);
 
     // Switch to Availability tab
@@ -75,13 +70,6 @@ describe("TradeCrewDetail Component", () => {
     expect(screen.getByText("August 2026")).toBeInTheDocument();
     expect(screen.getByText("Next available:")).toBeInTheDocument();
     expect(screen.getByText("28 August 2026")).toBeInTheDocument();
-
-    // Switch to Documents tab
-    fireEvent.click(screen.getByRole("tab", { name: "Documents" }));
-    expect(screen.getByText("Identity verified")).toBeInTheDocument();
-    expect(screen.getByText("Crew lead verified")).toBeInTheDocument();
-    expect(screen.getByText("Experience verified")).toBeInTheDocument();
-    expect(screen.getByText("Documents verified")).toBeInTheDocument();
   });
 
   it("calculates live dynamic cost estimate in the sticky request panel and opens deployment request drawer", () => {
