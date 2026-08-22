@@ -159,9 +159,12 @@
   line-height: 1.25;
 }
 
-.verifiedRoundIcon {
-  color: #16a34a;
+.verifiedBlueIcon {
+  color: #ffffff;
+  fill: #0284c7;
   flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .specializationRow {
