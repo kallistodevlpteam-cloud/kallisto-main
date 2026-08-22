@@ -65,11 +65,20 @@
 }
 
 .heroRateValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
   font-size: 24px;
   font-weight: 850;
   color: #0f172a;
   letter-spacing: -0.03em;
   line-height: 1.1;
+}
+
+.heroRupeeIcon {
+  color: #0f172a;
+  flex-shrink: 0;
+  margin-right: -1px;
 }
 
 .heroRateLabel {
@@ -78,7 +87,7 @@
   color: #64748b;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 .heroIdentityGroup {

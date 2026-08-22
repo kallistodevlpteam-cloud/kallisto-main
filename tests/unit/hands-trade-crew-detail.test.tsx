@@ -22,7 +22,7 @@ describe("TradeCrewDetail Component", () => {
     expect(screen.getByLabelText(/Verified/i)).toBeInTheDocument();
     expect(screen.getByText("14 yrs")).toBeInTheDocument();
     expect(screen.getByText("64+")).toBeInTheDocument();
-    expect(screen.getByText("₹950")).toBeInTheDocument();
+    expect(screen.getByText("950")).toBeInTheDocument();
 
     // Section nav
     expect(screen.getByRole("tab", { name: "Overview" })).toBeInTheDocument();

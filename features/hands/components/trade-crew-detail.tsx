@@ -239,7 +239,10 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
 
                 {/* Rate Block on Right Side of Title Section */}
                 <div className={styles.heroRateBlock}>
-                  <span className={styles.heroRateValue}>₹{crew.dailyRate.toLocaleString("en-IN")}</span>
+                  <div className={styles.heroRateValue}>
+                    <IndianRupee size={20} strokeWidth={2.8} className={styles.heroRupeeIcon} aria-hidden="true" />
+                    <span>{crew.dailyRate.toLocaleString("en-IN")}</span>
+                  </div>
                   <span className={styles.heroRateLabel}>/DAY / WORKER</span>
                 </div>
             </div>
