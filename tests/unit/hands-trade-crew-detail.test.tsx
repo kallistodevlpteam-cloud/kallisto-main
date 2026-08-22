@@ -29,6 +29,8 @@ describe("TradeCrewDetail Component", () => {
     expect(screen.getByRole("tab", { name: "Capabilities" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Reviews" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Availability" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Request Deployment" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Request Crew" })).toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "Crew" })).not.toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "Deployments" })).not.toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "Documents" })).not.toBeInTheDocument();
@@ -65,11 +67,12 @@ describe("TradeCrewDetail Component", () => {
     expect(screen.getByText("28 August 2026")).toBeInTheDocument();
   });
 
-  it("calculates live dynamic cost estimate in the sticky request panel and opens deployment request drawer", () => {
+  it("calculates live dynamic cost estimate in the request deployment tab and opens deployment request drawer", () => {
     render(<TradeCrewDetail crewId="crew-masons-01" />);
 
-    // Sticky Request Panel: 8 workers × ₹950 × 15 days = ₹114,000
-    expect(screen.getByRole("heading", { level: 2, name: "Request This Crew" })).toBeInTheDocument();
+    // Switch to Request Deployment tab
+    fireEvent.click(screen.getByRole("tab", { name: "Request Deployment" }));
+    expect(screen.getByRole("heading", { level: 2, name: "Request Workforce Deployment" })).toBeInTheDocument();
     expect(screen.getByText("₹1,14,000")).toBeInTheDocument();
 
     // Increase duration by 1 day

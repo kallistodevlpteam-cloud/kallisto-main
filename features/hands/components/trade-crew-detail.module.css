@@ -14,26 +14,19 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   1. Two-Column Layout (Left Content 68% | Right Sticky 32%)
+   1. Single Full-Width Section Layout
    ───────────────────────────────────────────────────────────────────────────── */
 .twoColLayout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 350px;
-  gap: 28px;
-  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
   width: 100%;
-}
-
-@media (max-width: 1080px) {
-  .twoColLayout {
-    grid-template-columns: 1fr;
-  }
 }
 
 .leftStack {
   display: flex;
   flex-direction: column;
   gap: 0;
+  width: 100%;
   min-width: 0;
 }
 
@@ -54,6 +47,34 @@
   justify-content: space-between;
   gap: 20px;
   flex-wrap: wrap;
+}
+
+.heroRightActionsGroup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.headerRequestCtaBtn {
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 9999px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+  transition: all 140ms ease;
+  white-space: nowrap;
+}
+
+.headerRequestCtaBtn:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
 }
 
 .heroRateBlock {
@@ -1552,6 +1573,41 @@
   border-color: #0f172a;
   color: #ffffff;
   font-weight: 750;
+}
+
+.requestDeploymentLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 28px;
+  align-items: flex-start;
+  width: 100%;
+  margin-top: 6px;
+}
+
+@media (max-width: 860px) {
+  .requestDeploymentLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.requestConfigColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.requestSummaryColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  box-sizing: border-box;
 }
 
 /* Live Cost Calculation Box */
