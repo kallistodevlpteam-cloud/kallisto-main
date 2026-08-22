@@ -236,6 +236,12 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                   </div>
                 </div>
               </div>
+
+                {/* Rate Block on Right Side of Title Section */}
+                <div className={styles.heroRateBlock}>
+                  <span className={styles.heroRateValue}>₹{crew.dailyRate.toLocaleString("en-IN")}</span>
+                  <span className={styles.heroRateLabel}>/DAY / WORKER</span>
+                </div>
             </div>
 
             {/* Service Area, Radius & Quick Actions Strip */}
@@ -301,11 +307,6 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
               <div className={styles.metricTile}>
                 <span className={styles.metricBigValue}>{crew.crewSizeMin}–{crew.crewSizeMax}</span>
                 <span className={styles.metricSubLabel}>Deployable Crew / Site</span>
-              </div>
-              <div className={styles.metricDivider} />
-              <div className={styles.metricTile}>
-                <span className={styles.metricBigValue}>₹{crew.dailyRate.toLocaleString("en-IN")}</span>
-                <span className={styles.metricSubLabel}>/day / worker</span>
               </div>
             </div>
 
