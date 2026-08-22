@@ -70,7 +70,6 @@ function getBrandInfo(crew: TradeCrew): { name: string; icon: React.ElementType;
 const SECTION_TABS = [
   { id: "overview", label: "Overview" },
   { id: "capabilities", label: "Capabilities" },
-  { id: "crew", label: "Crew" },
   { id: "reviews", label: "Reviews" },
   { id: "availability", label: "Availability" },
 ];
@@ -377,56 +376,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
             </section>
           )}
 
-          {/* 5. Section: Crew Composition */}
-          {activeTab === "crew" && (
-            <section id="crew" className={styles.sectionCard} aria-labelledby="heading-crew">
-              <div className={styles.sectionHeaderRow}>
-                <h2 id="heading-crew" className={styles.sectionTitle}>Crew Composition</h2>
-                <span className={styles.sectionSubtitle}>Structured workforce distribution</span>
-              </div>
-
-              <div className={styles.crewCompositionWrap}>
-                <div className={styles.crewBigStatBox}>
-                  <span className={styles.crewBigCount}>
-                    {crew.crewComposition?.totalWorkforce || 8}
-                  </span>
-                  <span className={styles.crewBigLabel}>Total Workforce</span>
-                </div>
-
-                <div className={styles.rolesGrid}>
-                  {crew.crewComposition?.roles.map((role) => (
-                    <div key={role.role} className={styles.roleCard}>
-                      <span className={styles.roleCount}>{role.count}</span>
-                      <span className={styles.roleName}>{role.role}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className={styles.deploymentSpecsStrip}>
-                  <div className={styles.depSpecItem}>
-                    <span className={styles.depSpecLabel}>Typical deployment</span>
-                    <span className={styles.depSpecValue}>
-                      {crew.crewComposition?.typicalDeployment || "8–12 workers"}
-                    </span>
-                  </div>
-                  <div className={styles.depSpecItem}>
-                    <span className={styles.depSpecLabel}>Maximum deployment</span>
-                    <span className={styles.depSpecValue}>
-                      {crew.crewComposition?.maxDeployment || 24} workers
-                    </span>
-                  </div>
-                  <div className={styles.depSpecItem}>
-                    <span className={styles.depSpecLabel}>Crew lead</span>
-                    <span className={styles.depSpecValue}>
-                      {crew.crewComposition?.crewLeadTitle || "Verified Site Supervisor"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </section>
-          )}
-
-          {/* 6. Section: Client Reviews */}
+          {/* 5. Section: Client Reviews */}
           {activeTab === "reviews" && (
             <section id="reviews" className={styles.sectionCard} aria-labelledby="heading-reviews">
               <div className={styles.sectionHeaderRow}>

@@ -27,22 +27,15 @@ describe("TradeCrewDetail Component", () => {
     // Section nav
     expect(screen.getByRole("tab", { name: "Overview" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Capabilities" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Crew" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Reviews" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Availability" })).toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Crew" })).not.toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "Deployments" })).not.toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "Documents" })).not.toBeInTheDocument();
   });
 
-  it("renders structured crew composition and capabilities with specializations", () => {
+  it("renders structured technical capabilities step cards", () => {
     render(<TradeCrewDetail crewId="crew-masons-01" />);
-
-    // Switch to Crew tab
-    fireEvent.click(screen.getByRole("tab", { name: "Crew" }));
-    expect(screen.getByText("Total Workforce")).toBeInTheDocument();
-    expect(screen.getByText("Site Lead")).toBeInTheDocument();
-    expect(screen.getByText("Masons")).toBeInTheDocument();
-    expect(screen.getByText("Helpers")).toBeInTheDocument();
 
     // Switch to Capabilities tab
     fireEvent.click(screen.getByRole("tab", { name: "Capabilities" }));
