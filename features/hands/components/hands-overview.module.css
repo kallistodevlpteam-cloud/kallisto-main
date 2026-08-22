@@ -2497,9 +2497,9 @@
 }
 
 .discoveryTopNavCenter {
-  flex: 1;
-  max-width: 580px;
-  margin: 0 auto;
+  margin-left: auto;
+  width: 480px;
+  max-width: 100%;
   display: flex;
   align-items: center;
 }
@@ -2535,6 +2535,9 @@
   font-size: 13px;
   font-weight: 500;
   color: #0f172a;
+  padding: 0 !important;
+  margin: 0 !important;
+  text-align: left;
 }
 
 .discoverySearchInput:focus,

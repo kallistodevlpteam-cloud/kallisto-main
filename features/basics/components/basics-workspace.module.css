@@ -4601,9 +4601,9 @@
 }
 
 .discoveryTopNavCenter {
-  flex: 1;
-  max-width: 580px;
-  margin: 0 auto;
+  margin-left: auto;
+  width: 480px;
+  max-width: 100%;
   display: flex;
   align-items: center;
 }
@@ -4681,8 +4681,8 @@
   height: 38px;
   padding: 0 4px 0 16px;
   background: #ffffff;
-  border: 1px solid #e2e8f0;
   border-radius: 9999px;
+  border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   transition: all 180ms ease;
   box-sizing: border-box;
@@ -4700,14 +4700,18 @@
 
 .discoverySearchInput {
   flex: 1;
+  min-width: 0;
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
   background: transparent;
-  color: #0f172a;
+  font-family: inherit;
   font-size: 13px;
   font-weight: 500;
-  min-width: 0;
+  color: #0f172a;
+  padding: 0 !important;
+  margin: 0 !important;
+  text-align: left;
 }
 
 .discoverySearchInput:focus,
