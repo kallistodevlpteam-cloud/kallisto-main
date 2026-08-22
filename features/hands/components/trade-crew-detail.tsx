@@ -249,6 +249,14 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
               </div>
             </div>
 
+            {/* Hero Subheading (Basics-style greeting sentence) */}
+            <div className={styles.referenceHeroSubheading}>
+              Hi, we’re {crew.name} — we specialize in {crew.skills[0] || crew.trade} in {crew.category}.{" "}
+              <span className={styles.referenceHeroMuted}>
+                Based in {crew.location}.
+              </span>
+            </div>
+
             {/* Hero Bio */}
             <p className={styles.referenceHeroBio}>{crew.about}</p>
 

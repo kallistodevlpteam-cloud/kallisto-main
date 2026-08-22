@@ -230,6 +230,19 @@
   color: #ffffff !important;
   border-color: #0f172a !important;
 }
+.referenceHeroSubheading {
+  font-size: 18.5px;
+  font-weight: 750;
+  line-height: 1.35;
+  color: #0f172a;
+  letter-spacing: -0.015em;
+  margin: 6px 0 0 0;
+}
+
+.referenceHeroMuted {
+  color: #64748b;
+  font-weight: 450;
+}
 
 .referenceHeroBio {
   font-size: 13.5px;
