@@ -210,9 +210,9 @@ export function ExpertDiscovery() {
   }, [filters, savedFilterOnly]);
 
   return (
-    <div className={styles.discoveryStack}>
+    <div className={`workspace-container ${styles.discoveryStack}`}>
       {/* 1. Integrated Sticky Top Navbar: Logo | Search Box | Round Wishlist Option */}
-      <div className={styles.discoveryStickyHeader}>
+      <header className={styles.discoveryStickyHeader}>
         <div className={styles.discoveryTopNavRow}>
           {/* Left (Red Box): Kallisto Basics Logo */}
           <Link href="/basics" className={styles.discoveryLogoLink} title="Back to Basics Overview">
@@ -223,6 +223,7 @@ export function ExpertDiscovery() {
               height={24}
               className={styles.discoveryLogoImg}
               priority
+              unoptimized
             />
           </Link>
 
@@ -290,7 +291,7 @@ export function ExpertDiscovery() {
             </Link>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* 2. Header Quick Filters */}
       <div className={styles.discoveryHeaderWrap}>
