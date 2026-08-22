@@ -53,6 +53,26 @@ describe("Hive Studio: 3-Layer Project Intelligence Workspace", () => {
       expect(screen.getByText("4 active tasks")).toBeInTheDocument();
       expect(screen.getByText("Living Space & Terrace")).toBeInTheDocument();
     });
+
+    it("opens project dropdown menu on click and selects a project", () => {
+      const handleSelectProject = vi.fn();
+      render(
+        <StudioProjectContextCard
+          selectedProjectId="proj-001"
+          projects={MOCK_PROJECTS}
+          onSelectProject={handleSelectProject}
+        />
+      );
+
+      const triggerBtn = screen.getByRole("button", { name: /Select project from dropdown/i });
+      fireEvent.click(triggerBtn);
+
+      expect(screen.getByText("SWITCH PROJECT")).toBeInTheDocument();
+      expect(screen.getByText("Nila Residence Fit-out")).toBeInTheDocument();
+
+      fireEvent.click(screen.getByText("Nila Residence Fit-out"));
+      expect(handleSelectProject).toHaveBeenCalledWith("proj-002");
+    });
   });
 
   describe("Layer 2: Action-Oriented Pathways", () => {
@@ -151,7 +171,7 @@ describe("Hive Studio: 3-Layer Project Intelligence Workspace", () => {
 
       // Layer 1
       expect(screen.getByText("KL-COK-2026")).toBeInTheDocument();
-      expect(screen.getByText("Luxury Villa Horizon")).toBeInTheDocument();
+      expect(screen.getByText("Luxury Villa Horizon - Living Space & Terrace")).toBeInTheDocument();
 
       // Layer 2
       expect(screen.getByText("What do you want to accomplish?")).toBeInTheDocument();

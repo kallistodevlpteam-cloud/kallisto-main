@@ -954,6 +954,136 @@
   letter-spacing: 0.02em;
 }
 
+.projectCodeBadgeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #334155;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.projectCodeBadgeButton:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.projectCodeChevron {
+  color: #64748b;
+  transition: transform 0.15s ease;
+}
+
+.projectDropdownMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 100;
+  min-width: 320px;
+  max-width: 400px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(15, 23, 42, 0.04);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: projectDropdownSlideIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes projectDropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.projectDropdownHeader {
+  padding: 6px 10px 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.projectDropdownItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.projectDropdownItem:hover {
+  background: #f8fafc;
+}
+
+.projectDropdownItemActive {
+  background: #f1f5f9;
+}
+
+.projectDropdownItemMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.projectDropdownItemTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.projectDropdownItemName {
+  font-size: 13px;
+  font-weight: 650;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.projectDropdownItemCode {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #64748b;
+  background: rgba(15, 23, 42, 0.05);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.projectDropdownItemPhase {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.projectDropdownCheck {
+  color: #0f172a;
+  flex-shrink: 0;
+}
+
 .projectPhaseBadge {
   display: inline-flex;
   align-items: center;
