@@ -2,10 +2,10 @@
 
 import React from "react";
 import {
-  BuildDuotoneIcon,
   ExploreDuotoneIcon,
   ResolveDuotoneIcon,
   ReviewDuotoneIcon,
+  StudioDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 import { StudioIntent } from "../types/studio-source";
 import styles from "./studio-chat-canvas.module.css";
@@ -17,7 +17,7 @@ export interface StudioIntentGridProps {
 
 const INTENT_ICONS: Record<StudioIntent, React.ElementType> = {
   create: ExploreDuotoneIcon,
-  analyse: BuildDuotoneIcon,
+  analyse: StudioDuotoneIcon,
   review: ReviewDuotoneIcon,
   resolve: ResolveDuotoneIcon,
 };
