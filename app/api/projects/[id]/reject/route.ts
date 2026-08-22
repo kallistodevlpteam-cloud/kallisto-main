@@ -19,12 +19,14 @@ export async function POST(request: NextRequest, { params }: RejectRouteParams) 
   }
   try {
     const token = request.headers.get("Authorization")?.replace("Bearer ", "") ?? undefined;
-    const projectCharacter = await rejectBackendProject(projectId, token);
-    return NextResponse.json({
-      status: "ok",
-      project_id: projectId,
-      project_character: projectCharacter,
-    });
+    const body = await request.json().catch(() => ({}));
+    const result = await rejectBackendProject(
+      projectId,
+      token,
+      body.rejection_reason ?? "",
+      body.notes ?? ""
+    );
+    return NextResponse.json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Backend unavailable";
     const status = error instanceof BackendError ? error.status : 503;

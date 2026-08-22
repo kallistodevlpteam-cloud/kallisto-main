@@ -2,13 +2,13 @@
 
 import {
   Globe2,
-  PanelLeft,
   Send,
   Zap,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { KallistoBrand } from "./kallisto-brand";
+import { SidebarToggleDuotoneIcon } from "./sidebar-icons";
 import {
   isSidebarItemActive,
   SIDEBAR_NAVIGATION,
@@ -40,7 +40,7 @@ export function SidebarExpanded({
             onClick={onToggleSidebar}
             title="Collapse sidebar"
           >
-            <PanelLeft size={18} strokeWidth={1.8} />
+            <SidebarToggleDuotoneIcon size={18} />
           </button>
         )}
       </div>

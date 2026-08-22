@@ -1,12 +1,25 @@
 "use client";
 
 import {
+  BuildingDuotoneIcon,
+  DrawingsDuotoneIcon,
+  EnergyDuotoneIcon,
+  ExploreDuotoneIcon,
+  LayersDuotoneIcon,
+  ResolveDuotoneIcon,
+  SiteDuotoneIcon,
+  UserDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
+import {
   AlertTriangle,
+  ChevronDown,
   ClipboardList,
+  Plus,
   RefreshCw,
   ShieldAlert,
   WifiOff,
 } from "lucide-react";
+import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   useCallback,
@@ -28,6 +41,7 @@ import { DeploymentDetailsDrawer } from "./deployment-details-drawer";
 import { HandsMetricCard } from "./hands-metric-card";
 import { HandsPageHeader } from "./hands-page-header";
 import { HandsPageTabs } from "./hands-page-tabs";
+import { HandsSearchBar } from "./hands-search-bar";
 import { NeedsAttentionCard } from "./needs-attention-card";
 import { OpenRequestsCard } from "./open-requests-card";
 import { WorkforceDemandCard } from "./workforce-demand-card";
@@ -67,6 +81,65 @@ const TAB_PLACEHOLDERS: Record<
   },
 };
 
+const QUICK_SEARCH_TRADES = [
+  {
+    label: "MEP",
+    query: "Electricians",
+    icon: EnergyDuotoneIcon,
+    accentColor: "#0284c7",
+    bgTint: "#f0f9ff",
+  },
+  {
+    label: "Masonry",
+    query: "Masons",
+    icon: BuildingDuotoneIcon,
+    accentColor: "#16a34a",
+    bgTint: "#f0fdf4",
+  },
+  {
+    label: "Plumbing",
+    query: "Plumbers",
+    icon: ResolveDuotoneIcon,
+    accentColor: "#0891b2",
+    bgTint: "#ecfeff",
+  },
+  {
+    label: "Carpentry",
+    query: "Carpenters",
+    icon: LayersDuotoneIcon,
+    accentColor: "#d97706",
+    bgTint: "#fffbeb",
+  },
+  {
+    label: "Steel Fixers",
+    query: "Steel Fixers",
+    icon: SiteDuotoneIcon,
+    accentColor: "#64748b",
+    bgTint: "#f8fafc",
+  },
+  {
+    label: "Painting",
+    query: "Painters",
+    icon: DrawingsDuotoneIcon,
+    accentColor: "#e11d48",
+    bgTint: "#fff1f2",
+  },
+  {
+    label: "Supervisors",
+    query: "Supervisors",
+    icon: UserDuotoneIcon,
+    accentColor: "#9333ea",
+    bgTint: "#faf5ff",
+  },
+  {
+    label: "Surveyors",
+    query: "Surveyors",
+    icon: ExploreDuotoneIcon,
+    accentColor: "#ea580c",
+    bgTint: "#fff7ed",
+  },
+];
+
 export function HandsOverview() {
   const pathname = usePathname();
   const router = useRouter();
@@ -78,6 +151,8 @@ export function HandsOverview() {
   const [selectedDeployment, setSelectedDeployment] =
     useState<Deployment | null>(null);
   const [headerNotice, setHeaderNotice] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showFullDashboard, setShowFullDashboard] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -146,6 +221,95 @@ export function HandsOverview() {
     setSelectedDeployment(null);
   }, []);
 
+  const handleHeroSearch = (q: string, projectId?: string | null) => {
+    const params = new URLSearchParams();
+    if (q.trim()) params.set("q", q.trim());
+    if (projectId) params.set("projectId", projectId);
+    const queryString = params.toString();
+    router.push(`/hands/trades${queryString ? `?${queryString}` : ""}`);
+  };
+
+  const isLanding = activeTab === "overview" && searchParams.get("view") !== "dashboard";
+
+  if (isLanding) {
+    return (
+      <div className={`workspace-container ${styles.handsLandingPage}`}>
+        {/* Top Right Quick Actions */}
+        <div className={styles.overviewTopNavActions}>
+          <button
+            type="button"
+            className={styles.handsRoundBtn}
+            onClick={handleOpenRequest}
+            title="Request Workforce"
+            aria-label="Request more workers"
+          >
+            <Plus size={16} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className={styles.handsRoundBtn}
+            onClick={() => handleTabChange("requests")}
+            title="Workforce Requests"
+            aria-label="View workforce requests"
+          >
+            <ClipboardList size={15} aria-hidden="true" />
+          </button>
+        </div>
+
+        {/* Centered Intelligence & Workforce Hub */}
+        <section className={styles.grokHeroContainer} aria-label="Kallisto Hands Command Hub">
+          {/* Brand Header */}
+          <div className={styles.grokBrand}>
+            <Image
+              src="/kallisto-hands-logo.png"
+              alt="Kallisto Hands"
+              width={260}
+              height={44}
+              className={styles.grokHandsLogoImg}
+              priority
+              unoptimized
+            />
+            <p className={styles.grokTagline}>
+              Deploy verified site workforce, track daily shifts, and manage trade teams with precision.
+            </p>
+          </div>
+
+          {/* Layered Project Search Card */}
+          <div className={styles.grokSearchWrapper}>
+            <HandsSearchBar
+              onSearch={handleHeroSearch}
+              initialQuery={searchQuery}
+            />
+          </div>
+
+          {/* Quick Search Trade Dock */}
+          <nav className={styles.quickSearchDock} aria-label="Quick trade filters">
+            {QUICK_SEARCH_TRADES.map((trade) => (
+              <button
+                key={trade.label}
+                type="button"
+                className={styles.quickSearchCard}
+                onClick={() => handleHeroSearch(trade.query)}
+              >
+                <span
+                  className={styles.quickSearchIconWrap}
+                  style={{ background: trade.bgTint, color: trade.accentColor }}
+                >
+                  <trade.icon size={19} aria-hidden="true" />
+                </span>
+                <span className={styles.quickSearchLabel}>{trade.label}</span>
+              </button>
+            ))}
+          </nav>
+        </section>
+
+        {requestDrawerOpen ? (
+          <WorkforceRequestDrawer onClose={handleCloseRequest} />
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div className={`workspace-container ${styles.page}`}>
       <HandsPageHeader
@@ -153,6 +317,8 @@ export function HandsOverview() {
         onOverflowAction={(action) =>
           setHeaderNotice(`${action} will open in the Hands settings workspace.`)
         }
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
       />
 
       <HandsPageTabs activeTab={activeTab} onSelect={handleTabChange} />
@@ -176,49 +342,93 @@ export function HandsOverview() {
         aria-labelledby={`hands-tab-${activeTab}`}
         className={styles.tabPanel}
       >
-        {activeTab === "overview" ? (
+        {loadState === "loading" ? <HandsOverviewSkeleton /> : null}
+        {loadState === "error" ? (
+          <HandsStateView
+            icon="error"
+            title="Hands overview could not be loaded"
+            description="The workforce service returned an unexpected error."
+            actionLabel="Retry"
+            onAction={handleRetry}
+          />
+        ) : null}
+        {loadState === "offline" ? (
+          <HandsStateView
+            icon="offline"
+            title="You appear to be offline"
+            description="Reconnect to load the current workforce, attendance and cost records."
+            actionLabel="Try again"
+            onAction={handleRetry}
+          />
+        ) : null}
+        {loadState === "forbidden" ? (
+          <HandsStateView
+            icon="forbidden"
+            title="Hands access is restricted"
+            description="Your provider account does not have permission to view workforce operations."
+          />
+        ) : null}
+
+        {loadState === "success" && data ? (
           <>
-            {loadState === "loading" ? <HandsOverviewSkeleton /> : null}
-            {loadState === "success" && data ? (
+            {activeTab === "overview" && (
               <HandsOverviewContent
                 data={data}
+                searchQuery={searchQuery}
                 onSelectDeployment={setSelectedDeployment}
                 onNavigateTab={handleTabChange}
                 onRequestWorkforce={handleOpenRequest}
               />
-            ) : null}
-            {loadState === "error" ? (
-              <HandsStateView
-                icon="error"
-                title="Hands overview could not be loaded"
-                description="The workforce service returned an unexpected error."
-                actionLabel="Retry"
-                onAction={handleRetry}
-              />
-            ) : null}
-            {loadState === "offline" ? (
-              <HandsStateView
-                icon="offline"
-                title="You appear to be offline"
-                description="Reconnect to load the current workforce, attendance and cost records."
-                actionLabel="Try again"
-                onAction={handleRetry}
-              />
-            ) : null}
-            {loadState === "forbidden" ? (
-              <HandsStateView
-                icon="forbidden"
-                title="Hands access is restricted"
-                description="Your provider account does not have permission to view workforce operations."
-              />
-            ) : null}
+            )}
+            {activeTab === "deployments" && (
+              <div className={styles.overviewStack}>
+                <ActiveDeploymentsCard
+                  deployments={(data.deployments || []).filter((d) => {
+                    if (!searchQuery.trim()) return true;
+                    const q = searchQuery.toLowerCase();
+                    return (
+                      d.projectName.toLowerCase().includes(q) ||
+                      d.location.toLowerCase().includes(q) ||
+                      d.workforce.toLowerCase().includes(q) ||
+                      d.supervisor.toLowerCase().includes(q)
+                    );
+                  })}
+                  onSelectDeployment={setSelectedDeployment}
+                  onNavigateTab={handleTabChange}
+                  onRequestWorkforce={handleOpenRequest}
+                />
+              </div>
+            )}
+            {activeTab === "requests" && (
+              <div className={styles.overviewStack}>
+                <OpenRequestsCard
+                  requests={(data.requests || []).filter((r) => {
+                    if (!searchQuery.trim()) return true;
+                    const q = searchQuery.toLowerCase();
+                    return (
+                      r.projectName.toLowerCase().includes(q) ||
+                      r.trade.toLowerCase().includes(q)
+                    );
+                  })}
+                  onNavigateTab={handleTabChange}
+                  onRequestWorkforce={handleOpenRequest}
+                />
+                <WorkforceDemandCard
+                  demand={data.demand}
+                  onNavigateTab={handleTabChange}
+                />
+              </div>
+            )}
+            {activeTab !== "overview" &&
+              activeTab !== "deployments" &&
+              activeTab !== "requests" && (
+                <HandsTabPlaceholder
+                  tab={activeTab}
+                  onReturn={() => handleTabChange("overview")}
+                />
+              )}
           </>
-        ) : (
-          <HandsTabPlaceholder
-            tab={activeTab}
-            onReturn={() => handleTabChange("overview")}
-          />
-        )}
+        ) : null}
       </div>
 
       {requestDrawerOpen ? (
@@ -238,6 +448,7 @@ export function HandsOverview() {
 
 interface HandsOverviewContentProps {
   data: HandsOverviewData;
+  searchQuery?: string;
   onSelectDeployment: (deployment: Deployment) => void;
   onNavigateTab: (tab: HandsTab) => void;
   onRequestWorkforce: () => void;
@@ -245,10 +456,31 @@ interface HandsOverviewContentProps {
 
 function HandsOverviewContent({
   data,
+  searchQuery = "",
   onSelectDeployment,
   onNavigateTab,
   onRequestWorkforce,
 }: HandsOverviewContentProps) {
+  const filteredDeployments = (data.deployments || []).filter((d) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      d.projectName.toLowerCase().includes(q) ||
+      d.location.toLowerCase().includes(q) ||
+      d.workforce.toLowerCase().includes(q) ||
+      d.supervisor.toLowerCase().includes(q)
+    );
+  });
+
+  const filteredRequests = (data.requests || []).filter((r) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      r.projectName.toLowerCase().includes(q) ||
+      r.trade.toLowerCase().includes(q)
+    );
+  });
+
   return (
     <div className={styles.overviewStack}>
       <section className={styles.metricsGrid} aria-label="Hands metrics">
@@ -259,13 +491,13 @@ function HandsOverviewContent({
 
       <div className={styles.operationalGrid}>
         <ActiveDeploymentsCard
-          deployments={data.deployments}
+          deployments={filteredDeployments}
           onSelectDeployment={onSelectDeployment}
           onNavigateTab={onNavigateTab}
           onRequestWorkforce={onRequestWorkforce}
         />
         <OpenRequestsCard
-          requests={data.requests}
+          requests={filteredRequests}
           onNavigateTab={onNavigateTab}
           onRequestWorkforce={onRequestWorkforce}
         />

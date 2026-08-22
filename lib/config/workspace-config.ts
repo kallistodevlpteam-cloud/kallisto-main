@@ -32,6 +32,7 @@ export const ROUTE_BREADCRUMBS: Record<string, BreadcrumbMeta> = {
   "/analytics": { parent: WORKSPACE_CONFIG.workspaceType, current: "Analytics" },
   "/hub": { parent: WORKSPACE_CONFIG.workspaceType, current: "Hub" },
   "/hands": { parent: WORKSPACE_CONFIG.workspaceType, current: "Hands" },
+  "/hands/trades": { parent: "Hands", current: "Find Trades" },
   "/basics": { parent: WORKSPACE_CONFIG.workspaceType, current: "Basics" },
   "/basics/experts": { parent: "Basics", current: "Find Experts" },
   "/basics/requirements": { parent: "Basics", current: "Requirements" },

@@ -18,12 +18,19 @@ export async function POST(request: NextRequest, { params }: RespondRouteParams)
     );
   }
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
+    const decision = body.decision as "accept" | "reject";
+    if (!decision || !["accept", "reject"].includes(decision)) {
+      return NextResponse.json(
+        { status: "error", message: "decision must be 'accept' or 'reject'" },
+        { status: 400 }
+      );
+    }
     const result = await respondToBackendProposal(
       projectId,
-      body.decision,
-      body.reason,
-      body.negotiation_notes
+      decision,
+      body.reason ?? "",
+      body.negotiation_notes ?? ""
     );
     return NextResponse.json(result);
   } catch (error) {

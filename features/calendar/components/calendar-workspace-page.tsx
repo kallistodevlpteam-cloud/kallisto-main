@@ -2,14 +2,10 @@
 
 import React, { useState } from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
-import { useCalendarQueryState, type CalendarTabId } from "../hooks/use-calendar-query-state";
+import { useCalendarQueryState } from "../hooks/use-calendar-query-state";
 import { useCalendarActivities } from "../hooks/use-calendar-activities";
 import { useProjectSchedule } from "../hooks/use-project-schedule";
-import { CalendarPageHeader } from "./calendar-page-header";
-import { TodayTab } from "./today-tab/today-tab";
 import { CalendarTab } from "./calendar-tab/calendar-tab";
-import { GanttTab } from "./gantt-tab/gantt-tab";
-import { ActivityInspectorDrawer } from "./inspector/activity-inspector-drawer";
 import { AddActivityModal } from "./modals/add-activity-modal";
 import { MOCK_PROJECTS } from "../data/mock-calendar-data";
 import styles from "./calendar-workspace-page.module.css";
@@ -22,8 +18,7 @@ export function CalendarWorkspacePage() {
     projectId: queryState.project || undefined,
     activityType: queryState.activityType || undefined,
     visibility: queryState.visibility || undefined,
-    // Today is an operational record of the full day, including completed work.
-    includeCompleted: queryState.tab === "today" ? true : queryState.includeCompleted,
+    includeCompleted: true,
     scope: queryState.scope,
   };
 
@@ -33,12 +28,9 @@ export function CalendarWorkspacePage() {
     error: activitiesError,
     refetch: refetchActivities,
     createActivity,
-    updateActivityDate,
-    markActivityComplete,
   } = useCalendarActivities(activityFilter);
 
   const {
-    scheduleItems,
     isLoading: isScheduleLoading,
     error: scheduleError,
     refetch: refetchSchedule,
@@ -55,31 +47,15 @@ export function CalendarWorkspacePage() {
     setAddModalOpen(true);
   };
 
-  const handleTabChange = (newTab: CalendarTabId) => {
-    setQueryState({ tab: newTab });
-  };
-
   const handleSelectItem = (id: string, type: "activity" | "schedule") => {
     setQueryState({ selected: `${type}:${id}` });
-  };
-
-  const handleCloseInspector = () => {
-    setQueryState({ selected: null });
   };
 
   const isLoading = isActivitiesLoading || isScheduleLoading;
   const hasError = activitiesError || scheduleError;
 
   return (
-    <div className={styles.container}>
-      {/* Compact Page Header with Restrained Active Underline Tabs (Today | Calendar | Gantt) */}
-      <CalendarPageHeader
-        activeTab={queryState.tab}
-        selectedDate={queryState.date}
-        onTabChange={handleTabChange}
-        onOpenAddModal={handleOpenAddModal}
-      />
-
+    <div className={`${styles.container} calendarWorkspaceRoot`}>
       {/* Loading State */}
       {isLoading && (
         <div className="route-state-box route-state-loading" aria-label="Loading calendar workspace">
@@ -114,62 +90,20 @@ export function CalendarWorkspacePage() {
         </div>
       )}
 
-      {/* Main Active Tab Workspace Render */}
+      {/* Direct Clean Calendar Workspace */}
       {!isLoading && !hasError && (
-        <>
-          {queryState.tab === "today" && (
-            <TodayTab
-              activities={activities}
-              scheduleItems={scheduleItems}
-              projectsList={MOCK_PROJECTS}
-              selectedDate={queryState.date}
-              scope={queryState.scope === "team" ? "team" : "mine"}
-              category={queryState.category}
-              onSelectActivity={(id) => handleSelectItem(id, "activity")}
-              onSelectScheduleItem={(id) => handleSelectItem(id, "schedule")}
-              onViewAllSchedule={() => handleTabChange("calendar")}
-              onDateChange={(date) => setQueryState({ date, tab: "today" })}
-              onScopeChange={(scope) => setQueryState({ scope, tab: "today" })}
-              onCategoryChange={(category) => setQueryState({ category, tab: "today" })}
-              onAddActivity={() => handleOpenAddModal("schedule_event")}
-              onMarkComplete={markActivityComplete}
-            />
-          )}
-
-          {queryState.tab === "calendar" && (
-            <CalendarTab
-              queryState={queryState}
-              onUpdateQuery={setQueryState}
-              activities={activities}
-              projectsList={MOCK_PROJECTS}
-              onSelectActivity={(id) => handleSelectItem(id, "activity")}
-              onAddActivity={(date) => {
-                if (date) setQueryState({ date });
-                handleOpenAddModal("schedule_event");
-              }}
-            />
-          )}
-
-          {queryState.tab === "gantt" && (
-            <GanttTab
-              queryState={queryState}
-              onUpdateQuery={setQueryState}
-              projectsList={MOCK_PROJECTS}
-              scheduleItems={scheduleItems}
-              onSelectItem={handleSelectItem}
-            />
-          )}
-        </>
+        <CalendarTab
+          queryState={queryState}
+          onUpdateQuery={setQueryState}
+          activities={activities}
+          projectsList={MOCK_PROJECTS}
+          onSelectActivity={(id) => handleSelectItem(id, "activity")}
+          onAddActivity={(date) => {
+            if (date) setQueryState({ date });
+            handleOpenAddModal("schedule_event");
+          }}
+        />
       )}
-
-      {/* Contextual Inspector Drawer (Deep-linked via `selected` param) */}
-      <ActivityInspectorDrawer
-        selectedParam={queryState.selected}
-        activities={activities}
-        scheduleItems={scheduleItems}
-        onClose={handleCloseInspector}
-        onUpdateActivityDate={updateActivityDate}
-      />
 
       {/* Add Activity Creation Modal */}
       {addModalOpen && (

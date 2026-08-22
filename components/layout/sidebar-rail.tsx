@@ -2,7 +2,6 @@
 
 import {
   Globe2,
-  PanelLeft,
   Zap,
 } from "lucide-react";
 import Link from "next/link";
@@ -21,20 +20,21 @@ export function SidebarRail({ onToggleSidebar, pendingEnquiryCount = null }: Sid
   return (
     <aside className="sidebar sidebar--rail" aria-label="Compact navigation">
       <div className="rail-top">
-        {onToggleSidebar && (
+        {onToggleSidebar ? (
           <button
-            className="rail-toggle-btn"
+            className="rail-brand-btn"
             type="button"
             onClick={onToggleSidebar}
             aria-label="Expand sidebar"
             title="Expand sidebar"
           >
-            <PanelLeft size={17} strokeWidth={1.8} />
+            <KallistoBrand compact />
           </button>
+        ) : (
+          <div className="rail-brand">
+            <KallistoBrand compact />
+          </div>
         )}
-        <div className="rail-brand">
-          <KallistoBrand compact />
-        </div>
       </div>
 
       <nav className="rail-nav" aria-label="Quick links">

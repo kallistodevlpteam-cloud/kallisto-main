@@ -1,9 +1,11 @@
 import {
   AlertTriangle,
   ChevronRight,
-  CircleAlert,
-  Clock3,
 } from "lucide-react";
+import {
+  ClockDuotoneIcon,
+  ResolveDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import type { AttentionItem, HandsTab } from "../types/hands.types";
 import styles from "./hands-overview.module.css";
 
@@ -13,9 +15,9 @@ interface NeedsAttentionCardProps {
 }
 
 const SEVERITY_ICONS = {
-  critical: CircleAlert,
+  critical: ResolveDuotoneIcon,
   warning: AlertTriangle,
-  info: Clock3,
+  info: ClockDuotoneIcon,
 } as const;
 
 export function NeedsAttentionCard({
