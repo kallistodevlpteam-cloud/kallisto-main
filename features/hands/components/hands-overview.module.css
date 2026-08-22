@@ -2462,7 +2462,7 @@
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  padding: 10px 24px 6px 24px;
+  padding: 28px 24px 8px 24px;
   margin: -24px -24px 10px -24px;
   width: calc(100% + 48px);
   box-sizing: border-box;
