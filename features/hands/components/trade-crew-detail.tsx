@@ -390,39 +390,51 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
             <section id="capabilities" className={styles.sectionCard} aria-labelledby="heading-capabilities">
               <div className={styles.sectionHeaderRow}>
                 <h2 id="heading-capabilities" className={styles.sectionTitle}>Technical Masonry & RCC Capabilities</h2>
-                <span className={styles.sectionSubtitle}>Industrial standards, tolerances, and structural specifications</span>
+                <span className={styles.sectionSubtitle}>Industrial standards, tolerances, and execution specifications</span>
               </div>
 
-              <div className={styles.capabilitiesGrid}>
-                {crew.capabilityRatings?.map((cap) => (
-                  <div key={cap.name} className={styles.capabilityCard}>
-                    <div className={styles.capabilityTopLine}>
-                      <span className={styles.capabilityName}>{cap.name}</span>
-                      <span className={styles.capabilityLevelBadge}>
-                        {cap.levelLabel || `Mastery (${cap.rating}/5)`}
-                      </span>
-                    </div>
-                    {cap.description && (
-                      <p className={styles.capabilityDescription}>{cap.description}</p>
-                    )}
-                    <div className={styles.capabilityBottomLine}>
-                      <div className={styles.dotRatingWrap} aria-label={`${cap.rating} out of 5 stars`}>
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <span
-                            key={star}
-                            className={star <= cap.rating ? styles.dotFilled : styles.dotEmpty}
-                            aria-hidden="true"
-                          />
-                        ))}
+              <div className={styles.capabilitiesStepGrid}>
+                {crew.capabilityRatings?.map((cap, idx) => {
+                  const icons = [Building2, Layers, Sparkles, Grid3X3, Compass, Droplets, Zap];
+                  const CapIcon = icons[idx % icons.length];
+                  return (
+                    <article key={cap.name} className={styles.capabilityStepCard}>
+                      <div>
+                        <div className={styles.capCardTopRow}>
+                          <div className={styles.capIconBox} aria-hidden="true">
+                            <CapIcon size={16} />
+                          </div>
+                          <span className={styles.capStepBadge}>{cap.step || `STEP ${idx + 1}`}</span>
+                        </div>
+
+                        <div className={styles.capMetricTimeline}>
+                          {cap.timelineOrMetric || (cap.verifiedSites ? `${cap.verifiedSites} verified sites` : "Standard shift")}
+                        </div>
+
+                        <h3 className={styles.capStepTitle}>{cap.name}</h3>
+
+                        {cap.description && (
+                          <p className={styles.capStepDescription}>{cap.description}</p>
+                        )}
                       </div>
-                      {cap.verifiedSites && (
-                        <span className={styles.verifiedSitesCount}>
-                          ✓ {cap.verifiedSites} verified deployments
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))}
+
+                      <div className={styles.capCardFooterRow}>
+                        <span className={styles.capToolsTag}>TOOLS</span>
+                        <div className={styles.capToolsList}>
+                          {cap.tools && cap.tools.length > 0 ? (
+                            cap.tools.map((tool) => (
+                              <span key={tool} className={styles.capToolItemBadge}>
+                                {tool}
+                              </span>
+                            ))
+                          ) : (
+                            <span className={styles.capToolItemBadge}>IS Standards</span>
+                          )}
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
 
               <h3 className={styles.bulletListTitle}>Specializations</h3>

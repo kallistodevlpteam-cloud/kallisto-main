@@ -589,6 +589,141 @@
   color: #0f172a;
 }
 
+/* Capabilities — Step Cards Grid (Reference Design) */
+.capabilitiesStepGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+  margin: 6px 0 16px 0;
+}
+
+@media (max-width: 900px) {
+  .capabilitiesStepGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 580px) {
+  .capabilitiesStepGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.capabilityStepCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px 18px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 230px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  box-sizing: border-box;
+}
+
+.capabilityStepCard:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  transform: translateY(-2px);
+}
+
+.capCardTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.capIconBox {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.capStepBadge {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.capMetricTimeline {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: 14px;
+  margin-bottom: 2px;
+}
+
+.capStepTitle {
+  font-size: 14.5px;
+  font-weight: 750;
+  color: #0f172a;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.capStepDescription {
+  font-size: 12.5px;
+  color: #475569;
+  line-height: 1.5;
+  margin: 6px 0 0 0;
+}
+
+.capCardFooterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.capToolsTag {
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.capToolsList {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.capToolItemBadge {
+  font-size: 10px;
+  font-weight: 600;
+  color: #334155;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
 .rateCardHighlightTag {
   font-size: 10.5px;
   font-weight: 700;
@@ -665,87 +800,7 @@
   color: #475569;
 }
 
-/* Capabilities Visual Ratings */
-.capabilitiesGrid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
-}
 
-.capabilityCard {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px 14px;
-  background: #f8fafc;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
-
-.capabilityTopLine {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.capabilityName {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.capabilityLevelBadge {
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #0f172a;
-  background: #e2e8f0;
-  padding: 2px 8px;
-  border-radius: 9999px;
-}
-
-.capabilityDescription {
-  font-size: 12.5px;
-  color: #475569;
-  line-height: 1.45;
-  margin: 0;
-}
-
-.capabilityBottomLine {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding-top: 4px;
-  border-top: 1px solid #edf2f7;
-}
-
-.verifiedSitesCount {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: #15803d;
-}
-
-.dotRatingWrap {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.dotFilled {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #0f172a;
-}
-
-.dotEmpty {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #cbd5e1;
-}
 
 .specializationsWrap {
   display: flex;

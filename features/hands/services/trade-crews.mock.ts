@@ -10,11 +10,14 @@ import {
 } from "@/components/layout/sidebar-icons";
 
 export interface CapabilityRating {
+  step?: string;
   name: string;
+  timelineOrMetric?: string;
   rating: number; // 1-5
   levelLabel?: string;
   verifiedSites?: number;
   description?: string;
+  tools?: string[];
 }
 
 export interface CrewRoleBreakdown {
@@ -225,39 +228,54 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     ],
     capabilityRatings: [
       {
+        step: "STEP 1",
         name: "Structural RCC Masonry",
+        timelineOrMetric: "48 verified sites",
         rating: 5,
         levelLabel: "Mastery (5/5)",
         verifiedSites: 48,
-        description: "Engineered shear wall infill, lintel casting, and tie-column integration to IS 456 standards",
+        description: "Engineered shear wall infill, lintel casting, and tie-column integration to IS 456 standards.",
+        tools: ["IS 456", "Laser Level", "Plumb Line"],
       },
       {
+        step: "STEP 2",
         name: "AAC & Solid Concrete Blockwork",
+        timelineOrMetric: "52 verified sites",
         rating: 5,
         levelLabel: "Mastery (5/5)",
         verifiedSites: 52,
-        description: "Precision laying (±2mm tolerance) with polymer thin-bed adhesive and bond-beam seismic ties",
+        description: "Precision laying (±2mm tolerance) with polymer thin-bed adhesive and bond-beam seismic ties.",
+        tools: ["Thin-Bed", "IS 2185", "Bond Beam"],
       },
       {
+        step: "STEP 3",
         name: "Multi-Coat Plastering & Stucco",
+        timelineOrMetric: "38 verified sites",
         rating: 4,
         levelLabel: "Advanced (4/5)",
         verifiedSites: 38,
-        description: "Smooth sponge float, troweled exterior stucco, and water-repellent plastering to IS 1661",
+        description: "Smooth sponge float, troweled exterior stucco, and water-repellent plastering to IS 1661 specifications.",
+        tools: ["IS 1661", "Sponge Float", "Mixer"],
       },
       {
+        step: "STEP 4",
         name: "Architectural Exposed Brickwork",
+        timelineOrMetric: "24 verified sites",
         rating: 5,
         levelLabel: "Specialist (5/5)",
         verifiedSites: 24,
-        description: "Precision English and Flemish bond with uniform 10mm recessed pointing",
+        description: "Precision English and Flemish bond with uniform 10mm recessed pointing and clean exposed facings.",
+        tools: ["English Bond", "Joint Raker", "IS 2212"],
       },
       {
+        step: "STEP 5",
         name: "Random Rubble (RR) Stone Masonry",
+        timelineOrMetric: "31 verified sites",
         rating: 4,
         levelLabel: "Advanced (4/5)",
         verifiedSites: 31,
-        description: "Heavy retaining foundation masonry with weep-hole integration and cement coping",
+        description: "Heavy retaining foundation masonry with weep-hole integration and engineered cement coping.",
+        tools: ["Stone Dressing", "Weep Holes", "Coping"],
       },
     ],
     specializations: [
