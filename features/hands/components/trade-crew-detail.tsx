@@ -236,32 +236,9 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                   </div>
                 </div>
               </div>
-
-              {/* Action Buttons Group */}
-              <div className={styles.headerActionGroup}>
-                <button
-                  type="button"
-                  className={`${styles.secondaryGhostBtn} ${isSaved ? styles.secondaryGhostBtnActive : ""}`}
-                  onClick={handleToggleSave}
-                  aria-pressed={isSaved}
-                  title={isSaved ? "Remove from shortlist" : "Add to shortlist"}
-                >
-                  <Bookmark size={13} fill={isSaved ? "currentColor" : "none"} aria-hidden="true" />
-                  <span>{isSaved ? "Shortlisted" : "Add to Shortlist"}</span>
-                </button>
-
-                <Link
-                  href={`/hands/trades?compare=${crew.id}`}
-                  className={styles.secondaryGhostBtn}
-                  title="Compare with other trade crews"
-                >
-                  <Columns3 size={13} aria-hidden="true" />
-                  <span>Compare</span>
-                </Link>
-              </div>
             </div>
 
-            {/* Service Area & Radius Strip */}
+            {/* Service Area, Radius & Quick Actions Strip */}
             <div className={styles.serviceAreaSubRow}>
               <div className={styles.serviceAreaWrapper}>
                 <MapPin size={15} className={styles.locationPinIcon} aria-hidden="true" />
@@ -270,9 +247,30 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                 </span>
               </div>
 
-              <div className={styles.serviceRadiusBadge}>
-                <Radar size={13} className={styles.radiusIcon} aria-hidden="true" />
-                <span>45 km service radius</span>
+              <div className={styles.serviceAreaRightActions}>
+                <div className={styles.serviceRadiusBadge}>
+                  <Radar size={13} className={styles.radiusIcon} aria-hidden="true" />
+                  <span>45 km service radius</span>
+                </div>
+
+                <button
+                  type="button"
+                  className={`${styles.iconActionButton} ${isSaved ? styles.iconActionButtonActive : ""}`}
+                  onClick={handleToggleSave}
+                  aria-label={isSaved ? "Remove from shortlist" : "Add to shortlist"}
+                  title={isSaved ? "Remove from shortlist" : "Add to shortlist"}
+                >
+                  <Bookmark size={14} fill={isSaved ? "#0f172a" : "none"} aria-hidden="true" />
+                </button>
+
+                <Link
+                  href={`/hands/trades?compare=${crew.id}`}
+                  className={styles.iconActionButton}
+                  aria-label="Compare with other trade crews"
+                  title="Compare with other trade crews"
+                >
+                  <Columns3 size={14} aria-hidden="true" />
+                </Link>
               </div>
             </div>
 

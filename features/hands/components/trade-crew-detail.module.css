@@ -256,6 +256,12 @@
   font-weight: 600;
 }
 
+.serviceAreaRightActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .serviceRadiusBadge {
   display: inline-flex;
   align-items: center;
@@ -273,6 +279,33 @@
 .radiusIcon {
   color: #6366f1;
   flex-shrink: 0;
+}
+
+.iconActionButton {
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: none;
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 140ms ease;
+  text-decoration: none;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.iconActionButton:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.iconActionButtonActive {
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
 /* Concise Description Statement */
