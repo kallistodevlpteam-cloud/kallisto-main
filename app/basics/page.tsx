@@ -1,16 +1,14 @@
 import { Suspense } from "react";
 import { BasicsOverview } from "@/features/basics/components/basics-overview";
 import { BasicsLoadingSkeleton } from "@/features/basics/components/basics-shared";
+import styles from "@/features/basics/components/basics-workspace.module.css";
 
-export default async function BasicsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ projectId?: string }>;
-}) {
-  const { projectId } = await searchParams;
+export default function BasicsPage() {
   return (
-    <Suspense fallback={<BasicsLoadingSkeleton label="Loading Basics overview" />}>
-      <BasicsOverview projectId={projectId} />
-    </Suspense>
+    <div className={styles.page}>
+      <Suspense fallback={<BasicsLoadingSkeleton label="Loading Kallisto Basics" />}>
+        <BasicsOverview />
+      </Suspense>
+    </div>
   );
 }

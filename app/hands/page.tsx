@@ -4,22 +4,20 @@ import { HandsOverview } from "@/features/hands";
 
 export default function HandsPage() {
   return (
-    <AppShell>
-      <Suspense
-        fallback={
-          <div className="workspace-container">
-            <div
-              className="route-state-box route-state-loading"
-              aria-label="Loading Hands workspace"
-            >
-              <div className="skeleton-bar skeleton-title" />
-              <div className="skeleton-bar skeleton-subtitle" />
-            </div>
+    <Suspense
+      fallback={
+        <div className="workspace-container">
+          <div
+            className="route-state-box route-state-loading"
+            aria-label="Loading Hands workspace"
+          >
+            <div className="skeleton-bar skeleton-title" />
+            <div className="skeleton-bar skeleton-subtitle" />
           </div>
-        }
-      >
-        <HandsOverview />
-      </Suspense>
-    </AppShell>
+        </div>
+      }
+    >
+      <HandsOverview />
+    </Suspense>
   );
 }

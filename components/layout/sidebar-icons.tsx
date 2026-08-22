@@ -2362,4 +2362,210 @@ export function VersionsDuotoneIcon({ size = 16, className = "", ...props }: Sid
   );
 }
 
+/**
+ * Sidebar Collapse / Expand Toggle — Solid left rail with tinted main canvas pane
+ */
+export function SidebarToggleDuotoneIcon({ size = 18, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted right canvas pane */}
+      <path
+        d="M9 3H19C20.1 3 21 3.9 21 5V19C21 20.1 20.1 21 19 21H9V3Z"
+        fill="currentColor"
+        opacity="0.35"
+      />
+      {/* Solid left navigation column */}
+      <path
+        d="M5 3C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H9V3H5Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
 
+export const PanelLeftDuotoneIcon = SidebarToggleDuotoneIcon;
+
+
+
+/**
+ * Case Studies (Documents / Case Studies Tab) — Tinted document sheet with solid folded corner & lines
+ */
+export function CaseStudiesDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted sheet base */}
+      <path
+        d="M6 2C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2H6Z"
+        fill="currentColor"
+        opacity="0.38"
+      />
+      {/* Solid folded corner and document lines */}
+      <path
+        d="M14 2V7C14 7.6 14.4 8 15 8H20L14 2ZM7.5 11.5C7.5 11 7.9 10.5 8.5 10.5H15.5C16.1 10.5 16.5 11 16.5 11.5C16.5 12 16.1 12.5 15.5 12.5H8.5C7.9 12.5 7.5 12 7.5 11.5ZM7.5 15C7.5 14.4 7.9 14 8.5 14H15.5C16.1 14 16.5 14.4 16.5 15C16.5 15.6 16.1 16 15.5 16H8.5C7.9 16 7.5 15.6 7.5 15ZM7.5 18.5C7.5 18 7.9 17.5 8.5 17.5H12.5C13.1 17.5 13.5 18 13.5 18.5C13.5 19 13.1 19.5 12.5 19.5H8.5C7.9 19.5 7.5 19 7.5 18.5Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Tag (Tagged Tab) — Price / Category tag with tinted body and solid eyelet & accent
+ */
+export function TagDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted background tag */}
+      <path
+        d="M12.5 2H5C3.3 2 2 3.3 2 5V12.5C2 13.3 2.3 14.1 2.9 14.6L11.4 23.1C12.5 24.2 14.3 24.2 15.4 23.1L21.1 17.4C22.2 16.3 22.2 14.5 21.1 13.4L12.5 2Z"
+        fill="currentColor"
+        opacity="0.38"
+      />
+      {/* Solid tag corner, eyelet and outline */}
+      <path
+        d="M10.6 3H5C3.9 3 3 3.9 3 5V10.6C3 11.4 3.3 12.1 3.9 12.7L12.7 21.5C13.5 22.3 14.8 22.3 15.6 21.5L20.5 16.6C21.3 15.8 21.3 14.5 20.5 13.7L11.7 4.9C11.1 4.3 10.9 3 10.6 3ZM6.5 8C5.7 8 5 7.3 5 6.5C5 5.7 5.7 5 6.5 5C7.3 5 8 5.7 8 6.5C8 7.3 7.3 8 6.5 8Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Reviews (Reviews Tab) — Heart with tinted aura & solid core
+ */
+export function ReviewsDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted heart aura */}
+      <path
+        d="M12 21.35L10.55 20.03C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5C22 12.28 18.6 15.36 13.45 20.04L12 21.35Z"
+        fill="currentColor"
+        opacity="0.38"
+      />
+      {/* Solid inner heart */}
+      <path
+        d="M12 18.6L10.8 17.5C6.5 13.6 3.7 11.1 3.7 8C3.7 5.6 5.6 3.7 8 3.7C9.4 3.7 10.8 4.4 11.6 5.4L12 5.8L12.4 5.4C13.2 4.4 14.6 3.7 16 3.7C18.4 3.7 20.3 5.6 20.3 8C20.3 11.1 17.5 13.6 13.2 17.5L12 18.6Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Pricing (Pricing Tab) — Banknote currency bill with tinted body & solid emblem
+ */
+export function PricingDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted banknote background */}
+      <rect x="2" y="5" width="20" height="14" rx="3" fill="currentColor" opacity="0.38" />
+      {/* Solid central coin & border markings */}
+      <circle cx="12" cy="12" r="3.2" fill="currentColor" />
+      <path
+        d="M2 9C3.7 9 5 7.7 5 6H2V9ZM2 15C3.7 15 5 16.3 5 18H2V15ZM22 9C20.3 9 19 7.7 19 6H22V9ZM22 15C20.3 15 19 16.3 19 18H22V15ZM2 8V16C2 17.7 3.3 19 5 19H19C20.7 19 22 17.7 22 16V8C22 6.3 20.7 5 19 5H5C3.3 5 2 6.3 2 8ZM4 7H20C20.6 7 21 7.4 21 8V16C21 16.6 20.6 17 20 17H4C3.4 17 3 16.6 3 16V8C3 7.4 3.4 7 4 7Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Briefcase / Experience — Duotone portfolio briefcase with tinted body and solid handle & lock
+ */
+export function BriefcaseDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted briefcase body */}
+      <rect x="2" y="7" width="20" height="14" rx="3" fill="currentColor" opacity="0.35" />
+      {/* Solid handle, center lock & divider straps */}
+      <path
+        d="M8 7V5C8 3.9 8.9 3 10 3H14C15.1 3 16 3.9 16 5V7M2 12H22M10 12V14C10 14.6 10.4 15 11 15H13C13.6 15 14 14.6 14 14V12"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <rect
+        x="2"
+        y="7"
+        width="20"
+        height="14"
+        rx="3"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Star / Rating — Duotone star with tinted aura & solid core star
+ */
+export function StarDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted circular background halo */}
+      <circle cx="12" cy="12" r="9.5" fill="currentColor" opacity="0.2" />
+      {/* Solid precision 5-point star */}
+      <path
+        d="M12 2.5L14.9 8.6L21.6 9.5L16.8 14.2L17.9 20.9L12 17.7L6.1 20.9L7.2 14.2L2.4 9.5L9.1 8.6L12 2.5Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}

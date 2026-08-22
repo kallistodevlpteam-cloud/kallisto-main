@@ -2,14 +2,14 @@
 
 import { KeyboardEvent, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Plus } from "lucide-react";
 import {
-  Banknote,
-  Building2,
-  FileText,
-  Heart,
-  Plus,
-  Tag,
-} from "lucide-react";
+  BuildingDuotoneIcon,
+  CaseStudiesDuotoneIcon,
+  PricingDuotoneIcon,
+  ReviewsDuotoneIcon,
+  TagDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import type { PortfolioTab } from "@/features/portfolio/types/portfolio.types";
 import {
   buildPortfolioQuery,
@@ -21,11 +21,11 @@ const TAB_CONFIG: Record<
   PortfolioTab,
   { label: string; icon: React.ComponentType<{ size?: number; className?: string }> }
 > = {
-  projects: { label: "Projects", icon: Building2 },
-  "case-studies": { label: "Case Studies", icon: FileText },
-  tagged: { label: "Tagged", icon: Tag },
-  reviews: { label: "Reviews", icon: Heart },
-  pricing: { label: "Pricing", icon: Banknote },
+  projects: { label: "Projects", icon: BuildingDuotoneIcon },
+  "case-studies": { label: "Case Studies", icon: CaseStudiesDuotoneIcon },
+  tagged: { label: "Tagged", icon: TagDuotoneIcon },
+  reviews: { label: "Reviews", icon: ReviewsDuotoneIcon },
+  pricing: { label: "Pricing", icon: PricingDuotoneIcon },
 };
 
 interface PortfolioTabsProps {
@@ -45,6 +45,7 @@ export function PortfolioTabs({
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const toolbarRef = useRef<HTMLDivElement | null>(null);
   const tabs = getPortfolioTabs(isOwner);
 
   const selectTab = (tab: PortfolioTab) => {
@@ -54,6 +55,14 @@ export function PortfolioTabs({
     );
     router.replace(`${pathname}?${query}`, { scroll: false });
     onTabChange(tab);
+
+    // Smoothly scroll the tab bar into the top freeze zone
+    if (toolbarRef.current) {
+      toolbarRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
   };
 
   const handleKeyDown = (
@@ -72,7 +81,7 @@ export function PortfolioTabs({
   };
 
   return (
-    <div className={styles.tabsToolbar}>
+    <div ref={toolbarRef} className={styles.tabsToolbar}>
       <div
         className={styles.portfolioTabs}
         role="tablist"

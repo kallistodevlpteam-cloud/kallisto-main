@@ -141,7 +141,9 @@ export function PortfolioPage({
     url.searchParams.delete("project");
     window.history.replaceState(window.history.state, "", url);
     window.requestAnimationFrame(() => {
-      document.getElementById("portfolio-tab-pricing")?.focus();
+      const tabEl = document.getElementById("portfolio-tab-pricing");
+      tabEl?.focus();
+      tabEl?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   };
 

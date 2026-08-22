@@ -83,14 +83,7 @@ export function CalendarPageHeader({
               className={`${styles.viewSwitcherBtn} ${activeTab === "calendar" ? styles.viewSwitcherBtnActive : ""}`}
               onClick={() => onTabChange("calendar")}
             >
-              Week
-            </button>
-            <button
-              type="button"
-              className={`${styles.viewSwitcherBtn} ${activeTab === "calendar" ? styles.viewSwitcherBtnActive : ""}`}
-              onClick={() => onTabChange("calendar")}
-            >
-              Month
+              Calendar
             </button>
             <button
               type="button"

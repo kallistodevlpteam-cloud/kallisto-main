@@ -16,10 +16,14 @@ export function MainWorkspace({ children, className }: MainWorkspaceProps) {
     pathname = "";
   }
   const isEnquiries = typeof pathname === "string" && (pathname === "/enquiries" || pathname.startsWith("/enquiries"));
+  const isBasicsOverview = typeof pathname === "string" && pathname === "/basics";
+  const isHandsOverview = typeof pathname === "string" && pathname === "/hands";
 
   return (
     <main
       className={`workspace${isEnquiries ? " enquiries-route-workspace" : ""}${
+        isBasicsOverview ? " basics-route-workspace" : ""
+      }${isHandsOverview ? " hands-route-workspace" : ""}${
         className ? ` ${className}` : ""
       }`}
       id="home"

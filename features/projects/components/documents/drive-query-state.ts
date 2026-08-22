@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export type DriveScope = "all" | "shared" | "starred";
@@ -125,13 +125,15 @@ export function useDriveQueryState() {
   const [query, setQuery] = useState<DriveQueryState>(() =>
     parseDriveQuery(new URLSearchParams(searchParamsString)),
   );
-  const [prevParamsString, setPrevParamsString] = useState(searchParamsString);
 
-  // Sync state during render when searchParamsString changes (e.g. navigation or Browser Back/Forward)
-  if (searchParamsString !== prevParamsString) {
-    setPrevParamsString(searchParamsString);
-    setQuery(parseDriveQuery(new URLSearchParams(searchParamsString)));
-  }
+  const queryRef = useRef(query);
+  queryRef.current = query;
+
+  // Sync state when searchParamsString changes (e.g. navigation or Browser Back/Forward)
+  useEffect(() => {
+    const parsed = parseDriveQuery(new URLSearchParams(searchParamsString));
+    setQuery(parsed);
+  }, [searchParamsString]);
 
   const updateQuery = useCallback(
     (
@@ -140,27 +142,26 @@ export function useDriveQueryState() {
         | ((current: DriveQueryState) => Partial<DriveQueryState>),
       options: { resetPage?: boolean; replace?: boolean } = {},
     ) => {
-      setQuery((current) => {
-        const patch = typeof update === "function" ? update(current) : update;
-        const next: DriveQueryState = {
-          ...current,
-          ...patch,
-          filters: patch.filters ?? current.filters,
-          page: options.resetPage ? 1 : (patch.page ?? current.page),
-        };
+      const current = queryRef.current;
+      const patch = typeof update === "function" ? update(current) : update;
+      const next: DriveQueryState = {
+        ...current,
+        ...patch,
+        filters: patch.filters ?? current.filters,
+        page: options.resetPage ? 1 : (patch.page ?? current.page),
+      };
 
-        const params = toSearchParams(next);
-        const queryString = params.toString();
-        const url = queryString ? `${pathname}?${queryString}` : pathname;
+      setQuery(next);
 
-        if (options.replace ?? true) {
-          router.replace(url, { scroll: false });
-        } else {
-          router.push(url, { scroll: false });
-        }
+      const params = toSearchParams(next);
+      const queryString = params.toString();
+      const url = queryString ? `${pathname}?${queryString}` : pathname;
 
-        return next;
-      });
+      if (options.replace ?? true) {
+        router.replace(url, { scroll: false });
+      } else {
+        router.push(url, { scroll: false });
+      }
     },
     [pathname, router],
   );

@@ -526,8 +526,8 @@ textarea:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  width: 100%;
 }
 
 .rail-toggle-btn {
@@ -551,6 +551,25 @@ textarea:focus-visible {
 .rail-brand {
   display: grid;
   place-items: center;
+  width: 100%;
+  padding: 6px 2px;
+}
+
+.rail-brand-btn {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding: 6px 2px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--ink, #0f172a);
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+
+.rail-brand-btn:hover {
+  background: var(--surface-hover, #f1f5f9);
 }
 
 .rail-nav {
@@ -619,8 +638,9 @@ textarea:focus-visible {
 
 /* Topbar Component */
 .topbar {
-  position: relative;
-  z-index: 10;
+  position: sticky;
+  top: 0;
+  z-index: 50;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -632,6 +652,7 @@ textarea:focus-visible {
   border-radius: 12px;
   border: none;
   background: #f7f7f5;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .topbar-left {
@@ -1100,11 +1121,14 @@ textarea:focus-visible {
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
-  overflow-x: clip;
+  overflow-x: hidden;
   background: var(--surface);
 }
 
 .app-shell.has-project-dashboard-profile .workspace,
+.workspace.basics-route-workspace,
+.workspace.hands-route-workspace,
+.workspace:has(.basicsShell),
 .workspace:has(.documentsBoundedRoute) {
   padding: 0;
   overflow: hidden;
@@ -1218,6 +1242,7 @@ textarea:focus-visible {
 
 /* Strictly scope fixed height outer layout to schedule and task workspaces only. */
 .workspace:has(.schedulePageMainShell),
+.workspace:has(.calendarWorkspaceRoot),
 .workspace:has(.projectTasksWorkspace),
 .workspace:has(.studio-page-container),
 .workspace:has(.hive-studio-workspace) {
