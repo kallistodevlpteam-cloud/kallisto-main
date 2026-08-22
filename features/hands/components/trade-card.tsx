@@ -120,7 +120,7 @@ export function TradeCard({
           </button>
         </div>
 
-        {/* 3. 3-Column Stat Metric Strip */}
+        {/* 3. 3-Column Stat Metric Strip (Experience | Deployments | Location) */}
         <div className={styles.tradeMetricsRow}>
           {/* Column 1: Experience */}
           <div className={styles.tradeMetricCol}>
@@ -128,11 +128,15 @@ export function TradeCard({
             <span className={styles.tradeMetricLabel}>experience</span>
           </div>
 
+          <div className={styles.tradeMetricDivider} aria-hidden="true" />
+
           {/* Column 2: Deployments / Consults */}
           <div className={styles.tradeMetricCol}>
             <strong className={styles.tradeMetricValue}>{crew.completedJobs}+</strong>
             <span className={styles.tradeMetricLabel}>deployments</span>
           </div>
+
+          <div className={styles.tradeMetricDivider} aria-hidden="true" />
 
           {/* Column 3: Location */}
           <div className={styles.tradeMetricCol}>

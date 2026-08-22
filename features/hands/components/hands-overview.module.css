@@ -2915,29 +2915,32 @@
 
 .tradeCard {
   background: #ffffff;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  border-radius: 20px;
-  padding: 12px;
-  box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02);
+  border: 1px solid #f1f5f9;
+  border-radius: 18px;
+  padding: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
   display: flex;
   flex-direction: column;
   gap: 10px;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 200ms ease;
+  min-width: 0;
+  cursor: pointer;
+  user-select: none;
   position: relative;
   overflow: hidden;
 }
 
 .tradeCard:hover {
-  transform: translateY(-3px);
   border-color: #cbd5e1;
-  box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.08), 0 3px 8px rgba(15, 23, 42, 0.03);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  transform: translateY(-3px);
 }
 
 /* Top Dark Graphic Cover */
 .tradeCoverArea {
   position: relative;
   width: 100%;
-  height: 154px;
+  height: 165px;
   border-radius: 14px;
   background: linear-gradient(145deg, #090d16 0%, #111726 100%);
   display: flex;
@@ -2972,17 +2975,21 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  background: #ffffff;
-  border-radius: 8px;
-  padding: 3px 8px;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11.5px;
-  font-weight: 750;
+  padding: 3.5px 8.5px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
   color: #0f172a;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  z-index: 2;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  line-height: 1;
 }
 
 .tradeStarIcon {
@@ -3025,7 +3032,10 @@
 .tradeCardBody {
   display: flex;
   flex-direction: column;
-  padding: 0 4px;
+  gap: 10px;
+  flex: 1;
+  justify-content: space-between;
+  padding: 2px 7px 7px;
 }
 
 .tradeCardTitleRow {
@@ -3040,58 +3050,67 @@
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+  flex: 1;
 }
 
 .tradeCardTitle {
   margin: 0;
-  font-size: 15px;
+  font-size: 15.5px;
   font-weight: 750;
   color: #0f172a;
   line-height: 1.25;
-  white-space: nowrap;
+  letter-spacing: -0.01em;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tradeCardSubtitle {
   margin: 0;
-  font-size: 12.5px;
-  font-weight: 450;
+  font-size: 12px;
+  font-weight: 500;
   color: #64748b;
-  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tradeBookmarkBtn {
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  cursor: pointer;
-  padding: 2px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.15s ease, transform 0.15s ease;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0;
   flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 150ms ease;
 }
 
 .tradeBookmarkBtn:hover {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
   color: #0f172a;
-  transform: scale(1.1);
 }
 
 .tradeBookmarkBtnActive {
-  color: #0f172a !important;
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
 }
 
-/* 3-Column Metric Strip */
+/* 3-Column Metric Strip (Experience | Deployments | Location) */
 .tradeMetricsRow {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
   align-items: center;
-  margin: 10px 0 6px;
-  padding: 8px 0;
-  border-top: 1px solid #f8fafc;
-  border-bottom: 1px solid #f8fafc;
+  padding: 4px 0 2px;
+  margin: 0;
 }
 
 .tradeMetricCol {
@@ -3099,31 +3118,41 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
   text-align: center;
+  min-width: 0;
   padding: 0 4px;
 }
 
-.tradeMetricCol:not(:last-child) {
-  border-right: 1px solid #f1f5f9;
+.tradeMetricDivider {
+  width: 1px;
+  height: 20px;
+  background-color: #f1f5f9;
+  flex-shrink: 0;
 }
 
 .tradeMetricValue {
-  font-size: 13.5px;
-  font-weight: 750;
   color: #0f172a;
+  font-size: 13px;
+  font-weight: 750;
   line-height: 1.2;
-  white-space: nowrap;
+  letter-spacing: -0.01em;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
   max-width: 100%;
 }
 
 .tradeMetricLabel {
-  font-size: 11px;
-  font-weight: 450;
   color: #94a3b8;
+  font-size: 10.5px;
+  font-weight: 500;
   line-height: 1.2;
+  margin-top: 2px;
+  letter-spacing: 0.01em;
+  text-transform: lowercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Bottom Rate & CTA */
@@ -3132,53 +3161,56 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-top: auto;
-  padding: 4px 4px 2px 4px;
+  padding-top: 4px;
+  margin-top: 0;
 }
 
 .tradePriceWrap {
   display: flex;
   align-items: baseline;
   gap: 4px;
+  min-width: 0;
 }
 
 .tradePriceAmount {
-  font-size: 16.5px;
-  font-weight: 800;
   color: #0f172a;
-  letter-spacing: -0.02em;
+  font-size: 14.5px;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 .tradePricePeriod {
-  font-size: 11.5px;
-  font-weight: 450;
   color: #64748b;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .tradeCompareBtn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 32px;
-  padding: 0 14px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  justify-content: center;
+  gap: 4.5px;
+  height: 27px;
+  padding: 0 10px;
   border-radius: 9999px;
-  color: #334155;
-  font-size: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-  transition: all 0.15s ease;
+  transition: all 140ms ease;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .tradeCompareBtn:hover {
-  background: #f8fafc;
+  background: #f1f5f9;
   border-color: #cbd5e1;
   color: #0f172a;
-  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.06);
 }
 
 .tradeLocationRow {
