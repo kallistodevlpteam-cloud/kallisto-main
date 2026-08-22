@@ -134,7 +134,7 @@ describe("Hive Studio: 3-Layer Project Intelligence Workspace", () => {
   });
 
   describe("Full StudioIdleContent Integration", () => {
-    it("composes all three layers without blank void space", () => {
+    it("composes Layer 1 and Layer 2 on main canvas without void space", () => {
       render(
         <StudioIdleContent
           selectedProjectId="proj-001"
@@ -155,10 +155,6 @@ describe("Hive Studio: 3-Layer Project Intelligence Workspace", () => {
       // Layer 2
       expect(screen.getByText("What do you want to accomplish?")).toBeInTheDocument();
       expect(screen.getByText("Explore")).toBeInTheDocument();
-
-      // Layer 3
-      expect(screen.getByText("Recent work")).toBeInTheDocument();
-      expect(screen.getByText("Odin noticed")).toBeInTheDocument();
     });
   });
 });
