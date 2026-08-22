@@ -14,6 +14,39 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   Breadcrumb Navigation
+   ───────────────────────────────────────────────────────────────────────────── */
+.breadcrumbNav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.breadcrumbLink {
+  color: #475569;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 140ms ease;
+}
+
+.breadcrumbLink:hover {
+  color: #0f172a;
+}
+
+.breadcrumbDivider {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.breadcrumbCurrent {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    1. Two-Column Layout (Left Content 68% | Right Sticky 32%)
    ───────────────────────────────────────────────────────────────────────────── */
 .twoColLayout {
@@ -38,36 +71,48 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   2. Basics-Style Reference Hero Section
+   2. Professional Workforce Procurement Profile Header
    ───────────────────────────────────────────────────────────────────────────── */
-.referenceHero {
+.workforceHeroSection {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 0;
+  padding: 0 0 4px 0;
   background: transparent;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
 }
 
-.referenceHeroTop {
+.heroMainRow {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
-.profileBrandTileWrapper {
+.heroIdentityGroup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .heroIdentityGroup {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.teamVisualBlock {
   position: relative;
-  width: 170px;
-  max-width: 100%;
-  height: 88px;
+  width: 140px;
+  height: 74px;
   border-radius: 12px;
   overflow: hidden;
   background: linear-gradient(145deg, #090d16 0%, #111726 100%);
   border: 1px solid #1e293b;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.16);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -75,39 +120,39 @@
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
-.profileBrandTileWrapper:hover {
+.teamVisualBlock:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.22);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.22);
 }
 
-.brandCoverGrid {
+.teamVisualGrid {
   position: absolute;
   inset: 0;
   background-image: 
     linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-size: 22px 22px;
   background-position: center center;
   pointer-events: none;
 }
 
-.brandMarkContent {
+.teamVisualBrand {
   position: relative;
   z-index: 2;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   color: #ffffff;
 }
 
-.brandIconWrap {
+.teamVisualIconWrap {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.brandText {
-  font-size: 16px;
+.teamVisualName {
+  font-size: 15px;
   font-weight: 850;
   color: #ffffff;
   letter-spacing: -0.02em;
@@ -117,44 +162,29 @@
   line-height: 1;
 }
 
-.brandDot {
+.teamVisualDot {
   color: #06b6d4;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
   margin-left: 1px;
 }
 
-.referenceHeroIdentity {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  min-width: 0;
-  flex: 1;
-}
-
-@media (max-width: 768px) {
-  .referenceHeroIdentity {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-.heroIdentityInfo {
+.identityDetails {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
   min-width: 0;
 }
 
-.heroTitleRow {
+.titleRow {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.heroTitle {
-  font-size: 21px;
+.teamName {
+  font-size: 22px;
   font-weight: 800;
   color: #0f172a;
   letter-spacing: -0.02em;
@@ -162,106 +192,7 @@
   line-height: 1.25;
 }
 
-.heroCategorySub {
-  font-size: 14px;
-  font-weight: 550;
-  color: #64748b;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  flex-wrap: wrap;
-}
-
-.subDot {
-  color: #94a3b8;
-  font-weight: 700;
-}
-
-.heroLocationAvailRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 2px;
-}
-
-.heroLocation {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #64748b;
-}
-
-.detailActions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.secondaryButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  background: #ffffff;
-  color: #334155;
-  border: 1px solid #cbd5e1;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 9999px;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 140ms ease;
-  line-height: 1;
-}
-
-.secondaryButton:hover {
-  background: #f8fafc;
-  border-color: #94a3b8;
-  color: #0f172a;
-  transform: translateY(-1px);
-}
-
-.secondaryButtonActive {
-  background: #0f172a !important;
-  color: #ffffff !important;
-  border-color: #0f172a !important;
-}
-.referenceHeroSubheading {
-  font-size: 18.5px;
-  font-weight: 750;
-  line-height: 1.35;
-  color: #0f172a;
-  letter-spacing: -0.015em;
-  margin: 6px 0 0 0;
-}
-
-.referenceHeroMuted {
-  color: #64748b;
-  font-weight: 450;
-}
-
-.referenceHeroBio {
-  font-size: 13.5px;
-  font-weight: 400;
-  color: #475569;
-  line-height: 1.6;
-  margin: 0;
-  max-width: 90ch;
-}
-
-.heroBadgesRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 2px;
-}
-
-.verifiedBadge {
+.verifiedKallistoBadge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -274,38 +205,217 @@
   border-radius: 9999px;
 }
 
-.availabilityBadge {
+.specializationRow {
+  font-size: 13.5px;
+  font-weight: 550;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.bulletSeparator {
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.locationAvailabilityRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 1px;
+}
+
+.locationText {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  color: #334155;
+  font-size: 12.5px;
+  font-weight: 550;
+  color: #64748b;
+}
+
+.availabilityPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
   font-size: 12px;
   font-weight: 600;
-  padding: 3px 9px;
+  padding: 2.5px 8px;
   border-radius: 9999px;
 }
 
-.profileStats {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-  flex-wrap: wrap;
-  font-size: 13px;
-  color: #64748b;
-  margin-top: 4px;
+.availDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #16a34a;
 }
 
-.profileStat {
+/* Action Group */
+.headerActionGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .headerActionGroup {
+    align-items: flex-start;
+    width: 100%;
+  }
+}
+
+.primaryRequestBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: #0f172a;
+  color: #ffffff;
+  border: 1px solid #0f172a;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+  transition: all 140ms ease;
+  line-height: 1;
+}
+
+.primaryRequestBtn:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.24);
+}
+
+.secondaryActionsRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.secondaryGhostBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 140ms ease;
+  line-height: 1;
+}
+
+.secondaryGhostBtn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.secondaryGhostBtnActive {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #94a3b8 !important;
+}
+
+/* Concise Description Statement */
+.conciseDescription {
+  font-size: 14px;
+  font-weight: 450;
+  color: #334155;
+  line-height: 1.5;
+  margin: 0;
+  font-style: normal;
+}
+
+/* 3. Strong Scannable Proof Metrics Row */
+.proofMetricsGrid {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 16px;
+  flex-wrap: wrap;
+}
+
+.metricTile {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.metricBigValue {
+  font-size: 16.5px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.015em;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  line-height: 1.2;
+}
+
+.metricSubLabel {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.metricDivider {
+  width: 1px;
+  height: 28px;
+  background: #cbd5e1;
+}
+
+@media (max-width: 640px) {
+  .metricDivider {
+    display: none;
+  }
+}
+
+/* 4. Compact Capability & Verification Chips */
+.proofChipsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: -2px;
+}
+
+.proofChip {
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
-.profileStat strong {
-  font-weight: 700;
-  color: #0f172a;
+.chipCheck {
+  color: #16a34a;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

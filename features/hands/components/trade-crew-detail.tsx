@@ -20,6 +20,7 @@ import {
   MapPin,
   Minus,
   Plus,
+  Send,
   ShieldCheck,
   Sparkles,
   Star,
@@ -167,124 +168,178 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
 
   return (
     <div className={styles.detailContainer}>
+      {/* Top Breadcrumb Navigation */}
+      <nav className={styles.breadcrumbNav} aria-label="Breadcrumb navigation">
+        <Link href="/" className={styles.breadcrumbLink}>
+          Virtual Office
+        </Link>
+        <span className={styles.breadcrumbDivider}>›</span>
+        <Link href="/hands" className={styles.breadcrumbLink}>
+          Hands
+        </Link>
+        <span className={styles.breadcrumbDivider}>›</span>
+        <span className={styles.breadcrumbCurrent}>{crew.name}</span>
+      </nav>
+
       {/* Two Primary Sections Layout: Left Section & Right Section */}
       <div className={styles.twoColLayout}>
         {/* ─── LEFT SECTION: Review the Provider (Hero, Tabs & Details) ─── */}
         <main className={styles.leftStack}>
-          {/* 1. Basics-style Reference Hero Section */}
-          <section className={styles.referenceHero}>
-            <div className={styles.referenceHeroTop}>
-              <div className={styles.referenceHeroIdentity}>
-                {/* Brand Logo Tile */}
-                <div className={styles.profileBrandTileWrapper} aria-hidden="true">
-                  <div className={styles.brandCoverGrid} />
-                  <div className={styles.brandMarkContent}>
+          {/* 1. Professional Workforce Procurement Profile Header */}
+          <section className={styles.workforceHeroSection} aria-label="Team Profile Overview">
+            {/* Top Row: Identity Block + Action CTAs */}
+            <div className={styles.heroMainRow}>
+              <div className={styles.heroIdentityGroup}>
+                {/* Compact Team Identity Visual Block */}
+                <div className={styles.teamVisualBlock} aria-hidden="true">
+                  <div className={styles.teamVisualGrid} />
+                  <div className={styles.teamVisualBrand}>
                     <div
-                      className={styles.brandIconWrap}
+                      className={styles.teamVisualIconWrap}
                       style={{
                         color: brand?.color || "#06b6d4",
                         filter: `drop-shadow(0 0 8px ${brand?.color || "#06b6d4"}66)`,
                       }}
                     >
-                      <BrandIcon size={24} strokeWidth={2.4} />
+                      <BrandIcon size={20} strokeWidth={2.4} />
                     </div>
-                    <span className={styles.brandText}>
+                    <span className={styles.teamVisualName}>
                       {brand?.name}
-                      <span className={styles.brandDot}>°</span>
+                      <span className={styles.teamVisualDot}>°</span>
                     </span>
                   </div>
                 </div>
 
-                {/* Identity Info next to image card */}
-                <div className={styles.heroIdentityInfo}>
-                  <div className={styles.heroTitleRow}>
-                    <h1 className={styles.heroTitle}>{crew.name}</h1>
+                {/* Identity Details */}
+                <div className={styles.identityDetails}>
+                  {/* Title + Verified Badge */}
+                  <div className={styles.titleRow}>
+                    <h1 className={styles.teamName}>{crew.name}</h1>
                     {crew.verified && (
-                      <div className={styles.verifiedBadge}>
+                      <div className={styles.verifiedKallistoBadge}>
                         <CheckCircle2 size={13} aria-hidden="true" />
                         <span>Verified</span>
                       </div>
                     )}
                   </div>
 
-                  <div className={styles.heroCategorySub}>
-                    <span>{crew.category}</span>
-                    <span className={styles.subDot}>•</span>
-                    <span>{crew.skills?.slice(0, 2).join(" & ") || crew.trade}</span>
+                  {/* Specialization Line */}
+                  <div className={styles.specializationRow}>
+                    <span className={styles.categoryText}>{crew.category}</span>
+                    <span className={styles.bulletSeparator}>·</span>
+                    <span className={styles.skillsText}>
+                      {crew.skills?.slice(0, 2).join(" & ") || "RCC Brickwork & Plastering"}
+                    </span>
                   </div>
 
-                  <div className={styles.heroLocationAvailRow}>
-                    <span className={styles.heroLocation}>
+                  {/* Location & Availability Line */}
+                  <div className={styles.locationAvailabilityRow}>
+                    <span className={styles.locationText}>
                       <MapPin size={13} aria-hidden="true" />
                       <span>{crew.location}</span>
                     </span>
-                    <span className={styles.availabilityBadge}>
-                      {crew.availabilityLabel || "Available for deployment"}
-                    </span>
+                    <span className={styles.bulletSeparator}>·</span>
+                    <div className={styles.availabilityPill}>
+                      <span className={styles.availDot} />
+                      <span>
+                        {crew.availabilityLabel || "Available Tomorrow"} · {crew.crewSizeMin}–{crew.crewSizeMax} workers
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Action Buttons: Shortlist & Compare */}
-              <div className={styles.detailActions}>
+              {/* Action Buttons Group */}
+              <div className={styles.headerActionGroup}>
                 <button
                   type="button"
-                  className={`${styles.secondaryButton} ${isSaved ? styles.secondaryButtonActive : ""}`}
-                  onClick={handleToggleSave}
-                  aria-pressed={isSaved}
-                  title={isSaved ? "Remove from shortlist" : "Add to shortlist"}
+                  className={styles.primaryRequestBtn}
+                  onClick={() => setDrawerOpen(true)}
                 >
-                  <Bookmark size={14} fill={isSaved ? "currentColor" : "none"} aria-hidden="true" />
-                  <span>{isSaved ? "Shortlisted" : "Add to Shortlist"}</span>
+                  <Send size={13} aria-hidden="true" />
+                  <span>Request This Team</span>
                 </button>
 
-                <Link
-                  href={`/hands/trades?compare=${crew.id}`}
-                  className={styles.secondaryButton}
-                  title="Compare with other trade crews"
-                >
-                  <Columns3 size={14} aria-hidden="true" />
-                  <span>Compare</span>
-                </Link>
+                <div className={styles.secondaryActionsRow}>
+                  <button
+                    type="button"
+                    className={`${styles.secondaryGhostBtn} ${isSaved ? styles.secondaryGhostBtnActive : ""}`}
+                    onClick={handleToggleSave}
+                    aria-pressed={isSaved}
+                    title={isSaved ? "Remove from shortlist" : "Add to shortlist"}
+                  >
+                    <Bookmark size={13} fill={isSaved ? "currentColor" : "none"} aria-hidden="true" />
+                    <span>{isSaved ? "Shortlisted" : "Add to Shortlist"}</span>
+                  </button>
+
+                  <Link
+                    href={`/hands/trades?compare=${crew.id}`}
+                    className={styles.secondaryGhostBtn}
+                    title="Compare with other trade crews"
+                  >
+                    <Columns3 size={13} aria-hidden="true" />
+                    <span>Compare</span>
+                  </Link>
+                </div>
               </div>
             </div>
 
-            {/* Hero Subheading (Basics-style greeting sentence) */}
-            <div className={styles.referenceHeroSubheading}>
-              Hi, we’re {crew.name} — we specialize in {crew.skills[0] || crew.trade} in {crew.category}.{" "}
-              <span className={styles.referenceHeroMuted}>
-                Based in {crew.location}.
-              </span>
+            {/* 2. Concise Single Statement */}
+            <p className={styles.conciseDescription}>
+              “Experienced RCC and masonry crew for residential and commercial construction projects.”
+            </p>
+
+            {/* 3. Strong Scannable Metrics Row */}
+            <div className={styles.proofMetricsGrid}>
+              <div className={styles.metricTile}>
+                <span className={styles.metricBigValue}>{crew.experienceYears} yrs</span>
+                <span className={styles.metricSubLabel}>Experience</span>
+              </div>
+              <div className={styles.metricDivider} />
+              <div className={styles.metricTile}>
+                <span className={styles.metricBigValue}>
+                  {crew.rating.toFixed(1)} <Star size={13} fill="#eab308" color="#eab308" style={{ display: "inline", verticalAlign: "-1px" }} />
+                </span>
+                <span className={styles.metricSubLabel}>{crew.reviewCount} Reviews</span>
+              </div>
+              <div className={styles.metricDivider} />
+              <div className={styles.metricTile}>
+                <span className={styles.metricBigValue}>{crew.completedJobs}+</span>
+                <span className={styles.metricSubLabel}>Projects Completed</span>
+              </div>
+              <div className={styles.metricDivider} />
+              <div className={styles.metricTile}>
+                <span className={styles.metricBigValue}>{crew.crewSizeMin}–{crew.crewSizeMax}</span>
+                <span className={styles.metricSubLabel}>Workers</span>
+              </div>
+              <div className={styles.metricDivider} />
+              <div className={styles.metricTile}>
+                <span className={styles.metricBigValue}>₹{crew.dailyRate.toLocaleString("en-IN")}</span>
+                <span className={styles.metricSubLabel}>/day / worker</span>
+              </div>
             </div>
 
-            {/* Hero Bio */}
-            <p className={styles.referenceHeroBio}>{crew.about}</p>
-
-            {/* Profile Statistics Strip with Icons */}
-            <div className={styles.profileStats}>
-              <span className={styles.profileStat}>
-                <MapPin size={14} aria-hidden="true" />
-                <strong>{crew.location}</strong>
+            {/* 4. Compact Verification / Capability Proof Chips */}
+            <div className={styles.proofChipsRow}>
+              <span className={styles.proofChip}>
+                <Check size={12} className={styles.chipCheck} aria-hidden="true" />
+                <span>RCC Brickwork</span>
               </span>
-              <span className={styles.profileStat}>
-                <Clock size={14} aria-hidden="true" />
-                <strong>{crew.experienceYears} yrs</strong> experience
+              <span className={styles.proofChip}>
+                <Check size={12} className={styles.chipCheck} aria-hidden="true" />
+                <span>Masonry</span>
               </span>
-              <span className={styles.profileStat}>
-                <Star size={14} fill="#eab308" color="#eab308" aria-hidden="true" />
-                <strong>{crew.rating.toFixed(1)}</strong> ({crew.reviewCount} reviews)
+              <span className={styles.proofChip}>
+                <Check size={12} className={styles.chipCheck} aria-hidden="true" />
+                <span>Plastering</span>
               </span>
-              <span className={styles.profileStat}>
-                <Briefcase size={14} aria-hidden="true" />
-                <strong>{crew.completedJobs}+</strong> deployments
+              <span className={styles.proofChip}>
+                <Check size={12} className={styles.chipCheck} aria-hidden="true" />
+                <span>Skills Verified</span>
               </span>
-              <span className={styles.profileStat}>
-                <Users size={14} aria-hidden="true" />
-                <strong>{crew.crewSizeMin}–{crew.crewSizeMax}</strong> workers
-              </span>
-              <span className={styles.profileStat}>
-                <IndianRupee size={14} aria-hidden="true" />
-                <strong>₹{crew.dailyRate.toLocaleString("en-IN")}</strong> / day / worker
+              <span className={styles.proofChip}>
+                <Check size={12} className={styles.chipCheck} aria-hidden="true" />
+                <span>Safety Verified</span>
               </span>
             </div>
           </section>
