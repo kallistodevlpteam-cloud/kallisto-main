@@ -212,7 +212,7 @@ export function HandsTradeDiscovery() {
                 className={styles.searchPillSendBtn}
                 aria-label="Search"
               >
-                <Search size={16} aria-hidden="true" />
+                <Search size={14} strokeWidth={2.4} aria-hidden="true" />
               </button>
             </form>
           </div>

@@ -2168,18 +2168,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: none;
   background: #0f172a;
   color: #ffffff;
   cursor: pointer;
+  flex-shrink: 0;
   transition: all 140ms ease;
 }
 
 .searchPillSendBtn:hover {
-  background: #0284c7;
+  background: #1e293b;
   transform: scale(1.04);
 }
 
