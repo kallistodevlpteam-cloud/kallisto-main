@@ -169,8 +169,8 @@ export function HandsTradeDiscovery() {
             <Image
               src="/kallisto-hands-logo.png"
               alt="Kallisto Hands"
-              width={195}
-              height={32}
+              width={148}
+              height={24}
               className={styles.handsLogoImg}
               priority
               unoptimized

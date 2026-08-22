@@ -219,8 +219,8 @@ export function ExpertDiscovery() {
             <Image
               src="/kallisto-basics-logo.png"
               alt="Kallisto Basics"
-              width={185}
-              height={30}
+              width={148}
+              height={24}
               className={styles.discoveryLogoImg}
               priority
             />
