@@ -2582,7 +2582,7 @@
 .discoveryHeaderWrap {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
 }
 
@@ -2590,17 +2590,23 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
   width: 100%;
+  border-bottom: 1px solid #e2e8f0;
+  margin-top: 2px;
 }
 
 .discoveryPillDock {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 24px;
   overflow-x: auto;
   scrollbar-width: none;
-  padding: 2px 0;
+  -ms-overflow-style: none;
+  flex: 1;
+  padding: 0;
+  border-bottom: none;
+  margin-top: 0;
 }
 
 .discoveryPillDock::-webkit-scrollbar {
@@ -2608,65 +2614,89 @@
 }
 
 .discoveryPill {
+  position: relative;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 6px 14px;
-  border-radius: 9999px;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  color: #475569;
-  font-size: 12.5px;
-  font-weight: 550;
+  padding: 8px 2px 10px;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 140ms ease;
+  flex-shrink: 0;
+  transition: color 150ms ease;
+  user-select: none;
+  border-radius: 0;
 }
 
 .discoveryPill:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
+  background: transparent;
+  border: none;
   color: #0f172a;
 }
 
 .discoveryPillActive {
-  background: #0f172a !important;
-  border-color: #0f172a !important;
-  color: #ffffff !important;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.16);
+  background: transparent !important;
+  border: none !important;
+  color: #0f172a !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+.discoveryPillActive::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  background: #0f172a;
+  border-radius: 9999px 9999px 0 0;
 }
 
 .tabFilterWrap {
   position: relative;
   display: flex;
   align-items: center;
-  flex-shrink: 0;
 }
 
 .tabFilterIconBtn {
-  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  position: relative;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  color: #475569;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #64748b;
   cursor: pointer;
-  transition: all 140ms ease;
+  padding: 0;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+  transition: all 150ms ease;
 }
 
 .tabFilterIconBtn:hover {
-  background: #f1f5f9;
-  color: #0f172a;
-}
-
-.tabFilterIconBtnActive {
   background: #0f172a;
   border-color: #0f172a;
   color: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+  transform: translateY(-1px);
+}
+
+.tabFilterIconBtnActive {
+  background: #0f172a !important;
+  border-color: #0f172a !important;
+  color: #ffffff !important;
+  border-radius: 50% !important;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18) !important;
 }
 
 .tabFilterBadge {
@@ -2683,31 +2713,42 @@
   color: #ffffff;
   font-size: 9.5px;
   font-weight: 750;
+  border: 1.5px solid #ffffff;
 }
 
 .popoverBackdrop {
   position: fixed;
   inset: 0;
-  z-index: 70;
+  z-index: 55;
   background: transparent;
 }
 
 .filterPopover {
   position: absolute;
-  top: calc(100% + 8px);
+  top: 38px;
   right: 0;
-  width: 320px;
+  width: 360px;
+  max-width: 90vw;
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.14), 0 2px 8px rgba(15, 23, 42, 0.04);
-  z-index: 80;
-  padding: 16px;
+  border-radius: 20px;
+  box-shadow: 0 16px 40px -4px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(0, 0, 0, 0.05);
+  z-index: 60;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  animation: fadeInDown 140ms ease;
-  text-align: left;
+  overflow: hidden;
+  animation: popoverFadeIn 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popoverFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .popoverHeader {
