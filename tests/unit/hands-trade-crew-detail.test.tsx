@@ -44,8 +44,8 @@ describe("TradeCrewDetail Component", () => {
     expect(screen.getByText("Helpers")).toBeInTheDocument();
 
     // Capabilities
-    expect(screen.getByText("Brick Masonry")).toBeInTheDocument();
-    expect(screen.getByText("Block Masonry")).toBeInTheDocument();
+    expect(screen.getByText(/Structural RCC Masonry/i)).toBeInTheDocument();
+    expect(screen.getByText(/AAC & Solid Concrete Blockwork/i)).toBeInTheDocument();
     expect(screen.getByText("Residential")).toBeInTheDocument();
     expect(screen.getByText("Commercial")).toBeInTheDocument();
     expect(screen.getByText("High-rise")).toBeInTheDocument();

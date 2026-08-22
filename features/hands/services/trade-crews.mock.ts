@@ -12,6 +12,9 @@ import {
 export interface CapabilityRating {
   name: string;
   rating: number; // 1-5
+  levelLabel?: string;
+  verifiedSites?: number;
+  description?: string;
 }
 
 export interface CrewRoleBreakdown {
@@ -163,11 +166,41 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
       "Foundation random rubble (RR) masonry & coping",
     ],
     capabilityRatings: [
-      { name: "Brick Masonry", rating: 5 },
-      { name: "Block Masonry", rating: 5 },
-      { name: "Plastering", rating: 4 },
-      { name: "Stone Masonry", rating: 4 },
-      { name: "RCC Support", rating: 3 },
+      {
+        name: "Structural RCC Masonry",
+        rating: 5,
+        levelLabel: "Mastery (5/5)",
+        verifiedSites: 48,
+        description: "Engineered shear wall infill, lintel casting, and tie-column integration to IS 456 standards",
+      },
+      {
+        name: "AAC & Solid Concrete Blockwork",
+        rating: 5,
+        levelLabel: "Mastery (5/5)",
+        verifiedSites: 52,
+        description: "Precision laying (±2mm tolerance) with polymer thin-bed adhesive and bond-beam seismic ties",
+      },
+      {
+        name: "Multi-Coat Plastering & Stucco",
+        rating: 4,
+        levelLabel: "Advanced (4/5)",
+        verifiedSites: 38,
+        description: "Smooth sponge float, troweled exterior stucco, and water-repellent plastering to IS 1661",
+      },
+      {
+        name: "Architectural Exposed Brickwork",
+        rating: 5,
+        levelLabel: "Specialist (5/5)",
+        verifiedSites: 24,
+        description: "Precision English and Flemish bond with uniform 10mm recessed pointing",
+      },
+      {
+        name: "Random Rubble (RR) Stone Masonry",
+        rating: 4,
+        levelLabel: "Advanced (4/5)",
+        verifiedSites: 31,
+        description: "Heavy retaining foundation masonry with weep-hole integration and cement coping",
+      },
     ],
     specializations: [
       "Residential",
