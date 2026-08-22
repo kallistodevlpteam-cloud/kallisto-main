@@ -519,8 +519,7 @@ export function ExpertDiscovery() {
                 {activeFilters.length > 1 ? (
                   <button
                     type="button"
-                    className={styles.tertiaryButton}
-                    style={{ fontSize: "11.5px", padding: "2px 6px" }}
+                    className={styles.activeTagClearAll}
                     onClick={clearFilters}
                   >
                     Clear all
