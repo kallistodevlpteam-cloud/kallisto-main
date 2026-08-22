@@ -10,6 +10,7 @@ import {
   Building2,
   Check,
   CheckCircle2,
+  ChevronDown,
   ChevronRight,
   Clock,
   Columns3,
@@ -545,16 +546,19 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
               <label htmlFor="req-project" className={styles.fieldLabel}>
                 Your Project
               </label>
-              <select
-                id="req-project"
-                className={styles.selectInput}
-                value={selectedProjectId}
-                onChange={(e) => setSelectedProjectId(e.target.value)}
-              >
-                <option value="project-villa-01">Green Valley Residence (Kochi)</option>
-                <option value="project-apt-02">Skyline Heights Phase 1 (Ernakulam)</option>
-                <option value="project-comm-03">Metro Commercial Hub (Kakkanad)</option>
-              </select>
+              <div className={styles.selectWrapper}>
+                <select
+                  id="req-project"
+                  className={styles.selectInput}
+                  value={selectedProjectId}
+                  onChange={(e) => setSelectedProjectId(e.target.value)}
+                >
+                  <option value="project-villa-01">Green Valley Residence (Kochi)</option>
+                  <option value="project-apt-02">Skyline Heights Phase 1 (Ernakulam)</option>
+                  <option value="project-comm-03">Metro Commercial Hub (Kakkanad)</option>
+                </select>
+                <ChevronDown size={14} className={styles.selectChevron} aria-hidden="true" />
+              </div>
             </div>
 
             {/* Deployment Timeline */}
