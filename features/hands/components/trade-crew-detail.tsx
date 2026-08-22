@@ -527,51 +527,89 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
           {activeTab === "reviews" && (
             <section id="reviews" className={styles.sectionCard} aria-labelledby="heading-reviews">
               <div className={styles.sectionHeaderRow}>
-                <h2 id="heading-reviews" className={styles.sectionTitle}>Client Reviews</h2>
-                <span className={styles.sectionSubtitle}>Audited ratings from verified contractors</span>
+                <h2 id="heading-reviews" className={styles.sectionTitle}>Our Customer Reviews</h2>
+                <span className={styles.sectionSubtitle}>Audited ratings from verified clients & contractors</span>
               </div>
 
-              <div className={styles.reviewsOverviewBox}>
-                <div className={styles.overallScoreBox}>
-                  <span className={styles.overallScoreValue}>
+              {/* Top Overview: Score Hero Card (Left) + Star Breakdown (Right) */}
+              <div className={styles.reviewsHeroContainer}>
+                {/* Left Card: 4.3 / 4.9 Score + 5 Stars + Total Ratings */}
+                <div className={styles.scoreHeroCard}>
+                  <span className={styles.scoreHeroValue}>
                     {crew.reviewsBreakdown?.overallScore.toFixed(1) || "4.9"}
                   </span>
-                  <span style={{ fontSize: 13, color: "#64748b", fontWeight: 600 }}>out of 5</span>
-                  <div className={styles.overallScoreStars} aria-hidden="true">
+                  <div className={styles.scoreHeroStars} aria-label={`${crew.reviewsBreakdown?.overallScore || 4.9} out of 5 stars`}>
                     {[1, 2, 3, 4, 5].map((s) => (
-                      <Star key={s} size={14} fill="#eab308" color="#eab308" />
+                      <Star key={s} size={18} fill="#6366f1" color="#6366f1" />
                     ))}
                   </div>
+                  <span className={styles.scoreHeroCount}>
+                    {crew.reviewsBreakdown?.totalRatings || crew.reviewCount || 42} Ratings
+                  </span>
                 </div>
 
-                <div className={styles.metricsBarsList}>
-                  {crew.reviewsBreakdown?.metrics.map((metric) => (
-                    <div key={metric.label} className={styles.metricBarRow}>
-                      <span className={styles.metricBarLabel}>{metric.label}</span>
-                      <div className={styles.barTrack} aria-hidden="true">
+                {/* Right Breakdown: 5.0, 4.0, 3.0, 2.0, 1.0 */}
+                <div className={styles.starDistributionList}>
+                  {crew.reviewsBreakdown?.starDistribution?.map((item) => (
+                    <div key={item.starLabel} className={styles.starDistRow}>
+                      <span className={styles.starDistLabel}>{item.starLabel}</span>
+                      <div className={styles.starDistTrack} aria-hidden="true">
                         <div
-                          className={styles.barFill}
-                          style={{ width: `${(metric.score / 5) * 100}%` }}
+                          className={styles.starDistFill}
+                          style={{ width: `${item.percentage}%` }}
                         />
                       </div>
-                      <span className={styles.metricBarScore}>{metric.score.toFixed(1)}</span>
+                      <span className={styles.starDistCount}>{item.countLabel}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className={styles.testimonialsList}>
+              {/* Customer Reviews List */}
+              <div className={styles.customerReviewsList}>
                 {crew.reviewsBreakdown?.testimonials.map((t) => (
-                  <div key={t.id} className={styles.testimonialCard}>
-                    <p className={styles.testimonialComment}>"{t.comment}"</p>
-                    <div className={styles.testimonialAuthorRow}>
-                      <strong style={{ color: "#0f172a" }}>— {t.author}</strong>
-                      <span>•</span>
-                      <span>{t.location}</span>
-                      <span>•</span>
-                      <span>{t.date}</span>
+                  <article key={t.id} className={styles.customerReviewItem}>
+                    <div className={styles.reviewHeaderRow}>
+                      <div className={styles.reviewUserWrap}>
+                        <div className={styles.reviewAvatar} aria-hidden="true">
+                          {t.author.charAt(0)}
+                        </div>
+                        <div className={styles.reviewUserMeta}>
+                          <h3 className={styles.reviewUserName}>{t.author}</h3>
+                          <span className={styles.reviewDate}>{t.date}</span>
+                        </div>
+                      </div>
+
+                      <div className={styles.reviewStarsRow} aria-label={`${t.rating} out of 5 stars`}>
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <Star
+                            key={s}
+                            size={14}
+                            fill={s <= t.rating ? "#6366f1" : "none"}
+                            color={s <= t.rating ? "#6366f1" : "#cbd5e1"}
+                            strokeWidth={s <= t.rating ? 0 : 2}
+                            aria-hidden="true"
+                          />
+                        ))}
+                      </div>
                     </div>
-                  </div>
+
+                    <p className={styles.reviewComment}>{t.comment}</p>
+
+                    {t.photos && t.photos.length > 0 && (
+                      <div className={styles.reviewPhotosRow}>
+                        {t.photos.map((photo, pIdx) => (
+                          <img
+                            key={pIdx}
+                            src={photo}
+                            alt={`Site work photo ${pIdx + 1} by ${t.author}`}
+                            className={styles.reviewThumbPhoto}
+                            loading="lazy"
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </article>
                 ))}
               </div>
             </section>

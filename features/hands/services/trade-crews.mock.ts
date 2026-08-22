@@ -48,19 +48,31 @@ export interface ReviewMetric {
   score: number;
 }
 
+export interface StarRatingBreakdown {
+  starLabel: string;
+  starValue: number;
+  count: number;
+  countLabel: string;
+  percentage: number;
+}
+
 export interface ClientReviewItem {
   id: string;
   author: string;
+  avatarUrl?: string;
   projectType: string;
   location: string;
   date: string;
   rating: number;
   comment: string;
   verifiedClient: boolean;
+  photos?: string[];
 }
 
 export interface ReviewsBreakdown {
   overallScore: number;
+  totalRatings?: number;
+  starDistribution?: StarRatingBreakdown[];
   metrics: ReviewMetric[];
   testimonials: ClientReviewItem[];
 }
@@ -304,6 +316,14 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     ],
     reviewsBreakdown: {
       overallScore: 4.9,
+      totalRatings: 42,
+      starDistribution: [
+        { starLabel: "5.0", starValue: 5, count: 36, countLabel: "36 Reviews", percentage: 86 },
+        { starLabel: "4.0", starValue: 4, count: 5, countLabel: "5 Reviews", percentage: 12 },
+        { starLabel: "3.0", starValue: 3, count: 1, countLabel: "1 Reviews", percentage: 2 },
+        { starLabel: "2.0", starValue: 2, count: 0, countLabel: "0 Reviews", percentage: 0 },
+        { starLabel: "1.0", starValue: 1, count: 0, countLabel: "0 Reviews", percentage: 0 },
+      ],
       metrics: [
         { label: "Reliability", score: 4.9 },
         { label: "Quality", score: 4.9 },
@@ -313,23 +333,34 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
       testimonials: [
         {
           id: "rev-m-01",
-          author: "Verified Project Client",
+          author: "Marco MacGyver",
           projectType: "Residential Villa Project",
           location: "Kakkanad",
-          date: "Aug 2026",
-          rating: 4.9,
-          comment: "Completed the masonry and external plastering package ahead of schedule. Rajan managed the site coordination diligently with daily DPR logs.",
+          date: "Aug 12, 2026",
+          rating: 5,
+          comment: "Experienced masonry crew specializing in high-tolerance structural brickwork and multi-coat plastering. Rajan managed the site coordination diligently with daily DPR logs and zero rework.",
           verifiedClient: true,
+          photos: [
+            "https://images.unsplash.com/photo-1541888946425-d0fbb180c5f5?w=150&auto=format&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?w=150&auto=format&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=150&auto=format&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504307651554-6691fc9d0554?w=150&auto=format&fit=crop&q=80",
+          ],
         },
         {
           id: "rev-m-02",
-          author: "Site Director — Skyline Infrastructure",
+          author: "Robert Karmazov",
           projectType: "Commercial Office Block",
           location: "Kochi",
-          date: "Jun 2026",
-          rating: 5.0,
-          comment: "Flawless AAC blockwork line and plumb. Mortar mix consistency and joint packing passed structural audit on first inspection.",
+          date: "Jul 28, 2026",
+          rating: 4,
+          comment: "Flawless AAC blockwork line and plumb. Mortar mix consistency and joint packing passed structural audit on first inspection with rigorous safety compliance.",
           verifiedClient: true,
+          photos: [
+            "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=150&auto=format&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=150&auto=format&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=150&auto=format&fit=crop&q=80",
+          ],
         },
       ],
     },

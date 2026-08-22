@@ -932,67 +932,78 @@
   gap: 8px;
 }
 
-/* Client Reviews */
-.reviewsOverviewBox {
+/* Client Reviews — Reference Design */
+.reviewsHeroContainer {
   display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 20px;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
   align-items: center;
-  padding: 14px;
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  margin: 6px 0 20px 0;
 }
 
-@media (max-width: 640px) {
-  .reviewsOverviewBox {
+@media (max-width: 680px) {
+  .reviewsHeroContainer {
     grid-template-columns: 1fr;
   }
 }
 
-.overallScoreBox {
+.scoreHeroCard {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 24px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   text-align: center;
-  gap: 3px;
 }
 
-.overallScoreValue {
-  font-size: 32px;
-  font-weight: 800;
+.scoreHeroValue {
+  font-size: 38px;
+  font-weight: 850;
   color: #0f172a;
   line-height: 1;
+  letter-spacing: -0.03em;
 }
 
-.overallScoreStars {
-  display: flex;
-  gap: 2px;
-  color: #eab308;
-}
-
-.metricsBarsList {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.metricBarRow {
+.scoreHeroStars {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 12px;
+  gap: 4px;
+  color: #6366f1;
 }
 
-.metricBarLabel {
-  width: 90px;
-  color: #475569;
-  font-weight: 550;
+.scoreHeroCount {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #94a3b8;
 }
 
-.barTrack {
+.starDistributionList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.starDistRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12.5px;
+}
+
+.starDistLabel {
+  width: 24px;
+  font-weight: 650;
+  color: #334155;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.starDistTrack {
   flex: 1;
   height: 6px;
   background: #e2e8f0;
@@ -1000,49 +1011,122 @@
   overflow: hidden;
 }
 
-.barFill {
+.starDistFill {
   height: 100%;
-  background: #0f172a;
+  background: #6366f1;
   border-radius: 9999px;
+  transition: width 300ms ease;
 }
 
-.metricBarScore {
-  width: 26px;
-  font-weight: 700;
-  color: #0f172a;
+.starDistCount {
+  width: 76px;
+  font-size: 12px;
+  font-weight: 550;
+  color: #64748b;
   text-align: right;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.testimonialsList {
+/* Customer Reviews List */
+.customerReviewsList {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0;
   margin-top: 4px;
 }
 
-.testimonialCard {
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 14px;
+.customerReviewItem {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
+  padding: 20px 0;
+  border-top: 1px solid #f1f5f9;
 }
 
-.testimonialComment {
+.customerReviewItem:first-child {
+  border-top: 1px solid #f1f5f9;
+}
+
+.reviewHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.reviewUserWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reviewAvatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 13px;
-  font-style: italic;
-  color: #334155;
-  line-height: 1.5;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.reviewUserMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.reviewUserName {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
   margin: 0;
 }
 
-.testimonialAuthorRow {
+.reviewDate {
   font-size: 11.5px;
-  color: #64748b;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.reviewStarsRow {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 3px;
+}
+
+.reviewComment {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.reviewPhotosRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.reviewThumbPhoto {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #e2e8f0;
+  transition: transform 150ms ease;
+  cursor: pointer;
+}
+
+.reviewThumbPhoto:hover {
+  transform: scale(1.05);
 }
 
 /* Availability Calendar Preview */

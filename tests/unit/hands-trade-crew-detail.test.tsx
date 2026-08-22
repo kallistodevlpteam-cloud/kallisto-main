@@ -63,10 +63,11 @@ describe("TradeCrewDetail Component", () => {
 
     // Switch to Client Reviews tab
     fireEvent.click(screen.getByRole("tab", { name: "Reviews" }));
-    expect(screen.getByText("Reliability")).toBeInTheDocument();
-    expect(screen.getByText("Quality")).toBeInTheDocument();
-    expect(screen.getByText("Timeliness")).toBeInTheDocument();
-    expect(screen.getByText("Communication")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 2, name: /Our Customer Reviews/i })).toBeInTheDocument();
+    expect(screen.getByText("Marco MacGyver")).toBeInTheDocument();
+    expect(screen.getByText("Robert Karmazov")).toBeInTheDocument();
+    expect(screen.getByText("36 Reviews")).toBeInTheDocument();
+    expect(screen.getByText("5 Reviews")).toBeInTheDocument();
   });
 
   it("renders availability calendar and verification trust checklist", () => {
