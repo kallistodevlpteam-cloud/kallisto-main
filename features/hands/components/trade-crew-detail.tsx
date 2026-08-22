@@ -207,9 +207,9 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                   <div className={styles.titleRow}>
                     <h1 className={styles.teamName}>{crew.name}</h1>
                     {crew.verified && (
-                      <BadgeCheck
-                        size={20}
-                        className={styles.verifiedBadgeIcon}
+                      <CheckCircle2
+                        size={18}
+                        className={styles.verifiedRoundIcon}
                         aria-label="Verified Kallisto Trade Crew"
                       />
                     )}

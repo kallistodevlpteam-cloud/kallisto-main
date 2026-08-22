@@ -159,9 +159,8 @@
   line-height: 1.25;
 }
 
-.verifiedBadgeIcon {
-  color: #ffffff;
-  fill: #0284c7;
+.verifiedRoundIcon {
+  color: #16a34a;
   flex-shrink: 0;
 }
 
