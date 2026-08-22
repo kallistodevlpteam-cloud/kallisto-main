@@ -318,29 +318,6 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
               </div>
             </div>
 
-            {/* 4. Compact Verification / Capability Proof Chips */}
-            <div className={styles.proofChipsRow}>
-              <span className={styles.proofChip}>
-                <Check size={12} className={styles.chipCheck} aria-hidden="true" />
-                <span>RCC Brickwork</span>
-              </span>
-              <span className={styles.proofChip}>
-                <Check size={12} className={styles.chipCheck} aria-hidden="true" />
-                <span>Masonry</span>
-              </span>
-              <span className={styles.proofChip}>
-                <Check size={12} className={styles.chipCheck} aria-hidden="true" />
-                <span>Plastering</span>
-              </span>
-              <span className={styles.proofChip}>
-                <Check size={12} className={styles.chipCheck} aria-hidden="true" />
-                <span>Skills Verified</span>
-              </span>
-              <span className={styles.proofChip}>
-                <Check size={12} className={styles.chipCheck} aria-hidden="true" />
-                <span>Safety Verified</span>
-              </span>
-            </div>
           </section>
 
           {/* 2. Horizontal Section Navigation Tabs */}

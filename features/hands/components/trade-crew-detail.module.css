@@ -379,33 +379,6 @@
   }
 }
 
-/* 4. Compact Capability & Verification Chips */
-.proofChipsRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: -2px;
-}
-
-.proofChip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  padding: 4px 9px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #334155;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
-}
-
-.chipCheck {
-  color: #16a34a;
-}
-
 /* ─────────────────────────────────────────────────────────────────────────────
    4. Basics-Style Profile Tabs Bar
    ───────────────────────────────────────────────────────────────────────────── */
