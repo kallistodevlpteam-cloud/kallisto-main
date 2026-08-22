@@ -60,37 +60,18 @@ describe("Hive Studio: 3-Layer Project Intelligence Workspace", () => {
       expect(screen.getByText("Project history")).toBeInTheDocument();
       expect(screen.getByText("Site Feasibility")).toBeInTheDocument();
     });
-
-    it("triggers prompt action when clicking a resource pill", () => {
-      const handleSelectPrompt = vi.fn();
-      render(
-        <StudioProjectContextCard
-          selectedProjectId="proj-001"
-          projects={MOCK_PROJECTS}
-          onSelectProject={vi.fn()}
-          onSelectPrompt={handleSelectPrompt}
-        />
-      );
-
-      fireEvent.click(screen.getByText("Drawings (Rev 04)"));
-      expect(handleSelectPrompt).toHaveBeenCalledWith(
-        expect.stringContaining("Review and inspect architectural drawings (Rev 04)"),
-      );
-
-      fireEvent.click(screen.getByText("BOQ (Preliminary)"));
-      expect(handleSelectPrompt).toHaveBeenCalledWith(
-        expect.stringContaining("Open and audit the preliminary BOQ breakdown"),
-      );
-    });
   });
 
   describe("Layer 2: Action-Oriented Pathways", () => {
-    it("renders Explore, Create, Review, Solve with action subtitles", () => {
+    it("renders Explore, Create, Review, Solve with action subtitles and makes them clickable", () => {
       const handleSelectIntent = vi.fn();
+      const handleSelectPrompt = vi.fn();
       render(
         <StudioIntentGrid
           selectedIntent="create"
           onSelectIntent={handleSelectIntent}
+          onSelectPrompt={handleSelectPrompt}
+          projectName="Luxury Villa Horizon"
         />
       );
 
@@ -106,6 +87,15 @@ describe("Hive Studio: 3-Layer Project Intelligence Workspace", () => {
 
       fireEvent.click(screen.getByText("Review"));
       expect(handleSelectIntent).toHaveBeenCalledWith("review");
+      expect(handleSelectPrompt).toHaveBeenCalledWith(
+        expect.stringContaining("Review the BOQ, drawings, and scope for Luxury Villa Horizon"),
+      );
+
+      fireEvent.click(screen.getByText("Explore"));
+      expect(handleSelectIntent).toHaveBeenCalledWith("create");
+      expect(handleSelectPrompt).toHaveBeenCalledWith(
+        expect.stringContaining("Help me explore and understand the design requirements"),
+      );
     });
   });
 

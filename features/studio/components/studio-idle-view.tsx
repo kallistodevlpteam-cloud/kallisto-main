@@ -26,6 +26,9 @@ export function StudioIdleContent({
   onSelectIntent,
   onSelectPrompt,
 }: StudioIdleContentProps) {
+  const selectedProject = projects.find((p) => p.id === selectedProjectId) || projects[0];
+  const projectName = selectedProject?.name || "Luxury Villa Horizon";
+
   return (
     <div className={styles.studioIdleContainer}>
       {/* Layer 1: Project Context & Knowledge Foundation */}
@@ -40,6 +43,8 @@ export function StudioIdleContent({
       <StudioIntentGrid
         selectedIntent={selectedIntent}
         onSelectIntent={onSelectIntent}
+        onSelectPrompt={onSelectPrompt}
+        projectName={projectName}
       />
     </div>
   );
