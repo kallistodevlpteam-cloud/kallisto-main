@@ -998,11 +998,14 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #f8fafc;
-  border: 1px dashed #cbd5e1;
-  border-radius: 10px;
-  padding: 8px 12px;
+  background: rgba(248, 250, 252, 0.72);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  border: 1px dashed rgba(203, 213, 225, 0.9);
+  border-radius: 12px;
+  padding: 8px 14px;
   flex-wrap: wrap;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .odinAccessLabel {
@@ -1032,10 +1035,21 @@
   font-size: 11px;
   font-weight: 550;
   color: #475569;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
   padding: 3px 8px;
-  border-radius: 6px;
+  border-radius: 7px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: all 0.15s ease;
+}
+
+.odinAccessPill:hover {
+  background: #ffffff;
+  border-color: rgba(148, 163, 184, 0.8);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.05);
 }
 
 /* ── Layer 2: Action-Oriented Pathways ── */
@@ -1064,7 +1078,7 @@
 .intentGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 12px;
   width: 100%;
 }
 
@@ -1077,36 +1091,42 @@
 .intentCard {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 14px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
+  gap: 9px;
+  padding: 16px 14px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.15s ease;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.03), 0 2px 4px -1px rgba(15, 23, 42, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.95);
   outline: none;
 }
 
 .intentCard:hover {
-  border-color: #cbd5e1;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(203, 213, 225, 0.95);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.07), 0 4px 10px -2px rgba(15, 23, 42, 0.03), inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 .intentCardActive {
   border-color: #0f172a !important;
-  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.12) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.14), 0 6px 20px -2px rgba(15, 23, 42, 0.06) !important;
 }
 
 .intentIconWrap {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .intentMeta {
@@ -1117,7 +1137,7 @@
 
 .intentTitle {
   margin: 0;
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 700;
   color: #0f172a;
   line-height: 1.3;
@@ -1143,11 +1163,20 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  background: linear-gradient(135deg, #faf5ff 0%, #f5f3ff 50%, #eff6ff 100%);
-  border: 1px solid #ddd6fe;
-  border-radius: 14px;
-  padding: 12px 18px;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.04);
+  background: linear-gradient(135deg, rgba(250, 245, 255, 0.88) 0%, rgba(245, 243, 255, 0.78) 50%, rgba(239, 246, 255, 0.82) 100%);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(221, 214, 254, 0.85);
+  border-radius: 16px;
+  padding: 14px 20px;
+  box-shadow: 0 8px 24px -3px rgba(124, 58, 237, 0.07), 0 2px 8px -1px rgba(124, 58, 237, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nextActionCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(196, 181, 253, 0.95);
+  box-shadow: 0 12px 32px -4px rgba(124, 58, 237, 0.12), 0 4px 12px -2px rgba(124, 58, 237, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 .nextActionLeft {
