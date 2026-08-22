@@ -91,6 +91,16 @@ export interface VerificationChecklist {
   lastVerificationDate: string;
 }
 
+export interface RateCardItem {
+  id: string;
+  title: string;
+  rate: number;
+  unit: string;
+  description: string;
+  shiftHours?: number;
+  highlight?: boolean;
+}
+
 export interface TradeCrew {
   id: string;
   name: string;
@@ -120,6 +130,7 @@ export interface TradeCrew {
 
   // Rich Detail Profile fields
   about?: string;
+  rateCards?: RateCardItem[];
   coreCapabilities?: string[];
   capabilityRatings?: CapabilityRating[];
   specializations?: string[];
@@ -158,6 +169,41 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     accentColor: "#16a34a",
     bgTint: "#f0fdf4",
     about: "Experienced masonry crew specializing in high-tolerance structural brickwork, precision block masonry, and multi-coat sand-faced plastering. Tracked across 64+ commercial and premium residential developments across central Kerala with zero safety incidents.",
+    rateCards: [
+      {
+        id: "rate-mason-lead",
+        title: "Master Mason / Lead",
+        rate: 950,
+        unit: "/ day / worker",
+        description: "8-hour shift · Structural alignment, beam infills & precision corner setting",
+        shiftHours: 8,
+        highlight: true,
+      },
+      {
+        id: "rate-mason-skilled",
+        title: "Skilled Block & Brick Mason",
+        rate: 850,
+        unit: "/ day / worker",
+        description: "8-hour shift · High-speed AAC blockwork, fly-ash brickwork & joint mortar",
+        shiftHours: 8,
+      },
+      {
+        id: "rate-helper",
+        title: "Civil Helper / Labourer",
+        rate: 650,
+        unit: "/ day / worker",
+        description: "8-hour shift · Mortar mixing, block staging, curing & site cleanup",
+        shiftHours: 8,
+      },
+      {
+        id: "rate-squad-8",
+        title: "Standard 8-Worker Gang",
+        rate: 6400,
+        unit: "/ day / squad",
+        description: "1 Master + 4 Skilled + 3 Helpers · Optimal for 1,200–1,500 sq.ft daily masonry",
+        shiftHours: 8,
+      },
+    ],
     coreCapabilities: [
       "Structural brickwork & load-bearing masonry",
       "Autoclaved Aerated Concrete (AAC) & concrete block laying",
