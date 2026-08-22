@@ -15,7 +15,6 @@ import { getProjectDisplayName } from "../project-selector";
 import { ComposerAttachmentMenu } from "./composer-attachment-menu";
 import { PromptUsage } from "@/components/ui/prompt";
 
-import { SuggestedPrompts } from "../suggested-prompts";
 import { useAnimatedPlaceholder } from "../../hooks/use-animated-placeholder";
 
 const DEFAULT_EXAMPLES = [
@@ -150,11 +149,11 @@ export function StudioComposer({
   const { animatedText, isTyping, isDeleting } = useAnimatedPlaceholder({
     examples,
     enabled: animationEnabled,
-    initialDelay: 1500,
-    typingSpeed: 38,
-    deletingSpeed: 22,
-    holdDuration: 2100,
-    betweenDelay: 650,
+    initialDelay: 300,
+    typingSpeed: 32,
+    deletingSpeed: 18,
+    holdDuration: 2400,
+    betweenDelay: 500,
   });
 
   const staticFallback = isActive
@@ -168,10 +167,6 @@ export function StudioComposer({
 
   const showOverlay = prompt === "" && !isFocused;
   const showCaret = !isActive && !prefersReducedMotion && (isTyping || isDeleting) && showOverlay;
-
-  const handleExampleSelect = (exampleText: string) => {
-    onPromptChange(exampleText);
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -189,13 +184,6 @@ export function StudioComposer({
 
   return (
     <div style={{ width: "100%", position: "relative" }}>
-      {/* Dynamic Example Suggestion Chips (Idle mode) */}
-      {!isActive && (
-        <div style={{ marginBottom: "12px" }}>
-          <SuggestedPrompts intent={selectedIntent} onSelectPrompt={handleExampleSelect} />
-        </div>
-      )}
-
       {/* Main Composer Box */}
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         <div
