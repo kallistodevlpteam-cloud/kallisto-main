@@ -1286,14 +1286,13 @@
 }
 
 .stickyRequestPanel {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  padding: 22px 20px;
+  background: transparent;
+  border: none;
+  padding: 4px 0 20px 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  box-shadow: none;
 }
 
 .requestPanelTitle {
