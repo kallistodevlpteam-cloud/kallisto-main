@@ -52,8 +52,7 @@ describe("Hive Studio: 3-Layer Project Intelligence Workspace", () => {
       expect(screen.getByText("12 files · 4 active tasks")).toBeInTheDocument();
       expect(screen.getByText("Living Space & Terrace")).toBeInTheDocument();
 
-      // Odin access connection strip
-      expect(screen.getByText("Odin has access to:")).toBeInTheDocument();
+      // Connected project resource indicators
       expect(screen.getByText("Drawings (Rev 04)")).toBeInTheDocument();
       expect(screen.getByText("Documents (12)")).toBeInTheDocument();
       expect(screen.getByText("BOQ (Preliminary)")).toBeInTheDocument();
@@ -147,7 +146,7 @@ describe("Hive Studio: 3-Layer Project Intelligence Workspace", () => {
 
       // Layer 1
       expect(screen.getByText("KL-COK-2026")).toBeInTheDocument();
-      expect(screen.getByText("Odin has access to:")).toBeInTheDocument();
+      expect(screen.getByText("Drawings (Rev 04)")).toBeInTheDocument();
 
       // Layer 2
       expect(screen.getByText("What do you want to accomplish?")).toBeInTheDocument();

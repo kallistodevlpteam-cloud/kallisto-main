@@ -1,13 +1,10 @@
 "use client";
 
-import React from "react";
-import { Sparkles } from "lucide-react";
 import {
   DocumentsDuotoneIcon,
   DrawingsDuotoneIcon,
   HistoryDuotoneIcon,
   MapPinDuotoneIcon,
-  OdinDuotoneIcon,
   ReviewDuotoneIcon,
   SpreadsheetDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
@@ -74,13 +71,8 @@ export function StudioProjectContextCard({
         </div>
       </div>
 
-      {/* Subtle "Odin has access to..." Connection Strip */}
-      <div className={styles.odinAccessStrip} aria-label="Odin connected project data">
-        <div className={styles.odinAccessLabel}>
-          <OdinDuotoneIcon size={14} className={styles.odinAccessIcon} aria-hidden="true" />
-          <span>Odin has access to:</span>
-        </div>
-
+      {/* Connected Project Resources Strip */}
+      <div className={styles.odinAccessStrip} aria-label="Connected project data">
         <div className={styles.odinAccessPills}>
           <div className={styles.odinAccessPill}>
             <DrawingsDuotoneIcon size={14} style={{ color: "#2563eb" }} aria-hidden="true" />
