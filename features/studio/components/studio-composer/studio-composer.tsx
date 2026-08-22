@@ -231,7 +231,7 @@ export function StudioComposer({
             minHeight: isActive ? "94px" : "106px",
             padding: "14px 12px 12px 12px",
             border: "none",
-            borderRadius: "24px",
+            borderRadius: "28px",
             background: "#ffffff",
             boxShadow: "0 4px 24px rgba(15, 23, 42, 0.06), 0 1px 4px rgba(15, 23, 42, 0.02)",
             transition: "box-shadow 0.2s ease",
