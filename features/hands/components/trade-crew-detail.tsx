@@ -388,11 +388,6 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
           {/* 4. Section: Technical Capabilities */}
           {activeTab === "capabilities" && (
             <section id="capabilities" className={styles.sectionCard} aria-labelledby="heading-capabilities">
-              <div className={styles.sectionHeaderRow}>
-                <h2 id="heading-capabilities" className={styles.sectionTitle}>Technical Masonry & RCC Capabilities</h2>
-                <span className={styles.sectionSubtitle}>Industrial standards, tolerances, and execution specifications</span>
-              </div>
-
               <div className={styles.capabilitiesStepGrid}>
                 {crew.capabilityRatings?.map((cap, idx) => {
                   const icons = [Building2, Layers, Sparkles, Grid3X3, Compass, Droplets, Zap];
