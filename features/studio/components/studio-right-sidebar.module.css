@@ -40,6 +40,18 @@
   padding-bottom: 10px;
 }
 
+.sidebarHeaderLabelWrap {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.sidebarHeaderLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
 .tabsRow {
   display: flex;
   align-items: center;

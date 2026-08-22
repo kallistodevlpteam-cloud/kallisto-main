@@ -197,38 +197,11 @@ export function StudioRightSidebar({
   // ── PROJECT INTELLIGENCE, OUTPUTS & CHAT HISTORY MODE ──
   return (
     <aside className={`${styles.sidebarContainer} ${className}`}>
-      {/* Top Header & Tab Switcher Bar */}
+      {/* Top Header & Title Bar */}
       <div className={styles.sidebarTopBar}>
-        <div className={styles.tabsRow}>
-          <button
-            type="button"
-            className={`${styles.tabBtn} ${internalTab === "intelligence" ? styles.activeTabBtn : ""}`}
-            onClick={() => setInternalTab("intelligence")}
-            title="Project Intelligence"
-          >
-            <OdinDuotoneIcon size={14} style={{ color: "#7c3aed" }} />
-            <span>Project</span>
-          </button>
-
-          <button
-            type="button"
-            className={`${styles.tabBtn} ${internalTab === "outputs" ? styles.activeTabBtn : ""}`}
-            onClick={() => setInternalTab("outputs")}
-            title="Outputs & Deliverables"
-          >
-            <OutputsDuotoneIcon size={14} style={{ color: "#6366f1" }} />
-            <span>Outputs</span>
-          </button>
-
-          <button
-            type="button"
-            className={`${styles.tabBtn} ${internalTab === "chats" ? styles.activeTabBtn : ""}`}
-            onClick={() => setInternalTab("chats")}
-            title="Chat History"
-          >
-            <HistoryDuotoneIcon size={14} style={{ color: "#f59e0b" }} />
-            <span>History</span>
-          </button>
+        <div className={styles.sidebarHeaderLabelWrap}>
+          <OdinDuotoneIcon size={15} style={{ color: "#7c3aed" }} />
+          <span className={styles.sidebarHeaderLabel}>Project</span>
         </div>
 
         <button
