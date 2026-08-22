@@ -168,19 +168,6 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
 
   return (
     <div className={styles.detailContainer}>
-      {/* Top Breadcrumb Navigation */}
-      <nav className={styles.breadcrumbNav} aria-label="Breadcrumb navigation">
-        <Link href="/" className={styles.breadcrumbLink}>
-          Virtual Office
-        </Link>
-        <span className={styles.breadcrumbDivider}>›</span>
-        <Link href="/hands" className={styles.breadcrumbLink}>
-          Hands
-        </Link>
-        <span className={styles.breadcrumbDivider}>›</span>
-        <span className={styles.breadcrumbCurrent}>{crew.name}</span>
-      </nav>
-
       {/* Two Primary Sections Layout: Left Section & Right Section */}
       <div className={styles.twoColLayout}>
         {/* ─── LEFT SECTION: Review the Provider (Hero, Tabs & Details) ─── */}

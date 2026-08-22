@@ -14,39 +14,6 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Breadcrumb Navigation
-   ───────────────────────────────────────────────────────────────────────────── */
-.breadcrumbNav {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: #64748b;
-  margin-top: 2px;
-}
-
-.breadcrumbLink {
-  color: #475569;
-  font-weight: 500;
-  text-decoration: none;
-  transition: color 140ms ease;
-}
-
-.breadcrumbLink:hover {
-  color: #0f172a;
-}
-
-.breadcrumbDivider {
-  color: #94a3b8;
-  font-size: 13px;
-}
-
-.breadcrumbCurrent {
-  color: #0f172a;
-  font-weight: 600;
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
    1. Two-Column Layout (Left Content 68% | Right Sticky 32%)
    ───────────────────────────────────────────────────────────────────────────── */
 .twoColLayout {

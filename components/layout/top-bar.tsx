@@ -24,6 +24,7 @@ import {
 } from "./breadcrumb-overflow-menu";
 import { DeveloperConsoleHook } from "../../developer-console/hooks/useDeveloperConsole";
 import { WORKSPACE_CONFIG, ROUTE_BREADCRUMBS } from "@/lib/config/workspace-config";
+import { getTradeCrewById } from "@/features/hands/services/trade-crews.mock";
 
 interface TopBarProps {
   sidebarCollapsed: boolean;
@@ -166,6 +167,23 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
       else if (parts[1] === "proposals") items.push({ label: "Proposals" });
       else if (parts[1] === "tasks" && parts[2]) items.push({ label: "Active Task" });
     }
+  } else if (currentPath.startsWith("/hands/trades/")) {
+    const parts = currentPath.split("/").filter(Boolean);
+    const crewId = parts[2];
+    const crew = crewId ? getTradeCrewById(crewId) : null;
+    items = [
+      { label: "Virtual Office" },
+      { label: "Hands", href: "/hands" },
+      { label: crew?.name || "Trade Crew Profile" },
+    ];
+  } else if (currentPath.startsWith("/basics/experts/")) {
+    const parts = currentPath.split("/").filter(Boolean);
+    const expertId = parts[2];
+    items = [
+      { label: "Virtual Office" },
+      { label: "Basics", href: "/basics" },
+      { label: expertId ? "Expert Profile" : "Find Experts" },
+    ];
   } else {
     let meta = ROUTE_BREADCRUMBS[currentPath];
     if (!meta) {
