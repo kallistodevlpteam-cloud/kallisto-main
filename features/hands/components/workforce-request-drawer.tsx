@@ -60,14 +60,47 @@ type SubmissionState =
 
 interface WorkforceRequestDrawerProps {
   onClose: () => void;
+  initialTrade?: WorkerTrade | string;
+  initialWorkerCount?: number | string;
+  initialStartDate?: string;
+  initialDuration?: string;
+  initialProjectId?: string;
+  initialValues?: Partial<WorkforceRequestDraft>;
 }
 
 export function WorkforceRequestDrawer({
   onClose,
+  initialTrade,
+  initialWorkerCount,
+  initialStartDate,
+  initialDuration,
+  initialProjectId,
+  initialValues,
 }: WorkforceRequestDrawerProps) {
   const panelRef = useRef<HTMLElement>(null);
-  const [values, setValues] =
-    useState<WorkforceRequestDraft>(INITIAL_VALUES);
+  const [values, setValues] = useState<WorkforceRequestDraft>(() => {
+    const base = { ...INITIAL_VALUES, ...(initialValues || {}) };
+    if (initialTrade) {
+      base.trade = (TRADES.includes(initialTrade as WorkerTrade)
+        ? (initialTrade as WorkerTrade)
+        : "") as WorkerTrade | "";
+    }
+    if (initialWorkerCount) {
+      base.workerCount = String(initialWorkerCount);
+    }
+    if (initialStartDate) {
+      base.startDate = initialStartDate;
+    }
+    if (initialDuration) {
+      base.expectedDuration = initialDuration;
+    }
+    if (initialProjectId) {
+      base.projectId = initialProjectId;
+      const matched = PROJECTS.find((p) => p.id === initialProjectId);
+      if (matched) base.siteLocation = matched.location;
+    }
+    return base;
+  });
   const [errors, setErrors] = useState<WorkforceRequestErrors>({});
   const [submissionState, setSubmissionState] =
     useState<SubmissionState>("idle");

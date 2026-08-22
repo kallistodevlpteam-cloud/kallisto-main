@@ -1,4 +1,5 @@
 export { HandsOverview, HandsOverviewSkeleton } from "./components/hands-overview";
+export { TradeCrewDetail } from "./components/trade-crew-detail";
 export type {
   AttendanceSummary,
   AttentionItem,

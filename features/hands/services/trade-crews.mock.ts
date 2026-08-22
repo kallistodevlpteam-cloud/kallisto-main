@@ -9,6 +9,85 @@ import {
   UserDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 
+export interface CapabilityRating {
+  name: string;
+  rating: number; // 1-5
+}
+
+export interface CrewRoleBreakdown {
+  count: number;
+  role: string;
+}
+
+export interface CrewComposition {
+  totalWorkforce: number;
+  typicalDeployment: string;
+  maxDeployment: number;
+  crewLeadTitle: string;
+  roles: CrewRoleBreakdown[];
+}
+
+export interface DeploymentEvidence {
+  id: string;
+  projectName: string;
+  location: string;
+  scopeTags: string[];
+  workerCount: number;
+  durationDays: number;
+  year: number;
+  status: "Completed" | "In Progress";
+  rating: number;
+  evidenceReference?: string;
+}
+
+export interface ReviewMetric {
+  label: string;
+  score: number;
+}
+
+export interface ClientReviewItem {
+  id: string;
+  author: string;
+  projectType: string;
+  location: string;
+  date: string;
+  rating: number;
+  comment: string;
+  verifiedClient: boolean;
+}
+
+export interface ReviewsBreakdown {
+  overallScore: number;
+  metrics: ReviewMetric[];
+  testimonials: ClientReviewItem[];
+}
+
+export interface CalendarDayStatus {
+  day: number;
+  month: string;
+  year: number;
+  weekday: string;
+  status: "available" | "partially_available" | "deployed";
+}
+
+export interface AvailabilitySchedule {
+  monthName: string;
+  year: number;
+  days: CalendarDayStatus[];
+  nextAvailableDate: string;
+  currentDeploymentText: string;
+}
+
+export interface VerificationChecklist {
+  identityVerified: boolean;
+  crewLeadVerified: boolean;
+  experienceVerified: boolean;
+  previousDeploymentsVerified: boolean;
+  skillAssessmentCompleted: boolean;
+  documentsVerified: boolean;
+  lastVerificationDate: string;
+}
+
 export interface TradeCrew {
   id: string;
   name: string;
@@ -35,6 +114,17 @@ export interface TradeCrew {
   icon: typeof BuildingDuotoneIcon;
   accentColor: string;
   bgTint: string;
+
+  // Rich Detail Profile fields
+  about?: string;
+  coreCapabilities?: string[];
+  capabilityRatings?: CapabilityRating[];
+  specializations?: string[];
+  crewComposition?: CrewComposition;
+  recentDeployments?: DeploymentEvidence[];
+  reviewsBreakdown?: ReviewsBreakdown;
+  availabilitySchedule?: AvailabilitySchedule;
+  verification?: VerificationChecklist;
 }
 
 export const MOCK_TRADE_CREWS: TradeCrew[] = [
@@ -51,7 +141,7 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     completedJobs: 64,
     experienceYears: 14,
     crewSizeMin: 4,
-    crewSizeMax: 12,
+    crewSizeMax: 24,
     dailyRate: 950,
     rateUnit: "per worker / day",
     availability: "immediate",
@@ -64,6 +154,133 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     icon: BuildingDuotoneIcon,
     accentColor: "#16a34a",
     bgTint: "#f0fdf4",
+    about: "Experienced masonry crew specializing in high-tolerance structural brickwork, precision block masonry, and multi-coat sand-faced plastering. Tracked across 64+ commercial and premium residential developments across central Kerala with zero safety incidents.",
+    coreCapabilities: [
+      "Structural brickwork & load-bearing masonry",
+      "Autoclaved Aerated Concrete (AAC) & concrete block laying",
+      "External & internal single/double coat plastering",
+      "RCC masonry support, beam infill, and lintel casting",
+      "Foundation random rubble (RR) masonry & coping",
+    ],
+    capabilityRatings: [
+      { name: "Brick Masonry", rating: 5 },
+      { name: "Block Masonry", rating: 5 },
+      { name: "Plastering", rating: 4 },
+      { name: "Stone Masonry", rating: 4 },
+      { name: "RCC Support", rating: 3 },
+    ],
+    specializations: [
+      "Residential",
+      "Commercial",
+      "High-rise",
+      "Villa",
+      "Renovation",
+      "Structural",
+    ],
+    crewComposition: {
+      totalWorkforce: 8,
+      typicalDeployment: "8–12 workers",
+      maxDeployment: 24,
+      crewLeadTitle: "Verified Site Supervisor",
+      roles: [
+        { count: 1, role: "Site Lead" },
+        { count: 5, role: "Masons" },
+        { count: 2, role: "Helpers" },
+      ],
+    },
+    recentDeployments: [
+      {
+        id: "dep-mason-01",
+        projectName: "Residential Villa — Kakkanad",
+        location: "Kakkanad, Kochi",
+        scopeTags: ["Masonry", "Plastering"],
+        workerCount: 12,
+        durationDays: 28,
+        year: 2026,
+        status: "Completed",
+        rating: 4.9,
+      },
+      {
+        id: "dep-mason-02",
+        projectName: "Commercial Building — Kochi",
+        location: "MG Road, Kochi",
+        scopeTags: ["Blockwork", "Lintels"],
+        workerCount: 18,
+        durationDays: 42,
+        year: 2026,
+        status: "Completed",
+        rating: 5.0,
+      },
+      {
+        id: "dep-mason-03",
+        projectName: "Skyline Residency Phase 2",
+        location: "Edappally, Kochi",
+        scopeTags: ["AAC Blocks", "Brick Infill"],
+        workerCount: 16,
+        durationDays: 21,
+        year: 2025,
+        status: "Completed",
+        rating: 4.8,
+      },
+    ],
+    reviewsBreakdown: {
+      overallScore: 4.9,
+      metrics: [
+        { label: "Reliability", score: 4.9 },
+        { label: "Quality", score: 4.9 },
+        { label: "Timeliness", score: 4.7 },
+        { label: "Communication", score: 4.9 },
+      ],
+      testimonials: [
+        {
+          id: "rev-m-01",
+          author: "Verified Project Client",
+          projectType: "Residential Villa Project",
+          location: "Kakkanad",
+          date: "Aug 2026",
+          rating: 4.9,
+          comment: "Completed the masonry and external plastering package ahead of schedule. Rajan managed the site coordination diligently with daily DPR logs.",
+          verifiedClient: true,
+        },
+        {
+          id: "rev-m-02",
+          author: "Site Director — Skyline Infrastructure",
+          projectType: "Commercial Office Block",
+          location: "Kochi",
+          date: "Jun 2026",
+          rating: 5.0,
+          comment: "Flawless AAC blockwork line and plumb. Mortar mix consistency and joint packing passed structural audit on first inspection.",
+          verifiedClient: true,
+        },
+      ],
+    },
+    availabilitySchedule: {
+      monthName: "August",
+      year: 2026,
+      days: [
+        { day: 24, month: "Aug", year: 2026, weekday: "Mon", status: "deployed" },
+        { day: 25, month: "Aug", year: 2026, weekday: "Tue", status: "deployed" },
+        { day: 26, month: "Aug", year: 2026, weekday: "Wed", status: "deployed" },
+        { day: 27, month: "Aug", year: 2026, weekday: "Thu", status: "deployed" },
+        { day: 28, month: "Aug", year: 2026, weekday: "Fri", status: "available" },
+        { day: 29, month: "Aug", year: 2026, weekday: "Sat", status: "available" },
+        { day: 30, month: "Aug", year: 2026, weekday: "Sun", status: "partially_available" },
+        { day: 31, month: "Aug", year: 2026, weekday: "Mon", status: "available" },
+        { day: 1, month: "Sep", year: 2026, weekday: "Tue", status: "available" },
+        { day: 2, month: "Sep", year: 2026, weekday: "Wed", status: "available" },
+      ],
+      nextAvailableDate: "28 August 2026",
+      currentDeploymentText: "Kochi • Until 27 Aug",
+    },
+    verification: {
+      identityVerified: true,
+      crewLeadVerified: true,
+      experienceVerified: true,
+      previousDeploymentsVerified: true,
+      skillAssessmentCompleted: true,
+      documentsVerified: true,
+      lastVerificationDate: "18 Aug 2026",
+    },
   },
   {
     id: "crew-electricians-01",
@@ -78,7 +295,7 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     completedJobs: 89,
     experienceYears: 12,
     crewSizeMin: 2,
-    crewSizeMax: 8,
+    crewSizeMax: 16,
     dailyRate: 1100,
     rateUnit: "per worker / day",
     availability: "immediate",
@@ -91,6 +308,108 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     icon: EnergyDuotoneIcon,
     accentColor: "#0284c7",
     bgTint: "#f0f9ff",
+    about: "Licensed electrical gang with Kerala Electrical Inspectorate Class-B supervisor certification. Experts in slab conduit rough-in, distribution board dressing, three-phase power routing, and smart home automation bus wiring.",
+    coreCapabilities: [
+      "Slab conduit laying & box casting inspection",
+      "Complete DB dressing with RCCB/MCB discrimination",
+      "Armoured cable pulling & HT/LT switchgear terminations",
+      "Chemical earthing pits & lightning protection grid",
+      "KNX / DALI automation and architectural lighting circuits",
+    ],
+    capabilityRatings: [
+      { name: "Conduit & Piping", rating: 5 },
+      { name: "DB Dressing", rating: 5 },
+      { name: "Cable Routing", rating: 5 },
+      { name: "Earthing Grid", rating: 4 },
+      { name: "Automation Bus", rating: 4 },
+    ],
+    specializations: [
+      "Commercial MEP",
+      "Luxury Residential",
+      "Hospital & Lab",
+      "High-rise",
+      "Industrial Wiring",
+    ],
+    crewComposition: {
+      totalWorkforce: 6,
+      typicalDeployment: "4–8 workers",
+      maxDeployment: 16,
+      crewLeadTitle: "Class-B Electrical Supervisor",
+      roles: [
+        { count: 1, role: "Supervisor" },
+        { count: 3, role: "Licensed Electricians" },
+        { count: 2, role: "Wiremen Helpers" },
+      ],
+    },
+    recentDeployments: [
+      {
+        id: "dep-elec-01",
+        projectName: "Technopark Phase 3 Fitout",
+        location: "Trivandrum",
+        scopeTags: ["DB Dressing", "Cable Trays"],
+        workerCount: 8,
+        durationDays: 35,
+        year: 2026,
+        status: "Completed",
+        rating: 5.0,
+      },
+      {
+        id: "dep-elec-02",
+        projectName: "Palm Grove Luxury Bungalows",
+        location: "Kovalam",
+        scopeTags: ["Automation", "Conduit"],
+        workerCount: 6,
+        durationDays: 24,
+        year: 2026,
+        status: "Completed",
+        rating: 4.9,
+      },
+    ],
+    reviewsBreakdown: {
+      overallScore: 4.95,
+      metrics: [
+        { label: "Reliability", score: 5.0 },
+        { label: "Quality", score: 4.9 },
+        { label: "Timeliness", score: 4.9 },
+        { label: "Communication", score: 4.9 },
+      ],
+      testimonials: [
+        {
+          id: "rev-e-01",
+          author: "Project Lead — Trivandrum IT Park",
+          projectType: "Corporate Office",
+          location: "Trivandrum",
+          date: "Jul 2026",
+          rating: 5.0,
+          comment: "Shaji and team executed 4 floors of electrical fitout with meticulous DB tagging and zero insulation resistance faults.",
+          verifiedClient: true,
+        },
+      ],
+    },
+    availabilitySchedule: {
+      monthName: "August",
+      year: 2026,
+      days: [
+        { day: 24, month: "Aug", year: 2026, weekday: "Mon", status: "available" },
+        { day: 25, month: "Aug", year: 2026, weekday: "Tue", status: "available" },
+        { day: 26, month: "Aug", year: 2026, weekday: "Wed", status: "available" },
+        { day: 27, month: "Aug", year: 2026, weekday: "Thu", status: "partially_available" },
+        { day: 28, month: "Aug", year: 2026, weekday: "Fri", status: "available" },
+        { day: 29, month: "Aug", year: 2026, weekday: "Sat", status: "available" },
+        { day: 30, month: "Aug", year: 2026, weekday: "Sun", status: "available" },
+      ],
+      nextAvailableDate: "Immediate (Today)",
+      currentDeploymentText: "Standby in Trivandrum",
+    },
+    verification: {
+      identityVerified: true,
+      crewLeadVerified: true,
+      experienceVerified: true,
+      previousDeploymentsVerified: true,
+      skillAssessmentCompleted: true,
+      documentsVerified: true,
+      lastVerificationDate: "15 Aug 2026",
+    },
   },
   {
     id: "crew-plumbers-01",
@@ -105,7 +424,7 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     completedJobs: 52,
     experienceYears: 9,
     crewSizeMin: 2,
-    crewSizeMax: 6,
+    crewSizeMax: 12,
     dailyRate: 1050,
     rateUnit: "per worker / day",
     availability: "immediate",
@@ -132,7 +451,7 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     completedJobs: 71,
     experienceYears: 13,
     crewSizeMin: 4,
-    crewSizeMax: 10,
+    crewSizeMax: 20,
     dailyRate: 1150,
     rateUnit: "per worker / day",
     availability: "this_week",
@@ -159,7 +478,7 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     completedJobs: 63,
     experienceYears: 10,
     crewSizeMin: 4,
-    crewSizeMax: 16,
+    crewSizeMax: 24,
     dailyRate: 1000,
     rateUnit: "per worker / day",
     availability: "immediate",
@@ -186,7 +505,7 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     completedJobs: 46,
     experienceYears: 8,
     crewSizeMin: 3,
-    crewSizeMax: 8,
+    crewSizeMax: 16,
     dailyRate: 900,
     rateUnit: "per worker / day",
     availability: "immediate",
@@ -213,7 +532,7 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     completedJobs: 112,
     experienceYears: 16,
     crewSizeMin: 1,
-    crewSizeMax: 3,
+    crewSizeMax: 4,
     dailyRate: 1600,
     rateUnit: "per supervisor / day",
     availability: "immediate",
@@ -240,7 +559,7 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     completedJobs: 48,
     experienceYears: 11,
     crewSizeMin: 2,
-    crewSizeMax: 4,
+    crewSizeMax: 6,
     dailyRate: 1800,
     rateUnit: "per surveyor / day",
     availability: "immediate",
@@ -267,7 +586,7 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     completedJobs: 73,
     experienceYears: 13,
     crewSizeMin: 3,
-    crewSizeMax: 8,
+    crewSizeMax: 12,
     dailyRate: 1100,
     rateUnit: "per worker / day",
     availability: "this_week",
@@ -294,7 +613,7 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     completedJobs: 41,
     experienceYears: 11,
     crewSizeMin: 2,
-    crewSizeMax: 6,
+    crewSizeMax: 8,
     dailyRate: 1250,
     rateUnit: "per worker / day",
     availability: "immediate",
@@ -321,7 +640,7 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     completedJobs: 95,
     experienceYears: 7,
     crewSizeMin: 5,
-    crewSizeMax: 25,
+    crewSizeMax: 30,
     dailyRate: 800,
     rateUnit: "per worker / day",
     availability: "immediate",
@@ -336,3 +655,117 @@ export const MOCK_TRADE_CREWS: TradeCrew[] = [
     bgTint: "#faf5ff",
   },
 ];
+
+export function getTradeCrewById(id: string): TradeCrew | null {
+  const crew = MOCK_TRADE_CREWS.find((c) => c.id === id);
+  if (!crew) return null;
+
+  // Hydrate defaults for any missing rich details
+  const hydrated: TradeCrew = {
+    ...crew,
+    about:
+      crew.about ||
+      `Professional ${crew.trade.toLowerCase()} team operating across ${crew.location} with ${crew.experienceYears} years of verified construction experience and ${crew.completedJobs}+ completed deployments. Kallisto safety certified with verified site lead oversight.`,
+    coreCapabilities: crew.coreCapabilities || [
+      `${crew.trade} site package execution`,
+      "Material handling and quality verification",
+      "Daily shift reporting and supervisor oversight",
+      "Safety and equipment standards compliance",
+    ],
+    capabilityRatings:
+      crew.capabilityRatings ||
+      crew.skills.slice(0, 5).map((skill, index) => ({
+        name: skill,
+        rating: 5 - (index % 2),
+      })),
+    specializations: crew.specializations || [
+      "Residential",
+      "Commercial",
+      "Villa",
+      "Structural",
+      "Renovation",
+    ],
+    crewComposition: crew.crewComposition || {
+      totalWorkforce: crew.crewSizeMin + 4,
+      typicalDeployment: `${crew.crewSizeMin}–${crew.crewSizeMin + 6} workers`,
+      maxDeployment: crew.crewSizeMax,
+      crewLeadTitle: crew.leadRole || "Verified Site Supervisor",
+      roles: [
+        { count: 1, role: "Site Lead" },
+        { count: Math.max(1, crew.crewSizeMin - 1), role: crew.trade },
+        { count: 2, role: "Helpers" },
+      ],
+    },
+    recentDeployments: crew.recentDeployments || [
+      {
+        id: `dep-${crew.id}-01`,
+        projectName: `Premium Project — ${crew.location.split(",")[0]}`,
+        location: crew.location,
+        scopeTags: [crew.trade, "General Scope"],
+        workerCount: crew.crewSizeMin + 2,
+        durationDays: 30,
+        year: 2026,
+        status: "Completed",
+        rating: Number(crew.rating.toFixed(1)),
+      },
+      {
+        id: `dep-${crew.id}-02`,
+        projectName: `Commercial Facility — Central Kerala`,
+        location: "Kochi, Kerala",
+        scopeTags: [crew.trade, "Phase 1"],
+        workerCount: crew.crewSizeMin + 4,
+        durationDays: 20,
+        year: 2025,
+        status: "Completed",
+        rating: 4.8,
+      },
+    ],
+    reviewsBreakdown: crew.reviewsBreakdown || {
+      overallScore: Number(crew.rating.toFixed(1)),
+      metrics: [
+        { label: "Reliability", score: Number(crew.rating.toFixed(1)) },
+        { label: "Quality", score: Number(crew.rating.toFixed(1)) },
+        { label: "Timeliness", score: Math.max(4.5, Number((crew.rating - 0.2).toFixed(1))) },
+        { label: "Communication", score: Number(crew.rating.toFixed(1)) },
+      ],
+      testimonials: [
+        {
+          id: `rev-${crew.id}-01`,
+          author: "Verified Project Client",
+          projectType: "Construction Project",
+          location: crew.location.split(",")[0],
+          date: "Jul 2026",
+          rating: Number(crew.rating.toFixed(1)),
+          comment: `Punctual and highly capable ${crew.trade.toLowerCase()} team. All daily targets and safety protocols were met meticulously.`,
+          verifiedClient: true,
+        },
+      ],
+    },
+    availabilitySchedule: crew.availabilitySchedule || {
+      monthName: "August",
+      year: 2026,
+      days: [
+        { day: 24, month: "Aug", year: 2026, weekday: "Mon", status: "available" },
+        { day: 25, month: "Aug", year: 2026, weekday: "Tue", status: "available" },
+        { day: 26, month: "Aug", year: 2026, weekday: "Wed", status: "available" },
+        { day: 27, month: "Aug", year: 2026, weekday: "Thu", status: "deployed" },
+        { day: 28, month: "Aug", year: 2026, weekday: "Fri", status: "available" },
+        { day: 29, month: "Aug", year: 2026, weekday: "Sat", status: "available" },
+        { day: 30, month: "Aug", year: 2026, weekday: "Sun", status: "available" },
+      ],
+      nextAvailableDate: crew.availabilityLabel || "Available Tomorrow",
+      currentDeploymentText: `${crew.location.split(",")[0]} • Active Standby`,
+    },
+    verification: crew.verification || {
+      identityVerified: true,
+      crewLeadVerified: true,
+      experienceVerified: true,
+      previousDeploymentsVerified: true,
+      skillAssessmentCompleted: true,
+      documentsVerified: true,
+      lastVerificationDate: "18 Aug 2026",
+    },
+  };
+
+  return hydrated;
+}

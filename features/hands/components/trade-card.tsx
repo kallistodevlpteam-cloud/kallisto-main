@@ -1,6 +1,5 @@
-"use client";
-
 import React from "react";
+import Link from "next/link";
 import {
   Bookmark,
   Building2,
@@ -68,7 +67,12 @@ export function TradeCard({
   return (
     <article className={styles.tradeCard} aria-label={`${crew.name} - ${crew.trade}`}>
       {/* 1. Top Media / Dark Graphic Cover */}
-      <div className={styles.tradeCoverArea}>
+      <Link
+        href={`/hands/trades/${crew.id}`}
+        className={styles.tradeCoverArea}
+        style={{ textDecoration: "none", cursor: "pointer", display: "block" }}
+        title={`View ${crew.name} profile`}
+      >
         <div className={styles.tradeCoverGrid} aria-hidden="true" />
 
         {/* Top-Right Floating Rating Badge */}
@@ -90,15 +94,21 @@ export function TradeCard({
             <span className={styles.tradeBrandDot}>°</span>
           </span>
         </div>
-      </div>
+      </Link>
 
       {/* 2. Title & Trade Subtitle with Bookmark */}
       <div className={styles.tradeCardBody}>
         <div className={styles.tradeCardTitleRow}>
           <div className={styles.tradeCardTitleWrap}>
-            <h3 className={styles.tradeCardTitle} title={crew.name}>
-              {crew.name}
-            </h3>
+            <Link
+              href={`/hands/trades/${crew.id}`}
+              style={{ textDecoration: "none", color: "inherit" }}
+              title={`View ${crew.name} profile`}
+            >
+              <h3 className={styles.tradeCardTitle} title={crew.name}>
+                {crew.name}
+              </h3>
+            </Link>
             <p className={styles.tradeCardSubtitle}>{crew.trade || crew.category}</p>
           </div>
 
