@@ -159,17 +159,10 @@
   line-height: 1.25;
 }
 
-.verifiedKallistoBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  color: #15803d;
-  font-size: 12px;
-  font-weight: 650;
-  padding: 3px 9px;
-  border-radius: 9999px;
+.verifiedBadgeIcon {
+  color: #ffffff;
+  fill: #0284c7;
+  flex-shrink: 0;
 }
 
 .specializationRow {

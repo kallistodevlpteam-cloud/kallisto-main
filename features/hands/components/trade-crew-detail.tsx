@@ -4,6 +4,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
+  BadgeCheck,
   Bookmark,
   Briefcase,
   Building2,
@@ -206,10 +207,11 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                   <div className={styles.titleRow}>
                     <h1 className={styles.teamName}>{crew.name}</h1>
                     {crew.verified && (
-                      <div className={styles.verifiedKallistoBadge}>
-                        <CheckCircle2 size={13} aria-hidden="true" />
-                        <span>Verified</span>
-                      </div>
+                      <BadgeCheck
+                        size={20}
+                        className={styles.verifiedBadgeIcon}
+                        aria-label="Verified Kallisto Trade Crew"
+                      />
                     )}
                   </div>
 
