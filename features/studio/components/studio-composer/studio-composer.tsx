@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowUp, Check, ChevronDown, ChevronRight, X } from "lucide-react";
+import { ArrowRight, ArrowUp, Check, ChevronDown, ChevronRight, X, Zap } from "lucide-react";
 import {
   DocumentsDuotoneIcon,
   EnquiriesDuotoneIcon,
@@ -14,7 +14,7 @@ import { STUDIO_INTENTS } from "../../lib/studio-intents";
 import { getProjectDisplayName } from "../project-selector";
 import { ComposerAttachmentMenu } from "./composer-attachment-menu";
 import { PromptUsage } from "@/components/ui/prompt";
-
+import canvasStyles from "../studio-chat-canvas.module.css";
 import { useAnimatedPlaceholder } from "../../hooks/use-animated-placeholder";
 
 const DEFAULT_EXAMPLES = [
@@ -184,6 +184,42 @@ export function StudioComposer({
 
   return (
     <div style={{ width: "100%", position: "relative" }}>
+      {/* Recommended Next Action Card directly above textbox (Idle mode) */}
+      {!isActive && prompt === "" && (
+        <div style={{ marginBottom: "12px" }}>
+          <div className={canvasStyles.nextActionCard}>
+            <div className={canvasStyles.nextActionLeft}>
+              <div className={canvasStyles.nextActionIconWrap}>
+                <Zap size={16} aria-hidden="true" />
+              </div>
+              <div className={canvasStyles.nextActionMeta}>
+                <span className={canvasStyles.nextActionBadge}>Recommended Next Action</span>
+                <h3 className={canvasStyles.nextActionTitle}>
+                  Complete the preliminary estimate for {projectDisplay}
+                </h3>
+                <p className={canvasStyles.nextActionDescription}>
+                  Odin can synthesize the structural BOQ, living room material specs, and civil labour rates into an authoritative estimate.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className={canvasStyles.nextActionBtn}
+              onClick={() =>
+                onPromptChange(
+                  `Complete the preliminary estimate for ${projectDisplay} synthesizing the BOQ, material specs and current civil labour rates.`
+                )
+              }
+              aria-label={`Complete the preliminary estimate for ${projectDisplay}`}
+            >
+              <span>Complete estimate</span>
+              <ArrowRight size={14} aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Main Composer Box */}
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         <div

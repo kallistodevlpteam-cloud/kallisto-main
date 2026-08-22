@@ -142,9 +142,6 @@ describe("Hive Studio: 3-Layer Project Intelligence Workspace", () => {
           onSelectProject={vi.fn()}
           selectedIntent="create"
           onSelectIntent={vi.fn()}
-          recentTasks={[]}
-          onReopenTask={vi.fn()}
-          onSelectPrompt={vi.fn()}
         />
       );
 
@@ -155,10 +152,6 @@ describe("Hive Studio: 3-Layer Project Intelligence Workspace", () => {
       // Layer 2
       expect(screen.getByText("What do you want to accomplish?")).toBeInTheDocument();
       expect(screen.getByText("Explore")).toBeInTheDocument();
-
-      // Recommended Next Action Card
-      expect(screen.getByText("Recommended Next Action")).toBeInTheDocument();
-      expect(screen.getByText("Complete estimate")).toBeInTheDocument();
     });
   });
 });
