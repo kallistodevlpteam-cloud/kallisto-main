@@ -48,9 +48,6 @@ describe("TradeCrewDetail Component", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Capabilities" }));
     expect(screen.getByText(/Structural RCC Masonry/i)).toBeInTheDocument();
     expect(screen.getByText(/AAC & Solid Concrete Blockwork/i)).toBeInTheDocument();
-    expect(screen.getByText("Residential")).toBeInTheDocument();
-    expect(screen.getByText("Commercial")).toBeInTheDocument();
-    expect(screen.getByText("High-rise")).toBeInTheDocument();
   });
 
   it("renders evidence-based recent deployments and client reviews breakdown", () => {

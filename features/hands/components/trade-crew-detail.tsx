@@ -406,15 +406,6 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                   </article>
                 ))}
               </div>
-
-              <h3 className={styles.bulletListTitle}>Specializations</h3>
-              <div className={styles.specializationsWrap}>
-                {crew.specializations?.map((spec) => (
-                  <span key={spec} className={styles.specBadge}>
-                    {spec}
-                  </span>
-                ))}
-              </div>
             </section>
           )}
 
