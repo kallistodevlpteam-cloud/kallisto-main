@@ -245,9 +245,10 @@ export function HandsTradeDiscovery() {
             </Link>
           </div>
         </div>
+      </header>
 
-        {/* 2. Header Quick Filters */}
-        <div className={styles.discoveryHeaderWrap}>
+      {/* 2. Header Quick Filters */}
+      <div className={styles.discoveryHeaderWrap}>
           {/* Quick Category Filter Tabs with Right-Aligned Filter Icon */}
           <div className={styles.discoveryTabDockRow}>
             <div className={styles.discoveryPillDock} role="navigation" aria-label="Quick trade categories">
@@ -426,7 +427,6 @@ export function HandsTradeDiscovery() {
             </div>
           </div>
         </div>
-      </header>
 
       {/* 2. Full Width Responsive Trade Crews Grid */}
       <div className={styles.detailStack}>

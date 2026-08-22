@@ -290,9 +290,10 @@ export function ExpertDiscovery() {
             </Link>
           </div>
         </div>
+      </div>
 
-        {/* 2. Header Quick Filters */}
-        <div className={styles.discoveryHeaderWrap}>
+      {/* 2. Header Quick Filters */}
+      <div className={styles.discoveryHeaderWrap}>
         {/* Quick Category Filter Tabs with Right-Aligned Filter Icon */}
         <div className={styles.discoveryTabDockRow}>
           <div className={styles.discoveryPillDock} role="navigation" aria-label="Quick discipline categories">
@@ -530,7 +531,6 @@ export function ExpertDiscovery() {
           </div>
         </div>
       </div>
-    </div>
 
       {/* 2. Full Width Responsive Provider Grid */}
       <div className={styles.detailStack}>
