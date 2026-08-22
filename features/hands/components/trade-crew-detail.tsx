@@ -95,9 +95,6 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
   // Saved / Bookmark state
   const [isSaved, setIsSaved] = useState<boolean>(false);
 
-  // Service availability state
-  const [isAvailable, setIsAvailable] = useState<boolean>(true);
-
   // Workforce Request Drawer modal state
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
@@ -250,36 +247,13 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
               </div>
             </div>
 
-            {/* Service Area & Availability Strip (identical to Kallisto Home / Workspace banner) */}
+            {/* Service Area Strip */}
             <div className={styles.serviceAreaSubRow}>
               <div className={styles.serviceAreaWrapper}>
                 <MapPin size={15} className={styles.locationPinIcon} aria-hidden="true" />
                 <span>
                   Service area: <strong className={styles.serviceAreaText}>{crew.location}</strong>
                 </span>
-              </div>
-
-              <div className={styles.availabilityToggleWrapper}>
-                <span className={styles.availabilityLabel}>
-                  <span
-                    className={`${styles.availabilityStatusDot} ${
-                      isAvailable ? styles.statusDotActive : styles.statusDotInactive
-                    }`}
-                  />
-                  <span>{isAvailable ? "Available for service" : "Deployment paused"}</span>
-                </span>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={isAvailable}
-                  aria-label="Toggle workforce availability"
-                  className={`${styles.availabilitySwitch} ${
-                    isAvailable ? styles.switchActive : ""
-                  }`}
-                  onClick={() => setIsAvailable((prev) => !prev)}
-                >
-                  <span className={styles.switchThumb} />
-                </button>
               </div>
             </div>
 
