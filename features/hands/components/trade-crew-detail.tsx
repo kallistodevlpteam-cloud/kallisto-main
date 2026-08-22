@@ -167,17 +167,6 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
 
   return (
     <div className={styles.detailContainer}>
-      {/* Back Navigation & Breadcrumbs */}
-      <nav className={styles.backNavRow} aria-label="Breadcrumb navigation">
-        <Link href="/hands/trades" className={styles.backLink}>
-          <ArrowLeft size={16} aria-hidden="true" />
-          <span>Back to Find Trades</span>
-        </Link>
-        <span className={styles.breadcrumbCategory}>
-          Hands / {crew.category}
-        </span>
-      </nav>
-
       {/* Two Primary Sections Layout: Left Section & Right Section */}
       <div className={styles.twoColLayout}>
         {/* ─── LEFT SECTION: Review the Provider (Hero, Tabs & Details) ─── */}

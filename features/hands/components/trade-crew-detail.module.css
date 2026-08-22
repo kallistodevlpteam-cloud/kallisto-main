@@ -14,41 +14,7 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   1. Back Navigation & Breadcrumb Row
-   ───────────────────────────────────────────────────────────────────────────── */
-.backNavRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-top: 2px;
-}
-
-.backLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13.5px;
-  font-weight: 550;
-  color: #475569;
-  text-decoration: none;
-  transition: color 150ms ease, transform 150ms ease;
-  padding: 2px 0;
-}
-
-.backLink:hover {
-  color: #0f172a;
-  transform: translateX(-2px);
-}
-
-.breadcrumbCategory {
-  font-size: 12.5px;
-  font-weight: 500;
-  color: #94a3b8;
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   2. Two-Column Layout (Left Content 68% | Right Sticky 32%)
+   1. Two-Column Layout (Left Content 68% | Right Sticky 32%)
    ───────────────────────────────────────────────────────────────────────────── */
 .twoColLayout {
   display: grid;
@@ -72,7 +38,7 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   3. Basics-Style Reference Hero Section
+   2. Basics-Style Reference Hero Section
    ───────────────────────────────────────────────────────────────────────────── */
 .referenceHero {
   display: flex;
@@ -94,9 +60,9 @@
 
 .profileBrandTileWrapper {
   position: relative;
-  width: 154px;
+  width: 170px;
   max-width: 100%;
-  height: 68px;
+  height: 88px;
   border-radius: 12px;
   overflow: hidden;
   background: linear-gradient(145deg, #090d16 0%, #111726 100%);
