@@ -2548,6 +2548,26 @@
   color: #94a3b8;
 }
 
+.discoveryClearBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+  transition: all 150ms ease;
+}
+
+.discoveryClearBtn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
 .discoveryTopNavRight {
   display: flex;
   align-items: center;

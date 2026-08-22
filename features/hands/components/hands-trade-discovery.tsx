@@ -197,7 +197,7 @@ export function HandsTradeDiscovery() {
               {internalQuery ? (
                 <button
                   type="button"
-                  className={styles.paletteClearBtn}
+                  className={styles.discoveryClearBtn}
                   onClick={() => {
                     setInternalQuery("");
                     updateParam("q", undefined);

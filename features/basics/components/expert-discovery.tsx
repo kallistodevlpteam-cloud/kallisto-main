@@ -245,7 +245,7 @@ export function ExpertDiscovery() {
               {filters.q ? (
                 <button
                   type="button"
-                  className={styles.paletteClearBtn}
+                  className={styles.discoveryClearBtn}
                   onClick={() => updateParam("q", undefined)}
                   aria-label="Clear search input"
                 >
