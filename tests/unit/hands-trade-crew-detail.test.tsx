@@ -37,13 +37,15 @@ describe("TradeCrewDetail Component", () => {
   it("renders structured crew composition and capabilities with specializations", () => {
     render(<TradeCrewDetail crewId="crew-masons-01" />);
 
-    // Crew composition
+    // Switch to Crew tab
+    fireEvent.click(screen.getByRole("tab", { name: "Crew" }));
     expect(screen.getByText("Total Workforce")).toBeInTheDocument();
     expect(screen.getByText("Site Lead")).toBeInTheDocument();
     expect(screen.getByText("Masons")).toBeInTheDocument();
     expect(screen.getByText("Helpers")).toBeInTheDocument();
 
-    // Capabilities
+    // Switch to Capabilities tab
+    fireEvent.click(screen.getByRole("tab", { name: "Capabilities" }));
     expect(screen.getByText(/Structural RCC Masonry/i)).toBeInTheDocument();
     expect(screen.getByText(/AAC & Solid Concrete Blockwork/i)).toBeInTheDocument();
     expect(screen.getByText("Residential")).toBeInTheDocument();
@@ -54,11 +56,13 @@ describe("TradeCrewDetail Component", () => {
   it("renders evidence-based recent deployments and client reviews breakdown", () => {
     render(<TradeCrewDetail crewId="crew-masons-01" />);
 
-    // Recent Deployments
+    // Switch to Recent Deployments tab
+    fireEvent.click(screen.getByRole("tab", { name: "Deployments" }));
     expect(screen.getByText("Residential Villa — Kakkanad")).toBeInTheDocument();
     expect(screen.getByText("Commercial Building — Kochi")).toBeInTheDocument();
 
-    // Client Reviews
+    // Switch to Client Reviews tab
+    fireEvent.click(screen.getByRole("tab", { name: "Reviews" }));
     expect(screen.getByText("Reliability")).toBeInTheDocument();
     expect(screen.getByText("Quality")).toBeInTheDocument();
     expect(screen.getByText("Timeliness")).toBeInTheDocument();
@@ -68,12 +72,14 @@ describe("TradeCrewDetail Component", () => {
   it("renders availability calendar and verification trust checklist", () => {
     render(<TradeCrewDetail crewId="crew-masons-01" />);
 
-    // Availability
+    // Switch to Availability tab
+    fireEvent.click(screen.getByRole("tab", { name: "Availability" }));
     expect(screen.getByText("August 2026")).toBeInTheDocument();
     expect(screen.getByText("Next available:")).toBeInTheDocument();
     expect(screen.getByText("28 August 2026")).toBeInTheDocument();
 
-    // Verification
+    // Switch to Documents tab
+    fireEvent.click(screen.getByRole("tab", { name: "Documents" }));
     expect(screen.getByText("Identity verified")).toBeInTheDocument();
     expect(screen.getByText("Crew lead verified")).toBeInTheDocument();
     expect(screen.getByText("Experience verified")).toBeInTheDocument();

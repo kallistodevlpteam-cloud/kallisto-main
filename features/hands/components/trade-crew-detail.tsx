@@ -329,7 +329,7 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                 role="tab"
                 aria-selected={activeTab === tab.id}
                 className={`${styles.profileTab} ${activeTab === tab.id ? styles.profileTabActive : ""}`}
-                onClick={() => scrollToSection(tab.id)}
+                onClick={() => setActiveTab(tab.id)}
               >
                 {tab.label}
               </button>
@@ -337,318 +337,332 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
           </nav>
 
           {/* 3. Section: Overview */}
-          <section id="overview" className={styles.sectionCard} aria-labelledby="heading-overview">
-            <div className={styles.sectionHeaderRow}>
-              <h2 id="heading-overview" className={styles.sectionTitle}>Overview</h2>
-              <span className={styles.sectionSubtitle}>About the crew & capabilities</span>
-            </div>
-
-            <p className={styles.aboutParagraph}>{crew.about}</p>
-
-            <h3 className={styles.bulletListTitle}>Core capabilities</h3>
-            <ul className={styles.coreCapabilitiesList}>
-              {crew.coreCapabilities?.map((item, idx) => (
-                <li key={idx}>{item}</li>
-              ))}
-            </ul>
-          </section>
-
-          {/* 4. Section: Technical Capabilities */}
-          <section id="capabilities" className={styles.sectionCard} aria-labelledby="heading-capabilities">
-            <div className={styles.sectionHeaderRow}>
-              <h2 id="heading-capabilities" className={styles.sectionTitle}>Technical Masonry & RCC Capabilities</h2>
-              <span className={styles.sectionSubtitle}>Industrial standards, tolerances, and structural specifications</span>
-            </div>
-
-            <div className={styles.capabilitiesGrid}>
-              {crew.capabilityRatings?.map((cap) => (
-                <div key={cap.name} className={styles.capabilityCard}>
-                  <div className={styles.capabilityTopLine}>
-                    <span className={styles.capabilityName}>{cap.name}</span>
-                    <span className={styles.capabilityLevelBadge}>
-                      {cap.levelLabel || `Mastery (${cap.rating}/5)`}
-                    </span>
-                  </div>
-                  {cap.description && (
-                    <p className={styles.capabilityDescription}>{cap.description}</p>
-                  )}
-                  <div className={styles.capabilityBottomLine}>
-                    <div className={styles.dotRatingWrap} aria-label={`${cap.rating} out of 5 stars`}>
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span
-                          key={star}
-                          className={star <= cap.rating ? styles.dotFilled : styles.dotEmpty}
-                          aria-hidden="true"
-                        />
-                      ))}
-                    </div>
-                    {cap.verifiedSites && (
-                      <span className={styles.verifiedSitesCount}>
-                        ✓ {cap.verifiedSites} verified deployments
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <h3 className={styles.bulletListTitle}>Specializations</h3>
-            <div className={styles.specializationsWrap}>
-              {crew.specializations?.map((spec) => (
-                <span key={spec} className={styles.specBadge}>
-                  {spec}
-                </span>
-              ))}
-            </div>
-          </section>
-
-          {/* 5. Section: Crew Composition */}
-          <section id="crew" className={styles.sectionCard} aria-labelledby="heading-crew">
-            <div className={styles.sectionHeaderRow}>
-              <h2 id="heading-crew" className={styles.sectionTitle}>Crew Composition</h2>
-              <span className={styles.sectionSubtitle}>Structured workforce distribution</span>
-            </div>
-
-            <div className={styles.crewCompositionWrap}>
-              <div className={styles.crewBigStatBox}>
-                <span className={styles.crewBigCount}>
-                  {crew.crewComposition?.totalWorkforce || 8}
-                </span>
-                <span className={styles.crewBigLabel}>Total Workforce</span>
+          {activeTab === "overview" && (
+            <section id="overview" className={styles.sectionCard} aria-labelledby="heading-overview">
+              <div className={styles.sectionHeaderRow}>
+                <h2 id="heading-overview" className={styles.sectionTitle}>Overview</h2>
+                <span className={styles.sectionSubtitle}>About the crew & capabilities</span>
               </div>
 
-              <div className={styles.rolesGrid}>
-                {crew.crewComposition?.roles.map((role) => (
-                  <div key={role.role} className={styles.roleCard}>
-                    <span className={styles.roleCount}>{role.count}</span>
-                    <span className={styles.roleName}>{role.role}</span>
+              <p className={styles.aboutParagraph}>{crew.about}</p>
+
+              <h3 className={styles.bulletListTitle}>Core capabilities</h3>
+              <ul className={styles.coreCapabilitiesList}>
+                {crew.coreCapabilities?.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {/* 4. Section: Technical Capabilities */}
+          {activeTab === "capabilities" && (
+            <section id="capabilities" className={styles.sectionCard} aria-labelledby="heading-capabilities">
+              <div className={styles.sectionHeaderRow}>
+                <h2 id="heading-capabilities" className={styles.sectionTitle}>Technical Masonry & RCC Capabilities</h2>
+                <span className={styles.sectionSubtitle}>Industrial standards, tolerances, and structural specifications</span>
+              </div>
+
+              <div className={styles.capabilitiesGrid}>
+                {crew.capabilityRatings?.map((cap) => (
+                  <div key={cap.name} className={styles.capabilityCard}>
+                    <div className={styles.capabilityTopLine}>
+                      <span className={styles.capabilityName}>{cap.name}</span>
+                      <span className={styles.capabilityLevelBadge}>
+                        {cap.levelLabel || `Mastery (${cap.rating}/5)`}
+                      </span>
+                    </div>
+                    {cap.description && (
+                      <p className={styles.capabilityDescription}>{cap.description}</p>
+                    )}
+                    <div className={styles.capabilityBottomLine}>
+                      <div className={styles.dotRatingWrap} aria-label={`${cap.rating} out of 5 stars`}>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span
+                            key={star}
+                            className={star <= cap.rating ? styles.dotFilled : styles.dotEmpty}
+                            aria-hidden="true"
+                          />
+                        ))}
+                      </div>
+                      {cap.verifiedSites && (
+                        <span className={styles.verifiedSitesCount}>
+                          ✓ {cap.verifiedSites} verified deployments
+                        </span>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
 
-              <div className={styles.deploymentSpecsStrip}>
-                <div className={styles.depSpecItem}>
-                  <span className={styles.depSpecLabel}>Typical deployment</span>
-                  <span className={styles.depSpecValue}>
-                    {crew.crewComposition?.typicalDeployment || "8–12 workers"}
+              <h3 className={styles.bulletListTitle}>Specializations</h3>
+              <div className={styles.specializationsWrap}>
+                {crew.specializations?.map((spec) => (
+                  <span key={spec} className={styles.specBadge}>
+                    {spec}
                   </span>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* 5. Section: Crew Composition */}
+          {activeTab === "crew" && (
+            <section id="crew" className={styles.sectionCard} aria-labelledby="heading-crew">
+              <div className={styles.sectionHeaderRow}>
+                <h2 id="heading-crew" className={styles.sectionTitle}>Crew Composition</h2>
+                <span className={styles.sectionSubtitle}>Structured workforce distribution</span>
+              </div>
+
+              <div className={styles.crewCompositionWrap}>
+                <div className={styles.crewBigStatBox}>
+                  <span className={styles.crewBigCount}>
+                    {crew.crewComposition?.totalWorkforce || 8}
+                  </span>
+                  <span className={styles.crewBigLabel}>Total Workforce</span>
                 </div>
-                <div className={styles.depSpecItem}>
-                  <span className={styles.depSpecLabel}>Maximum deployment</span>
-                  <span className={styles.depSpecValue}>
-                    {crew.crewComposition?.maxDeployment || 24} workers
-                  </span>
+
+                <div className={styles.rolesGrid}>
+                  {crew.crewComposition?.roles.map((role) => (
+                    <div key={role.role} className={styles.roleCard}>
+                      <span className={styles.roleCount}>{role.count}</span>
+                      <span className={styles.roleName}>{role.role}</span>
+                    </div>
+                  ))}
                 </div>
-                <div className={styles.depSpecItem}>
-                  <span className={styles.depSpecLabel}>Crew lead</span>
-                  <span className={styles.depSpecValue}>
-                    {crew.crewComposition?.crewLeadTitle || "Verified Site Supervisor"}
-                  </span>
+
+                <div className={styles.deploymentSpecsStrip}>
+                  <div className={styles.depSpecItem}>
+                    <span className={styles.depSpecLabel}>Typical deployment</span>
+                    <span className={styles.depSpecValue}>
+                      {crew.crewComposition?.typicalDeployment || "8–12 workers"}
+                    </span>
+                  </div>
+                  <div className={styles.depSpecItem}>
+                    <span className={styles.depSpecLabel}>Maximum deployment</span>
+                    <span className={styles.depSpecValue}>
+                      {crew.crewComposition?.maxDeployment || 24} workers
+                    </span>
+                  </div>
+                  <div className={styles.depSpecItem}>
+                    <span className={styles.depSpecLabel}>Crew lead</span>
+                    <span className={styles.depSpecValue}>
+                      {crew.crewComposition?.crewLeadTitle || "Verified Site Supervisor"}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           {/* 6. Section: Recent Deployments */}
-          <section id="deployments" className={styles.sectionCard} aria-labelledby="heading-deployments">
-            <div className={styles.sectionHeaderRow}>
-              <h2 id="heading-deployments" className={styles.sectionTitle}>Recent Deployments</h2>
-              <span className={styles.sectionSubtitle}>Verified project delivery record</span>
-            </div>
+          {activeTab === "deployments" && (
+            <section id="deployments" className={styles.sectionCard} aria-labelledby="heading-deployments">
+              <div className={styles.sectionHeaderRow}>
+                <h2 id="heading-deployments" className={styles.sectionTitle}>Recent Deployments</h2>
+                <span className={styles.sectionSubtitle}>Verified project delivery record</span>
+              </div>
 
-            <div className={styles.deploymentsList}>
-              {crew.recentDeployments?.map((dep) => (
-                <div key={dep.id} className={styles.deploymentCard}>
-                  <div className={styles.deploymentTopRow}>
-                    <h3 className={styles.deploymentProjectName}>{dep.projectName}</h3>
-                    <div className={styles.deploymentRating}>
-                      <Star size={11} fill="#eab308" color="#eab308" aria-hidden="true" />
-                      <span>{dep.rating.toFixed(1)}</span>
+              <div className={styles.deploymentsList}>
+                {crew.recentDeployments?.map((dep) => (
+                  <div key={dep.id} className={styles.deploymentCard}>
+                    <div className={styles.deploymentTopRow}>
+                      <h3 className={styles.deploymentProjectName}>{dep.projectName}</h3>
+                      <div className={styles.deploymentRating}>
+                        <Star size={11} fill="#eab308" color="#eab308" aria-hidden="true" />
+                        <span>{dep.rating.toFixed(1)}</span>
+                      </div>
+                    </div>
+
+                    <div className={styles.deploymentScopeRow}>
+                      {dep.scopeTags.map((tag) => (
+                        <span key={tag} className={styles.scopeTag}>{tag}</span>
+                      ))}
+                    </div>
+
+                    <div className={styles.deploymentMetaRow}>
+                      <span>{dep.workerCount} workers</span>
+                      <span>•</span>
+                      <span>{dep.durationDays} days</span>
+                      <span>•</span>
+                      <span style={{ color: "#15803d", fontWeight: 600 }}>{dep.status}</span>
                     </div>
                   </div>
-
-                  <div className={styles.deploymentScopeRow}>
-                    {dep.scopeTags.map((tag) => (
-                      <span key={tag} className={styles.scopeTag}>{tag}</span>
-                    ))}
-                  </div>
-
-                  <div className={styles.deploymentMetaRow}>
-                    <span>{dep.workerCount} workers</span>
-                    <span>•</span>
-                    <span>{dep.durationDays} days</span>
-                    <span>•</span>
-                    <span style={{ color: "#15803d", fontWeight: 600 }}>{dep.status}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* 7. Section: Client Reviews */}
-          <section id="reviews" className={styles.sectionCard} aria-labelledby="heading-reviews">
-            <div className={styles.sectionHeaderRow}>
-              <h2 id="heading-reviews" className={styles.sectionTitle}>Client Reviews</h2>
-              <span className={styles.sectionSubtitle}>Audited ratings from verified contractors</span>
-            </div>
+          {activeTab === "reviews" && (
+            <section id="reviews" className={styles.sectionCard} aria-labelledby="heading-reviews">
+              <div className={styles.sectionHeaderRow}>
+                <h2 id="heading-reviews" className={styles.sectionTitle}>Client Reviews</h2>
+                <span className={styles.sectionSubtitle}>Audited ratings from verified contractors</span>
+              </div>
 
-            <div className={styles.reviewsOverviewBox}>
-              <div className={styles.overallScoreBox}>
-                <span className={styles.overallScoreValue}>
-                  {crew.reviewsBreakdown?.overallScore.toFixed(1) || "4.9"}
-                </span>
-                <span style={{ fontSize: 13, color: "#64748b", fontWeight: 600 }}>out of 5</span>
-                <div className={styles.overallScoreStars} aria-hidden="true">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <Star key={s} size={14} fill="#eab308" color="#eab308" />
+              <div className={styles.reviewsOverviewBox}>
+                <div className={styles.overallScoreBox}>
+                  <span className={styles.overallScoreValue}>
+                    {crew.reviewsBreakdown?.overallScore.toFixed(1) || "4.9"}
+                  </span>
+                  <span style={{ fontSize: 13, color: "#64748b", fontWeight: 600 }}>out of 5</span>
+                  <div className={styles.overallScoreStars} aria-hidden="true">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star key={s} size={14} fill="#eab308" color="#eab308" />
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.metricsBarsList}>
+                  {crew.reviewsBreakdown?.metrics.map((metric) => (
+                    <div key={metric.label} className={styles.metricBarRow}>
+                      <span className={styles.metricBarLabel}>{metric.label}</span>
+                      <div className={styles.barTrack} aria-hidden="true">
+                        <div
+                          className={styles.barFill}
+                          style={{ width: `${(metric.score / 5) * 100}%` }}
+                        />
+                      </div>
+                      <span className={styles.metricBarScore}>{metric.score.toFixed(1)}</span>
+                    </div>
                   ))}
                 </div>
               </div>
 
-              <div className={styles.metricsBarsList}>
-                {crew.reviewsBreakdown?.metrics.map((metric) => (
-                  <div key={metric.label} className={styles.metricBarRow}>
-                    <span className={styles.metricBarLabel}>{metric.label}</span>
-                    <div className={styles.barTrack} aria-hidden="true">
-                      <div
-                        className={styles.barFill}
-                        style={{ width: `${(metric.score / 5) * 100}%` }}
-                      />
+              <div className={styles.testimonialsList}>
+                {crew.reviewsBreakdown?.testimonials.map((t) => (
+                  <div key={t.id} className={styles.testimonialCard}>
+                    <p className={styles.testimonialComment}>"{t.comment}"</p>
+                    <div className={styles.testimonialAuthorRow}>
+                      <strong style={{ color: "#0f172a" }}>— {t.author}</strong>
+                      <span>•</span>
+                      <span>{t.location}</span>
+                      <span>•</span>
+                      <span>{t.date}</span>
                     </div>
-                    <span className={styles.metricBarScore}>{metric.score.toFixed(1)}</span>
                   </div>
                 ))}
               </div>
-            </div>
-
-            <div className={styles.testimonialsList}>
-              {crew.reviewsBreakdown?.testimonials.map((t) => (
-                <div key={t.id} className={styles.testimonialCard}>
-                  <p className={styles.testimonialComment}>"{t.comment}"</p>
-                  <div className={styles.testimonialAuthorRow}>
-                    <strong style={{ color: "#0f172a" }}>— {t.author}</strong>
-                    <span>•</span>
-                    <span>{t.location}</span>
-                    <span>•</span>
-                    <span>{t.date}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+            </section>
+          )}
 
           {/* 8. Section: Availability */}
-          <section id="availability" className={styles.sectionCard} aria-labelledby="heading-availability">
-            <div className={styles.sectionHeaderRow}>
-              <h2 id="heading-availability" className={styles.sectionTitle}>Availability</h2>
-              <span className={styles.sectionSubtitle}>Current deployment calendar</span>
-            </div>
-
-            <div className={styles.availabilityCardContent}>
-              <h3 className={styles.calendarMonthTitle}>
-                {crew.availabilitySchedule?.monthName} {crew.availabilitySchedule?.year}
-              </h3>
-
-              <div className={styles.calendarGrid}>
-                {crew.availabilitySchedule?.days.map((day, idx) => (
-                  <div key={idx} className={styles.calendarDayCell}>
-                    <span className={styles.calendarWeekday}>{day.weekday}</span>
-                    <span className={styles.calendarDayNum}>{day.day}</span>
-                    <span
-                      className={
-                        day.status === "available"
-                          ? styles.statusDotAvailable
-                          : day.status === "partially_available"
-                          ? styles.statusDotPartial
-                          : styles.statusDotDeployed
-                      }
-                      title={day.status}
-                      aria-label={`Day ${day.day}: ${day.status}`}
-                    />
-                  </div>
-                ))}
+          {activeTab === "availability" && (
+            <section id="availability" className={styles.sectionCard} aria-labelledby="heading-availability">
+              <div className={styles.sectionHeaderRow}>
+                <h2 id="heading-availability" className={styles.sectionTitle}>Availability</h2>
+                <span className={styles.sectionSubtitle}>Current deployment calendar</span>
               </div>
 
-              <div className={styles.legendRow}>
-                <div className={styles.legendItem}>
-                  <span className={styles.statusDotAvailable} aria-hidden="true" />
-                  <span>Available</span>
-                </div>
-                <div className={styles.legendItem}>
-                  <span className={styles.statusDotPartial} aria-hidden="true" />
-                  <span>Partially available</span>
-                </div>
-                <div className={styles.legendItem}>
-                  <span className={styles.statusDotDeployed} aria-hidden="true" />
-                  <span>Deployed</span>
-                </div>
-              </div>
+              <div className={styles.availabilityCardContent}>
+                <h3 className={styles.calendarMonthTitle}>
+                  {crew.availabilitySchedule?.monthName} {crew.availabilitySchedule?.year}
+                </h3>
 
-              <div className={styles.availabilityStatusBanner}>
-                <div>
-                  <div className={styles.bannerLabel}>Next available:</div>
-                  <div className={styles.bannerValue}>
-                    {crew.availabilitySchedule?.nextAvailableDate || "Immediate"}
+                <div className={styles.calendarGrid}>
+                  {crew.availabilitySchedule?.days.map((day, idx) => (
+                    <div key={idx} className={styles.calendarDayCell}>
+                      <span className={styles.calendarWeekday}>{day.weekday}</span>
+                      <span className={styles.calendarDayNum}>{day.day}</span>
+                      <span
+                        className={
+                          day.status === "available"
+                            ? styles.statusDotAvailable
+                            : day.status === "partially_available"
+                            ? styles.statusDotPartial
+                            : styles.statusDotDeployed
+                        }
+                        title={day.status}
+                        aria-label={`Day ${day.day}: ${day.status}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                <div className={styles.legendRow}>
+                  <div className={styles.legendItem}>
+                    <span className={styles.statusDotAvailable} aria-hidden="true" />
+                    <span>Available</span>
+                  </div>
+                  <div className={styles.legendItem}>
+                    <span className={styles.statusDotPartial} aria-hidden="true" />
+                    <span>Partially available</span>
+                  </div>
+                  <div className={styles.legendItem}>
+                    <span className={styles.statusDotDeployed} aria-hidden="true" />
+                    <span>Deployed</span>
                   </div>
                 </div>
-                <div>
-                  <div className={styles.bannerLabel}>Current deployment:</div>
-                  <div className={styles.bannerValue}>
-                    {crew.availabilitySchedule?.currentDeploymentText || "None (Ready for site dispatch)"}
+
+                <div className={styles.availabilityStatusBanner}>
+                  <div>
+                    <div className={styles.bannerLabel}>Next available:</div>
+                    <div className={styles.bannerValue}>
+                      {crew.availabilitySchedule?.nextAvailableDate || "Immediate"}
+                    </div>
+                  </div>
+                  <div>
+                    <div className={styles.bannerLabel}>Current deployment:</div>
+                    <div className={styles.bannerValue}>
+                      {crew.availabilitySchedule?.currentDeploymentText || "None (Ready for site dispatch)"}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           {/* 9. Section: Kallisto Verification & Documents */}
-          <section id="documents" className={styles.sectionCard} aria-labelledby="heading-documents">
-            <div className={styles.sectionHeaderRow}>
-              <h2 id="heading-documents" className={styles.sectionTitle}>Kallisto Verification</h2>
-              <span className={styles.sectionSubtitle}>Trust & safety credential checks</span>
-            </div>
+          {activeTab === "documents" && (
+            <section id="documents" className={styles.sectionCard} aria-labelledby="heading-documents">
+              <div className={styles.sectionHeaderRow}>
+                <h2 id="heading-documents" className={styles.sectionTitle}>Kallisto Verification</h2>
+                <span className={styles.sectionSubtitle}>Trust & safety credential checks</span>
+              </div>
 
-            <div className={styles.verificationList}>
-              <div className={styles.verificationItem}>
-                <Check size={16} className={styles.checkIcon} aria-hidden="true" />
-                <span>Identity verified</span>
+              <div className={styles.verificationList}>
+                <div className={styles.verificationItem}>
+                  <Check size={16} className={styles.checkIcon} aria-hidden="true" />
+                  <span>Identity verified</span>
+                </div>
+                <div className={styles.verificationItem}>
+                  <Check size={16} className={styles.checkIcon} aria-hidden="true" />
+                  <span>Crew lead verified</span>
+                </div>
+                <div className={styles.verificationItem}>
+                  <Check size={16} className={styles.checkIcon} aria-hidden="true" />
+                  <span>Experience verified</span>
+                </div>
+                <div className={styles.verificationItem}>
+                  <Check size={16} className={styles.checkIcon} aria-hidden="true" />
+                  <span>Previous deployments verified</span>
+                </div>
+                <div className={styles.verificationItem}>
+                  <Check size={16} className={styles.checkIcon} aria-hidden="true" />
+                  <span>Skill assessment completed</span>
+                </div>
+                <div className={styles.verificationItem}>
+                  <Check size={16} className={styles.checkIcon} aria-hidden="true" />
+                  <span>Documents verified</span>
+                </div>
               </div>
-              <div className={styles.verificationItem}>
-                <Check size={16} className={styles.checkIcon} aria-hidden="true" />
-                <span>Crew lead verified</span>
-              </div>
-              <div className={styles.verificationItem}>
-                <Check size={16} className={styles.checkIcon} aria-hidden="true" />
-                <span>Experience verified</span>
-              </div>
-              <div className={styles.verificationItem}>
-                <Check size={16} className={styles.checkIcon} aria-hidden="true" />
-                <span>Previous deployments verified</span>
-              </div>
-              <div className={styles.verificationItem}>
-                <Check size={16} className={styles.checkIcon} aria-hidden="true" />
-                <span>Skill assessment completed</span>
-              </div>
-              <div className={styles.verificationItem}>
-                <Check size={16} className={styles.checkIcon} aria-hidden="true" />
-                <span>Documents verified</span>
-              </div>
-            </div>
 
-            <div className={styles.verificationFooterRow}>
-              <span className={styles.lastVerifiedText}>
-                Last verification: {crew.verification?.lastVerificationDate || "18 Aug 2026"}
-              </span>
-              <button
-                type="button"
-                className={styles.secondaryButton}
-                onClick={() => setDrawerOpen(true)}
-              >
-                <ShieldCheck size={14} aria-hidden="true" />
-                <span>View Verification Details</span>
-              </button>
-            </div>
-          </section>
+              <div className={styles.verificationFooterRow}>
+                <span className={styles.lastVerifiedText}>
+                  Last verification: {crew.verification?.lastVerificationDate || "18 Aug 2026"}
+                </span>
+                <button
+                  type="button"
+                  className={styles.secondaryButton}
+                  onClick={() => setDrawerOpen(true)}
+                >
+                  <ShieldCheck size={14} aria-hidden="true" />
+                  <span>View Verification Details</span>
+                </button>
+              </div>
+            </section>
+          )}
         </main>
 
         {/* ─── RIGHT SECTION: Sticky Deployment Request Panel ─── */}
