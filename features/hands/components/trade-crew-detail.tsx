@@ -94,6 +94,9 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
   // Saved / Bookmark state
   const [isSaved, setIsSaved] = useState<boolean>(false);
 
+  // Service availability state
+  const [isAvailable, setIsAvailable] = useState<boolean>(true);
+
   // Workforce Request Drawer modal state
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
@@ -168,159 +171,192 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
 
   return (
     <div className={styles.detailContainer}>
-      {/* 1. Full-Width Professional Workforce Procurement Profile Header */}
-      <section className={styles.workforceHeroSection} aria-label="Team Profile Overview">
-        {/* Top Row: Identity Block + Action CTAs */}
-        <div className={styles.heroMainRow}>
-          <div className={styles.heroIdentityGroup}>
-            {/* Compact Team Identity Visual Block */}
-            <div className={styles.teamVisualBlock} aria-hidden="true">
-              <div className={styles.teamVisualGrid} />
-              <div className={styles.teamVisualBrand}>
-                <div
-                  className={styles.teamVisualIconWrap}
-                  style={{
-                    color: brand?.color || "#06b6d4",
-                    filter: `drop-shadow(0 0 8px ${brand?.color || "#06b6d4"}66)`,
-                  }}
-                >
-                  <BrandIcon size={20} strokeWidth={2.4} />
-                </div>
-                <span className={styles.teamVisualName}>
-                  {brand?.name}
-                  <span className={styles.teamVisualDot}>°</span>
-                </span>
-              </div>
-            </div>
-
-            {/* Identity Details */}
-            <div className={styles.identityDetails}>
-              {/* Title + Verified Badge */}
-              <div className={styles.titleRow}>
-                <h1 className={styles.teamName}>{crew.name}</h1>
-                {crew.verified && (
-                  <div className={styles.verifiedKallistoBadge}>
-                    <CheckCircle2 size={13} aria-hidden="true" />
-                    <span>Verified</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Specialization Line */}
-              <div className={styles.specializationRow}>
-                <span className={styles.categoryText}>{crew.category}</span>
-                <span className={styles.bulletSeparator}>·</span>
-                <span className={styles.skillsText}>
-                  {crew.skills?.slice(0, 2).join(" & ") || "RCC Brickwork & Plastering"}
-                </span>
-              </div>
-
-              {/* Location & Availability Line */}
-              <div className={styles.locationAvailabilityRow}>
-                <span className={styles.locationText}>
-                  <MapPin size={13} aria-hidden="true" />
-                  <span>{crew.location}</span>
-                </span>
-                <span className={styles.bulletSeparator}>·</span>
-                <div className={styles.availabilityPill}>
-                  <span className={styles.availDot} />
-                  <span>
-                    {crew.availabilityLabel || "Available Tomorrow"} · {crew.crewSizeMin}–{crew.crewSizeMax} workers
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Buttons Group */}
-          <div className={styles.headerActionGroup}>
-            <button
-              type="button"
-              className={`${styles.secondaryGhostBtn} ${isSaved ? styles.secondaryGhostBtnActive : ""}`}
-              onClick={handleToggleSave}
-              aria-pressed={isSaved}
-              title={isSaved ? "Remove from shortlist" : "Add to shortlist"}
-            >
-              <Bookmark size={13} fill={isSaved ? "currentColor" : "none"} aria-hidden="true" />
-              <span>{isSaved ? "Shortlisted" : "Add to Shortlist"}</span>
-            </button>
-
-            <Link
-              href={`/hands/trades?compare=${crew.id}`}
-              className={styles.secondaryGhostBtn}
-              title="Compare with other trade crews"
-            >
-              <Columns3 size={13} aria-hidden="true" />
-              <span>Compare</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* 2. Concise Single Statement */}
-        <p className={styles.conciseDescription}>
-          “Experienced RCC and masonry crew for residential and commercial construction projects.”
-        </p>
-
-        {/* 3. Strong Scannable Metrics Row */}
-        <div className={styles.proofMetricsGrid}>
-          <div className={styles.metricTile}>
-            <span className={styles.metricBigValue}>{crew.experienceYears} yrs</span>
-            <span className={styles.metricSubLabel}>Experience</span>
-          </div>
-          <div className={styles.metricDivider} />
-          <div className={styles.metricTile}>
-            <span className={styles.metricBigValue}>
-              {crew.rating.toFixed(1)} <Star size={13} fill="#eab308" color="#eab308" style={{ display: "inline", verticalAlign: "-1px" }} />
-            </span>
-            <span className={styles.metricSubLabel}>{crew.reviewCount} Reviews</span>
-          </div>
-          <div className={styles.metricDivider} />
-          <div className={styles.metricTile}>
-            <span className={styles.metricBigValue}>{crew.completedJobs}+</span>
-            <span className={styles.metricSubLabel}>Projects Completed</span>
-          </div>
-          <div className={styles.metricDivider} />
-          <div className={styles.metricTile}>
-            <span className={styles.metricBigValue}>{crew.crewSizeMin}–{crew.crewSizeMax}</span>
-            <span className={styles.metricSubLabel}>Workers</span>
-          </div>
-          <div className={styles.metricDivider} />
-          <div className={styles.metricTile}>
-            <span className={styles.metricBigValue}>₹{crew.dailyRate.toLocaleString("en-IN")}</span>
-            <span className={styles.metricSubLabel}>/day / worker</span>
-          </div>
-        </div>
-
-        {/* 4. Compact Verification / Capability Proof Chips */}
-        <div className={styles.proofChipsRow}>
-          <span className={styles.proofChip}>
-            <Check size={12} className={styles.chipCheck} aria-hidden="true" />
-            <span>RCC Brickwork</span>
-          </span>
-          <span className={styles.proofChip}>
-            <Check size={12} className={styles.chipCheck} aria-hidden="true" />
-            <span>Masonry</span>
-          </span>
-          <span className={styles.proofChip}>
-            <Check size={12} className={styles.chipCheck} aria-hidden="true" />
-            <span>Plastering</span>
-          </span>
-          <span className={styles.proofChip}>
-            <Check size={12} className={styles.chipCheck} aria-hidden="true" />
-            <span>Skills Verified</span>
-          </span>
-          <span className={styles.proofChip}>
-            <Check size={12} className={styles.chipCheck} aria-hidden="true" />
-            <span>Safety Verified</span>
-          </span>
-        </div>
-      </section>
-
-      {/* Two Primary Sections Layout: Left Content & Right Sticky Panel */}
+      {/* Two Primary Sections Layout: Left Section & Right Section */}
       <div className={styles.twoColLayout}>
-        {/* ─── LEFT SECTION: Review the Provider (Tabs & Details) ─── */}
+        {/* ─── LEFT SECTION: Review the Provider (Hero, Tabs & Details) ─── */}
         <main className={styles.leftStack}>
-          {/* Horizontal Section Navigation Tabs */}
+          {/* 1. Professional Workforce Procurement Profile Header */}
+          <section className={styles.workforceHeroSection} aria-label="Team Profile Overview">
+            {/* Top Row: Identity Block + Action CTAs */}
+            <div className={styles.heroMainRow}>
+              <div className={styles.heroIdentityGroup}>
+                {/* Compact Team Identity Visual Block */}
+                <div className={styles.teamVisualBlock} aria-hidden="true">
+                  <div className={styles.teamVisualGrid} />
+                  <div className={styles.teamVisualBrand}>
+                    <div
+                      className={styles.teamVisualIconWrap}
+                      style={{
+                        color: brand?.color || "#06b6d4",
+                        filter: `drop-shadow(0 0 8px ${brand?.color || "#06b6d4"}66)`,
+                      }}
+                    >
+                      <BrandIcon size={20} strokeWidth={2.4} />
+                    </div>
+                    <span className={styles.teamVisualName}>
+                      {brand?.name}
+                      <span className={styles.teamVisualDot}>°</span>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Identity Details */}
+                <div className={styles.identityDetails}>
+                  {/* Title + Verified Badge */}
+                  <div className={styles.titleRow}>
+                    <h1 className={styles.teamName}>{crew.name}</h1>
+                    {crew.verified && (
+                      <div className={styles.verifiedKallistoBadge}>
+                        <CheckCircle2 size={13} aria-hidden="true" />
+                        <span>Verified</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Specialization Line */}
+                  <div className={styles.specializationRow}>
+                    <span className={styles.categoryText}>{crew.category}</span>
+                    <span className={styles.bulletSeparator}>·</span>
+                    <span className={styles.skillsText}>
+                      {crew.skills?.slice(0, 2).join(" & ") || "RCC Brickwork & Plastering"}
+                    </span>
+                  </div>
+
+                  {/* Location & Availability Line */}
+                  <div className={styles.locationAvailabilityRow}>
+                    <span className={styles.locationText}>
+                      <MapPin size={13} aria-hidden="true" />
+                      <span>{crew.location}</span>
+                    </span>
+                    <span className={styles.bulletSeparator}>·</span>
+                    <div className={styles.availabilityPill}>
+                      <span className={styles.availDot} />
+                      <span>
+                        {crew.availabilityLabel || "Available Tomorrow"} · {crew.crewSizeMin}–{crew.crewSizeMax} workers
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons Group */}
+              <div className={styles.headerActionGroup}>
+                <button
+                  type="button"
+                  className={`${styles.secondaryGhostBtn} ${isSaved ? styles.secondaryGhostBtnActive : ""}`}
+                  onClick={handleToggleSave}
+                  aria-pressed={isSaved}
+                  title={isSaved ? "Remove from shortlist" : "Add to shortlist"}
+                >
+                  <Bookmark size={13} fill={isSaved ? "currentColor" : "none"} aria-hidden="true" />
+                  <span>{isSaved ? "Shortlisted" : "Add to Shortlist"}</span>
+                </button>
+
+                <Link
+                  href={`/hands/trades?compare=${crew.id}`}
+                  className={styles.secondaryGhostBtn}
+                  title="Compare with other trade crews"
+                >
+                  <Columns3 size={13} aria-hidden="true" />
+                  <span>Compare</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Service Area & Availability Strip (identical to Kallisto Home / Workspace banner) */}
+            <div className={styles.serviceAreaSubRow}>
+              <div className={styles.serviceAreaWrapper}>
+                <MapPin size={15} className={styles.locationPinIcon} aria-hidden="true" />
+                <span>
+                  Service area: <strong className={styles.serviceAreaText}>{crew.location}</strong>
+                </span>
+              </div>
+
+              <div className={styles.availabilityToggleWrapper}>
+                <span className={styles.availabilityLabel}>
+                  <span
+                    className={`${styles.availabilityStatusDot} ${
+                      isAvailable ? styles.statusDotActive : styles.statusDotInactive
+                    }`}
+                  />
+                  <span>{isAvailable ? "Available for service" : "Deployment paused"}</span>
+                </span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={isAvailable}
+                  aria-label="Toggle workforce availability"
+                  className={`${styles.availabilitySwitch} ${
+                    isAvailable ? styles.switchActive : ""
+                  }`}
+                  onClick={() => setIsAvailable((prev) => !prev)}
+                >
+                  <span className={styles.switchThumb} />
+                </button>
+              </div>
+            </div>
+
+            {/* 2. Concise Single Statement */}
+            <p className={styles.conciseDescription}>
+              “Experienced RCC and masonry crew for residential and commercial construction projects.”
+            </p>
+
+            {/* 3. Strong Scannable Metrics Row */}
+            <div className={styles.proofMetricsGrid}>
+              <div className={styles.metricTile}>
+                <span className={styles.metricBigValue}>{crew.experienceYears} yrs</span>
+                <span className={styles.metricSubLabel}>Experience</span>
+              </div>
+              <div className={styles.metricDivider} />
+              <div className={styles.metricTile}>
+                <span className={styles.metricBigValue}>
+                  {crew.rating.toFixed(1)} <Star size={13} fill="#eab308" color="#eab308" style={{ display: "inline", verticalAlign: "-1px" }} />
+                </span>
+                <span className={styles.metricSubLabel}>{crew.reviewCount} Reviews</span>
+              </div>
+              <div className={styles.metricDivider} />
+              <div className={styles.metricTile}>
+                <span className={styles.metricBigValue}>{crew.completedJobs}+</span>
+                <span className={styles.metricSubLabel}>Projects Completed</span>
+              </div>
+              <div className={styles.metricDivider} />
+              <div className={styles.metricTile}>
+                <span className={styles.metricBigValue}>{crew.crewSizeMin}–{crew.crewSizeMax}</span>
+                <span className={styles.metricSubLabel}>Workers</span>
+              </div>
+              <div className={styles.metricDivider} />
+              <div className={styles.metricTile}>
+                <span className={styles.metricBigValue}>₹{crew.dailyRate.toLocaleString("en-IN")}</span>
+                <span className={styles.metricSubLabel}>/day / worker</span>
+              </div>
+            </div>
+
+            {/* 4. Compact Verification / Capability Proof Chips */}
+            <div className={styles.proofChipsRow}>
+              <span className={styles.proofChip}>
+                <Check size={12} className={styles.chipCheck} aria-hidden="true" />
+                <span>RCC Brickwork</span>
+              </span>
+              <span className={styles.proofChip}>
+                <Check size={12} className={styles.chipCheck} aria-hidden="true" />
+                <span>Masonry</span>
+              </span>
+              <span className={styles.proofChip}>
+                <Check size={12} className={styles.chipCheck} aria-hidden="true" />
+                <span>Plastering</span>
+              </span>
+              <span className={styles.proofChip}>
+                <Check size={12} className={styles.chipCheck} aria-hidden="true" />
+                <span>Skills Verified</span>
+              </span>
+              <span className={styles.proofChip}>
+                <Check size={12} className={styles.chipCheck} aria-hidden="true" />
+                <span>Safety Verified</span>
+              </span>
+            </div>
+          </section>
+
+          {/* 2. Horizontal Section Navigation Tabs */}
           <nav className={styles.profileTabs} aria-label="Crew profile sections">
             {SECTION_TABS.map((tab) => (
               <button
