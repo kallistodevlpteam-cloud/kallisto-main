@@ -181,13 +181,13 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
 
   return (
     <div className={styles.detailContainer}>
-      {/* Two Primary Sections Layout: Left Section & Right Section */}
+      {/* Two Primary Sections Layout: 50% Left Profile Details & 50% Right Deployment Request */}
       <div className={styles.twoColLayout}>
-        {/* ─── LEFT SECTION: Review the Provider (Hero, Tabs & Details) ─── */}
+        {/* ─── LEFT SECTION (50%): Review the Provider (Hero, Metrics, Tabs & Details) ─── */}
         <main className={styles.leftStack}>
           {/* 1. Professional Workforce Procurement Profile Header */}
           <section className={styles.workforceHeroSection} aria-label="Team Profile Overview">
-            {/* Top Row: Identity Block + Action CTAs */}
+            {/* Top Row: Identity Block + Rate Block */}
             <div className={styles.heroMainRow}>
               <div className={styles.heroIdentityGroup}>
                 {/* Compact Team Identity Visual Block */}
@@ -235,23 +235,14 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
                 </div>
               </div>
 
-                {/* Rate Block and Request CTA on Right Side of Title Section */}
-                <div className={styles.heroRightActionsGroup}>
-                  <div className={styles.heroRateBlock}>
-                    <div className={styles.heroRateValue}>
-                      <IndianRupee size={20} strokeWidth={2.8} className={styles.heroRupeeIcon} aria-hidden="true" />
-                      <span>{crew.dailyRate.toLocaleString("en-IN")}</span>
-                    </div>
-                    <span className={styles.heroRateLabel}>/DAY / WORKER</span>
-                  </div>
-
-                  <Link
-                    href={`/hands/trades/${crew.id}/request${projectId ? `?projectId=${projectId}` : ""}`}
-                    className={styles.headerRequestCtaBtn}
-                  >
-                    Request Crew
-                  </Link>
+              {/* Rate Block in Left Section */}
+              <div className={styles.heroRateBlock}>
+                <div className={styles.heroRateValue}>
+                  <IndianRupee size={20} strokeWidth={2.8} className={styles.heroRupeeIcon} aria-hidden="true" />
+                  <span>{crew.dailyRate.toLocaleString("en-IN")}</span>
                 </div>
+                <span className={styles.heroRateLabel}>/DAY / WORKER</span>
+              </div>
             </div>
 
             {/* Service Area, Radius & Quick Actions Strip */}
@@ -544,6 +535,219 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
             </section>
           )}
         </main>
+
+        {/* ─── RIGHT SECTION (50%): Deployment Request & Booking Configuration ─── */}
+        <aside className={styles.rightStack}>
+          <div className={styles.stickyPanelWrap}>
+            <div className={styles.stickyRequestPanel}>
+              {/* Title Row: Left side Request Deployment + Right side Project Selection */}
+              <div className={styles.requestPanelHeader}>
+                <h2 className={styles.requestPanelTitle}>Request Deployment</h2>
+
+                <div className={styles.headerProjectSelectGroup}>
+                  <label htmlFor="req-project-select" className={styles.headerProjectLabel}>
+                    Project:
+                  </label>
+                  <div className={styles.headerSelectWrapper}>
+                    <Building2 size={13} className={styles.headerProjectIcon} aria-hidden="true" />
+                    <select
+                      id="req-project-select"
+                      className={styles.headerSelectInput}
+                      value={selectedProjectId}
+                      onChange={(e) => setSelectedProjectId(e.target.value)}
+                    >
+                      <option value="project-villa-01">Villa Aluva — Structural Phase</option>
+                      <option value="project-skyline-02">Skyline Horizon Commercial</option>
+                      <option value="project-green-03">Green Meadows Residence</option>
+                    </select>
+                    <ChevronDown size={13} className={styles.headerSelectChevron} aria-hidden="true" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Mobilization Start Date */}
+              <div className={styles.fieldGroup}>
+                <div className={styles.fieldLabelRow}>
+                  <label htmlFor="req-start-date" className={styles.fieldLabel}>
+                    Mobilization Start Date
+                  </label>
+                </div>
+                <input
+                  id="req-start-date"
+                  type="date"
+                  className={styles.dateInput}
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+                <span className={styles.dateRangeResultBadge}>
+                  {formatDateRange(startDate, durationDays)}
+                </span>
+              </div>
+
+              {/* Duration in Days */}
+              <div className={styles.fieldGroup}>
+                <div className={styles.fieldLabelRow}>
+                  <label htmlFor="req-duration-input" className={styles.fieldLabel}>
+                    Deployment Duration
+                  </label>
+                  <span className={styles.fieldHelperHint}>Working days</span>
+                </div>
+                <div className={styles.stepperRow}>
+                  <button
+                    type="button"
+                    className={styles.stepperBtn}
+                    onClick={() => setDurationDays((prev) => Math.max(1, prev - 1))}
+                    aria-label="Decrease duration by 1 day"
+                  >
+                    <Minus size={14} />
+                  </button>
+                  <div className={styles.stepperInputWrap}>
+                    <input
+                      id="req-duration-input"
+                      type="number"
+                      min="1"
+                      max="180"
+                      className={styles.stepperNumberInput}
+                      value={durationDays}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        setDurationDays(isNaN(val) ? 1 : Math.max(1, Math.min(180, val)));
+                      }}
+                      aria-label="Duration in days"
+                    />
+                    <span className={styles.stepperUnitLabel}>days</span>
+                  </div>
+                  <button
+                    type="button"
+                    className={styles.stepperBtn}
+                    onClick={() => setDurationDays((prev) => prev + 1)}
+                    aria-label="Increase duration by 1 day"
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+                <div className={styles.quickPresetsRow} role="group" aria-label="Duration quick presets">
+                  {[
+                    { days: 6, label: "6d (1 Wk)" },
+                    { days: 12, label: "12d (2 Wks)" },
+                    { days: 15, label: "15d" },
+                    { days: 24, label: "24d (1 Mo)" },
+                  ].map((item) => (
+                    <button
+                      key={item.days}
+                      type="button"
+                      className={`${styles.presetChip} ${durationDays === item.days ? styles.presetChipActive : ""}`}
+                      onClick={() => setDurationDays(item.days)}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Crew Size */}
+              <div className={styles.fieldGroup}>
+                <div className={styles.fieldLabelRow}>
+                  <label htmlFor="req-crew-size-input" className={styles.fieldLabel}>
+                    Crew Size
+                  </label>
+                  <span className={styles.fieldHelperHint}>Min {crew.crewSizeMin} · Max {crew.crewSizeMax}</span>
+                </div>
+                <div className={styles.stepperRow}>
+                  <button
+                    type="button"
+                    className={styles.stepperBtn}
+                    onClick={() => setWorkerCount((prev) => Math.max(crew.crewSizeMin, prev - 1))}
+                    aria-label="Decrease crew size by 1 worker"
+                  >
+                    <Minus size={14} />
+                  </button>
+                  <div className={styles.stepperInputWrap}>
+                    <input
+                      id="req-crew-size-input"
+                      type="number"
+                      min={crew.crewSizeMin}
+                      max={crew.crewSizeMax}
+                      className={styles.stepperNumberInput}
+                      value={workerCount}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        setWorkerCount(isNaN(val) ? crew.crewSizeMin : Math.max(crew.crewSizeMin, Math.min(crew.crewSizeMax, val)));
+                      }}
+                      aria-label="Crew size in workers"
+                    />
+                    <span className={styles.stepperUnitLabel}>workers</span>
+                  </div>
+                  <button
+                    type="button"
+                    className={styles.stepperBtn}
+                    onClick={() => setWorkerCount((prev) => Math.min(crew.crewSizeMax, prev + 1))}
+                    aria-label="Increase crew size by 1 worker"
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+                <div className={styles.quickPresetsRow} role="group" aria-label="Crew size quick presets">
+                  {[
+                    { count: 4, label: "4 (Min)" },
+                    { count: 8, label: "8 (Std Gang)" },
+                    { count: 12, label: "12 (Squad)" },
+                    { count: 16, label: "16 (Double)" },
+                  ].map((item) => (
+                    <button
+                      key={item.count}
+                      type="button"
+                      className={`${styles.presetChip} ${workerCount === item.count ? styles.presetChipActive : ""}`}
+                      onClick={() => setWorkerCount(item.count)}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+                <span className={styles.fieldSubHelper}>
+                  Minimum gang: {crew.crewSizeMin} masons/helpers · Scalable up to {crew.crewSizeMax} workers per shift
+                </span>
+              </div>
+
+              {/* Live Cost Calculation Summary Box */}
+              <div className={styles.costSummaryBox}>
+                <div className={styles.costCalcFormula}>
+                  {workerCount} Workers × ₹{crew.dailyRate.toLocaleString("en-IN")} / Day × {durationDays} Days
+                </div>
+                <div className={styles.costTotalRow}>
+                  <span className={styles.costTotalLabel}>Estimated Cost</span>
+                  <span className={styles.costTotalAmount}>
+                    ₹{estimatedCost.toLocaleString("en-IN")}
+                  </span>
+                </div>
+                <p className={styles.costDisclaimerSubtext}>
+                  *Standard 8-hour shift rate. Excludes GST (18%), site accommodation allowances, scaffolding, and raw materials.
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className={styles.actionButtonsStack}>
+                <button
+                  type="button"
+                  className={styles.submitDeploymentBtn}
+                  onClick={() => setDrawerOpen(true)}
+                >
+                  <span>Request Deployment</span>
+                  <ChevronRight size={16} aria-hidden="true" />
+                </button>
+
+                <Link
+                  href={`/hands/trades/${crew.id}/request${projectId ? `?projectId=${projectId}` : ""}`}
+                  className={styles.secondaryRequestLink}
+                  aria-label="Request Crew"
+                >
+                  <span>Request Crew</span>
+                  <ChevronRight size={14} aria-hidden="true" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
 
       {/* Interactive Workforce Request Drawer Modal */}

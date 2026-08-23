@@ -121,7 +121,7 @@ export function TradeCrewRequestPage({
                 {crew.location}
               </span>
               <span className={styles.crewMetaSeparator}>·</span>
-              <span>⭐ {crew.rating.toFixed(1)} ({crew.verifiedSitesCount} verified sites)</span>
+              <span>⭐ {crew.rating.toFixed(1)} ({crew.completedJobs} verified sites)</span>
             </div>
           </div>
         </div>
