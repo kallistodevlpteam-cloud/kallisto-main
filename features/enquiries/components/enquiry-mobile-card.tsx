@@ -8,14 +8,16 @@ import { EnquiryRecord, NextActionType, PROJECT_TYPE_LABELS } from "../types/enq
 import { formatEnquiryBudgetRange } from "../utils/format-enquiry-budget";
 import { formatEnquiryDate, formatNextActionMeta } from "../utils/format-enquiry-date";
 import { getEnquiryDetailPath } from "../utils/enquiry-query-state";
+import { getEnquiryProviderDisplay } from "./enquiry-table-row";
 import styles from "./enquiries-workspace.module.css";
 
 interface MobileCardProps {
   enquiry: EnquiryRecord;
   now: Date;
+  basePath?: string;
 }
 
-const NEXT_ACTION_CONFIG = {
+const PROVIDER_NEXT_ACTION_CONFIG = {
   review_enquiry: {
     label: "Review enquiry",
     icon: FileText,
@@ -61,9 +63,59 @@ const NEXT_ACTION_CONFIG = {
   { label: string; icon: React.ComponentType<{ size?: number; className?: string }>; tone: string }
 >;
 
-export function EnquiryMobileCard({ enquiry, now }: MobileCardProps) {
+const CLIENT_NEXT_ACTION_CONFIG = {
+  review_enquiry: {
+    label: "Reviewing with Architect",
+    icon: FileText,
+    tone: "blue",
+  },
+  request_clarification: {
+    label: "Clarification Requested",
+    icon: MessageSquare,
+    tone: "orange",
+  },
+  schedule_consultation: {
+    label: "Consultation Scheduled",
+    icon: Calendar,
+    tone: "violet",
+  },
+  consultation: {
+    label: "Consultation in Progress",
+    icon: Calendar,
+    tone: "blue",
+  },
+  follow_up: {
+    label: "Follow-up Pending",
+    icon: Send,
+    tone: "blue",
+  },
+  prepare_proposal: {
+    label: "Proposal in Preparation",
+    icon: FileText,
+    tone: "blue",
+  },
+  convert_to_project: {
+    label: "Ready to Kickoff Project",
+    icon: CheckCircle2,
+    tone: "green",
+  },
+  mark_as_lost: {
+    label: "Enquiry Closed",
+    icon: XCircle,
+    tone: "red",
+  },
+} satisfies Record<
+  NextActionType,
+  { label: string; icon: React.ComponentType<{ size?: number; className?: string }>; tone: string }
+>;
+
+export function EnquiryMobileCard({ enquiry, now, basePath }: MobileCardProps) {
   const router = useRouter();
-  const nextActionPresentation = NEXT_ACTION_CONFIG[enquiry.nextAction.type];
+  const isClient = Boolean(basePath?.startsWith("/client"));
+
+  const nextActionPresentation = isClient
+    ? (CLIENT_NEXT_ACTION_CONFIG[enquiry.nextAction.type] ?? PROVIDER_NEXT_ACTION_CONFIG[enquiry.nextAction.type])
+    : PROVIDER_NEXT_ACTION_CONFIG[enquiry.nextAction.type];
   const IconComponent = nextActionPresentation.icon;
 
   const getToneClass = (tone: string) => {
@@ -118,7 +170,7 @@ export function EnquiryMobileCard({ enquiry, now }: MobileCardProps) {
     }
   };
 
-  const viewPath = getEnquiryDetailPath(enquiry.id);
+  const viewPath = getEnquiryDetailPath(enquiry.id, basePath);
 
   const handleCardClick = () => {
     router.push(viewPath);
@@ -130,6 +182,10 @@ export function EnquiryMobileCard({ enquiry, now }: MobileCardProps) {
       router.push(viewPath);
     }
   };
+
+  const subtitleText = isClient
+    ? `${getEnquiryProviderDisplay(enquiry)} · ${enquiry.location}`
+    : `${enquiry.clientName} · ${enquiry.location}`;
 
   return (
     <div
@@ -159,7 +215,7 @@ export function EnquiryMobileCard({ enquiry, now }: MobileCardProps) {
             {enquiry.isNew && <span className={styles.newBadge}>New</span>}
           </div>
           <span className={styles.mobileClientText}>
-            {enquiry.clientName} · {enquiry.location}
+            {subtitleText}
           </span>
         </div>
       </div>
@@ -176,17 +232,15 @@ export function EnquiryMobileCard({ enquiry, now }: MobileCardProps) {
 
         {/* Next Action */}
         <div className={styles.mobileMetaRow}>
-          <span className={styles.mobileMetaLabel}>Next Action</span>
-          <div className={styles.mobileNextAction}>
-            <div className={`${styles.actionIconWrap} ${getToneClass(nextActionPresentation.tone)}`}>
-              <IconComponent size={12} />
-            </div>
-            <div className={styles.mobileActionDetails}>
-              <span className={styles.mobileActionName}>{nextActionPresentation.label}</span>
+          <span className={styles.mobileMetaLabel}>{isClient ? "Next Step" : "Next Action"}</span>
+          <div className={styles.mobileActionVal}>
+            <span className={`${styles.iconWrap} ${getToneClass(nextActionPresentation.tone)}`}>
+              <IconComponent size={14} />
+            </span>
+            <div className={styles.mobileActionTextCol}>
+              <span className={styles.actionLabel}>{nextActionPresentation.label}</span>
               <span
-                className={`${styles.mobileActionDue} ${getDueColorClass(
-                  nextActionPresentation.tone
-                )}`}
+                className={`${styles.actionDueText} ${getDueColorClass(nextActionPresentation.tone)}`}
               >
                 {formatNextActionMeta(enquiry.nextAction, now)}
               </span>
@@ -194,10 +248,10 @@ export function EnquiryMobileCard({ enquiry, now }: MobileCardProps) {
           </div>
         </div>
 
-        {/* Received */}
+        {/* Received / Submitted Date */}
         <div className={styles.mobileMetaRow}>
-          <span className={styles.mobileMetaLabel}>Received</span>
-          <span className={styles.mobileMetaValue}>
+          <span className={styles.mobileMetaLabel}>{isClient ? "Submitted" : "Received"}</span>
+          <span className={styles.mobileDateVal}>
             {formatEnquiryDate(enquiry.receivedAt, now)}
           </span>
         </div>
@@ -205,7 +259,7 @@ export function EnquiryMobileCard({ enquiry, now }: MobileCardProps) {
         {/* Budget */}
         <div className={styles.mobileMetaRow}>
           <span className={styles.mobileMetaLabel}>Budget</span>
-          <span className={styles.mobileMetaValue}>
+          <span className={styles.mobileBudgetVal}>
             {enquiry.budget ? enquiry.budget : formatEnquiryBudgetRange(enquiry.budgetMin, enquiry.budgetMax)}
           </span>
         </div>

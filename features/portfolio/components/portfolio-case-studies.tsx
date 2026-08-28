@@ -120,7 +120,6 @@ export function PortfolioCaseStudies({
                   </span>
                   <h2 className={styles.caseStudyTitle}>{caseStudy.title}</h2>
                 </div>
-                <p className={styles.caseStudySummary}>{summaryText}</p>
               </div>
             </article>
           );
@@ -249,18 +248,6 @@ export function PortfolioCaseStudies({
                   ))}
                 </div>
               </div>
-            ) : null}
-
-            {/* CTA */}
-            {activeProject ? (
-              <button
-                type="button"
-                className={styles.previewCtaButton}
-                onClick={(event) => onOpenProject(activeProject, event.currentTarget)}
-              >
-                <TrendingUp size={15} aria-hidden="true" />
-                <span>Open Project Case Study</span>
-              </button>
             ) : null}
           </div>
         </div>

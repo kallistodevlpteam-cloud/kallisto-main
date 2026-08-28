@@ -3,7 +3,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   width: 100%;
 }
 
@@ -66,12 +66,12 @@
 .cardsGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
   width: 100%;
   align-items: stretch;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1180px) {
   .cardsGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -83,28 +83,30 @@
   }
 }
 
-/* ── 4. Card Shell (Minimal Pure White Elevated Card) ─────────────────── */
+/* ── 4. Card Shell (Modern Glassmorphic Elevated Silhouette) ──────── */
 
 .cardShell {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 12px 14px;
+  border: 1px solid #e8edf2;
+  border-radius: 20px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 10px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.15s ease;
+  gap: 12px;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease;
   box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
 }
 
 .cardShell:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-color: #cbd5e1;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
 /* ── 5. Main Card Content (Icon + Text Column) ─────────────────────── */
@@ -112,24 +114,25 @@
 .cardMain {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 13px;
   width: 100%;
 }
 
 .iconBox {
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   margin-top: 1px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
   transition: transform 0.2s ease;
 }
 
 .cardShell:hover .iconBox {
-  transform: scale(1.05);
+  transform: scale(1.06);
 }
 
 .headerIcon {
@@ -139,23 +142,23 @@
 .contentCol {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
   flex: 1;
   min-width: 0;
 }
 
 .cardTitle {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 13.5px;
+  font-weight: 750;
   color: #0f172a;
   line-height: 1.35;
   margin: 0;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.012em;
 }
 
 .cardSnippet {
   font-size: 12px;
-  line-height: 1.45;
+  line-height: 1.5;
   color: #475569;
   margin: 0;
   font-weight: 450;
@@ -163,72 +166,72 @@
 
 /* Color Themes for Icon Box Accents */
 .theme_blue .iconBox {
-  background: #f0f9ff;
-  color: #0284c7;
-  border: 1px solid #e0f2fe;
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
 }
 
 .theme_green .iconBox {
   background: #ecfdf5;
-  color: #047857;
-  border: 1px solid #d1fae5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
 }
 
 .theme_purple .iconBox {
   background: #f5f3ff;
-  color: #6d28d9;
-  border: 1px solid #ede9fe;
+  color: #7c3aed;
+  border: 1px solid #ddd6fe;
 }
 
 .theme_orange .iconBox {
-  background: #fff7ed;
-  color: #c2410c;
-  border: 1px solid #ffedd5;
+  background: #fffbeb;
+  color: #d97706;
+  border: 1px solid #fde68a;
 }
 
 .theme_pink .iconBox {
   background: #fff1f2;
   color: #e11d48;
-  border: 1px solid #ffe4e6;
+  border: 1px solid #fecdd3;
 }
 
-/* ── 6. Tags Row ───────────────────────────────────────────────────── */
+/* ── 6. Tags Row (Modern Smooth Pill Capsules) ────────────────────── */
 
 .tagsRow {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   flex-wrap: wrap;
   padding-top: 2px;
 }
 
 .confirmedBadge {
-  font-size: 10.5px;
-  font-weight: 600;
-  color: #047857;
+  font-size: 11px;
+  font-weight: 650;
+  color: #059669;
   background: #ecfdf5;
   border: 1px solid #a7f3d0;
-  padding: 2px 6.5px;
-  border-radius: 5px;
+  padding: 3px 10px;
+  border-radius: 9999px;
   line-height: 1.2;
   display: inline-flex;
   align-items: center;
-  gap: 3.5px;
+  gap: 4px;
   white-space: nowrap;
 }
 
 .inferredBadge {
-  font-size: 10.5px;
-  font-weight: 600;
-  color: #6d28d9;
+  font-size: 11px;
+  font-weight: 650;
+  color: #7c3aed;
   background: #f5f3ff;
   border: 1px solid #ddd6fe;
-  padding: 2px 6.5px;
-  border-radius: 5px;
+  padding: 3px 10px;
+  border-radius: 9999px;
   line-height: 1.2;
   display: inline-flex;
   align-items: center;
-  gap: 3.5px;
+  gap: 4px;
   white-space: nowrap;
 }
 
@@ -237,16 +240,23 @@
 }
 
 .softTag {
-  font-size: 10.5px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 550;
   color: #475569;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  padding: 2px 6.5px;
-  border-radius: 5px;
+  padding: 3px 10px;
+  border-radius: 9999px;
   display: inline-flex;
   align-items: center;
-  gap: 3.5px;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.softTag:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+  border-color: #cbd5e1;
 }
 
 .tagIcon {

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Check, EyeOff, Tag, Trash2 } from "lucide-react";
+import { Check, EyeOff, Tag, Trash2, Users } from "lucide-react";
 import type { TaggedPortfolioItem } from "@/features/portfolio/types/portfolio.types";
 import { PortfolioEmptyState } from "./portfolio-empty-state";
 import styles from "./portfolio.module.css";
@@ -41,62 +41,82 @@ export function PortfolioTaggedGrid({
   };
 
   return (
-    <div className={styles.taggedGrid}>
+    <div className={styles.instaGrid}>
       {items.map((item, index) => (
-        <article className={styles.taggedItem} key={item.id}>
-          <div className={styles.taggedMedia}>
-            <Image
-              src={item.coverImageUrl}
-              alt={`${item.projectName} cover`}
-              fill
-              priority={index < 2}
-              loading={index < 2 ? "eager" : "lazy"}
-              className={styles.taggedImage}
-              sizes="(max-width: 640px) 50vw, 32vw"
-            />
-            {isOwner ? (
-              <span className={styles.taggedStatus}>{item.status}</span>
-            ) : null}
-          </div>
-          <div className={styles.taggedContent}>
-            <span>
-              <Tag size={13} aria-hidden="true" />
-              {item.collaborator}
+        <article className={styles.instaTile} key={item.id}>
+          <div className={styles.instaTileButton} role="region" aria-label={`${item.projectName} collaboration`}>
+            <span className={styles.instaMedia}>
+              <Image
+                src={item.coverImageUrl}
+                alt={`${item.projectName} cover`}
+                fill
+                priority={index < 4}
+                loading={index < 4 ? "eager" : "lazy"}
+                className={styles.instaImage}
+                sizes="(max-width: 600px) 50vw, (max-width: 900px) 33vw, (max-width: 1200px) 25vw, 20vw"
+              />
+
+              {/* Tagged indicator top right */}
+              <span className={styles.instaMultiIcon} title={`Tagged by ${item.collaborator}`}>
+                <Tag size={13} aria-hidden="true" />
+              </span>
+
+              {/* Top Left Role Badge */}
+              <span className={styles.hoverCategoryBadge}>{item.role}</span>
+
+              {/* Bottom Hover Overlay with Details */}
+              <span className={styles.instaHoverOverlay}>
+                <span className={styles.hoverContentGroup}>
+                  <h3 className={styles.hoverProjectTitle}>{item.projectName}</h3>
+                  <span className={styles.hoverLocationRow}>
+                    <Users size={13} className={styles.pinIcon} aria-hidden="true" />
+                    <span>{item.collaborator}</span>
+                  </span>
+                  <span className={styles.hoverFooterRow}>
+                    <span>{item.role}</span>
+                    <span>By {item.originalOwner}</span>
+                  </span>
+                </span>
+              </span>
             </span>
-            <h2>{item.projectName}</h2>
-            <p>{item.role}</p>
-            <small>Original project by {item.originalOwner}</small>
           </div>
+
           {isOwner ? (
-            <div className={styles.taggedActions}>
+            <div className={styles.taggedOverlayActions}>
               {item.status !== "Approved" ? (
                 <button
                   type="button"
+                  className={styles.taggedActionBtn}
                   onClick={() => updateItem(item.id, "Approved")}
+                  title="Approve tag"
+                  aria-label="Approve tag"
                 >
-                  <Check size={13} aria-hidden="true" />
-                  Approve
+                  <Check size={12} aria-hidden="true" />
                 </button>
               ) : null}
               {item.status !== "Hidden" ? (
                 <button
                   type="button"
+                  className={styles.taggedActionBtn}
                   onClick={() => updateItem(item.id, "Hidden")}
+                  title="Hide tag"
+                  aria-label="Hide tag"
                 >
-                  <EyeOff size={13} aria-hidden="true" />
-                  Hide
+                  <EyeOff size={12} aria-hidden="true" />
                 </button>
               ) : null}
               <button
                 type="button"
+                className={styles.taggedActionBtn}
                 onClick={() =>
                   setItems((current) =>
                     current.filter((candidate) => candidate.id !== item.id),
                   )
                 }
+                title="Remove tag"
+                aria-label="Remove tag"
               >
-                <Trash2 size={13} aria-hidden="true" />
-                Remove
+                <Trash2 size={12} aria-hidden="true" />
               </button>
             </div>
           ) : null}

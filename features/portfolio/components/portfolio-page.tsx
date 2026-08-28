@@ -180,7 +180,11 @@ export function PortfolioPage({
         />
       </div>
 
-      <main className={styles.portfolioContent}>
+      <main
+        className={`${styles.portfolioContent} ${
+          activeTab === "case-studies" ? styles.portfolioContentFixed : ""
+        }`}
+      >
         <PortfolioTabs
           activeTab={activeTab}
           isOwner={isOwner}
@@ -219,7 +223,9 @@ export function PortfolioPage({
             />
           ) : null}
           {activeTab === "reviews" ? <PortfolioReviews /> : null}
-          {activeTab === "pricing" ? <PortfolioPricing /> : null}
+          {activeTab === "pricing" ? (
+            <PortfolioPricing profile={profile} isOwner={isOwner} />
+          ) : null}
         </section>
       </main>
 

@@ -4,12 +4,13 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  min-height: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
   margin: 0;
-  padding: 20px 32px 40px;
+  padding: 14px 28px 14px;
   box-sizing: border-box;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 /* Today Tab Workspace */
@@ -4945,17 +4946,23 @@
   border-radius: 0;
   margin: 0;
   width: 100%;
-  gap: 28px;
-  min-height: calc(100vh - 120px);
+  height: 100%;
+  min-height: 0;
+  flex: 1;
+  gap: 24px;
+  overflow: hidden;
 }
 
 .mockupCalendarLeft {
   flex: 1 1 0%;
   min-width: 0;
+  height: 100%;
+  min-height: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
   background: transparent;
+  overflow: hidden;
 }
 
 .mockupCalendarHeader {
@@ -4963,7 +4970,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
 }
 
 .mockupNavGroup {
@@ -5126,10 +5134,11 @@
 .mockupWeekdayRow {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 6px;
   text-align: center;
   width: 100%;
+  flex-shrink: 0;
 }
 
 .mockupWeekdayCell {
@@ -5139,8 +5148,8 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   background: #f6f7f9;
-  border-radius: 12px;
-  padding: 8px 0;
+  border-radius: 10px;
+  padding: 5px 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5150,21 +5159,23 @@
 .mockupDayGrid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  grid-auto-rows: minmax(105px, 1fr);
-  gap: 10px;
+  grid-auto-rows: minmax(0, 1fr);
+  gap: 8px;
   width: 100%;
+  height: 100%;
+  min-height: 0;
   flex: 1;
 }
 
 .mockupDayTile {
   background: #f6f7f9;
-  border-radius: 16px;
-  min-height: 104px;
+  border-radius: 12px;
+  min-height: 0;
   height: 100%;
-  padding: 10px 12px;
+  padding: 6px 8px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   cursor: pointer;
   transition: all 0.15s ease;
   border: 1px solid transparent;
@@ -5358,12 +5369,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  margin-top: auto;
-  padding-top: 20px;
-  padding-bottom: 8px;
+  gap: 18px;
+  margin-top: 6px;
+  padding-top: 6px;
+  padding-bottom: 0;
   border-top: 1px solid rgba(0, 0, 0, 0.05);
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .mockupCategoryCheckbox {
@@ -5427,13 +5439,15 @@
   max-width: 340px;
   flex-shrink: 0;
   border-left: none;
-  padding: 0 0 24px 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 10px;
   background: transparent;
   box-sizing: border-box;
   height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .mockupPanelHeader {
@@ -5811,10 +5825,12 @@
 .hiveStudioSection {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   width: 100%;
   height: 100%;
+  min-height: 0;
   flex: 1;
+  overflow: hidden;
 }
 
 .hiveStudioHeader {
@@ -5822,6 +5838,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 4px;
+  flex-shrink: 0;
 }
 
 .actionTitleGroup {
@@ -5866,8 +5883,21 @@
   flex-direction: column;
   gap: 4px;
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.hiveStudioCardList::-webkit-scrollbar {
+  width: 4px;
+}
+
+.hiveStudioCardList::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
 }
 
 .hiveExpandableCard {
@@ -6248,4 +6278,139 @@
   margin: 0;
   font-weight: 500;
 }
+
+/* =========================================================================
+   Responsive Breakpoints & Layout Adaptations
+   ========================================================================= */
+
+@media (max-width: 1180px) {
+  .mockupCalendarCard {
+    flex-direction: column;
+    gap: 32px;
+    min-height: auto;
+  }
+
+  .mockupCalendarLeft {
+    width: 100%;
+    flex: none;
+  }
+
+  .mockupRightPanel {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
+    padding-top: 24px;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .hiveStudioCardList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 860px) {
+  .container {
+    padding: 16px 16px 32px;
+  }
+
+  .mockupCalendarHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .mockupHeaderRight {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .mockupSearchWrap {
+    flex: 1 1 120px;
+    width: auto;
+    max-width: none;
+  }
+
+  .mockupSearchWrap:focus-within {
+    width: 100%;
+  }
+
+  .mockupWeekdayRow {
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .mockupWeekdayCell {
+    font-size: 10px;
+    padding: 6px 0;
+    border-radius: 8px;
+  }
+
+  .mockupDayGrid {
+    gap: 6px;
+    grid-auto-rows: minmax(80px, 1fr);
+  }
+
+  .mockupDayTile {
+    min-height: 80px;
+    padding: 6px 8px;
+    border-radius: 12px;
+  }
+
+  .mockupActivityPill {
+    font-size: 10px;
+    padding: 2px 4px;
+    gap: 3px;
+  }
+
+  .mockupCategoryLegend {
+    gap: 12px;
+    justify-content: flex-start;
+    padding-top: 14px;
+  }
+
+  .mockupCategoryCheckbox {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 580px) {
+  .container {
+    padding: 12px 10px 24px;
+  }
+
+  .mockupDayGrid {
+    gap: 4px;
+    grid-auto-rows: minmax(64px, 1fr);
+  }
+
+  .mockupDayTile {
+    min-height: 64px;
+    padding: 4px;
+    border-radius: 8px;
+  }
+
+  .mockupDayNumber {
+    font-size: 11px;
+  }
+
+  .mockupTodayBadge {
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+  }
+
+  .mockupActivityPill span {
+    font-size: 9.5px;
+  }
+
+  .hiveStudioCardList {
+    grid-template-columns: 1fr;
+  }
+}
+
 

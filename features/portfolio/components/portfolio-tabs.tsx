@@ -117,13 +117,13 @@ export function PortfolioTabs({
       </div>
       {isOwner ? (
         <button
-          className={styles.addProjectButton}
+          className={styles.addProjectIconButton}
           type="button"
           aria-label="Add project"
+          title="Add project"
           onClick={onAddProject}
         >
-          <Plus size={15} aria-hidden="true" />
-          <span>Add project</span>
+          <Plus size={16} aria-hidden="true" />
         </button>
       ) : null}
     </div>

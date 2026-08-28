@@ -324,10 +324,18 @@ export function SignInCard() {
           </div>
 
           <footer className={styles.footer}>
-            <span>New to Kallisto?</span>
-            <Link href="/apply" className={styles.footerLink}>
-              Apply for provider access
-            </Link>
+            <div>
+              <span>New to Kallisto? </span>
+              <Link href="/apply" className={styles.footerLink}>
+                Apply for provider access
+              </Link>
+            </div>
+            <div style={{ marginTop: "6px" }}>
+              <span>Client access? </span>
+              <Link href="/client/login" className={styles.footerLink}>
+                Sign in to Client Portal
+              </Link>
+            </div>
           </footer>
         </div>
       </section>

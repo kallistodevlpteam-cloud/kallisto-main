@@ -405,6 +405,7 @@ export function StudioActiveTaskCanvas({
                       <AssistantTaskResponse
                         content={msg.content}
                         outputReference={msg.outputReference}
+                        providerCard={msg.providerCard}
                         task={task}
                         projectName={project.name}
                         clientName="Ananya Builders"

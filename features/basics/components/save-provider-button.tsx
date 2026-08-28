@@ -5,8 +5,33 @@ import { useState } from "react";
 import { basicsProviderRepository } from "../repositories/basics-repositories";
 import styles from "./basics-workspace.module.css";
 
-export function SaveProviderButton({ providerId }: { providerId: string }) {
+export function SaveProviderButton({
+  providerId,
+  variant = "default",
+}: {
+  providerId: string;
+  variant?: "default" | "icon";
+}) {
   const [saved, setSaved] = useState(false);
+
+  if (variant === "icon") {
+    return (
+      <button
+        type="button"
+        className={`${styles.profileIconActionButton} ${saved ? styles.profileIconActionButtonActive : ""}`}
+        aria-pressed={saved}
+        aria-label={saved ? "Remove from shortlist" : "Add to shortlist"}
+        title={saved ? "Remove from shortlist" : "Add to shortlist"}
+        onClick={() => {
+          void basicsProviderRepository.saveProvider(providerId).then(() => {
+            setSaved((current) => !current);
+          });
+        }}
+      >
+        <Bookmark size={13} strokeWidth={2.2} fill={saved ? "currentColor" : "none"} aria-hidden="true" />
+      </button>
+    );
+  }
 
   return (
     <button

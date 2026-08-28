@@ -73,7 +73,6 @@ import { EnquirySiteImagesCard } from "./enquiry-site-images-card";
 import { EnquiryProjectDocumentsSection } from "./enquiry-project-documents-section";
 import { EnquiryClarificationComposer } from "./enquiry-clarification-composer";
 import { EnquiryDetailTabs, EnquiryTabKey, resolveValidTabKey } from "./enquiry-detail-tabs";
-import { DocumentsTitleRowActions } from "@/features/documents/components/documents-title-row-actions";
 import { OdinInsightsPanel } from "./odin-insights-panel";
 import { deriveContextualOdinInsights } from "@/features/enquiries/services/enquiry-intelligence";
 import { authedFetch } from "@/lib/auth/authed-fetch";
@@ -758,7 +757,6 @@ export function EnquiryDetailWorkspace({
                     <Share2 size={16} strokeWidth={1.8} />
                   </button>
                 </div>
-                <DocumentsTitleRowActions />
               </div>
 
               <div className={styles.subMetaRow}>

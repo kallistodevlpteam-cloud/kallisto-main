@@ -109,6 +109,7 @@ export function serializeEnquiryQuery(
   return params;
 }
 
-export function getEnquiryDetailPath(id: string): string {
-  return `/enquiries/${encodeURIComponent(id)}`;
+export function getEnquiryDetailPath(id: string, basePath = "/enquiries"): string {
+  const prefix = basePath.endsWith("/") ? basePath.slice(0, -1) : basePath;
+  return `${prefix}/${encodeURIComponent(id)}`;
 }

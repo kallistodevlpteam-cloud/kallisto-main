@@ -3,15 +3,21 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ResponseSummary } from "./response-summary";
 import { OutputGlanceCard } from "./output-glance-card";
+import { ProviderEnquiryGlanceCard } from "./provider-enquiry-glance-card";
 import { SuggestionChips } from "./suggestion-chips";
 import { StreamingText } from "./streaming-text";
 import { ThinkingIndicator } from "@/components/ui/thinking-indicator";
 import type { StudioTask } from "@/types/domain/studio";
-import type { StudioMessageAction, StudioOutputReference } from "@/types/domain/studio-message";
+import type {
+  StudioMessageAction,
+  StudioOutputReference,
+  StudioProviderCardReference,
+} from "@/types/domain/studio-message";
 
 export interface AssistantTaskResponseProps {
   content: string;
   outputReference?: StudioOutputReference;
+  providerCard?: StudioProviderCardReference;
   isProposalMsg?: boolean;
   task?: StudioTask | null;
   projectName?: string;
@@ -29,6 +35,7 @@ type TurnStage = "thinking" | "streaming" | "card" | "chips" | "complete";
 export function AssistantTaskResponse({
   content,
   outputReference,
+  providerCard,
   isProposalMsg,
   projectName = "Villa Design Consultation",
   clientName = "Ananya Builders",
@@ -148,6 +155,11 @@ export function AssistantTaskResponse({
           onPreviewClick={() => onPreviewClick(outputReference)}
           onAssemblyComplete={handleCardAssemblyComplete}
         />
+      )}
+
+      {/* Selected Provider Confirmation Card */}
+      {providerCard && (
+        <ProviderEnquiryGlanceCard providerCard={providerCard} />
       )}
 
       {/* Suggested Action Chips */}

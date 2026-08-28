@@ -24,8 +24,31 @@
   --control-hit-area: 40px;
   --project-composer-min-height: 48px;
   --project-composer-max-height: 144px;
-  --project-drawer-duration: 220ms;
   color-scheme: light;
+}
+
+[data-theme="dark"],
+.dark {
+  --ink: #f8fafc;
+  --muted: #94a3b8;
+  --soft: #64748b;
+  --line: #1e293b;
+  --line-strong: #334155;
+  --page: #090d16;
+  --surface: #0f172a;
+  --surface-subtle: #1e293b;
+  --surface-hover: #1e293b;
+  --surface-primary: #0f172a;
+  --accent: #38bdf8;
+  --accent-soft: rgba(56, 189, 248, 0.15);
+  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.5), 0 6px 16px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+
+[data-density="compact"] {
+  --topbar-height: 42px;
+  --control-hit-area: 32px;
+  font-size: 13px;
 }
 
 * {
@@ -398,6 +421,36 @@ textarea:focus-visible {
   font-weight: 600;
 }
 
+.nav-row.nav-row--locked {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.nav-row.nav-row--locked:hover {
+  background: var(--surface-subtle);
+  color: var(--ink);
+}
+
+.nav-lock-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  padding: 2px 3px;
+  border-radius: 4px;
+  transition: color 0.15s ease, transform 0.15s ease;
+  margin-left: auto;
+}
+
+.nav-row.nav-row--locked:hover .nav-lock-badge {
+  color: #d97706;
+  transform: scale(1.1);
+}
+
 .nav-section-header {
   margin: 0 9px 4px;
   color: var(--soft);
@@ -520,6 +573,9 @@ textarea:focus-visible {
   align-items: center;
   width: var(--sidebar-rail);
   padding: 8px 6px;
+  overflow: visible !important;
+  position: relative;
+  z-index: 70;
 }
 
 .rail-top {
@@ -528,6 +584,8 @@ textarea:focus-visible {
   align-items: center;
   margin-bottom: 12px;
   width: 100%;
+  position: relative;
+  overflow: visible;
 }
 
 .rail-toggle-btn {
@@ -541,6 +599,8 @@ textarea:focus-visible {
   color: #6b7280;
   cursor: pointer;
   transition: background 0.12s, color 0.12s;
+  position: relative;
+  overflow: visible;
 }
 
 .rail-toggle-btn:hover {
@@ -556,6 +616,7 @@ textarea:focus-visible {
 }
 
 .rail-brand-btn {
+  position: relative;
   display: grid;
   place-items: center;
   width: 100%;
@@ -566,6 +627,7 @@ textarea:focus-visible {
   color: var(--ink, #0f172a);
   cursor: pointer;
   transition: background 0.12s ease, transform 0.12s ease;
+  overflow: visible;
 }
 
 .rail-brand-btn:hover {
@@ -578,6 +640,8 @@ textarea:focus-visible {
   align-items: center;
   gap: 3px;
   width: 100%;
+  position: relative;
+  overflow: visible;
 }
 
 .rail-button {
@@ -592,6 +656,7 @@ textarea:focus-visible {
   color: #4b5563;
   cursor: pointer;
   transition: background 0.12s, color 0.12s;
+  overflow: visible;
 }
 
 .rail-button:hover {
@@ -614,6 +679,100 @@ textarea:focus-visible {
   background: #3b82f6;
 }
 
+.rail-button--locked {
+  position: relative;
+}
+
+.rail-lock-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #94a3b8;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+}
+
+.rail-button--locked:hover .rail-lock-dot {
+  color: #d97706;
+  border-color: #fde68a;
+  background: #fffbeb;
+  transform: scale(1.1);
+}
+
+/* ─── Sleek floating hover indicator for Rail Sidebar buttons ─── */
+.rail-tooltip {
+  position: absolute;
+  left: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-6px);
+  background: #0f172a;
+  color: #ffffff;
+  height: 32px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s cubic-bezier(0.16, 1, 0.3, 1), transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.15s;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 999999;
+}
+
+.rail-tooltip::before {
+  content: "";
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-right-color: #0f172a;
+}
+
+.rail-button:hover .rail-tooltip,
+.rail-brand-btn:hover .rail-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(0);
+}
+
+.rail-tooltip-badge {
+  font-size: 10.5px;
+  font-weight: 650;
+  line-height: 1;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: #334155;
+  color: #f1f5f9;
+}
+
+.rail-tooltip-locked-badge {
+  font-size: 10.5px;
+  font-weight: 650;
+  line-height: 1;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: rgba(245, 158, 11, 0.22);
+  color: #fbbf24;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .rail-spacer {
   flex: 1;
 }
@@ -624,6 +783,8 @@ textarea:focus-visible {
   align-items: center;
   gap: 6px;
   margin-top: auto;
+  position: relative;
+  overflow: visible;
 }
 
 .rail-upgrade-btn {
@@ -1129,7 +1290,8 @@ textarea:focus-visible {
 .workspace.basics-route-workspace,
 .workspace.hands-route-workspace,
 .workspace:has(.basicsShell),
-.workspace:has(.documentsBoundedRoute) {
+.workspace:has(.documentsBoundedRoute),
+.workspace:has(.calendarWorkspaceRoot) {
   padding: 0;
   overflow: hidden;
   height: 100%;

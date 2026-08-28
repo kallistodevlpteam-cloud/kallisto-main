@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Upload, Check } from "lucide-react";
 import styles from "../../app/settings/settings.module.css";
 
 interface AccountSettingsProps {
@@ -11,7 +12,6 @@ interface AccountSettingsProps {
 }
 
 export function AccountSettings({ user }: AccountSettingsProps) {
-  // Profile state
   const [photoUrl, setPhotoUrl] = useState("/assets/profile_avatar.png");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -19,13 +19,13 @@ export function AccountSettings({ user }: AccountSettingsProps) {
   const [email, setEmail] = useState("");
   const [website, setWebsite] = useState("");
 
-  // Preferences state
   const [timezone, setTimezone] = useState("");
   const [language, setLanguage] = useState("");
   const [startOfWeek, setStartOfWeek] = useState("");
   const [dateFormat, setDateFormat] = useState("");
   const [twentyFourHourFormat, setTwentyFourHourFormat] = useState(true);
   const [showActiveDot, setShowActiveDot] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -35,23 +35,30 @@ export function AccountSettings({ user }: AccountSettingsProps) {
     }
   };
 
+  const handleSave = () => {
+    setIsSaved(true);
+    setTimeout(() => setIsSaved(false), 2500);
+  };
+
   return (
-    <div className={styles.settingsContentOutlet}>
-      <div className={styles.profileCleanContainer}>
-        {/* Profile Section */}
-        <section>
-          <div className={styles.profileSectionHeader}>
-            <h2 className={styles.profileSectionTitle}>Profile</h2>
-            <p className={styles.profileSectionSubtitle}>
+    <div className={styles.contentScrollArea}>
+      {/* 1. Profile Section */}
+      <div className={styles.card}>
+        <div className={styles.cardHeader}>
+          <div>
+            <h2 className={styles.cardHeaderTitle}>Profile</h2>
+            <p className={styles.cardHeaderSubtitle}>
               Manage your information, preferences, and connected data.
             </p>
           </div>
+        </div>
 
-          {/* Profile Photo */}
-          <div className={styles.profilePhotoRow}>
-            <label style={{ cursor: "pointer", display: "inline-block" }}>
+        <div className={styles.cardBody}>
+          {/* Profile Photo Row */}
+          <div className={styles.avatarRow}>
+            <label style={{ cursor: "pointer" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={photoUrl} alt="Profile photo" className={styles.profilePhotoAvatar} />
+              <img src={photoUrl} alt="Profile photo" className={styles.avatarImg} />
               <input
                 type="file"
                 accept="image/*"
@@ -59,13 +66,13 @@ export function AccountSettings({ user }: AccountSettingsProps) {
                 style={{ display: "none" }}
               />
             </label>
-            <div className={styles.profilePhotoMeta}>
-              <span className={styles.profilePhotoLabel}>Profile photo</span>
-              <span className={styles.profilePhotoHint}>PNG, JPEG, SVG (Less than 5MB)</span>
+            <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+              <span className={styles.settingLabel}>Profile photo</span>
+              <span className={styles.settingDesc}>PNG, JPEG, SVG (Less than 5MB)</span>
             </div>
           </div>
 
-          {/* Profile Form Fields */}
+          {/* Form Fields */}
           <div className={styles.cleanFormGrid}>
             <div className={styles.cleanFieldGroup}>
               <label className={styles.cleanFieldLabel}>First Name</label>
@@ -113,11 +120,11 @@ export function AccountSettings({ user }: AccountSettingsProps) {
 
             <div className={`${styles.cleanFieldGroup} ${styles.fullWidthField}`}>
               <label className={styles.cleanFieldLabel}>Website</label>
-              <div className={styles.websiteInputContainer}>
-                <span className={styles.websitePrefix}>https://</span>
+              <div className={styles.copyInputGroup}>
+                <span style={{ fontSize: "13px", color: "#64748b", fontWeight: 600 }}>https://</span>
                 <input
                   type="text"
-                  className={`${styles.cleanInput} ${styles.websiteInput}`}
+                  className={styles.copyInputText}
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
                   placeholder="company.com"
@@ -125,17 +132,21 @@ export function AccountSettings({ user }: AccountSettingsProps) {
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </div>
 
-        {/* Preferences Section */}
-        <section style={{ marginTop: "12px" }}>
-          <div className={styles.profileSectionHeader}>
-            <h2 className={styles.profileSectionTitle}>Preferences</h2>
-            <p className={styles.profileSectionSubtitle}>
+      {/* 2. Preferences Section */}
+      <div className={styles.card} style={{ marginTop: "16px" }}>
+        <div className={styles.cardHeader}>
+          <div>
+            <h2 className={styles.cardHeaderTitle}>Preferences</h2>
+            <p className={styles.cardHeaderSubtitle}>
               Manage your application preferences
             </p>
           </div>
+        </div>
 
+        <div className={styles.cardBody}>
           <div className={styles.cleanFormGrid}>
             <div className={styles.cleanFieldGroup}>
               <label className={styles.cleanFieldLabel}>Timezone</label>
@@ -204,54 +215,65 @@ export function AccountSettings({ user }: AccountSettingsProps) {
             </div>
           </div>
 
-          {/* Toggle Switches */}
-          <div style={{ marginTop: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div className={styles.toggleRow}>
-              <label className={styles.switchLabel}>
-                <input
-                  type="checkbox"
-                  className={`${styles.switchInput} ${styles.greenSwitchInput}`}
-                  checked={twentyFourHourFormat}
-                  onChange={(e) => setTwentyFourHourFormat(e.target.checked)}
-                />
-                <span className={styles.greenSwitchSlider} />
-              </label>
-              <label
-                className={styles.toggleMeta}
+          {/* Toggles */}
+          <div style={{ marginTop: "12px" }}>
+            <div className={styles.settingRow}>
+              <div
+                className={styles.settingInfo}
                 onClick={() => setTwentyFourHourFormat(!twentyFourHourFormat)}
+                style={{ cursor: "pointer" }}
               >
-                <span className={styles.toggleTitle}>24 hour time format</span>
-                <span className={styles.toggleDesc}>
-                  Example: 20:00 PM, 12-hour format if switch off
-                </span>
-              </label>
+                <span className={styles.settingLabel}>24 hour time format</span>
+                <span className={styles.settingDesc}>Example: 20:00 PM, 12-hour format if switch off</span>
+              </div>
+              <div className={styles.settingControl}>
+                <label className={styles.switch}>
+                  <input
+                    type="checkbox"
+                    checked={twentyFourHourFormat}
+                    onChange={(e) => setTwentyFourHourFormat(e.target.checked)}
+                  />
+                  <span className={styles.slider} />
+                </label>
+              </div>
             </div>
 
-            <div className={styles.toggleRow}>
-              <label className={styles.switchLabel}>
-                <input
-                  type="checkbox"
-                  className={`${styles.switchInput} ${styles.greenSwitchInput}`}
-                  checked={showActiveDot}
-                  onChange={(e) => setShowActiveDot(e.target.checked)}
-                />
-                <span className={styles.greenSwitchSlider} />
-              </label>
-              <label
-                className={styles.toggleMeta}
+            <div className={styles.settingRow}>
+              <div
+                className={styles.settingInfo}
                 onClick={() => setShowActiveDot(!showActiveDot)}
+                style={{ cursor: "pointer" }}
               >
-                <span className={styles.toggleTitle}>Show active dot</span>
-                <span className={styles.toggleDesc}>
-                  Display a green dot next to your picture if you&apos;re online
-                </span>
-              </label>
+                <span className={styles.settingLabel}>Show active dot</span>
+                <span className={styles.settingDesc}>Display a green dot next to your picture if you&apos;re online</span>
+              </div>
+              <div className={styles.settingControl}>
+                <label className={styles.switch}>
+                  <input
+                    type="checkbox"
+                    checked={showActiveDot}
+                    onChange={(e) => setShowActiveDot(e.target.checked)}
+                  />
+                  <span className={styles.slider} />
+                </label>
+              </div>
             </div>
           </div>
-        </section>
+
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "16px" }}>
+            <button type="button" className={styles.btnPrimary} onClick={handleSave}>
+              {isSaved ? (
+                <>
+                  <Check size={14} color="#ffffff" />
+                  <span>Saved Successfully</span>
+                </>
+              ) : (
+                <span>Save Changes</span>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
-
-

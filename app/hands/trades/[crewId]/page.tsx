@@ -8,18 +8,18 @@ export default async function TradeCrewDetailPage({
   searchParams,
 }: {
   params: Promise<{ crewId: string }>;
-  searchParams: Promise<{ projectId?: string }>;
+  searchParams: Promise<{ tab?: string; projectId?: string; packageId?: string }>;
 }) {
   const [{ crewId }, query] = await Promise.all([params, searchParams]);
 
   return (
-    <div className={`workspace-container ${styles.page}`}>
-      <Suspense fallback={<HandsOverviewSkeleton />}>
-        <TradeCrewDetail
-          crewId={crewId}
-          projectId={query.projectId}
-        />
-      </Suspense>
-    </div>
+    <Suspense fallback={<HandsOverviewSkeleton />}>
+      <TradeCrewDetail
+        crewId={crewId}
+        projectId={query.projectId}
+        tab={query.tab}
+        packageId={query.packageId}
+      />
+    </Suspense>
   );
 }

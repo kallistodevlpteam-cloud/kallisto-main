@@ -56,11 +56,29 @@ export function StudioCreatePage() {
 
   const [showProposalModal, setShowProposalModal] = useState(isProposalIntent);
 
+  const promptParam = searchParams.get("prompt") || searchParams.get("q");
+
   useEffect(() => {
     if (isProposalIntent) {
       setShowProposalModal(true);
+    } else if (promptParam && taskSession.messages.length === 0) {
+      composer.setPrompt(promptParam);
+      taskSession.submitTask({
+        prompt: promptParam,
+        sources: [],
+        selectedProjectId: project.selectedProjectId,
+        projectName: "Consultation & Package Enquiry",
+        selectedIntent: "create",
+        selectedAgent: "proposal",
+        selectedOutputType: "proposal",
+        composerVersion: composer.version,
+        clearComposer: () => composer.setPrompt(""),
+        clearAttachments: () => composer.clearAttachments(),
+        restoreDraft: () => {},
+        getCurrentComposerState: () => ({ prompt: "", attachments: [], version: composer.version }),
+      });
     }
-  }, [isProposalIntent]);
+  }, [isProposalIntent, promptParam]);
 
   const handleCancelProposal = useCallback(() => {
     setShowProposalModal(false);

@@ -78,22 +78,16 @@ export function PortfolioProfileActions({
           <Pencil size={14} aria-hidden="true" />
           <span>Edit Portfolio</span>
         </button>
-      ) : (
-        <Link
-          className={styles.bannerActionButton}
-          href={buildPortfolioEnquiryHref(profile, "proposal")}
-        >
-          <span>Send Enquiry</span>
-        </Link>
-      )}
+      ) : null}
 
       <button
-        className={styles.bannerActionButton}
+        className={styles.bannerIconButton}
         type="button"
         onClick={sharePortfolio}
+        title={shareLabel}
+        aria-label={shareLabel}
       >
-        <Share2 size={14} aria-hidden="true" />
-        <span>{shareLabel}</span>
+        <Share2 size={15} aria-hidden="true" />
       </button>
 
       {isOwner ? (

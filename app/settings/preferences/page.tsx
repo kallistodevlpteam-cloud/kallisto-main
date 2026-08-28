@@ -1,7 +1,5 @@
-import { getAuthenticatedWorkspaceContext } from "@/lib/permissions";
-import { PreferencesSettings } from "@/components/settings/preferences-settings";
+import { redirect } from "next/navigation";
 
-export default async function PreferencesSettingsPage() {
-  const context = await getAuthenticatedWorkspaceContext();
-  return <PreferencesSettings user={context.user} />;
+export default function PreferencesPage() {
+  redirect("/settings/appearance");
 }

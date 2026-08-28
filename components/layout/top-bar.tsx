@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useSyncExternalStore } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -72,8 +72,15 @@ const MODULE_LABEL_MAP: Record<string, string> = {
   overview: "Overview",
 };
 
+const emptySubscribe = () => () => {};
+
 function BreadcrumbNav({ currentPath }: { currentPath: string }) {
   const searchParams = useSearchParams();
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
   const [, setSessionTick] = useState(0);
 
   useEffect(() => {
@@ -92,7 +99,63 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
 
   let items: BreadcrumbItem[];
 
-  if (currentPath.startsWith("/projects/")) {
+
+  if (currentPath.startsWith("/client")) {
+    const parts = currentPath.split("/").filter(Boolean);
+    const subRoute = parts[1] || "overview";
+    const CLIENT_MODULE_LABEL_MAP: Record<string, string> = {
+      overview: "Ask Odin",
+      projects: "Projects",
+      enquiries: "Enquiries",
+      payments: "Payments",
+      providers: "Providers",
+      settings: "Settings",
+      help: "Help & Support",
+    };
+
+    const CLIENT_SETTINGS_LABEL_MAP: Record<string, string> = {
+      profile: "Profile",
+      security: "Security & Login",
+      "project-preferences": "Project Preferences",
+      "project-access": "Project Access",
+      notifications: "Notifications",
+      communication: "Communication Preferences",
+      "payment-methods": "Payment Methods",
+      billing: "Billing & Invoices",
+      appearance: "Appearance",
+      "language-region": "Language & Region",
+      privacy: "Privacy & Data",
+    };
+
+    const currentLabel = CLIENT_MODULE_LABEL_MAP[subRoute] || (subRoute.charAt(0).toUpperCase() + subRoute.slice(1));
+    if (subRoute === "overview") {
+      const activeProjectName = searchParams.get("projectName") || "Kowdiar Villa";
+      items = [
+        { label: "Client Portal" },
+        { label: "Ask Odin", href: "/client/overview" },
+        { label: activeProjectName },
+      ];
+    } else if (subRoute === "settings" && parts.length > 2) {
+      const settingsSection = parts[2];
+      const sectionLabel = CLIENT_SETTINGS_LABEL_MAP[settingsSection] || (settingsSection.charAt(0).toUpperCase() + settingsSection.slice(1));
+      items = [
+        { label: "Client Portal" },
+        { label: "Settings", href: "/client/settings" },
+        { label: sectionLabel },
+      ];
+    } else if (parts.length > 2) {
+      items = [
+        { label: "Client Portal" },
+        { label: currentLabel, href: `/client/${subRoute}` },
+        { label: parts.slice(2).join(" / ") },
+      ];
+    } else {
+      items = [
+        { label: "Client Portal" },
+        { label: currentLabel },
+      ];
+    }
+  } else if (currentPath.startsWith("/projects/")) {
     const parts = currentPath.split("/").filter(Boolean);
     const projectId = parts[1];
     const projectName = PROJECT_NAME_MAP[projectId] || "Project Detail";
@@ -144,7 +207,7 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
       { label: "Clients", href: "/clients" },
       { label: "Client Detail" },
     ];
-  } else if (currentPath.startsWith("/studio")) {
+  } else if (currentPath.startsWith("/studio") || currentPath === "/") {
     items = [
       { label: "Virtual Office" },
       { label: "Hive Studio", href: "/studio" },
@@ -152,7 +215,7 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
     const projectParam =
       searchParams.get("project") ||
       searchParams.get("projectName") ||
-      (typeof window !== "undefined"
+      (mounted && typeof window !== "undefined"
         ? window.localStorage.getItem("kallisto_active_studio_project")
         : null);
 
@@ -367,7 +430,7 @@ export function TopBar({
           onClick={() => onToggleAccountPopover("main")}
           aria-expanded={accountOpen}
         >
-          <span className="avatar-monogram">AA</span>
+          <span className="avatar-monogram">{pathname?.startsWith("/client") ? "AS" : "AA"}</span>
         </button>
 
         {/* ElevenLabs Style Notification Popover Flyout */}

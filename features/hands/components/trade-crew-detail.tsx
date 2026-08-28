@@ -1,173 +1,145 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowLeft,
+  ArrowRight,
   BadgeCheck,
-  Bookmark,
   Briefcase,
   Building2,
   Check,
   CheckCircle2,
   ChevronDown,
-  ChevronRight,
   Clock,
   Columns3,
-  Compass,
   Droplets,
+  GraduationCap,
   Grid3X3,
-  IndianRupee,
+  Heart,
   Layers,
   MapPin,
-  Minus,
-  Plus,
   Radar,
-  Send,
+  Shield,
   ShieldCheck,
   Sparkles,
   Star,
+  TrendingUp,
   Users,
   Zap,
 } from "lucide-react";
+import Image from "next/image";
+import { RupeeIcon } from "@/components/layout/sidebar-icons";
 import { getTradeCrewById, type TradeCrew } from "../services/trade-crews.mock";
+import { TradeCrewOrderPanel } from "./trade-crew-order-panel";
 import { WorkforceRequestDrawer } from "./workforce-request-drawer";
 import styles from "./trade-crew-detail.module.css";
 
 interface TradeCrewDetailProps {
   crewId: string;
   projectId?: string;
+  tab?: string;
+  packageId?: string;
 }
 
-function getBrandInfo(crew: TradeCrew): { name: string; icon: React.ElementType; color: string } {
-  const tradeLower = crew.trade.toLowerCase() + " " + crew.category.toLowerCase();
+type HandsProfileTab = "services" | "overview" | "experience" | "reviews";
 
-  if (tradeLower.includes("electric") || tradeLower.includes("mep")) {
-    return { name: "circuit", icon: Zap, color: "#06b6d4" };
-  }
-  if (tradeLower.includes("plumb") || tradeLower.includes("sanitary")) {
-    return { name: "hydro", icon: Droplets, color: "#38bdf8" };
-  }
-  if (tradeLower.includes("wood") || tradeLower.includes("carpenter") || tradeLower.includes("formwork")) {
-    return { name: "forma", icon: Layers, color: "#10b981" };
-  }
-  if (tradeLower.includes("steel") || tradeLower.includes("rebar") || tradeLower.includes("reinforce")) {
-    return { name: "struct", icon: Grid3X3, color: "#a855f7" };
-  }
-  if (tradeLower.includes("paint") || tradeLower.includes("finish") || tradeLower.includes("coat")) {
-    return { name: "chroma", icon: Sparkles, color: "#f43f5e" };
-  }
-  if (tradeLower.includes("supervisor") || tradeLower.includes("qa") || tradeLower.includes("manage")) {
-    return { name: "siteguard", icon: ShieldCheck, color: "#eab308" };
-  }
-  if (tradeLower.includes("survey") || tradeLower.includes("qs")) {
-    return { name: "geoscan", icon: Compass, color: "#818cf8" };
-  }
-
-  // Default Civil / Masonry
-  return { name: "apex", icon: Building2, color: "#f97316" };
+function SakuraBonsaiTree() {
+  return (
+    <svg width="46" height="46" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      {/* Trunk */}
+      <path d="M24 41C24 35 21 30 22 24C22.5 21 24.5 19 25 16" stroke="#451a03" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M22 28C19 26 17 24 16 22" stroke="#451a03" strokeWidth="2" strokeLinecap="round" />
+      <path d="M23 22C26 20 28 19 30 18" stroke="#451a03" strokeWidth="2" strokeLinecap="round" />
+      {/* Foliage / Blossoms */}
+      <circle cx="25" cy="14" r="7.5" fill="#f472b6" opacity="0.9" />
+      <circle cx="17" cy="19" r="6" fill="#fb7185" opacity="0.85" />
+      <circle cx="32" cy="17" r="6" fill="#f43f5e" opacity="0.85" />
+      <circle cx="22" cy="10" r="5" fill="#fda4af" />
+      <circle cx="29" cy="11" r="4.5" fill="#fbcfe8" />
+      {/* Falling petals */}
+      <circle cx="11" cy="27" r="1.2" fill="#fb7185" opacity="0.7" />
+      <circle cx="36" cy="26" r="1.2" fill="#f43f5e" opacity="0.7" />
+      <circle cx="39" cy="33" r="1" fill="#fda4af" opacity="0.6" />
+      {/* Ground line */}
+      <ellipse cx="24" cy="41" rx="8" ry="1.5" fill="#cbd5e1" />
+    </svg>
+  );
 }
 
-const SECTION_TABS = [
-  { id: "overview", label: "Overview" },
-  { id: "capabilities", label: "Capabilities" },
-  { id: "reviews", label: "Reviews" },
-  { id: "availability", label: "Availability" },
-];
-
-const SAVED_CREWS_STORAGE_KEY = "kallisto_hands_saved_crews";
-
-function formatDateRange(startStr: string, days: number): string {
-  try {
-    const start = new Date(startStr);
-    if (isNaN(start.getTime())) return `${days} Working Days`;
-    const end = new Date(start);
-    end.setDate(start.getDate() + Math.max(1, days) - 1);
-    const opt: Intl.DateTimeFormatOptions = { day: "numeric", month: "short", year: "numeric" };
-    return `${start.toLocaleDateString("en-GB", opt)} → ${end.toLocaleDateString("en-GB", opt)} (${days} Working Days)`;
-  } catch {
-    return `${days} Working Days`;
-  }
+function AutumnBonsaiTree() {
+  return (
+    <svg width="46" height="46" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      {/* Trunk */}
+      <path d="M24 41C24 35 22 31 23 25C23.5 22 25.5 20 26 17" stroke="#451a03" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M23 29C20 27 18 25 17 23" stroke="#451a03" strokeWidth="2" strokeLinecap="round" />
+      <path d="M24 23C27 21 29 20 31 19" stroke="#451a03" strokeWidth="2" strokeLinecap="round" />
+      {/* Foliage */}
+      <circle cx="25" cy="14" r="7.5" fill="#f59e0b" opacity="0.9" />
+      <circle cx="17" cy="19" r="6" fill="#d97706" opacity="0.85" />
+      <circle cx="32" cy="17" r="6" fill="#b45309" opacity="0.85" />
+      <circle cx="22" cy="10" r="5" fill="#fbbf24" />
+      <circle cx="29" cy="11" r="4.5" fill="#fde68a" />
+      {/* Falling leaves */}
+      <circle cx="12" cy="27" r="1.2" fill="#d97706" opacity="0.7" />
+      <circle cx="37" cy="26" r="1.2" fill="#f59e0b" opacity="0.7" />
+      <circle cx="38" cy="34" r="1" fill="#fbbf24" opacity="0.6" />
+      {/* Ground line */}
+      <ellipse cx="24" cy="41" rx="8" ry="1.5" fill="#cbd5e1" />
+    </svg>
+  );
 }
 
-export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
+function DiamondBulletIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="#94a3b8" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style={{ flexShrink: 0 }}>
+      <path d="M8 1L10 6L8 8L6 6L8 1Z" />
+      <path d="M15 8L10 10L8 8L10 6L15 8Z" />
+      <path d="M8 15L6 10L8 8L10 10L8 15Z" />
+      <path d="M1 8L6 6L8 8L6 10L1 8Z" />
+    </svg>
+  );
+}
+
+function TradeCrewLogoTile({ name, trade }: { name: string; trade: string }) {
+  const initials = name
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+
+  return (
+    <div className={styles.profileBrandVisualTile}>
+      <span className={styles.profileBrandInitials}>{initials || "HC"}</span>
+    </div>
+  );
+}
+
+export function TradeCrewDetail({ crewId, projectId, tab = "services", packageId }: TradeCrewDetailProps) {
   const crew: TradeCrew | null = useMemo(() => getTradeCrewById(crewId), [crewId]);
-  const brand = useMemo(() => (crew ? getBrandInfo(crew) : null), [crew]);
-  const BrandIcon = brand?.icon || Building2;
-
-  // Section nav state
-  const [activeTab, setActiveTab] = useState<string>("overview");
-
-  // Sticky Request Panel state
-  const [selectedProjectId, setSelectedProjectId] = useState<string>(projectId || "project-villa-01");
-  const [startDate, setStartDate] = useState<string>("2026-09-12");
-  const [durationDays, setDurationDays] = useState<number>(15);
-  const [workerCount, setWorkerCount] = useState<number>(crew?.crewComposition?.totalWorkforce || 8);
-
-  // Saved / Bookmark state
+  const [activeTab, setActiveTab] = useState<HandsProfileTab>(
+    (tab as HandsProfileTab) || "services"
+  );
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [isSaved, setIsSaved] = useState<boolean>(false);
 
-  // Workforce Request Drawer modal state
-  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-
-  // Load saved state from storage
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(SAVED_CREWS_STORAGE_KEY);
-      if (raw) {
-        const ids: string[] = JSON.parse(raw);
-        setIsSaved(ids.includes(crewId));
-      }
-    } catch {
-      // ignore
-    }
-  }, [crewId]);
-
-  // Toggle save
-  const handleToggleSave = () => {
-    try {
-      const raw = localStorage.getItem(SAVED_CREWS_STORAGE_KEY);
-      const ids: string[] = raw ? JSON.parse(raw) : [];
-      let updated: string[];
-      if (ids.includes(crewId)) {
-        updated = ids.filter((id) => id !== crewId);
-        setIsSaved(false);
-      } else {
-        updated = [...ids, crewId];
-        setIsSaved(true);
-      }
-      localStorage.setItem(SAVED_CREWS_STORAGE_KEY, JSON.stringify(updated));
-    } catch {
-      setIsSaved((prev) => !prev);
-    }
-  };
-
-  const scrollToSection = (sectionId: string) => {
-    setActiveTab(sectionId);
-    const element = document.getElementById(sectionId);
-    if (element) {
-      const yOffset = -70; // offset for sticky section nav
-      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: "smooth" });
-    }
-  };
+  const profileTabs: { id: HandsProfileTab; label: string; count?: number }[] = [
+    { id: "services", label: "Services", count: 2 },
+    { id: "overview", label: "Overview" },
+    { id: "experience", label: "Experience & Credentials", count: crew?.certifications.length || 2 },
+    { id: "reviews", label: "Reviews", count: crew?.reviewCount || 24 },
+  ];
 
   if (!crew) {
     return (
-      <div className={styles.detailContainer}>
-        <div className={styles.backNavRow}>
-          <Link href="/hands/trades" className={styles.backLink}>
-            <ArrowLeft size={16} />
-            <span>Back to Find Trades</span>
-          </Link>
-        </div>
-        <div className={styles.identityCard} style={{ textAlign: "center", padding: "40px" }}>
-          <h2>Crew Profile Not Found</h2>
-          <p style={{ color: "#64748b" }}>
+      <div className={styles.page}>
+        <div style={{ textAlign: "center", padding: "60px 20px" }}>
+          <h2>Trade Crew Not Found</h2>
+          <p style={{ color: "#64748b", marginTop: "8px" }}>
             The requested trade crew record could not be retrieved from the Kallisto Hands registry.
           </p>
-          <div style={{ marginTop: "16px" }}>
-            <Link href="/hands/trades" className={styles.dominantCtaBtn}>
+          <div style={{ marginTop: "20px" }}>
+            <Link href="/hands/trades" className={styles.minimalBookNowBtn} style={{ maxWidth: "220px", margin: "0 auto" }}>
               Return to Trade Directory
             </Link>
           </div>
@@ -176,103 +148,109 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
     );
   }
 
-  // Calculate live estimate
-  const estimatedCost = workerCount * crew.dailyRate * durationDays;
+  // Pre-configured packages for this trade crew
+  const tradePackages = [
+    {
+      id: "std-gang",
+      title: `${crew.trade} Standard Gang`,
+      startingPrice: crew.dailyRate * (crew.crewSizeMin || 4) * 12,
+      durationText: "12 working days",
+      pricingModelText: "per gang / shift",
+      features: [
+        `Verified squad of ${crew.crewSizeMin || 4} tradesmen & helpers`,
+        "Daily shift progress reporting",
+        "Lead supervisor coordination",
+        "12 working days typical turnaround",
+        "2 site inspection checkpoints included",
+      ],
+      iconType: "sakura",
+    },
+    {
+      id: "scaled-squad",
+      title: `${crew.trade} Fast-Track Squad`,
+      startingPrice: crew.dailyRate * Math.min(crew.crewSizeMax || 16, (crew.crewSizeMin || 4) * 2) * 6,
+      durationText: "6 working days",
+      pricingModelText: "per gang / shift",
+      features: [
+        `High-capacity squad of ${Math.min(crew.crewSizeMax || 16, (crew.crewSizeMin || 4) * 2)} workers`,
+        "Rapid mobilization in 48 hours",
+        "Dedicated foreman & QA inspections",
+        "6 working days fast-track execution",
+        "Daily productivity sign-offs",
+      ],
+      iconType: "autumn",
+    },
+  ];
 
   return (
-    <div className={styles.detailContainer}>
-      {/* Two Primary Sections Layout: 50% Left Profile Details & 50% Right Deployment Request */}
-      <div className={styles.twoColLayout}>
-        {/* ─── LEFT SECTION (50%): Review the Provider (Hero, Metrics, Tabs & Details) ─── */}
-        <main className={styles.leftStack}>
-          {/* 1. Professional Workforce Procurement Profile Header */}
-          <section className={styles.workforceHeroSection} aria-label="Team Profile Overview">
-            {/* Top Row: Identity Block + Rate Block */}
-            <div className={styles.heroMainRow}>
-              <div className={styles.heroIdentityGroup}>
-                {/* Compact Team Identity Visual Block */}
-                <div className={styles.teamVisualBlock} aria-hidden="true">
-                  <div className={styles.teamVisualGrid} />
-                  <div className={styles.teamVisualBrand}>
-                    <div
-                      className={styles.teamVisualIconWrap}
-                      style={{
-                        color: brand?.color || "#06b6d4",
-                        filter: `drop-shadow(0 0 8px ${brand?.color || "#06b6d4"}66)`,
-                      }}
-                    >
-                      <BrandIcon size={20} strokeWidth={2.4} />
-                    </div>
-                    <span className={styles.teamVisualName}>
-                      {brand?.name}
-                      <span className={styles.teamVisualDot}>°</span>
-                    </span>
-                  </div>
+    <div className={styles.page}>
+      <div className={styles.profileTwoColumnLayout}>
+        {/* LEFT SECTION: PROFILE DETAILS & PORTFOLIO */}
+        <main className={styles.profileReviewSection}>
+          {/* APPROVED THEMED PROFILE HERO CARD */}
+          <section className={styles.profileHeroCard}>
+            {/* 1. Top Identity & Rate Row */}
+            <div className={styles.profileHeroHeaderRow}>
+              <div className={styles.profileHeroIdentityGroup}>
+                {/* Brand Visual Logo Tile */}
+                <div className={styles.profileBrandVisualBlock}>
+                  <TradeCrewLogoTile name={crew.name} trade={crew.trade} />
                 </div>
 
                 {/* Identity Details */}
-                <div className={styles.identityDetails}>
-                  {/* Title + Verified Badge */}
-                  <div className={styles.titleRow}>
-                    <h1 className={styles.teamName}>{crew.name}</h1>
-                    {crew.verified && (
-                      <BadgeCheck
-                        size={19}
-                        className={styles.verifiedBlueIcon}
-                        aria-label="Verified Kallisto Trade Crew"
-                      />
-                    )}
+                <div className={styles.profileIdentityDetails}>
+                  <div className={styles.profileTitleRow}>
+                    <h1 className={styles.profileTeamName}>{crew.name}</h1>
+                    <BadgeCheck size={20} className={styles.profileVerifiedBlueIcon} aria-label="Verified trade crew" />
                   </div>
-
-                  {/* Specialization Line */}
-                  <div className={styles.specializationRow}>
-                    <span className={styles.categoryText}>{crew.category}</span>
-                    <span className={styles.bulletSeparator}>·</span>
-                    <span className={styles.skillsText}>
-                      {crew.skills?.slice(0, 2).join(" & ") || "RCC Brickwork & Plastering"}
-                    </span>
+                  <div className={styles.profileSpecializationRow}>
+                    <span>{crew.trade}</span>
+                    <span className={styles.profileBulletSeparator}>·</span>
+                    <span>{crew.category}</span>
+                    <span className={styles.profileBulletSeparator}>·</span>
+                    <span>Lead: {crew.leadName} ({crew.leadRole})</span>
                   </div>
                 </div>
               </div>
 
-              {/* Rate Block in Left Section */}
-              <div className={styles.heroRateBlock}>
-                <div className={styles.heroRateValue}>
-                  <IndianRupee size={20} strokeWidth={2.8} className={styles.heroRupeeIcon} aria-hidden="true" />
+              {/* Rate Block in Top Right (Single Line with Vector Rupee) */}
+              <div className={styles.profileHeroRateBlock}>
+                <div className={styles.profileHeroRateValue}>
+                  <RupeeIcon size={19} className={styles.profileHeroRupeeIcon} aria-hidden="true" />
                   <span>{crew.dailyRate.toLocaleString("en-IN")}</span>
+                  <span className={styles.profileHeroRateLabel}>/DAY PER WORKER</span>
                 </div>
-                <span className={styles.heroRateLabel}>/DAY / WORKER</span>
               </div>
             </div>
 
-            {/* Service Area, Radius & Quick Actions Strip */}
-            <div className={styles.serviceAreaSubRow}>
-              <div className={styles.serviceAreaWrapper}>
-                <MapPin size={15} className={styles.locationPinIcon} aria-hidden="true" />
+            {/* 2. Service Area, Radius & Quick Actions Strip */}
+            <div className={styles.profileServiceAreaSubRow}>
+              <div className={styles.profileServiceAreaWrapper}>
+                <MapPin size={15} className={styles.profileLocationPinIcon} aria-hidden="true" />
                 <span>
-                  Service Area: <strong className={styles.serviceAreaText}>{crew.location}</strong>
+                  Service Area: <strong className={styles.profileServiceAreaText}>{crew.location}, {crew.state}</strong>
                 </span>
               </div>
 
-              <div className={styles.serviceAreaRightActions}>
-                <div className={styles.serviceRadiusBadge}>
-                  <Radar size={13} className={styles.radiusIcon} aria-hidden="true" />
+              <div className={styles.profileServiceAreaRightActions}>
+                <div className={styles.profileServiceRadiusBadge}>
+                  <Radar size={13} className={styles.profileRadiusIcon} aria-hidden="true" />
                   <span>45 km service radius</span>
                 </div>
 
                 <button
                   type="button"
-                  className={`${styles.iconActionButton} ${isSaved ? styles.iconActionButtonActive : ""}`}
-                  onClick={handleToggleSave}
-                  aria-label={isSaved ? "Remove from shortlist" : "Add to shortlist"}
-                  title={isSaved ? "Remove from shortlist" : "Add to shortlist"}
+                  className={styles.profileIconActionButton}
+                  onClick={() => setIsSaved((prev) => !prev)}
+                  title={isSaved ? "Saved in bookmarks" : "Save trade crew"}
+                  aria-label="Save trade crew"
                 >
-                  <Bookmark size={13} strokeWidth={2.2} fill={isSaved ? "currentColor" : "none"} aria-hidden="true" />
+                  <Heart size={14} fill={isSaved ? "#ef4444" : "none"} color={isSaved ? "#ef4444" : "#64748b"} />
                 </button>
 
                 <Link
-                  href={`/hands/trades?compare=${crew.id}`}
-                  className={styles.iconActionButton}
+                  href={`/hands/trades?compare=${encodeURIComponent(crew.id)}`}
+                  className={styles.profileIconActionButton}
                   aria-label="Compare with other trade crews"
                   title="Compare with other trade crews"
                 >
@@ -281,482 +259,451 @@ export function TradeCrewDetail({ crewId, projectId }: TradeCrewDetailProps) {
               </div>
             </div>
 
-            {/* 3. Strong Scannable Metrics Row */}
-            <div className={styles.proofMetricsGrid}>
-              <div className={styles.metricTile}>
-                <div className={styles.metricTileHeader}>
-                  <Briefcase size={15} className={styles.metricCardIcon} aria-hidden="true" />
-                  <span className={styles.metricSubLabel}>Experience</span>
+            {/* 3. Strong Scannable Proof Metrics Row (4 Columns) */}
+            <div className={styles.profileProofMetricsGrid}>
+              <div className={styles.profileMetricTile}>
+                <div className={styles.profileMetricTileHeader}>
+                  <Briefcase size={14} className={styles.profileMetricCardIcon} aria-hidden="true" />
+                  <span className={styles.profileMetricSubLabel}>Experience</span>
                 </div>
-                <span className={styles.metricBigValue}>{crew.experienceYears} yrs</span>
+                <span className={styles.profileMetricBigValue}>{crew.experienceYears} yrs</span>
               </div>
 
-              <div className={styles.metricTile}>
-                <div className={styles.metricTileHeader}>
-                  <Star size={15} fill="#eab308" color="#eab308" className={styles.metricCardIcon} aria-hidden="true" />
-                  <span className={styles.metricSubLabel}>{crew.reviewCount} Reviews</span>
+              <div className={styles.profileMetricTile}>
+                <div className={styles.profileMetricTileHeader}>
+                  <Star size={14} fill="#eab308" color="#eab308" className={styles.profileMetricCardIcon} aria-hidden="true" />
+                  <span className={styles.profileMetricSubLabel}>{crew.reviewCount} Reviews</span>
                 </div>
-                <span className={styles.metricBigValue}>{crew.rating.toFixed(1)}</span>
+                <span className={styles.profileMetricBigValue}>{crew.rating.toFixed(1)}</span>
               </div>
 
-              <div className={styles.metricTile}>
-                <div className={styles.metricTileHeader}>
-                  <Building2 size={15} className={styles.metricCardIcon} aria-hidden="true" />
-                  <span className={styles.metricSubLabel}>Projects Completed</span>
+              <div className={styles.profileMetricTile}>
+                <div className={styles.profileMetricTileHeader}>
+                  <Building2 size={14} className={styles.profileMetricCardIcon} aria-hidden="true" />
+                  <span className={styles.profileMetricSubLabel}>Deployments Completed</span>
                 </div>
-                <span className={styles.metricBigValue}>{crew.completedJobs}+</span>
+                <span className={styles.profileMetricBigValue}>{crew.completedJobs}+</span>
               </div>
 
-              <div className={styles.metricTile}>
-                <div className={styles.metricTileHeader}>
-                  <Users size={15} className={styles.metricCardIcon} aria-hidden="true" />
-                  <span className={styles.metricSubLabel}>Deployable Crew / Site</span>
+              <div className={styles.profileMetricTile}>
+                <div className={styles.profileMetricTileHeader}>
+                  <Users size={14} className={styles.profileMetricCardIcon} aria-hidden="true" />
+                  <span className={styles.profileMetricSubLabel}>Gang Capacity</span>
                 </div>
-                <span className={styles.metricBigValue}>{crew.crewSizeMin}–{crew.crewSizeMax}</span>
+                <span className={styles.profileMetricBigValue}>{crew.crewSizeMin}-{crew.crewSizeMax} workers</span>
               </div>
             </div>
-
           </section>
 
-          {/* 2. Horizontal Section Navigation Tabs */}
-          <nav className={styles.profileTabs} aria-label="Crew profile sections">
-            {SECTION_TABS.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                role="tab"
-                aria-selected={activeTab === tab.id}
-                className={`${styles.profileTab} ${activeTab === tab.id ? styles.profileTabActive : ""}`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                {tab.label}
-              </button>
-            ))}
+          {/* SEGMENTED TAB NAVIGATION (PILL GEOMETRY) */}
+          <nav className={styles.profileSegmentedTabs} aria-label="Trade crew profile sections">
+            {profileTabs.map((profileTab) => {
+              const isActive = activeTab === profileTab.id;
+
+              return (
+                <button
+                  key={profileTab.id}
+                  type="button"
+                  onClick={() => setActiveTab(profileTab.id)}
+                  className={`${styles.profileSegmentedTab} ${isActive ? styles.profileSegmentedTabActive : ""}`}
+                >
+                  <span>{profileTab.label}</span>
+                  {profileTab.count !== undefined ? (
+                    <span className={isActive ? styles.profileTabCountActive : styles.profileTabCountMuted}>
+                      {profileTab.count}
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
           </nav>
 
-          {/* 3. Section: Overview */}
-          {activeTab === "overview" && (
-            <section id="overview" className={styles.sectionCard} aria-labelledby="heading-overview">
-              <div className={styles.sectionHeaderRow}>
-                <h2 id="heading-overview" className={styles.sectionTitle}>Overview</h2>
-                <span className={styles.sectionSubtitle}>About the crew & capabilities</span>
-              </div>
+          {/* TAB 1: SERVICES & WORKFORCE PACKAGES */}
+          {activeTab === "services" ? (
+            <div className={styles.profileServicesContainer}>
+              <section className={styles.profileServicesGrid}>
+                {tradePackages.map((pkg, idx) => {
+                  const isSelected = (packageId || "std-gang") === pkg.id;
 
-              <p className={styles.aboutParagraph}>{crew.about}</p>
-
-              <h3 className={styles.bulletListTitle}>Core capabilities</h3>
-              <ul className={styles.coreCapabilitiesList}>
-                {crew.coreCapabilities?.map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {/* 4. Section: Technical Capabilities */}
-          {activeTab === "capabilities" && (
-            <section id="capabilities" className={styles.sectionCard} aria-labelledby="heading-capabilities">
-              <div className={styles.capabilitiesStepGrid}>
-                {crew.capabilityRatings?.map((cap, idx) => (
-                  <article key={cap.name} className={styles.capabilityStepCard}>
-                    <div className={styles.capCardTopRow}>
-                      <span className={styles.capMetricTimeline}>
-                        {cap.timelineOrMetric || (cap.verifiedSites ? `${cap.verifiedSites} verified sites` : "Standard shift")}
-                      </span>
-                      <span className={styles.capStepBadge}>{cap.step || `STEP ${idx + 1}`}</span>
-                    </div>
-
-                    <h3 className={styles.capStepTitle}>{cap.name}</h3>
-
-                    {cap.description && (
-                      <p className={styles.capStepDescription}>{cap.description}</p>
-                    )}
-                  </article>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* 5. Section: Client Reviews */}
-          {activeTab === "reviews" && (
-            <section id="reviews" className={styles.sectionCard} aria-labelledby="heading-reviews">
-              <div className={styles.sectionHeaderRow}>
-                <h2 id="heading-reviews" className={styles.sectionTitle}>Our Customer Reviews</h2>
-                <span className={styles.sectionSubtitle}>Audited ratings from verified clients & contractors</span>
-              </div>
-
-              {/* Top Overview: Score Hero Card (Left) + Star Breakdown (Right) */}
-              <div className={styles.reviewsHeroContainer}>
-                {/* Left Card: 4.3 / 4.9 Score + 5 Stars + Total Ratings */}
-                <div className={styles.scoreHeroCard}>
-                  <span className={styles.scoreHeroValue}>
-                    {crew.reviewsBreakdown?.overallScore.toFixed(1) || "4.9"}
-                  </span>
-                  <div className={styles.scoreHeroStars} aria-label={`${crew.reviewsBreakdown?.overallScore || 4.9} out of 5 stars`}>
-                    {[1, 2, 3, 4, 5].map((s) => (
-                      <Star key={s} size={18} fill="#6366f1" color="#6366f1" />
-                    ))}
-                  </div>
-                  <span className={styles.scoreHeroCount}>
-                    {crew.reviewsBreakdown?.totalRatings || crew.reviewCount || 42} Ratings
-                  </span>
-                </div>
-
-                {/* Right Breakdown: 5.0, 4.0, 3.0, 2.0, 1.0 */}
-                <div className={styles.starDistributionList}>
-                  {crew.reviewsBreakdown?.starDistribution?.map((item) => (
-                    <div key={item.starLabel} className={styles.starDistRow}>
-                      <span className={styles.starDistLabel}>{item.starLabel}</span>
-                      <div className={styles.starDistTrack} aria-hidden="true">
-                        <div
-                          className={styles.starDistFill}
-                          style={{ width: `${item.percentage}%` }}
-                        />
-                      </div>
-                      <span className={styles.starDistCount}>{item.countLabel}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Customer Reviews List */}
-              <div className={styles.customerReviewsList}>
-                {crew.reviewsBreakdown?.testimonials.map((t) => (
-                  <article key={t.id} className={styles.customerReviewItem}>
-                    <div className={styles.reviewHeaderRow}>
-                      <div className={styles.reviewUserWrap}>
-                        <div className={styles.reviewAvatar} aria-hidden="true">
-                          {t.author.charAt(0)}
+                  return (
+                    <article className={styles.servicePackageCard} key={pkg.id}>
+                      <div className={styles.serviceCardHeader}>
+                        <div className={styles.serviceCardTitleGroup}>
+                          <h2 className={styles.serviceCardTitle}>{pkg.title}</h2>
+                          <div className={styles.servicePriceBlock}>
+                            <span className={styles.servicePriceMain}>
+                              ₹{pkg.startingPrice.toLocaleString("en-IN")}
+                            </span>
+                            <span className={styles.servicePriceSub}>{pkg.pricingModelText}</span>
+                          </div>
                         </div>
-                        <div className={styles.reviewUserMeta}>
-                          <h3 className={styles.reviewUserName}>{t.author}</h3>
-                          <span className={styles.reviewDate}>{t.date}</span>
+
+                        <div className={styles.serviceCardArtWrap} aria-hidden="true">
+                          {pkg.iconType === "sakura" ? <SakuraBonsaiTree /> : <AutumnBonsaiTree />}
                         </div>
                       </div>
 
-                      <div className={styles.reviewStarsRow} aria-label={`${t.rating} out of 5 stars`}>
-                        {[1, 2, 3, 4, 5].map((s) => (
-                          <Star
-                            key={s}
-                            size={14}
-                            fill={s <= t.rating ? "#6366f1" : "none"}
-                            color={s <= t.rating ? "#6366f1" : "#cbd5e1"}
-                            strokeWidth={s <= t.rating ? 0 : 2}
-                            aria-hidden="true"
-                          />
-                        ))}
+                      <div className={styles.serviceScopeDescription}>
+                        Coordinated professional {crew.trade.toLowerCase()} gang with defined deliverables, site foreman supervision, and muster log reports.
                       </div>
-                    </div>
 
-                    <p className={styles.reviewComment}>{t.comment}</p>
-
-                    {t.photos && t.photos.length > 0 && (
-                      <div className={styles.reviewPhotosRow}>
-                        {t.photos.map((photo, pIdx) => (
-                          <img
-                            key={pIdx}
-                            src={photo}
-                            alt={`Site work photo ${pIdx + 1} by ${t.author}`}
-                            className={styles.reviewThumbPhoto}
-                            loading="lazy"
-                          />
+                      <ul className={styles.serviceFeatureList}>
+                        {pkg.features.map((feature, fIdx) => (
+                          <li key={fIdx} className={styles.serviceFeatureItem}>
+                            <DiamondBulletIcon />
+                            <span>{feature}</span>
+                          </li>
                         ))}
-                      </div>
-                    )}
-                  </article>
-                ))}
-              </div>
-            </section>
-          )}
+                      </ul>
 
-          {/* 7. Section: Availability */}
-          {activeTab === "availability" && (
-            <section id="availability" className={styles.sectionCard} aria-labelledby="heading-availability">
-              <div className={styles.sectionHeaderRow}>
-                <h2 id="heading-availability" className={styles.sectionTitle}>Availability</h2>
-                <span className={styles.sectionSubtitle}>Current deployment calendar</span>
-              </div>
+                      <Link
+                        className={isSelected ? styles.serviceActionButtonActive : styles.serviceActionButtonSecondary}
+                        href={`/hands/trades/${crew.id}/request?packageId=${encodeURIComponent(pkg.id)}${
+                          projectId ? `&projectId=${projectId}` : ""
+                        }`}
+                      >
+                        {isSelected ? "Selected ✓" : "Request Gang"}
+                      </Link>
+                    </article>
+                  );
+                })}
+              </section>
 
-              <div className={styles.availabilityCardContent}>
-                <h3 className={styles.calendarMonthTitle}>
-                  {crew.availabilitySchedule?.monthName} {crew.availabilitySchedule?.year}
-                </h3>
-
-                <div className={styles.calendarGrid}>
-                  {crew.availabilitySchedule?.days.map((day, idx) => (
-                    <div key={idx} className={styles.calendarDayCell}>
-                      <span className={styles.calendarWeekday}>{day.weekday}</span>
-                      <span className={styles.calendarDayNum}>{day.day}</span>
-                      <span
-                        className={
-                          day.status === "available"
-                            ? styles.statusDotAvailable
-                            : day.status === "partially_available"
-                            ? styles.statusDotPartial
-                            : styles.statusDotDeployed
-                        }
-                        title={day.status}
-                        aria-label={`Day ${day.day}: ${day.status}`}
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                <div className={styles.legendRow}>
-                  <div className={styles.legendItem}>
-                    <span className={styles.statusDotAvailable} aria-hidden="true" />
-                    <span>Available</span>
-                  </div>
-                  <div className={styles.legendItem}>
-                    <span className={styles.statusDotPartial} aria-hidden="true" />
-                    <span>Partially available</span>
-                  </div>
-                  <div className={styles.legendItem}>
-                    <span className={styles.statusDotDeployed} aria-hidden="true" />
-                    <span>Deployed</span>
-                  </div>
-                </div>
-
-                <div className={styles.availabilityStatusBanner}>
-                  <div>
-                    <div className={styles.bannerLabel}>Next available:</div>
-                    <div className={styles.bannerValue}>
-                      {crew.availabilitySchedule?.nextAvailableDate || "Immediate"}
-                    </div>
-                  </div>
-                  <div>
-                    <div className={styles.bannerLabel}>Current deployment:</div>
-                    <div className={styles.bannerValue}>
-                      {crew.availabilitySchedule?.currentDeploymentText || "None (Ready for site dispatch)"}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-          )}
-        </main>
-
-        {/* ─── RIGHT SECTION (50%): Deployment Request & Booking Configuration ─── */}
-        <aside className={styles.rightStack}>
-          <div className={styles.stickyPanelWrap}>
-            <div className={styles.stickyRequestPanel}>
-              {/* Title Row: Left side Request Deployment + Right side Project Selection */}
-              <div className={styles.requestPanelHeader}>
-                <h2 className={styles.requestPanelTitle}>Request Deployment</h2>
-
-                <div className={styles.headerProjectSelectGroup}>
-                  <label htmlFor="req-project-select" className={styles.headerProjectLabel}>
-                    Project:
-                  </label>
-                  <div className={styles.headerSelectWrapper}>
-                    <Building2 size={13} className={styles.headerProjectIcon} aria-hidden="true" />
-                    <select
-                      id="req-project-select"
-                      className={styles.headerSelectInput}
-                      value={selectedProjectId}
-                      onChange={(e) => setSelectedProjectId(e.target.value)}
-                    >
-                      <option value="project-villa-01">Villa Aluva — Structural Phase</option>
-                      <option value="project-skyline-02">Skyline Horizon Commercial</option>
-                      <option value="project-green-03">Green Meadows Residence</option>
-                    </select>
-                    <ChevronDown size={13} className={styles.headerSelectChevron} aria-hidden="true" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Mobilization Start Date */}
-              <div className={styles.fieldGroup}>
-                <div className={styles.fieldLabelRow}>
-                  <label htmlFor="req-start-date" className={styles.fieldLabel}>
-                    Mobilization Start Date
-                  </label>
-                </div>
-                <input
-                  id="req-start-date"
-                  type="date"
-                  className={styles.dateInput}
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-                <span className={styles.dateRangeResultBadge}>
-                  {formatDateRange(startDate, durationDays)}
-                </span>
-              </div>
-
-              {/* Duration in Days */}
-              <div className={styles.fieldGroup}>
-                <div className={styles.fieldLabelRow}>
-                  <label htmlFor="req-duration-input" className={styles.fieldLabel}>
-                    Deployment Duration
-                  </label>
-                  <span className={styles.fieldHelperHint}>Working days</span>
-                </div>
-                <div className={styles.stepperRow}>
-                  <button
-                    type="button"
-                    className={styles.stepperBtn}
-                    onClick={() => setDurationDays((prev) => Math.max(1, prev - 1))}
-                    aria-label="Decrease duration by 1 day"
-                  >
-                    <Minus size={14} />
-                  </button>
-                  <div className={styles.stepperInputWrap}>
-                    <input
-                      id="req-duration-input"
-                      type="number"
-                      min="1"
-                      max="180"
-                      className={styles.stepperNumberInput}
-                      value={durationDays}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value, 10);
-                        setDurationDays(isNaN(val) ? 1 : Math.max(1, Math.min(180, val)));
-                      }}
-                      aria-label="Duration in days"
-                    />
-                    <span className={styles.stepperUnitLabel}>days</span>
-                  </div>
-                  <button
-                    type="button"
-                    className={styles.stepperBtn}
-                    onClick={() => setDurationDays((prev) => prev + 1)}
-                    aria-label="Increase duration by 1 day"
-                  >
-                    <Plus size={14} />
-                  </button>
-                </div>
-                <div className={styles.quickPresetsRow} role="group" aria-label="Duration quick presets">
-                  {[
-                    { days: 6, label: "6d (1 Wk)" },
-                    { days: 12, label: "12d (2 Wks)" },
-                    { days: 15, label: "15d" },
-                    { days: 24, label: "24d (1 Mo)" },
-                  ].map((item) => (
-                    <button
-                      key={item.days}
-                      type="button"
-                      className={`${styles.presetChip} ${durationDays === item.days ? styles.presetChipActive : ""}`}
-                      onClick={() => setDurationDays(item.days)}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Crew Size */}
-              <div className={styles.fieldGroup}>
-                <div className={styles.fieldLabelRow}>
-                  <label htmlFor="req-crew-size-input" className={styles.fieldLabel}>
-                    Crew Size
-                  </label>
-                  <span className={styles.fieldHelperHint}>Min {crew.crewSizeMin} · Max {crew.crewSizeMax}</span>
-                </div>
-                <div className={styles.stepperRow}>
-                  <button
-                    type="button"
-                    className={styles.stepperBtn}
-                    onClick={() => setWorkerCount((prev) => Math.max(crew.crewSizeMin, prev - 1))}
-                    aria-label="Decrease crew size by 1 worker"
-                  >
-                    <Minus size={14} />
-                  </button>
-                  <div className={styles.stepperInputWrap}>
-                    <input
-                      id="req-crew-size-input"
-                      type="number"
-                      min={crew.crewSizeMin}
-                      max={crew.crewSizeMax}
-                      className={styles.stepperNumberInput}
-                      value={workerCount}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value, 10);
-                        setWorkerCount(isNaN(val) ? crew.crewSizeMin : Math.max(crew.crewSizeMin, Math.min(crew.crewSizeMax, val)));
-                      }}
-                      aria-label="Crew size in workers"
-                    />
-                    <span className={styles.stepperUnitLabel}>workers</span>
-                  </div>
-                  <button
-                    type="button"
-                    className={styles.stepperBtn}
-                    onClick={() => setWorkerCount((prev) => Math.min(crew.crewSizeMax, prev + 1))}
-                    aria-label="Increase crew size by 1 worker"
-                  >
-                    <Plus size={14} />
-                  </button>
-                </div>
-                <div className={styles.quickPresetsRow} role="group" aria-label="Crew size quick presets">
-                  {[
-                    { count: 4, label: "4 (Min)" },
-                    { count: 8, label: "8 (Std Gang)" },
-                    { count: 12, label: "12 (Squad)" },
-                    { count: 16, label: "16 (Double)" },
-                  ].map((item) => (
-                    <button
-                      key={item.count}
-                      type="button"
-                      className={`${styles.presetChip} ${workerCount === item.count ? styles.presetChipActive : ""}`}
-                      onClick={() => setWorkerCount(item.count)}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-                <span className={styles.fieldSubHelper}>
-                  Minimum gang: {crew.crewSizeMin} masons/helpers · Scalable up to {crew.crewSizeMax} workers per shift
-                </span>
-              </div>
-
-              {/* Live Cost Calculation Summary Box */}
-              <div className={styles.costSummaryBox}>
-                <div className={styles.costCalcFormula}>
-                  {workerCount} Workers × ₹{crew.dailyRate.toLocaleString("en-IN")} / Day × {durationDays} Days
-                </div>
-                <div className={styles.costTotalRow}>
-                  <span className={styles.costTotalLabel}>Estimated Cost</span>
-                  <span className={styles.costTotalAmount}>
-                    ₹{estimatedCost.toLocaleString("en-IN")}
-                  </span>
-                </div>
-                <p className={styles.costDisclaimerSubtext}>
-                  *Standard 8-hour shift rate. Excludes GST (18%), site accommodation allowances, scaffolding, and raw materials.
+              {/* Unique Request Banner Card */}
+              <article className={styles.uniqueRequestCard}>
+                <h3 className={styles.uniqueRequestTitle}>Custom Workforce Scope</h3>
+                <p className={styles.uniqueRequestDesc}>
+                  Need a specialized trade squad, multi-shift deployment, or custom gang scale? Talk with our workforce deployment desk.
                 </p>
-              </div>
-
-              {/* Action Buttons */}
-              <div className={styles.actionButtonsStack}>
                 <button
                   type="button"
-                  className={styles.submitDeploymentBtn}
+                  className={styles.uniqueRequestButton}
                   onClick={() => setDrawerOpen(true)}
                 >
-                  <span>Request Deployment</span>
-                  <ChevronRight size={16} aria-hidden="true" />
+                  Configure Gang
                 </button>
-
-                <Link
-                  href={`/hands/trades/${crew.id}/request${projectId ? `?projectId=${projectId}` : ""}`}
-                  className={styles.secondaryRequestLink}
-                  aria-label="Request Crew"
-                >
-                  <span>Request Crew</span>
-                  <ChevronRight size={14} aria-hidden="true" />
-                </Link>
-              </div>
+              </article>
             </div>
-          </div>
-        </aside>
+          ) : null}
+
+          {/* TAB 2: OVERVIEW (STRUCTURED PROPERTY TABLES) */}
+          {activeTab === "overview" ? (
+            <div className={styles.profileOverviewStack}>
+              {/* Expertise & Project Fit Table Card */}
+              <section className={styles.profileDetailCard}>
+                <div className={styles.profileDetailCardHeader}>
+                  <h2 className={styles.profileDetailCardTitle}>
+                    <Briefcase size={16} className={styles.profileSectionIcon} />
+                    Trade Specializations & Crew Composition
+                  </h2>
+                </div>
+                <div className={styles.profileTableWrap}>
+                  <table className={styles.profilePropertyTable}>
+                    <tbody>
+                      <tr>
+                        <th scope="row">Primary Trade</th>
+                        <td>{crew.trade} · {crew.category}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Crew Lead</th>
+                        <td>{crew.leadName} ({crew.leadRole})</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Workforce Capacity</th>
+                        <td>
+                          {crew.crewSizeMin} to {crew.crewSizeMax} Tradesmen & Helpers per shift
+                        </td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Specialized Skills</th>
+                        <td>{crew.skills.join(", ")}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Mobilization Locations</th>
+                        <td>
+                          {crew.location}, {crew.state} (Up to 45 km radius)
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              {/* Software, Tools & Standards Table */}
+              <section className={styles.profileDetailCard}>
+                <div className={styles.profileDetailCardHeader}>
+                  <h2 className={styles.profileDetailCardTitle}>
+                    <ShieldCheck size={16} className={styles.profileSectionIcon} />
+                    Equipment, Tools & Safety Standards
+                  </h2>
+                </div>
+                <div className={styles.profileTableWrap}>
+                  <table className={styles.profilePropertyTable}>
+                    <tbody>
+                      <tr>
+                        <th scope="row">Compliance Standards</th>
+                        <td>IS Standards, NBC 2016, OSHA Site Safety Standards</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Certifications</th>
+                        <td>{crew.certifications.join(", ")}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Muster Roll Tracking</th>
+                        <td>Daily digital attendance & shift activity verification</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+          ) : null}
+
+          {/* TAB 3: EXPERIENCE & CREDENTIALS */}
+          {activeTab === "experience" ? (
+            <div className={styles.profileOverviewStack}>
+              <section className={styles.profileDetailCard}>
+                <div className={styles.profileDetailCardHeader}>
+                  <h2 className={styles.profileDetailCardTitle}>
+                    <GraduationCap size={16} className={styles.profileSectionIcon} />
+                    Trade Accreditations & Verification Status
+                  </h2>
+                </div>
+                <div className={styles.profileCardBody}>
+                  <div className={styles.profileCredentialsGrid}>
+                    {crew.certifications.map((cert, cIdx) => (
+                      <div key={cIdx} className={styles.profileCredentialCard}>
+                        <div className={styles.profileCredentialHeader}>
+                          <span className={styles.profileCredentialKind}>Trade Certification</span>
+                          <span className={styles.profileCredentialVerifiedBadge}>
+                            <CheckCircle2 size={11} aria-hidden="true" />
+                            Verified
+                          </span>
+                        </div>
+                        <h3 className={styles.profileCredentialTitle}>{cert}</h3>
+                        <p className={styles.profileCredentialIssuer}>
+                          Kallisto Hands Field Verification Desk
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              <section className={styles.profileDetailCard}>
+                <div className={styles.profileDetailCardHeader}>
+                  <h2 className={styles.profileDetailCardTitle}>
+                    <Briefcase size={16} className={styles.profileSectionIcon} />
+                    Track Record & Deployment History
+                  </h2>
+                </div>
+                <div className={styles.profileTableWrap}>
+                  <table className={styles.profilePropertyTable}>
+                    <tbody>
+                      <tr>
+                        <th scope="row">Years on Site</th>
+                        <td>{crew.experienceYears} Years</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Completed Deployments</th>
+                        <td>{crew.completedJobs} Site Jobs Delivered</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Next Available Date</th>
+                        <td>{crew.availabilitySchedule?.nextAvailableDate || "Immediate Dispatch"}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+          ) : null}
+
+          {/* TAB 4: REVIEWS */}
+          {activeTab === "reviews" ? (
+            <section className={styles.modernReviewsSection}>
+              {/* 1. Header with Date Filter */}
+              <div className={styles.modernReviewsHeader}>
+                <h2 className={styles.modernReviewsTitle}>Reviews</h2>
+                <div className={styles.modernReviewsDateFilter}>
+                  <span>March 2021 - February 2022</span>
+                  <ChevronDown size={14} className={styles.modernReviewsChevron} />
+                </div>
+              </div>
+
+              {/* 2. Top 3-Column Summary Card */}
+              <div className={styles.modernReviewsStatsCard}>
+                {/* Column 1: Total Reviews */}
+                <div className={styles.modernReviewsStatCol}>
+                  <span className={styles.modernStatLabel}>Total Reviews</span>
+                  <div className={styles.modernStatValueRow}>
+                    <span className={styles.modernStatBigNum}>{crew.reviewCount}</span>
+                    <span className={styles.modernGrowthBadge}>
+                      21% <TrendingUp size={11} strokeWidth={2.5} />
+                    </span>
+                  </div>
+                  <span className={styles.modernStatSub}>Growth in reviews on this year</span>
+                </div>
+
+                <div className={styles.modernStatsDivider} />
+
+                {/* Column 2: Average Rating */}
+                <div className={styles.modernReviewsStatCol}>
+                  <span className={styles.modernStatLabel}>Average Rating</span>
+                  <div className={styles.modernStatValueRow}>
+                    <span className={styles.modernStatBigNum}>{crew.rating.toFixed(1)}</span>
+                    <div className={styles.modernStarsCluster}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          size={14}
+                          fill={star <= Math.round(crew.rating) ? "#f59e0b" : "#e2e8f0"}
+                          color={star <= Math.round(crew.rating) ? "#f59e0b" : "#e2e8f0"}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <span className={styles.modernStatSub}>Average rating on this year</span>
+                </div>
+
+                <div className={styles.modernStatsDivider} />
+
+                {/* Column 3: Rating Distribution Bars */}
+                <div className={styles.modernReviewsDistCol}>
+                  <div className={styles.modernDistRow}>
+                    <span className={styles.modernDistStarLabel}>5</span>
+                    <div className={styles.modernDistBarTrack}>
+                      <div className={styles.modernDistBarFill} style={{ width: "84%", background: "#10b981" }} />
+                    </div>
+                    <span className={styles.modernDistCount}>1.8k</span>
+                  </div>
+                  <div className={styles.modernDistRow}>
+                    <span className={styles.modernDistStarLabel}>4</span>
+                    <div className={styles.modernDistBarTrack}>
+                      <div className={styles.modernDistBarFill} style={{ width: "42%", background: "#06b6d4" }} />
+                    </div>
+                    <span className={styles.modernDistCount}>850</span>
+                  </div>
+                  <div className={styles.modernDistRow}>
+                    <span className={styles.modernDistStarLabel}>3</span>
+                    <div className={styles.modernDistBarTrack}>
+                      <div className={styles.modernDistBarFill} style={{ width: "20%", background: "#f59e0b" }} />
+                    </div>
+                    <span className={styles.modernDistCount}>340</span>
+                  </div>
+                  <div className={styles.modernDistRow}>
+                    <span className={styles.modernDistStarLabel}>2</span>
+                    <div className={styles.modernDistBarTrack}>
+                      <div className={styles.modernDistBarFill} style={{ width: "8%", background: "#3b82f6" }} />
+                    </div>
+                    <span className={styles.modernDistCount}>120</span>
+                  </div>
+                  <div className={styles.modernDistRow}>
+                    <span className={styles.modernDistStarLabel}>1</span>
+                    <div className={styles.modernDistBarTrack}>
+                      <div className={styles.modernDistBarFill} style={{ width: "2%", background: "#ef4444" }} />
+                    </div>
+                    <span className={styles.modernDistCount}>0k</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Review Items Feed */}
+              <div className={styles.modernReviewsFeed}>
+                {(
+                  crew.reviewsBreakdown?.testimonials || [
+                    {
+                      id: "rev-1",
+                      author: "Horizon Infra Builders",
+                      projectType: "Commercial Complex",
+                      date: "14 Jan 2026",
+                      rating: 5,
+                      comment:
+                        "Excellent workforce discipline and zero downtime during reinforcement concrete pours. Lead foreman kept safety standards top-notch.",
+                      location: "Kochi, Kerala",
+                      verifiedClient: true,
+                    },
+                    {
+                      id: "rev-2",
+                      author: "Ar. Manoj Varma",
+                      projectType: "Luxury Villa",
+                      date: "02 Feb 2026",
+                      rating: 5,
+                      comment:
+                        "Prompt mobilization within 48 hours. The crew followed architectural drawings precisely with clean finishes.",
+                      location: "Ernakulam, Kerala",
+                      verifiedClient: true,
+                    },
+                  ]
+                ).map((rev) => (
+                  <article className={styles.modernReviewRow} key={rev.id}>
+                    <div className={styles.modernReviewUserMeta}>
+                      <div className={styles.modernReviewUserAvatar}>
+                        {rev.author.charAt(0)}
+                      </div>
+                      <div className={styles.modernReviewUserInfo}>
+                        <h3 className={styles.modernReviewUserName}>{rev.author}</h3>
+                        <span className={styles.modernReviewUserSpend}>
+                          Total Spend: <strong>₹{(crew.dailyRate * (crew.crewSizeMin || 4) * 12).toLocaleString("en-IN")}</strong>
+                        </span>
+                        <span className={styles.modernReviewUserCount}>
+                          Total Review: <strong>14</strong>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className={styles.modernReviewContent}>
+                      <div className={styles.modernReviewContentHeader}>
+                        <div className={styles.modernReviewContentStars}>
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star
+                              key={s}
+                              size={13}
+                              fill={s <= rev.rating ? "#f59e0b" : "#e2e8f0"}
+                              color={s <= rev.rating ? "#f59e0b" : "#e2e8f0"}
+                            />
+                          ))}
+                        </div>
+                        <span className={styles.modernReviewDate}>{rev.date}</span>
+                      </div>
+
+                      <p className={styles.modernReviewBodyText}>{rev.comment}</p>
+
+                      <div className={styles.modernReviewActionsBar}>
+                        <button type="button" className={styles.modernReviewActionBtn}>
+                          Public Comment
+                        </button>
+                        <button type="button" className={styles.modernReviewActionBtn}>
+                          Direct Message
+                        </button>
+                        <button type="button" className={styles.modernReviewHeartBtn} aria-label="Like review">
+                          <Heart size={14} fill="#3b82f6" color="#3b82f6" />
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
+        </main>
+
+        {/* RIGHT SECTION: ODIN CONVERSATIONAL BOOKING & DEPLOYMENT PANEL */}
+        <TradeCrewOrderPanel
+          crew={crew}
+          projectId={projectId}
+          initialPackageId={packageId}
+          onOpenDrawer={() => setDrawerOpen(true)}
+        />
       </div>
 
       {/* Interactive Workforce Request Drawer Modal */}
       {drawerOpen && (
         <WorkforceRequestDrawer
           initialTrade={crew.trade as any}
-          initialWorkerCount={workerCount}
-          initialStartDate={startDate}
-          initialDuration={`${durationDays} days`}
+          initialWorkerCount={crew.crewSizeMin || 4}
+          initialStartDate="2026-09-12"
+          initialDuration="12 days"
           onClose={() => setDrawerOpen(false)}
         />
       )}

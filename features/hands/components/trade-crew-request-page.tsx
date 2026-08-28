@@ -10,13 +10,13 @@ import {
   ChevronDown,
   ChevronRight,
   HardHat,
-  IndianRupee,
   MapPin,
   Minus,
   Plus,
   ShieldCheck,
   Users,
 } from "lucide-react";
+import { RupeeIcon } from "@/components/layout/sidebar-icons";
 import { getTradeCrewById } from "@/features/hands/services/trade-crews.mock";
 import { WorkforceRequestDrawer } from "@/features/hands/components/workforce-request-drawer";
 import styles from "./trade-crew-request-page.module.css";
@@ -129,7 +129,7 @@ export function TradeCrewRequestPage({
         <div className={styles.crewSummaryRight}>
           <div className={styles.rateBlock}>
             <div className={styles.rateValue}>
-              <IndianRupee size={16} strokeWidth={2.8} aria-hidden="true" />
+              <RupeeIcon size={16} aria-hidden="true" />
               <span>{crew.dailyRate.toLocaleString("en-IN")}</span>
             </div>
             <span className={styles.rateLabel}>/DAY / WORKER</span>

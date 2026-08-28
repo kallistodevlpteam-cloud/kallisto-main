@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import styles from "../../app/settings/settings.module.css";
 import { Copy, Trash2, Check } from "lucide-react";
+import styles from "../../app/settings/settings.module.css";
 
 interface WorkspaceSettingsProps {
   workspace: {
@@ -19,13 +19,20 @@ interface WorkspaceSettingsProps {
 }
 
 export function WorkspaceSettings({ workspace, user, permissions }: WorkspaceSettingsProps) {
-  const [workspaceName, setWorkspaceName] = useState(workspace.name);
+  const [workspaceName, setWorkspaceName] = useState(workspace.name || "Arjun Architects Studio");
+  const [subdomain, setSubdomain] = useState("arjun-architects");
   const [copied, setCopied] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
 
   const handleCopyId = () => {
     navigator.clipboard.writeText(workspace.id);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSave = () => {
+    setIsSaved(true);
+    setTimeout(() => setIsSaved(false), 2500);
   };
 
   const handleDeleteWorkspace = () => {
@@ -42,16 +49,19 @@ export function WorkspaceSettings({ workspace, user, permissions }: WorkspaceSet
   };
 
   return (
-    <div className={styles.settingsContentOutlet}>
-      <div className={styles.profileCleanContainer}>
-        <section>
-          <div className={styles.profileSectionHeader}>
-            <h2 className={styles.profileSectionTitle}>Workspace Identity</h2>
-            <p className={styles.profileSectionSubtitle}>
-              Identify your practice inside Kallisto dashboards.
+    <div className={styles.contentScrollArea}>
+      {/* 1. Workspace Identity */}
+      <div className={styles.card}>
+        <div className={styles.cardHeader}>
+          <div>
+            <h2 className={styles.cardHeaderTitle}>Workspace Identity</h2>
+            <p className={styles.cardHeaderSubtitle}>
+              Identify your practice inside Kallisto dashboards and client portal.
             </p>
           </div>
+        </div>
 
+        <div className={styles.cardBody}>
           <div className={styles.cleanFormGrid}>
             <div className={`${styles.cleanFieldGroup} ${styles.fullWidthField}`}>
               <label className={styles.cleanFieldLabel}>Workspace Name</label>
@@ -66,79 +76,72 @@ export function WorkspaceSettings({ workspace, user, permissions }: WorkspaceSet
 
             <div className={`${styles.cleanFieldGroup} ${styles.fullWidthField}`}>
               <label className={styles.cleanFieldLabel}>Workspace ID</label>
-              <div className={styles.websiteInputContainer}>
+              <div className={styles.copyInputGroup}>
                 <input
                   type="text"
-                  className={styles.cleanInput}
+                  className={styles.copyInputText}
                   value={workspace.id}
                   readOnly
-                  style={{ background: "#f9fafb", cursor: "default" }}
                 />
                 <button
                   type="button"
-                  className={styles.websitePrefix}
-                  style={{
-                    borderRight: "1px solid #e5e7eb",
-                    borderLeft: "none",
-                    borderTopRightRadius: "8px",
-                    borderBottomRightRadius: "8px",
-                    borderTopLeftRadius: 0,
-                    borderBottomLeftRadius: 0,
-                    cursor: "pointer",
-                    gap: "6px",
-                    fontWeight: 500,
-                  }}
+                  className={styles.btnSecondary}
+                  style={{ padding: "4px 10px", fontSize: "12px" }}
                   onClick={handleCopyId}
                 >
-                  {copied ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
+                  {copied ? <Check size={13} color="#16a34a" /> : <Copy size={13} />}
                   <span>{copied ? "Copied" : "Copy ID"}</span>
                 </button>
               </div>
             </div>
           </div>
-        </section>
 
-        <section style={{ marginTop: "12px" }}>
-          <div className={styles.profileSectionHeader}>
-            <h2 className={styles.profileSectionTitle} style={{ color: "#dc2626" }}>
-              Danger Zone
-            </h2>
-            <p className={styles.profileSectionSubtitle}>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "12px" }}>
+            <button type="button" className={styles.btnPrimary} onClick={handleSave}>
+              {isSaved ? (
+                <>
+                  <Check size={14} color="#ffffff" />
+                  <span>Saved</span>
+                </>
+              ) : (
+                <span>Save Changes</span>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Danger Zone */}
+      <div className={styles.card} style={{ marginTop: "16px" }}>
+        <div className={styles.cardHeader}>
+          <div>
+            <h2 className={styles.cardHeaderTitle} style={{ color: "#dc2626" }}>Danger Zone</h2>
+            <p className={styles.cardHeaderSubtitle}>
               Irreversible actions for this workspace.
             </p>
           </div>
+        </div>
 
-          <div
-            style={{
-              padding: "20px",
-              background: "#fffafb",
-              border: "1px solid #fee2e2",
-              borderRadius: "12px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: "20px",
-            }}
-          >
-            <div>
-              <div style={{ fontSize: "14px", fontWeight: 600, color: "#991b1b" }}>
-                Delete Workspace
-              </div>
-              <div style={{ fontSize: "12.5px", color: "#b91c1c", marginTop: "2px" }}>
+        <div className={styles.cardBody}>
+          <div className={styles.settingRow}>
+            <div className={styles.settingInfo}>
+              <span className={styles.settingLabel} style={{ color: "#991b1b" }}>Delete Workspace</span>
+              <span className={styles.settingDesc} style={{ color: "#b91c1c" }}>
                 Permanently delete this workspace, all team member permissions, and all associated projects.
-              </div>
+              </span>
             </div>
-            <button
-              type="button"
-              className={`${styles.actionBtn} ${styles.dangerBtn}`}
-              onClick={handleDeleteWorkspace}
-              style={{ flexShrink: 0, height: "38px", padding: "0 16px" }}
-            >
-              <Trash2 size={15} style={{ marginRight: "6px" }} />
-              Delete Workspace
-            </button>
+            <div className={styles.settingControl}>
+              <button
+                type="button"
+                className={styles.btnDanger}
+                onClick={handleDeleteWorkspace}
+              >
+                <Trash2 size={14} />
+                <span>Delete Workspace</span>
+              </button>
+            </div>
           </div>
-        </section>
+        </div>
       </div>
     </div>
   );

@@ -1,0 +1,394 @@
+/* ── 1. Container ─────────────────────────────────────────────────── */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* ── 2. Section Header ─────────────────────────────────────────────── */
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 2px 0 2px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #475569;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.countBadge {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #64748b;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.headerMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #16a34a;
+}
+
+.statusText {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+/* ── 3. 4-Card Responsive Grid ────────────────────────────────────── */
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+  align-items: stretch;
+}
+
+@media (max-width: 1360px) {
+  .cardsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .cardsGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ── 4. Trade Card Shell (Hands Search Result Reference) ─────────── */
+
+.tradeCard {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 18px;
+  padding: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 200ms ease;
+  min-width: 0;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.tradeCard:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  transform: translateY(-3px);
+}
+
+/* ── 5. Top Dark Graphic Cover Area ───────────────────────────────── */
+
+.tradeCoverArea {
+  position: relative;
+  width: 100%;
+  height: 156px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #090d16 0%, #111726 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Blueprint / Grid Overlay */
+.tradeCoverGrid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: center center;
+  pointer-events: none;
+}
+
+.tradeCoverGrid::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 16px 16px;
+  pointer-events: none;
+}
+
+/* Top Right Rating Badge */
+.tradeRatingBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3.5px 8.5px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  color: #0f172a;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  line-height: 1;
+}
+
+.tradeStarIcon {
+  color: #f59e0b;
+  fill: #f59e0b;
+}
+
+/* Center Trade Logo / Brand Emblem */
+.tradeBrandMark {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #ffffff;
+}
+
+.tradeBrandIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tradeBrandText {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  font-family: inherit;
+}
+
+.tradeBrandDot {
+  color: #06b6d4;
+  font-size: 14px;
+  margin-left: 2px;
+}
+
+/* ── 6. Card Body Content ─────────────────────────────────────────── */
+
+.tradeCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  justify-content: space-between;
+  padding: 2px 7px 7px;
+}
+
+.tradeCardTitleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tradeCardTitleWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.tradeCardTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 750;
+  color: #0f172a;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tradeCardSubtitle {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tradeBookmarkBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 150ms ease;
+}
+
+.tradeBookmarkBtn:hover {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.tradeBookmarkBtnActive {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+/* ── 7. 3-Column Metric Strip (Experience | Deployments | Location) ── */
+
+.tradeMetricsRow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: center;
+  padding: 4px 0 2px;
+  margin: 0;
+}
+
+.tradeMetricCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-width: 0;
+  padding: 0 4px;
+}
+
+.tradeMetricDivider {
+  width: 1px;
+  height: 20px;
+  background-color: #f1f5f9;
+  flex-shrink: 0;
+}
+
+.tradeMetricValue {
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.tradeMetricLabel {
+  color: #94a3b8;
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1.2;
+  margin-top: 2px;
+  text-transform: lowercase;
+}
+
+/* ── 8. Bottom Rate & Compare Action Button ───────────────────────── */
+
+.tradeCardBottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid #f8fafc;
+  margin-top: 2px;
+}
+
+.tradePriceWrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tradePriceAmount {
+  color: #0f172a;
+  font-size: 14.5px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.tradePricePeriod {
+  color: #94a3b8;
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1.2;
+  margin-top: 1px;
+}
+
+.tradeCompareBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 32px;
+  padding: 0 14px;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 9999px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 150ms ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+}
+
+.tradeCompareBtn:hover {
+  background: #1e293b;
+  border-color: #334155;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+}
+
+.tradeCompareBtn:active {
+  transform: translateY(0);
+}
