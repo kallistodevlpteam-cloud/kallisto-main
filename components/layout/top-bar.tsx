@@ -88,19 +88,69 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
     if (typeof window !== "undefined") {
       window.addEventListener("kallisto_studio_session_updated", handleUpdate);
       window.addEventListener("storage", handleUpdate);
+      window.addEventListener("popstate", handleUpdate);
     }
     return () => {
       if (typeof window !== "undefined") {
         window.removeEventListener("kallisto_studio_session_updated", handleUpdate);
         window.removeEventListener("storage", handleUpdate);
+        window.removeEventListener("popstate", handleUpdate);
       }
     };
   }, []);
 
   let items: BreadcrumbItem[];
 
+  if (currentPath.startsWith("/partner")) {
+    const parts = currentPath.split("/").filter(Boolean);
+    const partnerKey = parts[1] || "hands";
+    const PARTNER_NAME_MAP: Record<string, string> = {
+      hands: "Kallisto Hands",
+      hub: "Kallisto Hub",
+      basics: "Kallisto Basics",
+      settings: "Settings",
+      help: "Help & Support",
+    };
+    const currentPartnerName = PARTNER_NAME_MAP[partnerKey] || "Kallisto Partner";
+    const currentSearch = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : searchParams;
+    const activeOrderId = currentSearch?.get("orderId");
+    const activeSku = currentSearch?.get("sku");
 
-  if (currentPath.startsWith("/client")) {
+    if (parts.length > 2) {
+      const subRoute = parts[2];
+      const formattedSub = subRoute
+        .split("-")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
+
+      if (subRoute === "orders" && activeOrderId) {
+        items = [
+          { label: "Partner Workspace" },
+          { label: currentPartnerName, href: `/partner/${partnerKey}` },
+          { label: "Orders", href: `/partner/${partnerKey}/orders` },
+          { label: activeOrderId },
+        ];
+      } else if (subRoute === "products" && activeSku) {
+        items = [
+          { label: "Partner Workspace" },
+          { label: currentPartnerName, href: `/partner/${partnerKey}` },
+          { label: "Products", href: `/partner/${partnerKey}/products` },
+          { label: activeSku },
+        ];
+      } else {
+        items = [
+          { label: "Partner Workspace" },
+          { label: currentPartnerName, href: `/partner/${partnerKey}` },
+          { label: formattedSub },
+        ];
+      }
+    } else {
+      items = [
+        { label: "Partner Workspace" },
+        { label: currentPartnerName },
+      ];
+    }
+  } else if (currentPath.startsWith("/client")) {
     const parts = currentPath.split("/").filter(Boolean);
     const subRoute = parts[1] || "overview";
     const CLIENT_MODULE_LABEL_MAP: Record<string, string> = {
@@ -430,7 +480,17 @@ export function TopBar({
           onClick={() => onToggleAccountPopover("main")}
           aria-expanded={accountOpen}
         >
-          <span className="avatar-monogram">{pathname?.startsWith("/client") ? "AS" : "AA"}</span>
+          <span className="avatar-monogram">
+            {pathname?.startsWith("/client")
+              ? "AS"
+              : pathname?.startsWith("/partner")
+              ? pathname.includes("/hub")
+                ? "AP"
+                : pathname.includes("/basics")
+                ? "RV"
+                : "VM"
+              : "AA"}
+          </span>
         </button>
 
         {/* ElevenLabs Style Notification Popover Flyout */}

@@ -69,7 +69,7 @@ describe("TradeCrewDetail Component", () => {
   it("renders friendly fallback for non-existent crew ID", () => {
     render(<TradeCrewDetail crewId="invalid-crew-id" />);
 
-    expect(screen.getByText("Crew Profile Not Found")).toBeInTheDocument();
+    expect(screen.getByText("Trade Crew Not Found")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Return to Trade Directory" })).toBeInTheDocument();
   });
 });

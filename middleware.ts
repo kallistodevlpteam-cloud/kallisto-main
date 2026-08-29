@@ -6,6 +6,8 @@ const PUBLIC_PATHS = [
   "/sign-in",
   "/client/login",
   "/client/sign-in",
+  "/partner/login",
+  "/partner/sign-in",
   "/apply",
   "/waitlist",
   "/api/auth",
@@ -43,13 +45,24 @@ export function middleware(request: NextRequest) {
 
   // If user is unauthenticated and attempting to access a protected route
   if (!isAuthenticated && !isPublicPath) {
-    const isClientRoute = pathname.startsWith("/client");
-    const loginTarget = isClientRoute ? "/client/login" : "/login";
+    let loginTarget = "/login";
+    if (pathname.startsWith("/client")) {
+      loginTarget = "/client/login";
+    } else if (pathname.startsWith("/partner")) {
+      loginTarget = "/partner/login";
+    }
     const loginUrl = new URL(loginTarget, request.url);
-    if (pathname !== "/" && pathname !== "/client") {
+    if (pathname !== "/" && pathname !== "/client" && pathname !== "/partner") {
       loginUrl.searchParams.set("redirect", pathname);
     }
     return NextResponse.redirect(loginUrl);
+  }
+
+  // If user is already authenticated and visits partner login/sign-in, redirect to partner workspace
+  if (isAuthenticated && (pathname === "/partner/login" || pathname === "/partner/sign-in")) {
+    const partnerType = (request.cookies.get("kallisto_partner_type")?.value || "HANDS").toLowerCase();
+    const partnerTarget = partnerType === "hub" ? "/partner/hub" : partnerType === "basics" ? "/partner/basics" : "/partner/hands";
+    return NextResponse.redirect(new URL(partnerTarget, request.url));
   }
 
   // If user is already authenticated and visits client login/sign-in, redirect to client overview

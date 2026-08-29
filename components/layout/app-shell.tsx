@@ -40,6 +40,8 @@ function AppShellContent({ children, layoutProfile = "default" }: AppShellProps)
     if (!token) {
       if (pathname.startsWith("/client")) {
         router.replace("/client/login");
+      } else if (pathname.startsWith("/partner")) {
+        router.replace("/partner/login");
       } else {
         router.replace("/login");
       }

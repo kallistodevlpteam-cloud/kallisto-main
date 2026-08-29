@@ -61,6 +61,7 @@ export function AccountPopover({
 }: AccountPopoverProps) {
   const pathname = usePathname();
   const isClient = pathname?.startsWith("/client");
+  const isPartner = pathname?.startsWith("/partner");
   const [currentView, setCurrentView] = useState<"main" | "switcher">(initialView);
   const [prevInitialView, setPrevInitialView] = useState<"main" | "switcher">(initialView);
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState("ws-1");
@@ -69,6 +70,15 @@ export function AccountPopover({
 
   const handleNavigate = (tab: string, sub?: string) => {
     onClose();
+    if (isPartner) {
+      if (tab === "help") {
+        router.push("/partner/help");
+        return;
+      }
+      router.push("/partner/settings");
+      return;
+    }
+
     if (isClient) {
       if (tab === "help") {
         router.push("/client/help");
@@ -163,7 +173,76 @@ export function AccountPopover({
         {/* Central scrollable container */}
         <div className={styles.centralScrollArea}>
           {currentView === "main" ? (
-            isClient ? (
+            isPartner ? (
+              <>
+                {/* Partner Group 1: Profile & Business */}
+                <div className={styles.menuGroup}>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("profile")}>
+                    <span className={styles.menuLabel}>Partner profile</span>
+                  </button>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("business")}>
+                    <span className={styles.menuLabel}>Business & licensing</span>
+                  </button>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("security")}>
+                    <span className={styles.menuLabel}>Security & login</span>
+                  </button>
+                </div>
+
+                <div className={styles.menuDivider} />
+
+                {/* Partner Group 2: Switch Ecosystem */}
+                <div className={styles.menuGroup}>
+                  <div style={{ padding: "4px 8px 6px", fontSize: "11px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Switch Ecosystem
+                  </div>
+                  <button
+                    type="button"
+                    className={styles.menuRow}
+                    onClick={() => {
+                      onClose();
+                      document.cookie = "kallisto_partner_type=HANDS; path=/;";
+                      if (typeof window !== "undefined") localStorage.setItem("kallisto_partner_type", "HANDS");
+                      router.push("/partner/hands");
+                    }}
+                  >
+                    <span className={styles.menuLabel}>Kallisto Hands</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.menuRow}
+                    onClick={() => {
+                      onClose();
+                      document.cookie = "kallisto_partner_type=HUB; path=/;";
+                      if (typeof window !== "undefined") localStorage.setItem("kallisto_partner_type", "HUB");
+                      router.push("/partner/hub");
+                    }}
+                  >
+                    <span className={styles.menuLabel}>Kallisto Hub</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.menuRow}
+                    onClick={() => {
+                      onClose();
+                      document.cookie = "kallisto_partner_type=BASICS; path=/;";
+                      if (typeof window !== "undefined") localStorage.setItem("kallisto_partner_type", "BASICS");
+                      router.push("/partner/basics");
+                    }}
+                  >
+                    <span className={styles.menuLabel}>Kallisto Basics</span>
+                  </button>
+                </div>
+
+                <div className={styles.menuDivider} />
+
+                {/* Partner Group 3: Help */}
+                <div className={styles.menuGroup}>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("help")}>
+                    <span className={styles.menuLabel}>Help and documentation</span>
+                  </button>
+                </div>
+              </>
+            ) : isClient ? (
               <>
                 {/* Client Group 1: Profile & Security */}
                 <div className={styles.menuGroup}>
@@ -434,7 +513,7 @@ export function AccountPopover({
                 localStorage.removeItem("kallisto_auth_token");
                 localStorage.removeItem("kallisto_provider_id");
               }
-              window.location.href = isClient ? "/client/login" : "/login";
+              window.location.href = isPartner ? "/partner/login" : isClient ? "/client/login" : "/login";
             }}
           >
             <LogOut size={14} className={styles.signOutIcon} />

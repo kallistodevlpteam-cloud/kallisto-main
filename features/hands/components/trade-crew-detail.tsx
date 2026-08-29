@@ -304,6 +304,8 @@ export function TradeCrewDetail({ crewId, projectId, tab = "services", packageId
                 <button
                   key={profileTab.id}
                   type="button"
+                  role="tab"
+                  aria-selected={isActive}
                   onClick={() => setActiveTab(profileTab.id)}
                   className={`${styles.profileSegmentedTab} ${isActive ? styles.profileSegmentedTabActive : ""}`}
                 >

@@ -201,7 +201,9 @@ export function TradeCrewOrderPanel({
 
   // Auto-scroll on new chat turns
   useEffect(() => {
-    chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (typeof chatBottomRef.current?.scrollIntoView === "function") {
+      chatBottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   }, [
     selectedProject,
     selectedPackage,

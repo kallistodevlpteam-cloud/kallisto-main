@@ -10,6 +10,7 @@ import {
   isSidebarItemActive,
   getSidebarNavigationForPath,
   isClientPath,
+  isPartnerPath,
   type SidebarNavigationItem,
 } from "./sidebar-navigation";
 
@@ -27,12 +28,14 @@ export function SidebarRail({
   const pathname = usePathname();
   const navigation = getSidebarNavigationForPath(pathname);
   const isClient = isClientPath(pathname);
+  const isPartner = isPartnerPath(pathname);
+  const isUtilityPinned = isClient || isPartner;
 
-  const mainNavigation = isClient
-    ? navigation.filter((item) => item.section !== "client-utility")
+  const mainNavigation = isUtilityPinned
+    ? navigation.filter((item) => item.section !== "client-utility" && item.section !== "partner-utility")
     : navigation;
-  const clientUtilityNavigation = isClient
-    ? navigation.filter((item) => item.section === "client-utility")
+  const bottomUtilityNavigation = isUtilityPinned
+    ? navigation.filter((item) => item.section === "client-utility" || item.section === "partner-utility")
     : [];
 
   return (
@@ -59,9 +62,10 @@ export function SidebarRail({
 
       <nav className="rail-nav" aria-label="Quick links">
         {mainNavigation.map((item) => {
-          const { icon: Icon, label, href, badge, isLocked } = item;
+          const { icon: Icon, label, href, badge, isLocked, color } = item;
           const isActive = isSidebarItemActive(pathname, href);
           const hasPendingEnquiries = badge === "pending-enquiries" && pendingEnquiryCount !== null && pendingEnquiryCount > 0;
+          const itemColor = color || "#64748b";
 
           if (isLocked) {
             return (
@@ -72,7 +76,7 @@ export function SidebarRail({
                 onClick={() => onLockedItemClick?.(item)}
                 aria-label={`${label} (Locked feature)`}
               >
-                <Icon size={18} strokeWidth={1.75} aria-hidden="true" />
+                <Icon size={18} strokeWidth={1.75} style={{ color: itemColor }} aria-hidden="true" />
                 <span className="rail-lock-dot" title="Locked feature">
                   <LockDuotoneIcon size={10} aria-hidden="true" />
                 </span>
@@ -95,7 +99,7 @@ export function SidebarRail({
               aria-label={hasPendingEnquiries ? `${label}, ${pendingEnquiryCount} pending` : label}
               aria-current={isActive ? "page" : undefined}
             >
-              <Icon size={18} strokeWidth={1.75} aria-hidden="true" />
+              <Icon size={18} strokeWidth={1.75} style={{ color: itemColor }} aria-hidden="true" />
               {hasPendingEnquiries && <span className="rail-notice-dot" aria-hidden="true" />}
               <span className="rail-tooltip" role="tooltip">
                 <span>{label}</span>
@@ -111,10 +115,11 @@ export function SidebarRail({
       <div className="rail-spacer" />
 
       <div className="rail-bottom">
-        {isClient ? (
-          clientUtilityNavigation.map((item) => {
-            const { icon: Icon, label, href } = item;
+        {isUtilityPinned ? (
+          bottomUtilityNavigation.map((item) => {
+            const { icon: Icon, label, href, color } = item;
             const isActive = isSidebarItemActive(pathname, href);
+            const itemColor = color || "#64748b";
             return (
               <Link
                 key={label}
@@ -123,7 +128,7 @@ export function SidebarRail({
                 aria-label={label}
                 aria-current={isActive ? "page" : undefined}
               >
-                <Icon size={18} strokeWidth={1.75} aria-hidden="true" />
+                <Icon size={18} strokeWidth={1.75} style={{ color: itemColor }} aria-hidden="true" />
                 <span className="rail-tooltip" role="tooltip">
                   <span>{label}</span>
                 </span>

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { X, Check, Zap } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { X, Check, Zap, ArrowRight } from "lucide-react";
 import { LockDuotoneIcon } from "./sidebar-icons";
 import styles from "./locked-feature-modal.module.css";
 
@@ -26,6 +27,10 @@ export function LockedFeatureModal({
     "Priority support & cloud synchronisation",
   ],
 }: LockedFeatureModalProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const isPartner = pathname?.startsWith("/partner");
+
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -67,7 +72,9 @@ export function LockedFeatureModal({
 
         <div className={styles.modalBody}>
           <div className={styles.badgeRow}>
-            <span className={styles.lockBadge}>Plan Locked</span>
+            <span className={styles.lockBadge}>
+              {isPartner ? "Locked for Beta Trials" : "Plan Locked"}
+            </span>
           </div>
 
           <h2 id="locked-modal-title" className={styles.modalTitle}>
@@ -80,7 +87,9 @@ export function LockedFeatureModal({
 
           {perks && perks.length > 0 && (
             <div className={styles.perksBox}>
-              <span className={styles.perksTitle}>What unlocks with {featureName}:</span>
+              <span className={styles.perksTitle}>
+                {isPartner ? "Operational Focus for Beta Trials:" : `What unlocks with ${featureName}:`}
+              </span>
               {perks.map((perk, idx) => (
                 <div key={idx} className={styles.perkItem}>
                   <span className={styles.perkCheckCircle}>
@@ -101,16 +110,32 @@ export function LockedFeatureModal({
           >
             Dismiss
           </button>
-          <button
-            type="button"
-            className={styles.upgradeBtn}
-            onClick={() => {
-              onClose();
-            }}
-          >
-            <Zap size={14} fill="currentColor" className={styles.sparkleIcon} />
-            <span>Upgrade Workspace</span>
-          </button>
+          {isPartner ? (
+            <button
+              type="button"
+              className={styles.upgradeBtn}
+              onClick={() => {
+                onClose();
+                if (pathname !== "/partner/hub/products") {
+                  router.push("/partner/hub/products");
+                }
+              }}
+            >
+              <span>Go to Products Workspace</span>
+              <ArrowRight size={14} />
+            </button>
+          ) : (
+            <button
+              type="button"
+              className={styles.upgradeBtn}
+              onClick={() => {
+                onClose();
+              }}
+            >
+              <Zap size={14} fill="currentColor" className={styles.sparkleIcon} />
+              <span>Upgrade Workspace</span>
+            </button>
+          )}
         </div>
       </div>
     </div>
