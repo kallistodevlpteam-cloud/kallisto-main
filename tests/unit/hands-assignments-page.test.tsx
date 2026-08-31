@@ -85,7 +85,7 @@ describe("Kallisto Hands - Assignments Workspace & Structured Cards", () => {
     expect(screen.getByText("Day 12 of 30")).toBeDefined();
     expect(screen.getAllByText(/Attendance Today:/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/10 \/ 12 Present/i)).toBeDefined();
-    expect(screen.getAllByText("⚠ ATTENTION REQUIRED").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("ATTENTION REQUIRED").length).toBeGreaterThan(0);
   });
 
   it("renders Assignment Health badges (On Track, Attention Required, At Risk)", () => {
@@ -95,9 +95,9 @@ describe("Kallisto Hands - Assignments Workspace & Structured Cards", () => {
       </PartnerAuthProvider>
     );
 
-    expect(screen.getAllByText("● ON TRACK").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("⚠ ATTENTION REQUIRED").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("● AT RISK").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("ON TRACK").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("ATTENTION REQUIRED").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("AT RISK").length).toBeGreaterThan(0);
   });
 
   it("filters assignment cards by health tabs (On Track, Attention Required, At Risk)", () => {

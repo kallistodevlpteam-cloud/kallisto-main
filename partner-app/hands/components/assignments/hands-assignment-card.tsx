@@ -1,19 +1,15 @@
 "use client";
 
 import React from "react";
+import { ArrowRight } from "lucide-react";
 import {
-  Building2,
-  Briefcase,
-  AlertTriangle,
-  CheckCircle2,
-  AlertCircle,
-  ArrowRight,
-} from "lucide-react";
-import {
+  ProjectsDuotoneIcon,
+  HandsDuotoneIcon,
   TeamDuotoneIcon,
   LocationDuotoneIcon,
   CalendarDuotoneIcon,
   AnalyticsDuotoneIcon,
+  HubDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 import { AssignmentDeployment } from "../../types/assignment-domain";
 import styles from "./hands-assignments.module.css";
@@ -25,15 +21,81 @@ interface HandsAssignmentCardProps {
   onOpenDetail: (assignment: AssignmentDeployment) => void;
 }
 
-// Generate consistent theme color by project ID (identical to Request Card)
+// Custom Kallisto Duotone Status Icons
+function HealthCheckDuotoneIcon({ size = 15, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <circle cx="10" cy="10" r="8.5" fill="#059669" fillOpacity="0.18" />
+      <circle cx="10" cy="10" r="8.5" stroke="#059669" strokeWidth="1.5" />
+      <path
+        d="M6.2 10.2L8.7 12.7L13.8 7.3"
+        stroke="#059669"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function HealthWarningDuotoneIcon({ size = 15, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path
+        d="M10 2.2L18.2 16.8C18.4 17.2 18.2 17.8 17.7 18H2.3C1.8 17.8 1.6 17.2 1.8 16.8L10 2.2Z"
+        fill="#d97706"
+        fillOpacity="0.18"
+        stroke="#d97706"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path d="M10 7.5V11.5" stroke="#d97706" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="10" cy="14.3" r="1.1" fill="#d97706" />
+    </svg>
+  );
+}
+
+function HealthAlertDuotoneIcon({ size = 15, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <circle cx="10" cy="10" r="8.5" fill="#dc2626" fillOpacity="0.18" />
+      <circle cx="10" cy="10" r="8.5" stroke="#dc2626" strokeWidth="1.5" />
+      <path d="M10 6.2V11.2" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="10" cy="14.1" r="1.1" fill="#dc2626" />
+    </svg>
+  );
+}
+
+// Generate consistent theme color by project ID using Kallisto duotone icons
 function getProjectTheme(id: string) {
   const themes = [
-    { bg: "#2563eb", color: "#ffffff", icon: Building2 },
-    { bg: "#ea580c", color: "#ffffff", icon: Briefcase },
-    { bg: "#e11d48", color: "#ffffff", icon: Building2 },
-    { bg: "#7c3aed", color: "#ffffff", icon: Briefcase },
-    { bg: "#059669", color: "#ffffff", icon: Building2 },
-    { bg: "#0284c7", color: "#ffffff", icon: Briefcase },
+    { bg: "#eff6ff", color: "#2563eb", icon: ProjectsDuotoneIcon },
+    { bg: "#fff7ed", color: "#ea580c", icon: HandsDuotoneIcon },
+    { bg: "#f5f3ff", color: "#7c3aed", icon: TeamDuotoneIcon },
+    { bg: "#ecfdf5", color: "#059669", icon: ProjectsDuotoneIcon },
+    { bg: "#f0f9ff", color: "#0284c7", icon: HubDuotoneIcon },
+    { bg: "#fdf2f8", color: "#db2777", icon: HandsDuotoneIcon },
   ];
   let hash = 0;
   for (let i = 0; i < id.length; i++) {
@@ -56,23 +118,23 @@ export function HandsAssignmentCard({
     switch (assignment.health) {
       case "on_track":
         return {
-          label: "● ON TRACK",
+          label: "ON TRACK",
           boxClass: styles.healthBoxOnTrack,
-          icon: CheckCircle2,
+          icon: HealthCheckDuotoneIcon,
           defaultMsg: "All workers deployed and attendance reported.",
         };
       case "attention_required":
         return {
-          label: "⚠ ATTENTION REQUIRED",
+          label: "ATTENTION REQUIRED",
           boxClass: styles.healthBoxAttention,
-          icon: AlertTriangle,
+          icon: HealthWarningDuotoneIcon,
           defaultMsg: "Workers not marked or attendance pending.",
         };
       case "at_risk":
         return {
-          label: "● AT RISK",
+          label: "AT RISK",
           boxClass: styles.healthBoxAtRisk,
-          icon: AlertCircle,
+          icon: HealthAlertDuotoneIcon,
           defaultMsg: "Workforce shortage affecting deployment.",
         };
     }
@@ -172,7 +234,7 @@ export function HandsAssignmentCard({
 
       {/* 4. Assignment Health Status Callout Box */}
       <div className={`${styles.healthBox} ${healthConfig.boxClass}`}>
-        <HealthIcon size={13} className={styles.healthIcon} />
+        <HealthIcon size={15} className={styles.healthIcon} />
         <div className={styles.healthTexts}>
           <span className={styles.healthTag}>{healthConfig.label}</span>
           <span className={styles.healthDesc}>
