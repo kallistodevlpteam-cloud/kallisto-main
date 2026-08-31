@@ -53,6 +53,7 @@ import {
   ProjectStatCardsBar,
   type ProjectStatValues,
 } from "./project-stat-cards-bar";
+import { ProjectOverviewActivitySections } from "./project-overview-activity-sections";
 import { ProjectUpdatesPanel } from "./project-updates-panel";
 import styles from "@/features/enquiries/detail/components/enquiry-detail-workspace.module.css";
 
@@ -238,20 +239,7 @@ export function ProjectOverviewCard({
           <div className={styles.tabSectionGroup}>
             <OdinProjectBrief brief={viewModel.brief} />
             <ProjectStatCardsBar values={statValues} />
-            <ClientPrioritiesBar priorities={viewModel.priorities} />
-            <EnquiryProjectScopeSection
-              categories={viewModel.scopeGroups.map((g, idx) => ({
-                id: `cat-${idx + 1}`,
-                title: g.title,
-                items: g.items.map((i) => i.label),
-              }))}
-              unconfirmedItems={viewModel.unconfirmedScope}
-            />
-            <EnquirySiteImagesCard
-              title="Client Inspiration Images"
-              images={resolvedImages}
-              totalCount={resolvedImages.length}
-            />
+            <ProjectOverviewActivitySections projectId={projectId} />
             {futureContent}
           </div>
         )}
