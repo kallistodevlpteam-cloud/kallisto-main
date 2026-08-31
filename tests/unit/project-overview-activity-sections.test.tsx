@@ -90,13 +90,13 @@ describe("ProjectOverviewActivitySections", () => {
     expect(screen.getByText(/Conduit & Electrical Wiring/i)).toBeDefined();
     expect(screen.getByText(/View BOQ Materials/i)).toBeDefined();
 
-    expect(screen.getByText("HIVE SERVICES")).toBeDefined();
-    expect(screen.getByText("04 Services Used")).toBeDefined();
-    expect(screen.getByText(/3D Architectural Rendering/i)).toBeDefined();
-    expect(screen.getByText(/4 Photorealistic Views Approved/i)).toBeDefined();
-    expect(screen.getByText(/Structural Load & FEA Stress Analysis/i)).toBeDefined();
-    expect(screen.getByText(/MEP BIM Routing & Coordination/i)).toBeDefined();
-    expect(screen.getByText(/Site Feasibility & Digital Contour Scan/i)).toBeDefined();
-    expect(screen.getByText(/View Hive Services/i)).toBeDefined();
+    expect(screen.getByText("HIVE STUDIO")).toBeDefined();
+    expect(screen.getByText("04 Workspaces Used")).toBeDefined();
+    expect(screen.getByText(/AI Requirement Brief & Spatial Synthesis/i)).toBeDefined();
+    expect(screen.getByText(/ODIN Brief & 10 Domain Specs Synced/i)).toBeDefined();
+    expect(screen.getByText(/Concept Scheme & Palette Studio/i)).toBeDefined();
+    expect(screen.getByText(/Automated Proposal & Scope Generator/i)).toBeDefined();
+    expect(screen.getByText(/CAD Spec & Feasibility Verifier/i)).toBeDefined();
+    expect(screen.getByText(/Open Hive Studio/i)).toBeDefined();
   });
 });

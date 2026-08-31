@@ -479,19 +479,29 @@ export function ProjectOverviewActivitySections({
           </Link>
         </section>
 
-        {/* Right: HIVE SERVICES */}
-        <section className={styles.card} aria-label="Hive Services">
+        {/* Right: HIVE STUDIO */}
+        <section className={styles.card} aria-label="Hive Studio">
           <h3 className={styles.sectionTitle}>
-            <span>HIVE SERVICES</span>
-            <span className={styles.sectionBadge}>04 Services Used</span>
+            <span>HIVE STUDIO</span>
+            <span className={styles.sectionBadge}>04 Workspaces Used</span>
           </h3>
 
           <div className={styles.servicesList}>
             <div className={styles.serviceRow}>
               <div className={styles.serviceInfoCol}>
-                <span className={styles.serviceName}>3D Architectural Rendering</span>
+                <span className={styles.serviceName}>AI Requirement Brief &amp; Spatial Synthesis</span>
                 <span className={styles.serviceUpdateNote}>
-                  Update: <strong>4 Photorealistic Views Approved</strong>
+                  Output: <strong>ODIN Brief &amp; 10 Domain Specs Synced</strong>
+                </span>
+              </div>
+              <span className={styles.stepperBadgeCompleted}>Completed</span>
+            </div>
+
+            <div className={styles.serviceRow}>
+              <div className={styles.serviceInfoCol}>
+                <span className={styles.serviceName}>Concept Scheme &amp; Palette Studio</span>
+                <span className={styles.serviceUpdateNote}>
+                  Output: <strong>8 Design Themes &amp; Moodboard Generated</strong>
                 </span>
               </div>
               <span className={styles.stepperBadgeCompleted}>Delivered</span>
@@ -499,42 +509,32 @@ export function ProjectOverviewActivitySections({
 
             <div className={styles.serviceRow}>
               <div className={styles.serviceInfoCol}>
-                <span className={styles.serviceName}>Structural Load &amp; FEA Stress Analysis</span>
+                <span className={styles.serviceName}>Automated Proposal &amp; Scope Generator</span>
                 <span className={styles.serviceUpdateNote}>
-                  Update: <strong>Foundation Load Model Verified (v1.2)</strong>
+                  Output: <strong>Commercial Proposal v1.0 Dispatched</strong>
+                </span>
+              </div>
+              <span className={styles.stepperBadgeInProgress}>Sent to Client</span>
+            </div>
+
+            <div className={styles.serviceRow}>
+              <div className={styles.serviceInfoCol}>
+                <span className={styles.serviceName}>CAD Spec &amp; Feasibility Verifier</span>
+                <span className={styles.serviceUpdateNote}>
+                  Output: <strong>4 Architectural Sheets Checked (0 Conflicts)</strong>
                 </span>
               </div>
               <span className={styles.stepperBadgeCompleted}>Verified</span>
             </div>
-
-            <div className={styles.serviceRow}>
-              <div className={styles.serviceInfoCol}>
-                <span className={styles.serviceName}>MEP BIM Routing &amp; Coordination</span>
-                <span className={styles.serviceUpdateNote}>
-                  Update: <strong>HVAC &amp; Electrical 65% Synced</strong>
-                </span>
-              </div>
-              <span className={styles.stepperBadgeInProgress}>In Progress</span>
-            </div>
-
-            <div className={styles.serviceRow}>
-              <div className={styles.serviceInfoCol}>
-                <span className={styles.serviceName}>Site Feasibility &amp; Digital Contour Scan</span>
-                <span className={styles.serviceUpdateNote}>
-                  Update: <strong>ODIN Assessment Report Synchronized</strong>
-                </span>
-              </div>
-              <span className={styles.stepperBadgeCompleted}>Delivered</span>
-            </div>
           </div>
 
           <div className={styles.serviceValueBanner}>
-            <span>4 Hive Services Engaged</span>
-            <span style={{ fontWeight: 700 }}>3 of 4 Deliverables Cleared</span>
+            <span>4 Hive Studio Tasks Active</span>
+            <span style={{ fontWeight: 700 }}>Outputs Synced to Project</span>
           </div>
 
-          <Link href="/basics" className={styles.footerLink}>
-            <span>View Hive Services</span>
+          <Link href="/studio" className={styles.footerLink}>
+            <span>Open Hive Studio</span>
             <ArrowRight size={13} />
           </Link>
         </section>
