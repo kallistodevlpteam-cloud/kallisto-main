@@ -1629,17 +1629,6 @@ Note: ${selectedProduct.brand} currently maintains a 94% contractor preference s
               >
                 <Plus size={14} strokeWidth={2} />
               </button>
-
-              <button
-                type="button"
-                className={styles.composerScopeTag}
-                onClick={() => {}}
-                title="Scope selection"
-                aria-label="Scope"
-              >
-                <span>All</span>
-                <ChevronDown size={12} color="#64748b" />
-              </button>
             </div>
 
             <div className={styles.composerRightGroup}>

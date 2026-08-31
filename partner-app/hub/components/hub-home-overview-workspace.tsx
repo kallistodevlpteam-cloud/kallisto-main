@@ -771,16 +771,6 @@ export function HubHomeOverviewWorkspace() {
                 >
                   <Plus size={14} strokeWidth={2} />
                 </button>
-
-                <button
-                  type="button"
-                  className={styles.composerScopeTag}
-                  title="Scope selection"
-                  aria-label="Scope"
-                >
-                  <span>All</span>
-                  <ChevronDown size={12} color="#64748b" />
-                </button>
               </div>
 
               <div className={styles.composerRightGroup}>

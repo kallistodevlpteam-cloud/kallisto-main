@@ -57,17 +57,14 @@ describe("Partner App Shell & Navigation", () => {
   it("returns configured navigation arrays per partner ecosystem", () => {
     expect(PARTNER_HANDS_NAVIGATION.map((item) => item.label)).toEqual([
       "Overview",
-      "Workforce",
       "Workers",
       "Requests",
       "Assignments",
       "Attendance",
       "Projects",
       "Payments",
-      "Documents",
-      "Performance",
+      "Support",
       "Settings",
-      "Help & Support",
     ]);
 
     expect(PARTNER_HUB_NAVIGATION.map((item) => item.label)).toEqual([
@@ -107,12 +104,12 @@ describe("Partner App Shell & Navigation", () => {
 
     expect(screen.getByText("Hands Workspace Body")).toBeDefined();
     expect(screen.getAllByText("Overview").length).toBeGreaterThan(0);
-    expect(screen.getByText("Workforce")).toBeDefined();
     expect(screen.getByText("Workers")).toBeDefined();
     expect(screen.getByText("Attendance")).toBeDefined();
     expect(screen.getAllByText("Assignments").length).toBeGreaterThan(0);
-    expect(screen.getByText("Performance")).toBeDefined();
-    expect(screen.getAllByRole("button", { name: /Ask Odin/i }).length).toBeGreaterThan(0);
+    expect(screen.getByText("Projects")).toBeDefined();
+    expect(screen.getByText("Payments")).toBeDefined();
+    expect(screen.getByText("Support")).toBeDefined();
   });
 
   it("dynamically renders Hub navigation when navigating to Hub", async () => {

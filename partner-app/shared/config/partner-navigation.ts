@@ -27,6 +27,7 @@ export interface PartnerNavItem {
   badgeCount?: number;
   description?: string;
   isLocked?: boolean;
+  dividerBefore?: boolean;
 }
 
 export interface PartnerNavSection {
@@ -37,15 +38,13 @@ export interface PartnerNavSection {
 
 export const HANDS_NAVIGATION: PartnerNavItem[] = [
   { id: "overview", label: "Overview", href: "/partner/hands", icon: HandsDuotoneIcon, section: "main", color: "#f97316" },
-  { id: "workforce", label: "Workforce", href: "/partner/hands/workforce", icon: TeamDuotoneIcon, section: "main", color: "#0891b2" },
-  { id: "workers", label: "Workers", href: "/partner/hands/workers", icon: TeamDuotoneIcon, section: "main", color: "#0891b2" },
+  { id: "workers", label: "Workers", href: "/partner/hands/workers", icon: TeamDuotoneIcon, section: "main", color: "#0891b2", dividerBefore: true },
   { id: "requests", label: "Requests", href: "/partner/hands/requests", icon: EnquiriesDuotoneIcon, section: "main", badgeCount: 4, color: "#2563eb" },
   { id: "assignments", label: "Assignments", href: "/partner/hands/assignments", icon: ProjectsDuotoneIcon, section: "main", color: "#6366f1" },
   { id: "attendance", label: "Attendance", href: "/partner/hands/attendance", icon: CalendarDuotoneIcon, section: "main", color: "#ea580c" },
-  { id: "projects", label: "Projects", href: "/partner/hands/projects", icon: ProjectsDuotoneIcon, section: "main", color: "#6366f1" },
+  { id: "projects", label: "Projects", href: "/partner/hands/projects", icon: ProjectsDuotoneIcon, section: "main", color: "#6366f1", dividerBefore: true },
   { id: "payments", label: "Payments", href: "/partner/hands/payments", icon: PaymentsDuotoneIcon, section: "main", color: "#10b981" },
-  { id: "documents", label: "Documents", href: "/partner/hands/documents", icon: DocumentsDuotoneIcon, section: "main", color: "#0284c7" },
-  { id: "performance", label: "Performance", href: "/partner/hands/performance", icon: AnalyticsDuotoneIcon, section: "main", color: "#ec4899" },
+  { id: "support", label: "Support", href: "/partner/help", icon: HelpDuotoneIcon, section: "utility", color: "#0284c7", dividerBefore: true },
   { id: "settings", label: "Settings", href: "/partner/settings", icon: SettingsDuotoneIcon, section: "utility", color: "#64748b" },
 ];
 

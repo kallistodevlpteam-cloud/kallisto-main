@@ -67,9 +67,9 @@ function PartnerAppShellContent({ children }: PartnerAppShellProps) {
         title="Partner Workspace"
         variant="default"
         showHeading={false}
-        containerClassName="partnerHubProductsBounded"
+        containerClassName="hands-page-container"
       >
-        <div style={{ width: "100%", height: "100%", minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <div style={{ width: "100%", minHeight: 0, minWidth: 0, display: "flex", flexDirection: "column" }}>
           {children}
         </div>
       </RoutePageContainer>

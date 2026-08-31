@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { PanelLeftClose, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { KallistoLogoMark } from "@/components/layout/kallisto-brand";
 import { usePartnerAuth } from "../auth/context/partner-auth-context";
 import { LockDuotoneIcon } from "@/components/layout/sidebar-icons";
@@ -53,59 +53,63 @@ export function PartnerSidebarRail({ onToggleSidebar, onOpenOdin }: PartnerSideb
             const Icon = item.icon;
             const active = isPartnerItemActive(pathname, item.href);
             return (
-              <Link
-                key={item.id}
-                href={item.href}
-                title={item.isLocked ? `${item.label} (Locked for Beta Trials)` : item.label}
-                aria-label={item.label}
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "10px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: active ? "#0f172a" : "#64748b",
-                  backgroundColor: active ? "#f1f5f9" : "transparent",
-                  textDecoration: "none",
-                  position: "relative",
-                  transition: "all 0.15s ease",
-                  opacity: item.isLocked ? 0.65 : 1,
-                }}
-              >
-                <Icon size={18} />
-                {item.isLocked ? (
-                  <span
-                    style={{
-                      position: "absolute",
-                      bottom: "4px",
-                      right: "4px",
-                      width: "12px",
-                      height: "12px",
-                      borderRadius: "50%",
-                      backgroundColor: "#ffffff",
-                      boxShadow: "0 1px 2px rgba(0,0,0,0.12)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <LockDuotoneIcon size={8} style={{ color: "#64748b" }} />
-                  </span>
-                ) : item.badgeCount && item.badgeCount > 0 ? (
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: "6px",
-                      right: "6px",
-                      width: "6px",
-                      height: "6px",
-                      borderRadius: "50%",
-                      backgroundColor: "#ef4444",
-                    }}
-                  />
-                ) : null}
-              </Link>
+              <React.Fragment key={item.id}>
+                {item.dividerBefore && (
+                  <div style={{ width: "24px", height: "1px", backgroundColor: "#e2e8f0", margin: "4px 0" }} />
+                )}
+                <Link
+                  href={item.href}
+                  title={item.isLocked ? `${item.label} (Locked for Beta Trials)` : item.label}
+                  aria-label={item.label}
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: active ? "#0f172a" : "#64748b",
+                    backgroundColor: active ? "#f1f5f9" : "transparent",
+                    textDecoration: "none",
+                    position: "relative",
+                    transition: "all 0.15s ease",
+                    opacity: item.isLocked ? 0.65 : 1,
+                  }}
+                >
+                  <Icon size={18} />
+                  {item.isLocked ? (
+                    <span
+                      style={{
+                        position: "absolute",
+                        bottom: "4px",
+                        right: "4px",
+                        width: "12px",
+                        height: "12px",
+                        borderRadius: "50%",
+                        backgroundColor: "#ffffff",
+                        boxShadow: "0 1px 2px rgba(0,0,0,0.12)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <LockDuotoneIcon size={8} style={{ color: "#64748b" }} />
+                    </span>
+                  ) : item.badgeCount && item.badgeCount > 0 ? (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: "6px",
+                        right: "6px",
+                        width: "6px",
+                        height: "6px",
+                        borderRadius: "50%",
+                        backgroundColor: "#ef4444",
+                      }}
+                    />
+                  ) : null}
+                </Link>
+              </React.Fragment>
             );
           })}
         </div>

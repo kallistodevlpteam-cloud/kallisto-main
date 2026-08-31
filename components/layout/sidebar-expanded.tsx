@@ -89,7 +89,7 @@ export function SidebarExpanded({
                 {items.map((item) => {
                   const { icon: Icon, label, href, badge, isLocked, color } = item;
                   const isActive = isSidebarItemActive(pathname, href);
-                  const badgeCount = badge === "pending-enquiries" ? pendingEnquiryCount : null;
+                  const badgeCount = item.badgeCount ?? (badge === "pending-enquiries" ? pendingEnquiryCount : null);
                   const itemColor = color || "#64748b";
 
                   if (isLocked) {

@@ -1317,15 +1317,13 @@ textarea:focus-visible {
    own row scroll inside the table viewport. No shared page containers
    (Tasks, Drive, Finance, Site, Studio) are affected.
    ─────────────────────────────────────────────────────────────────────── */
-.workspace:has(.boqBoundedRoute),
-.workspace:has(.partnerHubProductsBounded) {
+.workspace:has(.boqBoundedRoute) {
   height: 100%;
   min-height: 0;
   overflow: hidden;
 }
 
-.workspace-container.boqBoundedRoute,
-.workspace-container.partnerHubProductsBounded {
+.workspace-container.boqBoundedRoute {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -1335,8 +1333,7 @@ textarea:focus-visible {
   box-sizing: border-box;
 }
 
-.boqBoundedRoute > .route-content-wrap,
-.partnerHubProductsBounded > .route-content-wrap {
+.boqBoundedRoute > .route-content-wrap {
   flex: 1;
   min-height: 0;
   height: 100%;
@@ -1369,24 +1366,36 @@ textarea:focus-visible {
   flex-direction: column;
 }
 
-.workspace-container.enquiries-page-container {
+.workspace-container.enquiries-page-container,
+.workspace-container.hands-page-container {
   width: 100%;
   max-width: 100%;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
+  min-height: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
-  padding: 24px;
+  padding: 16px 20px 32px 20px;
   box-sizing: border-box;
 }
 
-.workspace-container.enquiries-page-container > .route-content-wrap {
+.workspace-container.enquiries-page-container > .route-content-wrap,
+.workspace-container.hands-page-container > .route-content-wrap {
   flex: 1 1 auto;
   min-height: 0;
-  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
+}
+
+/* Workers page: own split-column scroll layout with sticky Odin panel */
+.workspace-container.hands-page-container:has(.hands-workers-workspace-root) {
+  height: 100%;
+  overflow: hidden;
+  padding: 16px 20px;
+}
+
+.workspace-container.hands-page-container:has(.hands-workers-workspace-root) > .route-content-wrap {
+  height: 100%;
   overflow: hidden;
 }
 

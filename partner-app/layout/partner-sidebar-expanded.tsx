@@ -74,32 +74,36 @@ export function PartnerSidebarExpanded({ onToggleSidebar, onOpenOdin }: PartnerS
           const Icon = item.icon;
           const active = isPartnerItemActive(pathname, item.href);
           return (
-            <Link
-              key={item.id}
-              href={item.href}
-              className={`${styles.partnerNavItem} ${active ? styles.partnerNavItemActive : ""}`}
-              style={item.isLocked ? { opacity: 0.72 } : undefined}
-            >
-              <Icon size={17} />
-              <span>{item.label}</span>
-              {item.isLocked ? (
-                <span
-                  style={{
-                    marginLeft: "auto",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "3px",
-                    fontSize: "10px",
-                    fontWeight: 600,
-                    color: "#94a3b8",
-                  }}
-                >
-                  <LockDuotoneIcon size={12} style={{ color: "#94a3b8" }} />
-                </span>
-              ) : item.badgeCount && item.badgeCount > 0 ? (
-                <span className={styles.partnerNavBadge}>{item.badgeCount}</span>
-              ) : null}
-            </Link>
+            <React.Fragment key={item.id}>
+              {item.dividerBefore && (
+                <div style={{ margin: "8px 16px", height: "1px", backgroundColor: "#f1f5f9" }} />
+              )}
+              <Link
+                href={item.href}
+                className={`${styles.partnerNavItem} ${active ? styles.partnerNavItemActive : ""}`}
+                style={item.isLocked ? { opacity: 0.72 } : undefined}
+              >
+                <Icon size={17} />
+                <span>{item.label}</span>
+                {item.isLocked ? (
+                  <span
+                    style={{
+                      marginLeft: "auto",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "3px",
+                      fontSize: "10px",
+                      fontWeight: 600,
+                      color: "#94a3b8",
+                    }}
+                  >
+                    <LockDuotoneIcon size={12} style={{ color: "#94a3b8" }} />
+                  </span>
+                ) : item.badgeCount && item.badgeCount > 0 ? (
+                  <span className={styles.partnerNavBadge}>{item.badgeCount}</span>
+                ) : null}
+              </Link>
+            </React.Fragment>
           );
         })}
 

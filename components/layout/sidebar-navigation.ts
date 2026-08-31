@@ -32,7 +32,10 @@ export type SidebarSection =
   | "partner-utility"
   | "hub-overview"
   | "hub-catalog"
-  | "hub-orders";
+  | "hub-orders"
+  | "hands-overview"
+  | "hands-workforce"
+  | "hands-projects";
 
 export type SidebarBadge = "pending-enquiries";
 
@@ -43,6 +46,8 @@ export interface SidebarNavigationItem {
   section: SidebarSection;
   color?: string;
   badge?: SidebarBadge;
+  badgeCount?: number;
+  dividerBefore?: boolean;
   isLocked?: boolean;
   lockedTitle?: string;
   lockedMessage?: string;
@@ -145,6 +150,13 @@ export const PARTNER_SIDEBAR_SECTIONS: ReadonlyArray<SidebarSectionDef> = [
   { id: "partner-utility" },
 ];
 
+export const PARTNER_HANDS_SECTIONS: ReadonlyArray<SidebarSectionDef> = [
+  { id: "hands-overview" },
+  { id: "hands-workforce" },
+  { id: "hands-projects" },
+  { id: "partner-utility" },
+];
+
 export const PARTNER_HUB_SECTIONS: ReadonlyArray<SidebarSectionDef> = [
   { id: "hub-overview" },
   { id: "hub-catalog" },
@@ -153,18 +165,15 @@ export const PARTNER_HUB_SECTIONS: ReadonlyArray<SidebarSectionDef> = [
 ];
 
 export const PARTNER_HANDS_NAVIGATION: ReadonlyArray<SidebarNavigationItem> = [
-  { icon: HandsDuotoneIcon, label: "Overview", href: "/partner/hands", section: "partner-main", color: "#f97316" },
-  { icon: TeamDuotoneIcon, label: "Workforce", href: "/partner/hands/workforce", section: "partner-main", color: "#0891b2" },
-  { icon: TeamDuotoneIcon, label: "Workers", href: "/partner/hands/workers", section: "partner-main", color: "#0891b2" },
-  { icon: EnquiriesDuotoneIcon, label: "Requests", href: "/partner/hands/requests", section: "partner-main", badge: "pending-enquiries", color: "#2563eb" },
-  { icon: ProjectsDuotoneIcon, label: "Assignments", href: "/partner/hands/assignments", section: "partner-main", color: "#6366f1" },
-  { icon: CalendarDuotoneIcon, label: "Attendance", href: "/partner/hands/attendance", section: "partner-main", color: "#ea580c" },
-  { icon: ProjectsDuotoneIcon, label: "Projects", href: "/partner/hands/projects", section: "partner-main", color: "#6366f1" },
-  { icon: PaymentsDuotoneIcon, label: "Payments", href: "/partner/hands/payments", section: "partner-main", color: "#10b981" },
-  { icon: DocumentsDuotoneIcon, label: "Documents", href: "/partner/hands/documents", section: "partner-main", color: "#0284c7" },
-  { icon: AnalyticsDuotoneIcon, label: "Performance", href: "/partner/hands/performance", section: "partner-main", color: "#ec4899" },
+  { icon: HandsDuotoneIcon, label: "Overview", href: "/partner/hands", section: "hands-overview", color: "#f97316" },
+  { icon: TeamDuotoneIcon, label: "Workers", href: "/partner/hands/workers", section: "hands-workforce", color: "#0891b2", dividerBefore: true },
+  { icon: EnquiriesDuotoneIcon, label: "Requests", href: "/partner/hands/requests", section: "hands-workforce", badgeCount: 4, color: "#2563eb" },
+  { icon: ProjectsDuotoneIcon, label: "Assignments", href: "/partner/hands/assignments", section: "hands-workforce", color: "#6366f1" },
+  { icon: CalendarDuotoneIcon, label: "Attendance", href: "/partner/hands/attendance", section: "hands-workforce", color: "#ea580c" },
+  { icon: ProjectsDuotoneIcon, label: "Projects", href: "/partner/hands/projects", section: "hands-projects", color: "#6366f1", dividerBefore: true },
+  { icon: PaymentsDuotoneIcon, label: "Payments", href: "/partner/hands/payments", section: "hands-projects", color: "#10b981" },
+  { icon: HelpDuotoneIcon, label: "Support", href: "/partner/help", section: "partner-utility", color: "#0284c7", dividerBefore: true },
   { icon: SettingsDuotoneIcon, label: "Settings", href: "/partner/settings", section: "partner-utility", color: "#64748b" },
-  { icon: HelpDuotoneIcon, label: "Help & Support", href: "/partner/help", section: "partner-utility", color: "#0284c7" },
 ];
 
 export const PARTNER_HUB_NAVIGATION: ReadonlyArray<SidebarNavigationItem> = [
@@ -252,6 +261,9 @@ export function getSidebarSectionsForPath(pathname: string): ReadonlyArray<Sideb
     const partnerType = getPartnerTypeFromPath(pathname);
     if (partnerType === "HUB") {
       return PARTNER_HUB_SECTIONS;
+    }
+    if (partnerType === "HANDS") {
+      return PARTNER_HANDS_SECTIONS;
     }
     return PARTNER_SIDEBAR_SECTIONS;
   }

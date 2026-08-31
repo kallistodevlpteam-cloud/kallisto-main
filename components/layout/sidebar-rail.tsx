@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Globe2,
   Zap,
@@ -62,52 +63,61 @@ export function SidebarRail({
 
       <nav className="rail-nav" aria-label="Quick links">
         {mainNavigation.map((item) => {
-          const { icon: Icon, label, href, badge, isLocked, color } = item;
+          const { icon: Icon, label, href, badge, badgeCount: directBadgeCount, dividerBefore, isLocked, color } = item;
           const isActive = isSidebarItemActive(pathname, href);
-          const hasPendingEnquiries = badge === "pending-enquiries" && pendingEnquiryCount !== null && pendingEnquiryCount > 0;
+          const badgeCount = directBadgeCount ?? (badge === "pending-enquiries" ? pendingEnquiryCount : null);
+          const hasPendingEnquiries = badgeCount !== null && badgeCount > 0;
           const itemColor = color || "#64748b";
 
-          if (isLocked) {
-            return (
-              <button
-                key={label}
-                type="button"
-                className="rail-button rail-button--locked"
-                onClick={() => onLockedItemClick?.(item)}
-                aria-label={`${label} (Locked feature)`}
-              >
-                <Icon size={18} strokeWidth={1.75} style={{ color: itemColor }} aria-hidden="true" />
-                <span className="rail-lock-dot" title="Locked feature">
-                  <LockDuotoneIcon size={10} aria-hidden="true" />
-                </span>
-                <span className="rail-tooltip" role="tooltip">
-                  <span>{label}</span>
-                  <span className="rail-tooltip-locked-badge">
-                    <LockDuotoneIcon size={9} aria-hidden="true" />
-                    <span>Locked</span>
-                  </span>
-                </span>
-              </button>
-            );
-          }
-
           return (
-            <Link
-              key={label}
-              href={href}
-              className={`rail-button${isActive ? " is-active" : ""}`}
-              aria-label={hasPendingEnquiries ? `${label}, ${pendingEnquiryCount} pending` : label}
-              aria-current={isActive ? "page" : undefined}
-            >
-              <Icon size={18} strokeWidth={1.75} style={{ color: itemColor }} aria-hidden="true" />
-              {hasPendingEnquiries && <span className="rail-notice-dot" aria-hidden="true" />}
-              <span className="rail-tooltip" role="tooltip">
-                <span>{label}</span>
-                {hasPendingEnquiries && (
-                  <span className="rail-tooltip-badge">{pendingEnquiryCount} pending</span>
-                )}
-              </span>
-            </Link>
+            <React.Fragment key={label}>
+              {dividerBefore && (
+                <div
+                  style={{
+                    width: "20px",
+                    height: "1px",
+                    backgroundColor: "var(--border-subtle, rgba(226, 232, 240, 0.8))",
+                    margin: "4px auto",
+                  }}
+                />
+              )}
+              {isLocked ? (
+                <button
+                  type="button"
+                  className="rail-button rail-button--locked"
+                  onClick={() => onLockedItemClick?.(item)}
+                  aria-label={`${label} (Locked feature)`}
+                >
+                  <Icon size={18} strokeWidth={1.75} style={{ color: itemColor }} aria-hidden="true" />
+                  <span className="rail-lock-dot" title="Locked feature">
+                    <LockDuotoneIcon size={10} aria-hidden="true" />
+                  </span>
+                  <span className="rail-tooltip" role="tooltip">
+                    <span>{label}</span>
+                    <span className="rail-tooltip-locked-badge">
+                      <LockDuotoneIcon size={9} aria-hidden="true" />
+                      <span>Locked</span>
+                    </span>
+                  </span>
+                </button>
+              ) : (
+                <Link
+                  href={href}
+                  className={`rail-button${isActive ? " is-active" : ""}`}
+                  aria-label={hasPendingEnquiries ? `${label}, ${badgeCount} pending` : label}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  <Icon size={18} strokeWidth={1.75} style={{ color: itemColor }} aria-hidden="true" />
+                  {hasPendingEnquiries && <span className="rail-notice-dot" aria-hidden="true" />}
+                  <span className="rail-tooltip" role="tooltip">
+                    <span>{label}</span>
+                    {hasPendingEnquiries && (
+                      <span className="rail-tooltip-badge">{badgeCount}</span>
+                    )}
+                  </span>
+                </Link>
+              )}
+            </React.Fragment>
           );
         })}
       </nav>

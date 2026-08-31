@@ -343,9 +343,29 @@ export function HubProductsCatalogView({
             </span>
           </div>
 
-          <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: 500, whiteSpace: "nowrap", flexShrink: 0 }}>
-            Live Depot Inventory & Pricing Telemetry
-          </span>
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "5px",
+              fontSize: "11px",
+              fontWeight: 600,
+              color: "#059669",
+              flexShrink: 0,
+            }}
+          >
+            <span
+              style={{
+                width: "6px",
+                height: "6px",
+                borderRadius: "9999px",
+                backgroundColor: "#10b981",
+                boxShadow: "0 0 0 2px rgba(16, 185, 129, 0.25)",
+                flexShrink: 0,
+              }}
+            />
+            <span>Live</span>
+          </div>
         </div>
 
         {/* Right: Search Pill + Filter Action Buttons */}
