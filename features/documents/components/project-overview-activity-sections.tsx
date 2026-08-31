@@ -479,54 +479,62 @@ export function ProjectOverviewActivitySections({
           </Link>
         </section>
 
-        {/* Right: HIVE PRODUCTS */}
-        <section className={styles.card} aria-label="Hive Products">
+        {/* Right: HIVE SERVICES */}
+        <section className={styles.card} aria-label="Hive Services">
           <h3 className={styles.sectionTitle}>
-            <span>HIVE PRODUCTS</span>
-            <span className={styles.sectionBadge}>12 Products Used</span>
+            <span>HIVE SERVICES</span>
+            <span className={styles.sectionBadge}>04 Services Used</span>
           </h3>
 
-          <div className={styles.productsList}>
-            <div className={styles.productRow}>
-              <div className={styles.productNameCol}>
-                <span className={styles.productName}>Marble</span>
-                <span className={styles.productQuantity}>1,240 sq ft</span>
+          <div className={styles.servicesList}>
+            <div className={styles.serviceRow}>
+              <div className={styles.serviceInfoCol}>
+                <span className={styles.serviceName}>3D Architectural Rendering</span>
+                <span className={styles.serviceUpdateNote}>
+                  Update: <strong>4 Photorealistic Views Approved</strong>
+                </span>
               </div>
               <span className={styles.stepperBadgeCompleted}>Delivered</span>
             </div>
 
-            <div className={styles.productRow}>
-              <div className={styles.productNameCol}>
-                <span className={styles.productName}>Cement</span>
-                <span className={styles.productQuantity}>180 Bags</span>
+            <div className={styles.serviceRow}>
+              <div className={styles.serviceInfoCol}>
+                <span className={styles.serviceName}>Structural Load &amp; FEA Stress Analysis</span>
+                <span className={styles.serviceUpdateNote}>
+                  Update: <strong>Foundation Load Model Verified (v1.2)</strong>
+                </span>
               </div>
-              <span className={styles.stepperBadgeCompleted}>Delivered</span>
+              <span className={styles.stepperBadgeCompleted}>Verified</span>
             </div>
 
-            <div className={styles.productRow}>
-              <div className={styles.productNameCol}>
-                <span className={styles.productName}>Electrical</span>
-                <span className={styles.productQuantity}>42 Items</span>
-              </div>
-              <span className={styles.dueChip}>Partial</span>
-            </div>
-
-            <div className={styles.productRow}>
-              <div className={styles.productNameCol}>
-                <span className={styles.productName}>Woodwork</span>
-                <span className={styles.productQuantity}>18 Items</span>
+            <div className={styles.serviceRow}>
+              <div className={styles.serviceInfoCol}>
+                <span className={styles.serviceName}>MEP BIM Routing &amp; Coordination</span>
+                <span className={styles.serviceUpdateNote}>
+                  Update: <strong>HVAC &amp; Electrical 65% Synced</strong>
+                </span>
               </div>
               <span className={styles.stepperBadgeInProgress}>In Progress</span>
             </div>
+
+            <div className={styles.serviceRow}>
+              <div className={styles.serviceInfoCol}>
+                <span className={styles.serviceName}>Site Feasibility &amp; Digital Contour Scan</span>
+                <span className={styles.serviceUpdateNote}>
+                  Update: <strong>ODIN Assessment Report Synchronized</strong>
+                </span>
+              </div>
+              <span className={styles.stepperBadgeCompleted}>Delivered</span>
+            </div>
           </div>
 
-          <div className={styles.materialValueBanner}>
-            <span className={styles.materialValueLabel}>Project Material Value</span>
-            <span className={styles.materialValueAmount}>₹8.4L</span>
+          <div className={styles.serviceValueBanner}>
+            <span>4 Hive Services Engaged</span>
+            <span style={{ fontWeight: 700 }}>3 of 4 Deliverables Cleared</span>
           </div>
 
           <Link href="/basics" className={styles.footerLink}>
-            <span>View Hive</span>
+            <span>View Hive Services</span>
             <ArrowRight size={13} />
           </Link>
         </section>

@@ -90,18 +90,13 @@ describe("ProjectOverviewActivitySections", () => {
     expect(screen.getByText(/Conduit & Electrical Wiring/i)).toBeDefined();
     expect(screen.getByText(/View BOQ Materials/i)).toBeDefined();
 
-    expect(screen.getByText("HIVE PRODUCTS")).toBeDefined();
-    expect(screen.getByText("12 Products Used")).toBeDefined();
-    expect(screen.getByText("Marble")).toBeDefined();
-    expect(screen.getByText("1,240 sq ft")).toBeDefined();
-    expect(screen.getByText("Cement")).toBeDefined();
-    expect(screen.getByText("180 Bags")).toBeDefined();
-    expect(screen.getByText("Electrical")).toBeDefined();
-    expect(screen.getByText("42 Items")).toBeDefined();
-    expect(screen.getByText("Woodwork")).toBeDefined();
-    expect(screen.getByText("18 Items")).toBeDefined();
-    expect(screen.getByText("Project Material Value")).toBeDefined();
-    expect(screen.getByText("₹8.4L")).toBeDefined();
-    expect(screen.getByText(/View Hive/i)).toBeDefined();
+    expect(screen.getByText("HIVE SERVICES")).toBeDefined();
+    expect(screen.getByText("04 Services Used")).toBeDefined();
+    expect(screen.getByText(/3D Architectural Rendering/i)).toBeDefined();
+    expect(screen.getByText(/4 Photorealistic Views Approved/i)).toBeDefined();
+    expect(screen.getByText(/Structural Load & FEA Stress Analysis/i)).toBeDefined();
+    expect(screen.getByText(/MEP BIM Routing & Coordination/i)).toBeDefined();
+    expect(screen.getByText(/Site Feasibility & Digital Contour Scan/i)).toBeDefined();
+    expect(screen.getByText(/View Hive Services/i)).toBeDefined();
   });
 });
