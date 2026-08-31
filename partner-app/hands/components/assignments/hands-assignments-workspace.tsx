@@ -5,10 +5,6 @@ import {
   Plus,
   Search,
   ChevronDown,
-  Building2,
-  Users,
-  Briefcase,
-  CheckCircle2,
   AlertTriangle,
   AlertCircle,
 } from "lucide-react";
@@ -31,6 +27,36 @@ import {
 import { HandsAssignmentCard } from "./hands-assignment-card";
 import { HandsAssignmentDrawer } from "./hands-assignment-drawer";
 import styles from "./hands-assignments.module.css";
+
+// Custom Kallisto Duotone Icons for KPI Summary Cards
+function DeploymentDuotoneIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 9.5C2 8.7 2.7 8 3.5 8H20.5C21.3 8 22 8.7 22 9.5V18C22 19.7 20.7 21 19 21H5C3.3 21 2 19.7 2 18V9.5Z" fill="currentColor" />
+      <path d="M8 8V5C8 3.9 8.9 3 10 3H14C15.1 3 16 3.9 16 5V8H8Z" fill="currentColor" opacity="0.38" />
+      <path d="M10 12H14" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function SitesCoveredDuotoneIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 6H20C21.1 6 22 6.9 22 8V20C22 21.1 21.1 22 20 22H14V6Z" fill="currentColor" opacity="0.38" />
+      <path d="M2 22H14V4C14 2.9 13.1 2 12 2H4C2.9 2 2 2.9 2 4V22ZM5 6H8V8H5V6ZM5 10H8V12H5V10ZM5 14H8V16H5V14ZM5 18H8V20H5V18Z" fill="currentColor" />
+    </svg>
+  );
+}
+
+function ShiftCompletionDuotoneIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.18" />
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M7.5 12.3L10.5 15.3L16.5 9.3" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
 export function HandsAssignmentsWorkspace() {
   const [assignments, setAssignments] = useState<AssignmentDeployment[]>(INITIAL_ASSIGNMENTS);
@@ -194,7 +220,7 @@ export function HandsAssignmentsWorkspace() {
         {/* Card 1: Active Deployments */}
         <div className={styles.summaryCard}>
           <div className={styles.summaryIconBox} style={{ backgroundColor: "#eff6ff", color: "#2563eb" }}>
-            <Briefcase size={18} />
+            <DeploymentDuotoneIcon size={18} />
           </div>
           <div className={styles.summaryTexts}>
             <span className={styles.summaryValue}>{metrics.activeDeployments}</span>
@@ -205,7 +231,7 @@ export function HandsAssignmentsWorkspace() {
         {/* Card 2: Sites Covered */}
         <div className={styles.summaryCard}>
           <div className={styles.summaryIconBox} style={{ backgroundColor: "#ecfdf5", color: "#059669" }}>
-            <Building2 size={18} />
+            <SitesCoveredDuotoneIcon size={18} />
           </div>
           <div className={styles.summaryTexts}>
             <span className={styles.summaryValue}>{metrics.sitesCovered}</span>
@@ -216,7 +242,7 @@ export function HandsAssignmentsWorkspace() {
         {/* Card 3: Deployed Crew */}
         <div className={styles.summaryCard}>
           <div className={styles.summaryIconBox} style={{ backgroundColor: "#f5f3ff", color: "#7c3aed" }}>
-            <Users size={18} />
+            <TeamDuotoneIcon size={18} />
           </div>
           <div className={styles.summaryTexts}>
             <span className={styles.summaryValue}>{metrics.deployedCrew}</span>
@@ -227,7 +253,7 @@ export function HandsAssignmentsWorkspace() {
         {/* Card 4: Shift Completion */}
         <div className={styles.summaryCard}>
           <div className={styles.summaryIconBox} style={{ backgroundColor: "#ecfdf5", color: "#059669" }}>
-            <CheckCircle2 size={18} />
+            <ShiftCompletionDuotoneIcon size={18} />
           </div>
           <div className={styles.summaryTexts}>
             <span className={styles.summaryValue}>{metrics.shiftCompletion}</span>
