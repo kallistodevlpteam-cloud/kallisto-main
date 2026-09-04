@@ -1,9 +1,13 @@
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, afterEach } from "vitest";
+import { render, screen, cleanup } from "@testing-library/react";
 import React from "react";
 import { ProjectOverviewActivitySections } from "@/features/documents/components/project-overview-activity-sections";
 
 describe("ProjectOverviewActivitySections", () => {
+  afterEach(() => {
+    cleanup();
+  });
+
   it("renders all 5 activity sections correctly", () => {
     render(<ProjectOverviewActivitySections projectId="proj-001" />);
 
@@ -64,16 +68,11 @@ describe("ProjectOverviewActivitySections", () => {
     expect(screen.getByText(/View Hands/i)).toBeDefined();
 
     expect(screen.getByText("ACTIVE PROJECT TEAM")).toBeDefined();
-    expect(screen.getByText("08 Members")).toBeDefined();
+    expect(screen.getByText("02 Members")).toBeDefined();
     expect(screen.getByText("Arjun Menon")).toBeDefined();
     expect(screen.getByText("Project Manager")).toBeDefined();
     expect(screen.getByText("Priya Sharma")).toBeDefined();
     expect(screen.getByText("Lead Architect")).toBeDefined();
-    expect(screen.getByText("Rahul Nair")).toBeDefined();
-    expect(screen.getByText("Structural Engineer")).toBeDefined();
-    expect(screen.getByText("Anjali Thomas")).toBeDefined();
-    expect(screen.getByText("Interior Designer")).toBeDefined();
-    expect(screen.getByText(/\+4 more/i)).toBeDefined();
     expect(screen.getByText(/View Team/i)).toBeDefined();
 
     // Section 5: PROJECT MATERIALS + HIVE PRODUCTS
@@ -98,5 +97,114 @@ describe("ProjectOverviewActivitySections", () => {
     expect(screen.getByText(/Automated Proposal & Scope Generator/i)).toBeDefined();
     expect(screen.getByText(/CAD Spec & Feasibility Verifier/i)).toBeDefined();
     expect(screen.getByText(/Open Hive Studio/i)).toBeDefined();
+  });
+
+  it("omits project progress and below content when project is upcoming", async () => {
+    const { ProjectOverviewCard } = await import("@/features/documents/components/project-overview-card");
+    render(
+      <ProjectOverviewCard
+        projectId="proj-007"
+        projectName="Skyline Heights Phase II"
+        projectStatus="upcoming"
+        isUpcoming={true}
+        statValues={{
+          projectType: "Residential Design",
+          duration: "Within 6 Months",
+          builtUpArea: "2,800 – 3,200 sq ft",
+          budget: "₹40L – ₹60L",
+          client: "Ananya Builders",
+        }}
+      />
+    );
+
+    expect(screen.getByText("ODIN PROJECT BRIEF")).toBeDefined();
+    expect(screen.getByText("PROJECT SNAPSHOT")).toBeDefined();
+
+    // 4 allowed tabs for upcoming projects
+    expect(screen.getByRole("tab", { name: /overview/i })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /client context/i })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /requirements/i })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /site & evidence/i })).toBeDefined();
+
+    // Omitted tabs for upcoming projects
+    expect(screen.queryByRole("tab", { name: /team members/i })).toBeNull();
+    expect(screen.queryByRole("tab", { name: /materials/i })).toBeNull();
+    expect(screen.queryByRole("tab", { name: /hands/i })).toBeNull();
+    expect(screen.queryByRole("tab", { name: /basics/i })).toBeNull();
+    expect(screen.queryByRole("tab", { name: /activity/i })).toBeNull();
+
+    expect(screen.queryByText("PROJECT PROGRESS")).toBeNull();
+    expect(screen.queryByText("Overall Progress")).toBeNull();
+    expect(screen.queryByText(/TODAY'S ACTIVITY/i)).toBeNull();
+    expect(screen.queryByText(/PENDING REVIEW & REQUESTS/i)).toBeNull();
+    expect(screen.queryByText("PROJECT TIMELINE")).toBeNull();
+    expect(screen.queryByText("HANDS")).toBeNull();
+    expect(screen.queryByText("ACTIVE PROJECT TEAM")).toBeNull();
+    expect(screen.queryByText("PROJECT MATERIALS")).toBeNull();
+    expect(screen.queryByText("HIVE STUDIO")).toBeNull();
+  });
+
+  it("renders project progress and below content when project is active", async () => {
+    const { ProjectOverviewCard } = await import("@/features/documents/components/project-overview-card");
+    render(
+      <ProjectOverviewCard
+        projectId="proj-001"
+        projectName="Nila Residence"
+        projectStatus="active"
+        isUpcoming={false}
+        statValues={{
+          projectType: "Residential Design",
+          duration: "Within 6 Months",
+          builtUpArea: "2,800 – 3,200 sq ft",
+          budget: "₹40L – ₹60L",
+          client: "Ananya Builders",
+        }}
+      />
+    );
+
+    expect(screen.getByText("ODIN PROJECT BRIEF")).toBeDefined();
+    expect(screen.getByText("PROJECT SNAPSHOT")).toBeDefined();
+
+    expect(screen.getAllByText("PROJECT PROGRESS").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Overall Progress").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/TODAY'S ACTIVITY/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/PENDING REVIEW & REQUESTS/i).length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("renders tabs correctly for both enquiry mode (4 tabs) and project mode (9 tabs)", async () => {
+    const { EnquiryDetailTabs, resolveValidTabKey } = await import(
+      "@/features/enquiries/detail/components/enquiry-detail-tabs"
+    );
+
+    // Default Enquiry mode (omits team, materials, hands, basics, activity)
+    const { unmount } = render(<EnquiryDetailTabs activeTab="overview" mode="enquiry" />);
+    expect(screen.getByRole("tab", { name: /overview/i })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /client context/i })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /requirements/i })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /site & evidence/i })).toBeDefined();
+    expect(screen.queryByRole("tab", { name: /basics/i })).toBeNull();
+    expect(screen.queryByRole("tab", { name: /team members/i })).toBeNull();
+    expect(screen.queryByRole("tab", { name: /materials/i })).toBeNull();
+    expect(screen.queryByRole("tab", { name: /hands/i })).toBeNull();
+    expect(screen.queryByRole("tab", { name: /activity/i })).toBeNull();
+    unmount();
+
+    // Project mode (all 9 tabs)
+    render(<EnquiryDetailTabs activeTab="overview" mode="project" />);
+    expect(screen.getByRole("tab", { name: /overview/i })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /client context/i })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /requirements/i })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /site & evidence/i })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /team members/i })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /materials/i })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /hands/i })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /basics/i })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /activity/i })).toBeDefined();
+
+    expect(resolveValidTabKey("team", "project")).toBe("team");
+    expect(resolveValidTabKey("materials", "project")).toBe("materials");
+    expect(resolveValidTabKey("hands", "project")).toBe("hands");
+    expect(resolveValidTabKey("basics", "project")).toBe("basics");
+    expect(resolveValidTabKey("requirements", "enquiry")).toBe("requirements");
   });
 });

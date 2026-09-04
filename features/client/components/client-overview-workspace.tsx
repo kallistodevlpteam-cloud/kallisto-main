@@ -233,9 +233,13 @@ interface ClientOverviewWorkspaceProps {
 export function ClientOverviewWorkspace({
   initialProjectId,
 }: ClientOverviewWorkspaceProps) {
+  const searchParams = useSearchParams();
+  const urlProjectId = searchParams.get("projectId") || searchParams.get("project");
   const projects = getClientProjects();
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
-    initialProjectId !== undefined ? initialProjectId : (projects[0]?.id ?? null)
+    initialProjectId !== undefined
+      ? initialProjectId
+      : (urlProjectId || null)
   );
   const [isProjectDropdownOpen, setIsProjectDropdownOpen] = useState(false);
   const [inputQuery, setInputQuery] = useState("");
@@ -350,7 +354,6 @@ export function ClientOverviewWorkspace({
     }
   };
 
-  const searchParams = useSearchParams();
   const promptParam = searchParams.get("prompt") || searchParams.get("q");
   const initialPromptSubmittedRef = useRef(false);
 
@@ -452,7 +455,7 @@ export function ClientOverviewWorkspace({
         className={`${styles.projectDropdownItem} ${selectedProjectId === null ? styles.projectDropdownItemActive : ""}`}
       >
         <div>
-          <span className={styles.projectDropdownItemName} style={{ color: "#4f46e5" }}>
+          <span className={styles.projectDropdownItemName} style={{ color: "#ea580c", fontWeight: 700 }}>
             ✦ Start New Project / Explore
           </span>
           <span className={styles.projectDropdownItemSub}>
@@ -578,7 +581,7 @@ export function ClientOverviewWorkspace({
                       >
                         <ProjectsDuotoneIcon size={14} style={{ color: "#ea580c", flexShrink: 0 }} />
                         <span className={styles.composerProjectPillText}>
-                          {selectedProjectId && selectedProject ? selectedProject.name : "✦ Start or select project"}
+                          {selectedProjectId && selectedProject ? selectedProject.name : "Start New Project / Explore"}
                         </span>
                         <ChevronDown
                           size={12}
@@ -1045,7 +1048,7 @@ export function ClientOverviewWorkspace({
                             >
                               <ProjectsDuotoneIcon size={14} style={{ color: "#ea580c", flexShrink: 0 }} />
                               <span className={styles.composerProjectPillText}>
-                                {selectedProjectId && selectedProject ? selectedProject.name : "✦ Start or select project"}
+                                {selectedProjectId && selectedProject ? selectedProject.name : "Start New Project / Explore"}
                               </span>
                               <ChevronDown
                                 size={12}

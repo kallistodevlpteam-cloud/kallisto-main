@@ -1388,11 +1388,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.editorialProjectCard:hover .editorialHeroImage {
-  transform: scale(1.03);
 }
 
 .editorialHeroOverlay {
@@ -2659,12 +2654,7 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
-  transition: transform 0.3s ease;
   display: block;
-}
-
-.projectCardWrapper:hover .projectCardImage {
-  transform: scale(1.03);
 }
 
 /* ── Information Section Below Media ── */

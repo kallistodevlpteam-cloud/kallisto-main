@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { createPortal } from "react-dom";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { ThemeSelect } from "@/components/ui/theme-select";
 import {
   Share2,
+  ArrowRight,
   Building2,
   MapPin,
   Calendar,
@@ -39,6 +41,8 @@ import {
   QrCode,
   Copy,
   X,
+  Banknote,
+  TrendingUp,
 } from "lucide-react";
 import {
   MapPinDuotoneIcon,
@@ -1253,80 +1257,6 @@ export function EnquiryDetailWorkspace({
                   }))}
                   totalCount={enquiry.inspirationImages?.length ?? 0}
                 />
-              </div>
-            )}
-
-            {/* —— TAB 6: ACTIVITY ——————————————————————————————————————————————————— */}
-            {activeTab === "activity" && (
-              <div className={styles.activitySection}>
-                <div className={styles.activityHeaderRow}>
-                  <div className={styles.activityTitleGroup}>
-                    <span className={styles.activityHeaderIcon}>
-                      <ClockDuotoneIcon size={16} />
-                    </span>
-                    <h3 className={styles.activityTitle}>Activity Timeline</h3>
-                  </div>
-                  <span className={styles.countBadge}>
-                    {1 + (stage === "clarification" || stage === "accepted" ? 1 : 0)} events
-                  </span>
-                </div>
-
-                <div className={styles.activityCard}>
-                  <div className={styles.timelineTrack}>
-                    <div className={styles.timelineNode}>
-                      <div className={`${styles.timelineNodeIconBox} ${styles.timelineNodeSuccess}`}>
-                        <CheckCircle2 size={16} />
-                      </div>
-                      <div className={styles.timelineNodeContent}>
-                        <div className={styles.timelineNodeHeader}>
-                          <strong className={styles.timelineNodeTitle}>Enquiry Received</strong>
-                          <span className={styles.timelineNodeTimestamp}>
-                            {header.receivedDate && header.receivedDate !== "Recently"
-                              ? header.receivedDate
-                              : "Recently"}
-                          </span>
-                        </div>
-                        <p className={styles.timelineNodeDesc}>
-                          New enquiry submitted via {header.source || "portal"} and logged into Kallisto pipeline.
-                        </p>
-                      </div>
-                    </div>
-
-                    {stage === "clarification" && (
-                      <div className={styles.timelineNode}>
-                        <div className={`${styles.timelineNodeIconBox} ${styles.timelineNodeWarning}`}>
-                          <HelpCircle size={16} />
-                        </div>
-                        <div className={styles.timelineNodeContent}>
-                          <div className={styles.timelineNodeHeader}>
-                            <strong className={styles.timelineNodeTitle}>Clarification Requested</strong>
-                            <span className={styles.timelineNodeTimestamp}>Today</span>
-                          </div>
-                          <p className={styles.timelineNodeDesc}>
-                            Clarification queries shared with client regarding project scope.
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    {stage === "accepted" && (
-                      <div className={styles.timelineNode}>
-                        <div className={`${styles.timelineNodeIconBox} ${styles.timelineNodePrimary}`}>
-                          <FileCheck2 size={16} />
-                        </div>
-                        <div className={styles.timelineNodeContent}>
-                          <div className={styles.timelineNodeHeader}>
-                            <strong className={styles.timelineNodeTitle}>Enquiry Accepted</strong>
-                            <span className={styles.timelineNodeTimestamp}>Today</span>
-                          </div>
-                          <p className={styles.timelineNodeDesc}>
-                            Enquiry accepted by service provider; proposal preparation underway.
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
               </div>
             )}
           </div>

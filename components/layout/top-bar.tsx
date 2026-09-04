@@ -57,6 +57,14 @@ const PROJECT_NAME_MAP: Record<string, string> = {
   "proj-3": "Oak House",
   "proj-4": "Palm Springs Suite",
   "proj-5": "Skyline Corporate HQ Suite",
+  "nila-residence": "Nila Residence",
+  "courtyard-house": "Courtyard House",
+  "fern-office": "The Fern Office",
+  "sera-villa-renovation": "Sera Villa Renovation",
+  "terra-cafe": "Terra Café",
+  "grove-apartments": "Grove Apartments",
+  "lumen-showroom": "Lumen Showroom",
+  "hillview-retreat": "Hillview Retreat",
 };
 
 const MODULE_LABEL_MAP: Record<string, string> = {
@@ -179,7 +187,7 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
 
     const currentLabel = CLIENT_MODULE_LABEL_MAP[subRoute] || (subRoute.charAt(0).toUpperCase() + subRoute.slice(1));
     if (subRoute === "overview") {
-      const activeProjectName = searchParams.get("projectName") || "Kowdiar Villa";
+      const activeProjectName = searchParams.get("projectName") || searchParams.get("projectId") || "Start New Project / Explore";
       items = [
         { label: "Client Portal" },
         { label: "Ask Odin", href: "/client/overview" },

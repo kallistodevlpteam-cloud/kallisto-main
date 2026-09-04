@@ -46,6 +46,8 @@ const PROJECTS: PortfolioProject[] = [
     },
     builtUpArea: { value: 3200, unit: "sq_ft" },
     siteArea: { value: 8.5, unit: "cent" },
+    floors: "2 Floors",
+    bedrooms: "4 BHK",
     completionYear: 2026,
     duration: "18 months",
     constructionStage: "Completed",
@@ -64,8 +66,35 @@ const PROJECTS: PortfolioProject[] = [
       "Deep shaded openings",
       "Locally sourced materials",
       "Integrated interior planning",
+      "Natural daylight optimization",
     ],
     materials: ["Laterite", "Natural stone", "Timber", "Lime plaster"],
+    materialItems: [
+      {
+        name: "Laterite",
+        application: "Exterior thermal mass walls & courtyard masonry",
+        colorSwatch: "#a0522d",
+        image: "/assets/projects/oak-house.png",
+      },
+      {
+        name: "Natural Stone",
+        application: "Courtyard paving, veranda copings & thresholds",
+        colorSwatch: "#708090",
+        image: "/assets/hero-architecture-banner.webp",
+      },
+      {
+        name: "Timber",
+        application: "Teak joinery, louvers, windows & acoustic ceilings",
+        colorSwatch: "#8b5a2b",
+        image: "/assets/projects/anitha_menon.png",
+      },
+      {
+        name: "Lime Plaster",
+        application: "Breathable moisture-regulating wall finishes",
+        colorSwatch: "#f5f5dc",
+        image: "/assets/studio/visualisations.jpg",
+      },
+    ],
     tags: [
       "Tropical Architecture",
       "Courtyard House",
@@ -77,8 +106,351 @@ const PROJECTS: PortfolioProject[] = [
     gallery: [
       "/assets/hero-architecture-banner.webp",
       "/assets/projects/anitha_menon.png",
+      "/assets/studio/visualisations.jpg",
       "/assets/studio/floor-plans.jpg",
+      "/assets/projects/greenfield-villa.png",
+      "/assets/projects/oak-house.png",
+      "/assets/studio/concept-plans.jpg",
+      "/assets/studio/drawing-analysis.jpg",
     ],
+    detailedGallery: [
+      {
+        id: "gal-1",
+        url: "/assets/hero-architecture-banner.webp",
+        category: "Exterior",
+        caption: "Courtyard Entrance & Tropical Landscaped Facade",
+        featured: true,
+      },
+      {
+        id: "gal-2",
+        url: "/assets/projects/anitha_menon.png",
+        category: "Interior",
+        caption: "Double-Height Living Room Overlooking Internal Court",
+      },
+      {
+        id: "gal-3",
+        url: "/assets/studio/visualisations.jpg",
+        category: "3D Visuals",
+        caption: "Twilight Ambient Lighting & Cross-Ventilation Concept",
+      },
+      {
+        id: "gal-4",
+        url: "/assets/studio/floor-plans.jpg",
+        category: "Floor Plans",
+        caption: "Ground Floor Architectural Plan & Spatial Flow",
+      },
+      {
+        id: "gal-5",
+        url: "/assets/projects/greenfield-villa.png",
+        category: "Exterior",
+        caption: "North Garden Verandah & Water Feature Integration",
+      },
+      {
+        id: "gal-6",
+        url: "/assets/projects/oak-house.png",
+        category: "Interior",
+        caption: "Family Dining Area with Reclaimed Teak Joinery",
+      },
+      {
+        id: "gal-7",
+        url: "/assets/studio/concept-plans.jpg",
+        category: "Floor Plans",
+        caption: "Upper Level Bedroom Zoning & Shaded Terrace Layout",
+      },
+      {
+        id: "gal-8",
+        url: "/assets/studio/drawing-analysis.jpg",
+        category: "Construction Progress",
+        caption: "Exposed Laterite Block Masonry & RCC Frame Erection",
+      },
+    ],
+    editorialSummary: {
+      vision:
+        "Nila Residence was designed as a climate-responsive family home that balances privacy, natural light and passive ventilation. The planning is organised around a central landscaped courtyard that acts as the heart of the residence.",
+      approach:
+        "Deep shaded verandahs, high-volume cross-ventilated living zones, and porous laterite walls provide thermal comfort throughout Kerala's tropical monsoon and summer cycles without heavy reliance on artificial cooling.",
+      context:
+        "Located in a quiet residential enclave in Kochi, the home respects neighborhood setbacks while maximizing internal garden views, preserving mature tropical trees and harvesting rainwater through permeable courtyard paving.",
+    },
+    milestones: [
+      {
+        id: "m-01",
+        stepNumber: "01",
+        title: "Project Initiated",
+        date: "January 2025",
+        status: "Completed",
+        description: "Initial client brief, site inspection, and zoning feasibility clearance.",
+      },
+      {
+        id: "m-02",
+        stepNumber: "02",
+        title: "Site Study & Requirements",
+        date: "February 2025",
+        status: "Completed",
+        description: "Topographic survey, sun-path analysis, and structured requirement sign-off.",
+      },
+      {
+        id: "m-03",
+        stepNumber: "03",
+        title: "Concept Design",
+        date: "March 2025",
+        status: "Completed",
+        description: "Courtyard spatial layout, 3D volumetric massing, and client presentation.",
+      },
+      {
+        id: "m-04",
+        stepNumber: "04",
+        title: "Design Development",
+        date: "May 2025",
+        status: "Completed",
+        description: "Structural grid alignment, MEP schematics, and material specifications.",
+      },
+      {
+        id: "m-05",
+        stepNumber: "05",
+        title: "Working Drawings",
+        date: "July 2025",
+        status: "Completed",
+        description: "GFC drawing pack, joinery details, and BOQ contractor tendering.",
+      },
+      {
+        id: "m-06",
+        stepNumber: "06",
+        title: "Construction Started",
+        date: "August 2025",
+        status: "Completed",
+        description: "Groundbreaking, laterite foundation, and RCC frame erection.",
+      },
+      {
+        id: "m-07",
+        stepNumber: "07",
+        title: "Interior & Finishing",
+        date: "June 2026",
+        status: "Completed",
+        description: "Custom teak carpentry, lime plaster application, and sanitary fittings.",
+      },
+      {
+        id: "m-08",
+        stepNumber: "08",
+        title: "Project Completed",
+        date: "July 2026",
+        status: "Completed",
+        description: "Final site audit, snag list clearance, and client handover.",
+      },
+    ],
+    progressStages: [
+      { stage: "Planning", percent: 100 },
+      { stage: "Architecture", percent: 100 },
+      { stage: "Documentation", percent: 100 },
+      { stage: "Construction", percent: 100 },
+      { stage: "Interior", percent: 100 },
+      { stage: "Handover", percent: 100 },
+    ],
+    serviceScopes: [
+      {
+        name: "Architecture",
+        description:
+          "Full architectural design services from conceptual development through schematic design and approvals.",
+        deliverables: [
+          "Concept design and massing models",
+          "Space planning and master layout",
+          "Design development package",
+          "Architectural statutory approval sets",
+        ],
+        status: "Delivered",
+      },
+      {
+        name: "Interior Design",
+        description:
+          "Bespoke interior design and spatial coordination rooted in natural materials and ergonomic lighting.",
+        deliverables: [
+          "Interior space planning and zoning",
+          "Material selection and finishes schedule",
+          "Custom teak joinery & cabinetry details",
+          "Lighting design and fixture selection",
+        ],
+        status: "Delivered",
+      },
+      {
+        name: "Working Drawings",
+        description:
+          "Comprehensive technical documentation and Good-For-Construction (GFC) sets for contractor execution.",
+        deliverables: [
+          "Detailed architectural construction drawings",
+          "Door, window, and louvers schedule",
+          "Toilet and kitchen layout sheets",
+          "Structural and MEP coordination drawings",
+        ],
+        status: "Delivered",
+      },
+      {
+        name: "Project Coordination",
+        description:
+          "On-site monitoring, consultant integration, and strict quality assurance throughout construction.",
+        deliverables: [
+          "Structural and MEP consultant coordination",
+          "Periodic site inspection and progress audits",
+          "BOQ compliance and material verification",
+          "Snagging management and handover sign-off",
+        ],
+        status: "Delivered",
+      },
+    ],
+    teamMembers: [
+      {
+        role: "Lead Architect",
+        name: "Arjun K.",
+        organization: "Arjun Architects",
+        service: "Architecture & Concept Planning",
+        status: "Verified",
+        isKallistoProvider: true,
+        providerId: "arjun-architects",
+      },
+      {
+        role: "Interior Designer",
+        name: "Maya Nair",
+        organization: "Arjun Architects",
+        service: "Interior Architecture & Joinery",
+        status: "Verified",
+        isKallistoProvider: true,
+        providerId: "arjun-architects",
+      },
+      {
+        role: "Structural Engineer",
+        name: "K. R. Varma",
+        organization: "Frame Structural Consultants",
+        service: "Structural Engineering & Grid Analysis",
+        status: "Partner",
+      },
+      {
+        role: "General Contractor",
+        name: "Paulson Thomas",
+        organization: "Greenfield Construction Ltd.",
+        service: "Civil Construction & Execution",
+        status: "Verified",
+        isKallistoProvider: true,
+      },
+    ],
+    updates: [
+      {
+        id: "upd-1",
+        date: "12 Jun 2026",
+        title: "Interior Work — 85% Complete",
+        description:
+          "Flooring and ceiling work completed across the living and dining areas. Custom teak joinery installation underway.",
+        images: [
+          "/assets/projects/anitha_menon.png",
+          "/assets/studio/visualisations.jpg",
+        ],
+        addedBy: "Arjun K. (Lead Architect)",
+        milestone: "Milestone 07: Interior & Finishing",
+      },
+      {
+        id: "upd-2",
+        date: "28 Apr 2026",
+        title: "Courtyard Landscaping & Paving",
+        description:
+          "Natural stone paving laid in central courtyard with rainwater percolation wells and indigenous planting installed.",
+        images: ["/assets/hero-architecture-banner.webp"],
+        addedBy: "Maya Nair (Interior Team)",
+        milestone: "Milestone 07: Interior & Finishing",
+      },
+      {
+        id: "upd-3",
+        date: "15 Jan 2026",
+        title: "Structural Frame & Roof Slab Concreted",
+        description:
+          "Upper floor roof slab casting completed with double-curing cycle inspected and certified by structural consultant.",
+        images: ["/assets/studio/drawing-analysis.jpg"],
+        addedBy: "Paulson Thomas (Contractor)",
+        milestone: "Milestone 06: Construction Started",
+      },
+    ],
+    documents: [
+      {
+        id: "doc-1",
+        name: "Project Brief & Requirements Sign-off",
+        fileType: "PDF",
+        size: "2.4 MB",
+        updatedDate: "Jan 2025",
+        version: "v1.0",
+        url: "#",
+      },
+      {
+        id: "doc-2",
+        name: "Architectural Drawings & 3D Massing",
+        fileType: "PDF",
+        size: "14.8 MB",
+        updatedDate: "Mar 2025",
+        version: "v2.1",
+        url: "#",
+      },
+      {
+        id: "doc-3",
+        name: "Floor Plans & Zoning Diagrams",
+        fileType: "PDF",
+        size: "8.2 MB",
+        updatedDate: "May 2025",
+        version: "v2.0",
+        url: "#",
+      },
+      {
+        id: "doc-4",
+        name: "Elevations & Sectional Details",
+        fileType: "PDF",
+        size: "11.5 MB",
+        updatedDate: "May 2025",
+        version: "v1.8",
+        url: "#",
+      },
+      {
+        id: "doc-5",
+        name: "GFC Working Drawing Package",
+        fileType: "PDF",
+        size: "22.0 MB",
+        updatedDate: "Jul 2025",
+        version: "v3.0",
+        url: "#",
+      },
+      {
+        id: "doc-6",
+        name: "Approved Bill of Quantities (BOQ)",
+        fileType: "XLSX",
+        size: "1.6 MB",
+        updatedDate: "Aug 2025",
+        version: "v2.4",
+        url: "#",
+      },
+      {
+        id: "doc-7",
+        name: "Technical Specifications Document",
+        fileType: "PDF",
+        size: "4.1 MB",
+        updatedDate: "Aug 2025",
+        version: "v1.2",
+        url: "#",
+      },
+      {
+        id: "doc-8",
+        name: "Final Handover & Completion Certificate",
+        fileType: "PDF",
+        size: "3.5 MB",
+        updatedDate: "Jul 2026",
+        version: "Final",
+        url: "#",
+      },
+    ],
+    outcomesSummary:
+      "Delivered within 18 months on budget with zero variation disputes. The passive ventilation strategy successfully reduced daytime interior temperatures by 4°C relative to outdoor ambient levels.",
+    clientFeedback: {
+      rating: 5,
+      quote:
+        "The entire process was well coordinated, from the initial design through completion. The central courtyard brings incredible light and airflow throughout the house, and Arjun's team managed every contractor seamlessly.",
+      clientName: "Anitha & Rajesh Menon",
+      projectContext: "Nila Residence, Kochi",
+      date: "August 2026",
+    },
+    relatedProjectIds: ["courtyard-house", "fern-office", "sera-villa-renovation"],
     featured: true,
     visibility: "public",
   },
@@ -922,6 +1294,8 @@ const TAGGED_ITEMS: TaggedPortfolioItem[] = [
     role: "Interior design and site coordination",
     originalOwner: "Terra Hospitality",
     status: "Approved",
+    projectType: "hospitality",
+    category: "Hospitality",
   },
   {
     id: "tagged-hillview-retreat",
@@ -932,6 +1306,8 @@ const TAGGED_ITEMS: TaggedPortfolioItem[] = [
     role: "Lead architect",
     originalOwner: "Hillview Resorts",
     status: "Approved",
+    projectType: "residential",
+    category: "Residential",
   },
   {
     id: "tagged-fern-office",
@@ -942,6 +1318,8 @@ const TAGGED_ITEMS: TaggedPortfolioItem[] = [
     role: "Architecture and interior coordination",
     originalOwner: "Fern Creative",
     status: "Pending",
+    projectType: "commercial",
+    category: "Commercial",
   },
   {
     id: "tagged-grove-apartments",
@@ -952,6 +1330,8 @@ const TAGGED_ITEMS: TaggedPortfolioItem[] = [
     role: "Design architect",
     originalOwner: "Grove Living",
     status: "Hidden",
+    projectType: "multi_residential",
+    category: "Multi-residential",
   },
 ];
 function isPublicProject(project: PortfolioProject): boolean {
@@ -988,5 +1368,254 @@ export function getPortfolioPageData(isOwner: boolean): PortfolioPageData {
     drafts: isOwner
       ? PROJECTS.filter((project) => project.status === "draft")
       : [],
+  };
+}
+
+export function getPortfolioProjects(): PortfolioProject[] {
+  return PROJECTS;
+}
+
+export function addPortfolioProject(newProject: PortfolioProject): PortfolioProject {
+  const existingIndex = PROJECTS.findIndex((p) => p.id === newProject.id);
+  if (existingIndex >= 0) {
+    PROJECTS[existingIndex] = newProject;
+  } else {
+    PROJECTS.unshift(newProject);
+    if (COLLECTIONS[0] && !COLLECTIONS[0].projectIds.includes(newProject.id)) {
+      COLLECTIONS[0].projectIds.unshift(newProject.id);
+    }
+  }
+  return newProject;
+}
+
+export function getDetailedPortfolioProject(
+  projectId: string,
+): PortfolioProject | null {
+  const project = PROJECTS.find(
+    (p) => p.id === projectId || p.slug === projectId,
+  );
+  if (!project) {
+    return null;
+  }
+
+  // Ensure default full-depth data structure for any project in portfolio
+  const isCompleted = project.status === "completed";
+  const progressPercent = isCompleted ? 100 : (project.completionPercent ?? 65);
+
+  const fallbackGallery = (project.gallery && project.gallery.length > 0
+    ? project.gallery
+    : [project.coverImage]
+  ).map((url, idx) => ({
+    id: `gal-${idx + 1}`,
+    url,
+    category: (idx % 4 === 0
+      ? "Exterior"
+      : idx % 4 === 1
+        ? "Interior"
+        : idx % 4 === 2
+          ? "Floor Plans"
+          : "3D Visuals") as
+      | "Exterior"
+      | "Interior"
+      | "Floor Plans"
+      | "3D Visuals",
+    caption: `${project.title} — View ${idx + 1}`,
+    featured: idx === 0,
+  }));
+
+  const fallbackEditorial = {
+    vision: `${project.title} was designed as a bespoke ${project.projectType} space that emphasizes climate sensitivity, efficient spatial planning, and high-quality material execution.`,
+    approach: `The design balances contextual responsiveness with durable construction techniques suited to Kerala's environmental conditions.`,
+    context: `Located in ${project.location.city}, ${project.location.state}, the project harmonizes with local zoning while maximizing natural light and ventilation.`,
+  };
+
+  const fallbackMilestones = [
+    {
+      id: "m-1",
+      stepNumber: "01",
+      title: "Project Initiated",
+      date: "Jan 2025",
+      status: "Completed" as const,
+      description: "Brief formulation and preliminary site analysis.",
+    },
+    {
+      id: "m-2",
+      stepNumber: "02",
+      title: "Concept Design",
+      date: "Mar 2025",
+      status: "Completed" as const,
+      description: "Schematic layouts and 3D volumetric study.",
+    },
+    {
+      id: "m-3",
+      stepNumber: "03",
+      title: "Working Drawings",
+      date: "Jun 2025",
+      status: "Completed" as const,
+      description: "Good-For-Construction technical package.",
+    },
+    {
+      id: "m-4",
+      stepNumber: "04",
+      title: "Construction Phase",
+      date: "Nov 2025",
+      status: isCompleted ? ("Completed" as const) : ("In Progress" as const),
+      description: "On-site structural execution and trade coordination.",
+    },
+    {
+      id: "m-5",
+      stepNumber: "05",
+      title: isCompleted ? "Project Completed" : "Final Handover",
+      date: String(project.completionYear ?? "2026"),
+      status: isCompleted ? ("Completed" as const) : ("Upcoming" as const),
+      description: isCompleted
+        ? "Client handover and documentation closure."
+        : "Pending completion and snag list resolution.",
+    },
+  ];
+
+  const fallbackProgressStages = [
+    { stage: "Planning", percent: 100 },
+    { stage: "Architecture", percent: 100 },
+    { stage: "Documentation", percent: 100 },
+    { stage: "Construction", percent: isCompleted ? 100 : 75 },
+    { stage: "Interior", percent: isCompleted ? 100 : 50 },
+    { stage: "Handover", percent: isCompleted ? 100 : 20 },
+  ];
+
+  const fallbackServices = project.services.map((svc) => ({
+    name: svc,
+    description: `Comprehensive ${svc.toLowerCase()} deliverables customized for ${project.title}.`,
+    deliverables: [
+      "Conceptual & detailed layouts",
+      "Coordination & review packages",
+      "Statutory & GFC specifications",
+    ],
+    status: isCompleted ? ("Delivered" as const) : ("In Progress" as const),
+  }));
+
+  const fallbackMaterials = (project.materials && project.materials.length > 0
+    ? project.materials
+    : ["Laterite", "Natural Stone", "Timber", "Lime Plaster"]
+  ).map((mat) => ({
+    name: mat,
+    application: `Primary finish for ${project.title}`,
+    colorSwatch: "#8b5a2b",
+  }));
+
+  const fallbackTeam = [
+    {
+      role: "Lead Architect",
+      name: "Arjun K.",
+      organization: "Arjun Architects",
+      service: "Architecture",
+      status: "Verified" as const,
+      isKallistoProvider: true,
+      providerId: "arjun-architects",
+    },
+    {
+      role: "Interior Designer",
+      name: "Maya Nair",
+      organization: "Arjun Architects",
+      service: "Interior Design",
+      status: "Verified" as const,
+      isKallistoProvider: true,
+      providerId: "arjun-architects",
+    },
+    {
+      role: "Structural Consultant",
+      name: "K. R. Varma",
+      organization: "Frame Structural Consultants",
+      service: "Structural Engineering",
+      status: "Partner" as const,
+    },
+  ];
+
+  const fallbackDocuments = [
+    {
+      id: "doc-1",
+      name: "Project Brief & Requirements",
+      fileType: "PDF",
+      size: "2.1 MB",
+      updatedDate: "Jan 2025",
+      version: "v1.0",
+      url: "#",
+    },
+    {
+      id: "doc-2",
+      name: "Architectural Drawings Package",
+      fileType: "PDF",
+      size: "12.4 MB",
+      updatedDate: "May 2025",
+      version: "v2.0",
+      url: "#",
+    },
+    {
+      id: "doc-3",
+      name: "GFC Working Drawing Set",
+      fileType: "PDF",
+      size: "18.6 MB",
+      updatedDate: "Jul 2025",
+      version: "v3.0",
+      url: "#",
+    },
+    {
+      id: "doc-4",
+      name: "Bill of Quantities (BOQ)",
+      fileType: "XLSX",
+      size: "1.4 MB",
+      updatedDate: "Aug 2025",
+      version: "v2.2",
+      url: "#",
+    },
+  ];
+
+  const fallbackRelated = PROJECTS.filter((p) => p.id !== project.id)
+    .slice(0, 3)
+    .map((p) => p.id);
+
+  return {
+    ...project,
+    floors: project.floors || "2 Floors",
+    bedrooms: project.bedrooms || "4 BHK",
+    detailedGallery:
+      project.detailedGallery && project.detailedGallery.length > 0
+        ? project.detailedGallery
+        : fallbackGallery,
+    editorialSummary: project.editorialSummary || fallbackEditorial,
+    milestones:
+      project.milestones && project.milestones.length > 0
+        ? project.milestones
+        : fallbackMilestones,
+    progressStages:
+      project.progressStages && project.progressStages.length > 0
+        ? project.progressStages
+        : fallbackProgressStages,
+    serviceScopes:
+      project.serviceScopes && project.serviceScopes.length > 0
+        ? project.serviceScopes
+        : fallbackServices,
+    materialItems:
+      project.materialItems && project.materialItems.length > 0
+        ? project.materialItems
+        : fallbackMaterials,
+    teamMembers:
+      project.teamMembers && project.teamMembers.length > 0
+        ? project.teamMembers
+        : fallbackTeam,
+    updates: project.updates || [],
+    documents:
+      project.documents && project.documents.length > 0
+        ? project.documents
+        : fallbackDocuments,
+    outcomesSummary:
+      project.outcomesSummary ||
+      `Delivered on schedule with comprehensive architectural coordination and strict material standards.`,
+    clientFeedback: project.clientFeedback || undefined,
+    relatedProjectIds:
+      project.relatedProjectIds && project.relatedProjectIds.length > 0
+        ? project.relatedProjectIds
+        : fallbackRelated,
+    completionPercent: progressPercent,
   };
 }

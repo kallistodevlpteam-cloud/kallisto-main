@@ -8,7 +8,6 @@ import { RoutePageContainer } from "@/components/ui/route-page-container";
 import { ProjectOverviewCard } from "@/features/documents/components/project-overview-card";
 import { useProjectDashboardLayout } from "@/features/documents/hooks/use-project-dashboard-layout";
 import { useDrawerBehaviour } from "@/features/hands/components/use-drawer-behaviour";
-import { ProjectDashboardHeaderActions } from "./components/project-dashboard-header-actions";
 import styles from "./projects.module.css";
 
 interface ProjectDetailWorkspaceProps {
@@ -120,6 +119,7 @@ export function ProjectDetailWorkspace({ projectId }: ProjectDetailWorkspaceProp
       showHeading={false}
     >
       <ProjectOverviewCard
+        projectId={project.id}
         dashboardRef={dashboardRef}
         layoutMode={updatesMode}
         updatesOpen={updatesOpen}
@@ -130,8 +130,10 @@ export function ProjectDetailWorkspace({ projectId }: ProjectDetailWorkspaceProp
         onOpenUpdates={() => setUpdatesOpen(true)}
         projectName={project.name}
         description={project.description}
+        projectStatus={project.status}
+        isUpcoming={project.status === "upcoming"}
         statValues={{
-          projectType: "Residential Design",
+          projectType: project.projectType || "Residential Design",
           duration: "Within 6 Months",
           builtUpArea: "2,800 – 3,200 sq ft",
           budget: project.budget && project.budget !== "₹ 12,0000" ? project.budget : "₹40L – ₹60L",

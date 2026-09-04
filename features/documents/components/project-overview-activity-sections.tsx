@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import {
   CheckCircle2,
   Clock,
@@ -16,15 +17,31 @@ import {
   HardHat,
   Package,
 } from "lucide-react";
+import type { EnquiryTabKey } from "@/features/enquiries/detail/components/enquiry-detail-tabs";
 import styles from "./project-overview-activity-sections.module.css";
 
-interface ProjectOverviewActivitySectionsProps {
+export interface ProjectOverviewActivitySectionsProps {
   projectId?: string;
+  onNavigateTab?: (tab: EnquiryTabKey) => void;
 }
 
 export function ProjectOverviewActivitySections({
   projectId = "proj-001",
+  onNavigateTab,
 }: ProjectOverviewActivitySectionsProps) {
+  const router = useRouter();
+  const currentPathname = usePathname();
+  const basePath = currentPathname || `/projects/${projectId}`;
+
+  const handleTabClick = (tab: EnquiryTabKey) => (e: React.MouseEvent) => {
+    if (onNavigateTab) {
+      e.preventDefault();
+      onNavigateTab(tab);
+      const params = new URLSearchParams(window.location.search);
+      params.set("tab", tab);
+      router.push(`${basePath}?${params.toString()}`, { scroll: false });
+    }
+  };
   return (
     <div className={styles.container} aria-label="Project Activity Command Center">
       {/* ── 1. PROJECT PROGRESS ─────────────────────────────────── */}
@@ -117,25 +134,25 @@ export function ProjectOverviewActivitySections({
           </div>
 
           <div className={styles.taskList}>
-            <div className={styles.taskItem}>
+            <Link href={projectId ? `/projects/${projectId}/tasks` : "/tasks"} className={styles.taskItem}>
               <span className={styles.taskItemName}>MEP layout review</span>
               <span className={styles.stepperBadgeInProgress}>In Progress</span>
-            </div>
-            <div className={styles.taskItem}>
+            </Link>
+            <Link href={projectId ? `/projects/${projectId}/tasks` : "/tasks"} className={styles.taskItem}>
               <span className={styles.taskItemName}>Living room elevation</span>
               <span className={styles.dueChip}>Pending Review</span>
-            </div>
-            <div className={styles.taskItem}>
+            </Link>
+            <Link href={projectId ? `/projects/${projectId}/tasks` : "/tasks"} className={styles.taskItem}>
               <span className={styles.taskItemName}>Electrical point marking</span>
               <span className={styles.stepperBadgeUpcoming}>Pending</span>
-            </div>
-            <div className={styles.taskItem}>
+            </Link>
+            <Link href={projectId ? `/projects/${projectId}/tasks` : "/tasks"} className={styles.taskItem}>
               <span className={styles.taskItemName}>Marble specification approval</span>
               <span className={styles.stepperBadgeCompleted}>Completed</span>
-            </div>
+            </Link>
           </div>
 
-          <Link href={`/projects/${projectId}/tasks`} className={styles.footerLink}>
+          <Link href={projectId ? `/projects/${projectId}/tasks` : "/tasks"} className={styles.footerLink}>
             <span>View all tasks</span>
             <ArrowRight size={13} />
           </Link>
@@ -308,7 +325,11 @@ export function ProjectOverviewActivitySections({
             <span style={{ fontWeight: 700, color: "#15803d" }}>Today&apos;s Labour Spend: ₹16,850</span>
           </div>
 
-          <Link href="/partner/hands" className={styles.footerLink}>
+          <Link
+            href={`${basePath}?tab=hands`}
+            onClick={handleTabClick("hands")}
+            className={styles.footerLink}
+          >
             <span>View Hands</span>
             <ArrowRight size={13} />
           </Link>
@@ -318,7 +339,7 @@ export function ProjectOverviewActivitySections({
         <section className={styles.card} aria-label="Active Project Team">
           <h3 className={styles.sectionTitle}>
             <span>ACTIVE PROJECT TEAM</span>
-            <span className={styles.sectionBadge}>08 Members</span>
+            <span className={styles.sectionBadge}>02 Members</span>
           </h3>
 
           <div className={styles.teamList}>
@@ -351,43 +372,13 @@ export function ProjectOverviewActivitySections({
               </div>
               <span className={styles.activeDotBadge}>Active</span>
             </div>
-
-            <div className={styles.teamMemberRow}>
-              <div className={styles.teamMemberLeft}>
-                <img
-                  src="/assets/rahul-avatar.jpg"
-                  alt="Rahul Nair"
-                  className={styles.teamMemberAvatar}
-                />
-                <div>
-                  <span className={styles.teamMemberName}>Rahul Nair</span>
-                  <span className={styles.teamMemberRole}>Structural Engineer</span>
-                </div>
-              </div>
-              <span className={styles.activeDotBadge}>Active</span>
-            </div>
-
-            <div className={styles.teamMemberRow}>
-              <div className={styles.teamMemberLeft}>
-                <img
-                  src="/assets/petra-avatar.jpg"
-                  alt="Anjali Thomas"
-                  className={styles.teamMemberAvatar}
-                />
-                <div>
-                  <span className={styles.teamMemberName}>Anjali Thomas</span>
-                  <span className={styles.teamMemberRole}>Interior Designer</span>
-                </div>
-              </div>
-              <span className={styles.activeDotBadge}>Active</span>
-            </div>
-
-            <div className={styles.moreMembersPill}>
-              +4 more project members
-            </div>
           </div>
 
-          <Link href="/team" className={styles.footerLink}>
+          <Link
+            href={`${basePath}?tab=team`}
+            onClick={handleTabClick("team")}
+            className={styles.footerLink}
+          >
             <span>View Team</span>
             <ArrowRight size={13} />
           </Link>

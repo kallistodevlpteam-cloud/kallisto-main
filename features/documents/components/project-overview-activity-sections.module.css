@@ -261,6 +261,9 @@
   background: #ffffff;
   border: 1px solid #f1f5f9;
   border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease;
 }
 

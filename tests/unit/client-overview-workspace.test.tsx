@@ -134,14 +134,14 @@ describe("ClientOverviewWorkspace — True Odin Conversational Workspace", () =>
     expect(screen.queryByRole("button", { name: /new query/i })).not.toBeInTheDocument();
   });
 
-  it("renders new client mode when initialProjectId is null and supports AI project scoping", async () => {
-    render(<ClientOverviewWorkspace initialProjectId={null} />);
+  it("renders new client mode by default at initial stage and displays Start New Project / Explore", async () => {
+    render(<ClientOverviewWorkspace />);
 
     // 1. Tagline adapts for new clients
     expect(screen.getByText("Tell Odin what you want to build, design, or explore.")).toBeInTheDocument();
 
-    // 2. Project button displays start or select project
-    expect(screen.getByRole("button", { name: /choose project/i })).toHaveTextContent("✦ Start or select project");
+    // 2. Project button displays Start New Project / Explore
+    expect(screen.getByRole("button", { name: /choose project/i })).toHaveTextContent("Start New Project / Explore");
 
     // 3. New client actions are present
     expect(screen.getByRole("button", { name: /start a project/i })).toBeInTheDocument();

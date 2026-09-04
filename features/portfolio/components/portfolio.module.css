@@ -1954,30 +1954,46 @@
   background: #1e293b;
 }
 
+.addProjectDedicatedBtn,
 .addProjectIconButton,
 .addProjectButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
+  gap: 7px;
   height: 36px;
+  padding: 0 16px;
   flex: 0 0 auto;
   margin-left: auto;
-  border-radius: 50%;
-  background: #f1f5f9;
-  border: none;
-  color: #0f172a;
+  border-radius: 9999px;
+  background: #0f172a;
+  border: 1px solid #0f172a;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 150ms ease;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
 }
 
+.addProjectDedicatedBtn:hover,
 .addProjectIconButton:hover,
 .addProjectButton:hover {
-  background: #e2e8f0;
-  color: #0f172a;
-  transform: scale(1.05);
+  background: #1e293b;
+  border-color: #1e293b;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
 }
 
+.addProjectDedicatedBtn:active,
+.addProjectIconButton:active,
+.addProjectButton:active {
+  transform: translateY(0);
+}
+
+.addProjectDedicatedBtn:focus-visible,
 .addProjectIconButton:focus-visible,
 .addProjectButton:focus-visible {
   outline: 2px solid #0f172a;
@@ -2264,6 +2280,218 @@
   min-height: 240px;
   margin-top: 12px;
   outline: none;
+}
+
+.projectGridWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ─── Project Category / Type Filter Bar & Search ───────── */
+.projectToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.projectCategoryFilterBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 4px 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.projectSearchWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 260px;
+  flex-shrink: 0;
+}
+
+.projectSearchInput {
+  width: 100%;
+  height: 34px;
+  padding: 0 28px 0 32px;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 13px;
+  color: #0f172a;
+  outline: none;
+  transition: all 150ms ease;
+}
+
+.projectSearchInput:focus {
+  background: #ffffff;
+  border-color: #0f172a;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.08);
+}
+
+.projectSearchInput::placeholder {
+  color: #94a3b8;
+  font-size: 12.5px;
+}
+
+.projectSearchIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.projectSearchClear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: #e2e8f0;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+  transition: all 150ms ease;
+}
+
+.projectSearchClear:hover {
+  background: #cbd5e1;
+  color: #0f172a;
+}
+
+@media (max-width: 768px) {
+  .projectToolbar {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .projectSearchWrapper {
+    width: 100%;
+  }
+}
+
+.projectCategoryFilterBar::-webkit-scrollbar {
+  display: none;
+}
+
+.categoryFilterPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 150ms ease;
+  user-select: none;
+}
+
+.categoryFilterPill:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.categoryFilterPillActive {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.categoryFilterPillActive:hover {
+  background: #1e293b;
+  color: #ffffff;
+  border-color: #1e293b;
+}
+
+.categoryCountBadge {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.08);
+  color: inherit;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.categoryFilterPillActive .categoryCountBadge {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+.categoryEmptyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.categoryEmptyTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+}
+
+.categoryEmptyDesc {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 16px 0;
+  max-width: 380px;
+}
+
+.resetCategoryBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.resetCategoryBtn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
 }
 
 /* Instagram 5-Column Square Grid (1:1 Ratio, 12px Gap) */
@@ -2777,10 +3005,10 @@
   grid-template-columns: 360px minmax(0, 1fr);
   gap: 28px;
   align-items: start;
-  margin-top: 12px;
+  margin-top: 6px;
   width: 100%;
-  height: calc(100vh - 130px);
-  max-height: calc(100vh - 130px);
+  height: calc(100vh - 180px);
+  max-height: calc(100vh - 180px);
   overflow: hidden;
   box-sizing: border-box;
 }
@@ -2789,8 +3017,8 @@
   .caseStudyLayout {
     grid-template-columns: 320px minmax(0, 1fr);
     gap: 16px;
-    height: calc(100vh - 130px);
-    max-height: calc(100vh - 130px);
+    height: calc(100vh - 180px);
+    max-height: calc(100vh - 180px);
   }
 }
 
@@ -2990,7 +3218,7 @@
 .previewMediaContainer {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 32 / 9;
   border-radius: 16px;
   overflow: hidden;
   background: #0f172a;

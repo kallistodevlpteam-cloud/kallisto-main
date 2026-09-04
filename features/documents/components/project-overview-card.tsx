@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, type CSSProperties, type ReactNode, type RefObject } from "react";
+import React, { useState, useEffect, type CSSProperties, type ReactNode, type RefObject } from "react";
+import Link from "next/link";
 import {
   Sparkles,
   ChevronDown,
@@ -18,7 +19,13 @@ import {
   FileText,
   Briefcase,
   Share2,
-  MessageSquare,
+  ArrowRight,
+  Users,
+  HardHat,
+  Package,
+  Banknote,
+  Clock,
+  TrendingUp,
 } from "lucide-react";
 import {
   ClockDuotoneIcon,
@@ -29,19 +36,23 @@ import {
 import {
   PROJECT_MAIN_MIN_WIDTH,
   PROJECT_UPDATES_GAP,
-  PROJECT_UPDATES_PANEL_ID,
   type ProjectUpdatesLayoutMode,
 } from "@/lib/layout/project-dashboard-responsive-contract";
 import type { UpdatePost } from "../hooks/use-project-updates-panel-state";
 import {
   EnquiryDetailTabs,
   type EnquiryTabKey,
+  UPCOMING_PROJECT_TABS,
+  PROJECT_TABS,
+  ENQUIRY_TABS,
 } from "@/features/enquiries/detail/components/enquiry-detail-tabs";
 import { OdinProjectBrief } from "@/features/enquiries/detail/components/odin-project-brief";
 import { ClientPrioritiesBar } from "@/features/enquiries/detail/components/client-priorities-bar";
-import { EnquiryProjectScopeSection } from "@/features/enquiries/detail/components/enquiry-project-scope-section";
 import { EnquirySiteImagesCard } from "@/features/enquiries/detail/components/enquiry-site-images-card";
 import { EnquiryProjectDocumentsSection } from "@/features/enquiries/detail/components/enquiry-project-documents-section";
+import { ProjectTeamWorkspace } from "@/features/projects/components/team/project-team-workspace";
+import { ProjectBasicsWorkspace } from "@/features/projects/components/basics/project-basics-workspace";
+import { ProjectMaterialsWorkspace } from "@/features/projects/components/materials/project-materials-workspace";
 import { DocumentsTitleRowActions } from "./documents-title-row-actions";
 import {
   buildEnquiryDetailViewModel,
@@ -49,6 +60,7 @@ import {
 } from "@/features/enquiries/detail/services/enquiry-detail-view-model";
 import { getMemberOdinInsightSummary } from "@/features/enquiries/detail/components/enquiry-detail-workspace";
 import { ClientPriority, EnquiryRecord } from "@/features/enquiries/types/enquiry.types";
+import { projectService } from "@/services/repositories/project-service";
 import {
   ProjectStatCardsBar,
   type ProjectStatValues,
@@ -84,6 +96,48 @@ const DEFAULT_PROJECT_DOCS = [
   { id: "doc-3", name: "ODIN Spatial Feasibility Assessment v1.2.pdf", docType: "Feasibility", approved: true, uploaded: true, updatedAt: "26 Jul 2026", updatedBy: { name: "ODIN System", initials: "OD" } },
 ];
 
+const HANDS_LABOUR_CONTRACTORS = [
+  {
+    id: "kochi-civil",
+    firmName: "Kochi Civil & Masonry Works",
+    leadName: "Ramesh Kumar",
+    role: "Civil & Structural Contractor Lead",
+    avatar: "/assets/arjun-avatar.jpg",
+    badge: "Grade A Civil",
+    phone: "+91 98471 88234",
+    email: "ramesh.civil@kallisto.partner",
+    deployedWorkers: 14,
+    activeOnSite: 12,
+    dailyRate: "₹9,950 / day",
+    trades: "Masonry (6), Helpers & Logistics (6), Plumbing (2)",
+    compliance: "ESIC & Workman Compensation Verified",
+  },
+  {
+    id: "apex-mep",
+    firmName: "Apex MEP & Finishing Solutions",
+    leadName: "Biju Varghese",
+    role: "MEP & Joinery Contractor Lead",
+    avatar: "/assets/david-avatar.jpg",
+    badge: "Licensed MEP",
+    phone: "+91 98472 99451",
+    email: "biju.mep@kallisto.partner",
+    deployedWorkers: 10,
+    activeOnSite: 8,
+    dailyRate: "₹8,700 / day",
+    trades: "Carpentry & Joinery (4), Electrical (3), Painting (3)",
+    compliance: "Class 1 Safety & Electrical Certified",
+  },
+];
+
+const HANDS_TRADE_CREWS = [
+  { trade: "Masons", count: "06 Workers", dailyRate: "₹5,400 / day", supervisor: "Ramesh K", contractorId: "kochi-civil", contractorName: "Kochi Civil", scope: "civil", attendance: "100% Present", isFull: true },
+  { trade: "Carpenters", count: "04 Workers", dailyRate: "₹3,600 / day", supervisor: "Biju Varghese", contractorId: "apex-mep", contractorName: "Apex MEP", scope: "woodwork", attendance: "100% Present", isFull: true },
+  { trade: "Electricians", count: "03 Workers", dailyRate: "₹2,700 / day", supervisor: "Sunil Kumar", contractorId: "apex-mep", contractorName: "Apex MEP", scope: "mep", attendance: "100% Present", isFull: true },
+  { trade: "Plumbers", count: "02 Workers", dailyRate: "₹1,800 / day", supervisor: "Niyas M", contractorId: "kochi-civil", contractorName: "Kochi Civil", scope: "mep", attendance: "100% Present", isFull: true },
+  { trade: "Painters", count: "03 Workers", dailyRate: "₹2,400 / day", supervisor: "Gireesh T", contractorId: "apex-mep", contractorName: "Apex MEP", scope: "finishing", attendance: "67% Present", isFull: false },
+  { trade: "Helpers / Site Logistics", count: "06 Workers", dailyRate: "₹2,750 / day", supervisor: "Anitha Das (Site Engg)", contractorId: "kochi-civil", contractorName: "Kochi Civil", scope: "logistics", attendance: "83% Present", isFull: false },
+];
+
 interface ProjectOverviewCardProps {
   projectId?: string;
   dashboardRef?: RefObject<HTMLDivElement | null>;
@@ -99,6 +153,9 @@ interface ProjectOverviewCardProps {
   overviewTitle?: string;
   projectName?: string;
   description?: string;
+  projectStatus?: string;
+  status?: string;
+  isUpcoming?: boolean;
   highlights?: Array<string | { text: string; status?: "positive" | "neutral" | "danger" }>;
   customRightPanel?: ReactNode;
   inspirationImages?: Array<{ url: string; alt?: string | null }>;
@@ -124,6 +181,9 @@ export function ProjectOverviewCard({
   updatesTitle,
   projectName,
   description,
+  projectStatus,
+  status,
+  isUpcoming: isUpcomingProp,
   customRightPanel,
   inspirationImages,
   projectScopes,
@@ -133,6 +193,19 @@ export function ProjectOverviewCard({
   const [activeDomainKey, setActiveDomainKey] = useState<string>("room_programme");
   const [selectedRequirementId, setSelectedRequirementId] = useState<string | null>(null);
   const [expandedRoomIds, setExpandedRoomIds] = useState<Record<string, boolean>>({});
+  const [handsContractorFilter, setHandsContractorFilter] = useState<string>("all");
+  const [handsTradeFilter, setHandsTradeFilter] = useState<string>("all");
+  const [handsStatusFilter, setHandsStatusFilter] = useState<string>("all");
+
+  const lookedUpProject = projectId ? projectService.getProjectByIdSync("ws-default", projectId) : null;
+  const resolvedStatus = (projectStatus || status || lookedUpProject?.status || "").toLowerCase();
+  const isUpcoming = isUpcomingProp !== undefined ? isUpcomingProp : (resolvedStatus === "upcoming" || resolvedStatus === "new");
+
+  useEffect(() => {
+    if (isUpcoming && ["team", "materials", "hands", "basics", "activity"].includes(activeTab)) {
+      setActiveTab("overview");
+    }
+  }, [isUpcoming, activeTab]);
 
   const baseEnquiry: EnquiryRecord = {
     id: projectId || "enq-2026-0486",
@@ -231,7 +304,12 @@ export function ProjectOverviewCard({
             </div>
           </div>
 
-          <EnquiryDetailTabs activeTab={activeTab} onTabChange={setActiveTab} />
+          <EnquiryDetailTabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            mode={isUpcoming ? "upcoming" : "project"}
+            tabs={isUpcoming ? UPCOMING_PROJECT_TABS : PROJECT_TABS}
+          />
         </div>
 
         {/* —— TAB 1: OVERVIEW —————————————————————————————————————————————————— */}
@@ -239,7 +317,12 @@ export function ProjectOverviewCard({
           <div className={styles.tabSectionGroup}>
             <OdinProjectBrief brief={viewModel.brief} />
             <ProjectStatCardsBar values={statValues} />
-            <ProjectOverviewActivitySections projectId={projectId} />
+            {!isUpcoming && (
+              <ProjectOverviewActivitySections
+                projectId={projectId}
+                onNavigateTab={setActiveTab}
+              />
+            )}
             {futureContent}
           </div>
         )}
@@ -527,8 +610,401 @@ export function ProjectOverviewCard({
           </div>
         )}
 
-        {/* —— TAB 5: ACTIVITY ——————————————————————————————————————————————————— */}
-        {activeTab === "activity" && (
+        {/* —— TAB 5: TEAM MEMBERS ————————————————————————————————————————————— */}
+        {!isUpcoming && activeTab === "team" && (
+          <div className={styles.tabSectionGroup}>
+            <ProjectTeamWorkspace
+              projectId={projectId}
+              projectName={projectName || "Nila Residence"}
+            />
+          </div>
+        )}
+
+        {/* —— TAB 6: MATERIALS ————————————————————————————————————————————— */}
+        {!isUpcoming && activeTab === "materials" && (
+          <div className={styles.tabSectionGroup}>
+            <ProjectMaterialsWorkspace
+              projectId={projectId}
+              projectName={projectName || "Nila Residence"}
+            />
+          </div>
+        )}
+
+        {/* —— TAB 7: HANDS ————————————————————————————————————————————— */}
+        {!isUpcoming && activeTab === "hands" && (() => {
+          const displayedCrews = HANDS_TRADE_CREWS.filter((crew) => {
+            const matchesContractor =
+              handsContractorFilter === "all" || crew.contractorId === handsContractorFilter;
+            const matchesTrade =
+              handsTradeFilter === "all" || crew.scope === handsTradeFilter;
+            const matchesStatus =
+              handsStatusFilter === "all" ||
+              (handsStatusFilter === "100" ? crew.isFull : !crew.isFull);
+            return matchesContractor && matchesTrade && matchesStatus;
+          });
+
+          const selectStyle: CSSProperties = {
+            height: "36px",
+            padding: "0 30px 0 12px",
+            border: "none",
+            outline: "none",
+            borderRadius: "8px",
+            backgroundColor: "#f1f5f9",
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "right 10px center",
+            backgroundSize: "13px 13px",
+            appearance: "none",
+            WebkitAppearance: "none",
+            MozAppearance: "none",
+            fontSize: "12px",
+            fontWeight: 600,
+            color: "#334155",
+            cursor: "pointer",
+          };
+
+          return (
+            <div className={styles.tabSectionGroup}>
+              {/* 1. Header Row */}
+              <div className={styles.householdHeaderRow}>
+                <div className={styles.householdTitleGroup}>
+                  <h4 className={styles.householdHeading}>Hands Project Workforce &amp; Labor Tracking</h4>
+                  <span className={styles.householdCountBadge}>₹18,650 Today&apos;s Spend</span>
+                </div>
+                <Link href="/hands" className={styles.editBriefBtn} style={{ textDecoration: "none" }}>
+                  <span>Open Hands Workspace</span>
+                  <ArrowRight size={13} />
+                </Link>
+              </div>
+
+              {/* 2. Top Dropdown Filters Toolbar */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "10px",
+                  flexWrap: "wrap",
+                  width: "100%",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                  {/* Labour Contractor Dropdown */}
+                  <select
+                    value={handsContractorFilter}
+                    onChange={(e) => setHandsContractorFilter(e.target.value)}
+                    style={selectStyle}
+                    aria-label="Filter by Labour Contractor"
+                  >
+                    <option value="all">All Contractors (02 Active on Site)</option>
+                    <option value="kochi-civil">Kochi Civil &amp; Masonry — Ramesh Kumar</option>
+                    <option value="apex-mep">Apex MEP &amp; Finishing — Biju Varghese</option>
+                  </select>
+
+                  {/* Trade Scope Dropdown */}
+                  <select
+                    value={handsTradeFilter}
+                    onChange={(e) => setHandsTradeFilter(e.target.value)}
+                    style={selectStyle}
+                    aria-label="Filter by Trade Scope"
+                  >
+                    <option value="all">All Trade Scopes</option>
+                    <option value="civil">Civil &amp; Masonry</option>
+                    <option value="woodwork">Woodwork &amp; Joinery</option>
+                    <option value="mep">Electrical &amp; Plumbing (MEP)</option>
+                    <option value="finishing">Painting &amp; Finishing</option>
+                    <option value="logistics">Site Logistics &amp; Helpers</option>
+                  </select>
+
+                  {/* Attendance Filter */}
+                  <select
+                    value={handsStatusFilter}
+                    onChange={(e) => setHandsStatusFilter(e.target.value)}
+                    style={selectStyle}
+                    aria-label="Filter by Attendance"
+                  >
+                    <option value="all">All Attendance</option>
+                    <option value="100">100% Present Today</option>
+                    <option value="partial">Partial Present</option>
+                  </select>
+                </div>
+
+                <div style={{ fontSize: "11.5px", fontWeight: 600, color: "#64748b" }}>
+                  {displayedCrews.length} trade {displayedCrews.length === 1 ? "crew" : "crews"} active
+                </div>
+              </div>
+
+              {/* 4. Financial Spend & Escrow 5-Card Strip */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                  gap: "10px",
+                  width: "100%",
+                }}
+              >
+                {/* Total Labor Spent */}
+                <div
+                  style={{
+                    background: "#ffffff",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "10px",
+                    padding: "12px 14px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#64748b" }}>
+                    <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                      Total Labor Spent
+                    </span>
+                    <Wallet size={15} />
+                  </div>
+                  <span style={{ fontSize: "20px", fontWeight: 800, color: "#16a34a", letterSpacing: "-0.02em" }}>
+                    ₹4.85L
+                  </span>
+                  <span style={{ fontSize: "11px", color: "#64748b", display: "flex", alignItems: "center", gap: "4px" }}>
+                    <TrendingUp size={11} color="#16a34a" />
+                    <span>33.5% of ₹14.50L</span>
+                  </span>
+                </div>
+
+                {/* Today's Spend */}
+                <div
+                  style={{
+                    background: "#ffffff",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "10px",
+                    padding: "12px 14px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#64748b" }}>
+                    <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                      Today&apos;s Spend
+                    </span>
+                    <Banknote size={15} />
+                  </div>
+                  <span style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>
+                    ₹18,650
+                  </span>
+                  <span style={{ fontSize: "11px", color: "#64748b" }}>22 of 24 on-site today</span>
+                </div>
+
+                {/* Settled via Escrow */}
+                <div
+                  style={{
+                    background: "#ffffff",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "10px",
+                    padding: "12px 14px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#64748b" }}>
+                    <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                      Settled via Escrow
+                    </span>
+                    <CheckCircle2 size={15} color="#16a34a" />
+                  </div>
+                  <span style={{ fontSize: "20px", fontWeight: 800, color: "#16a34a", letterSpacing: "-0.02em" }}>
+                    ₹4.10L
+                  </span>
+                  <span style={{ fontSize: "11px", color: "#64748b" }}>Verified &amp; Disbursed</span>
+                </div>
+
+                {/* Pending Sign-Off */}
+                <div
+                  style={{
+                    background: "#ffffff",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "10px",
+                    padding: "12px 14px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#64748b" }}>
+                    <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                      Pending Sign-Off
+                    </span>
+                    <Clock size={15} color="#d97706" />
+                  </div>
+                  <span style={{ fontSize: "20px", fontWeight: 800, color: "#d97706", letterSpacing: "-0.02em" }}>
+                    ₹75,250
+                  </span>
+                  <span style={{ fontSize: "11px", color: "#64748b" }}>Current cycle in review</span>
+                </div>
+
+                {/* Remaining Budget */}
+                <div
+                  style={{
+                    background: "#ffffff",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "10px",
+                    padding: "12px 14px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#64748b" }}>
+                    <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                      Remaining Budget
+                    </span>
+                    <ShieldCheck size={15} color="#7c3aed" />
+                  </div>
+                  <span style={{ fontSize: "20px", fontWeight: 800, color: "#7c3aed", letterSpacing: "-0.02em" }}>
+                    ₹9.65L
+                  </span>
+                  <span style={{ fontSize: "11px", color: "#64748b" }}>Available reserve</span>
+                </div>
+              </div>
+
+              {/* 5. Attendance Summary Strip */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", width: "100%" }}>
+                <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
+                  <span style={{ fontSize: "18px", fontWeight: 800, color: "#0f172a", display: "block" }}>24</span>
+                  <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase", marginTop: "2px", display: "block" }}>
+                    Total Labor
+                  </span>
+                </div>
+                <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
+                  <span style={{ fontSize: "18px", fontWeight: 800, color: "#0f172a", display: "block" }}>18</span>
+                  <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase", marginTop: "2px", display: "block" }}>
+                    Active Today
+                  </span>
+                </div>
+                <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
+                  <span style={{ fontSize: "18px", fontWeight: 800, color: "#0f172a", display: "block" }}>04</span>
+                  <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase", marginTop: "2px", display: "block" }}>
+                    On Leave
+                  </span>
+                </div>
+                <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
+                  <span style={{ fontSize: "18px", fontWeight: 800, color: "#0f172a", display: "block" }}>02</span>
+                  <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase", marginTop: "2px", display: "block" }}>
+                    Not Assigned
+                  </span>
+                </div>
+              </div>
+
+              {/* 6. Filtered Trade Crews Breakdown */}
+              {displayedCrews.length > 0 ? (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", width: "100%" }}>
+                  {displayedCrews.map((tr, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        background: "#ffffff",
+                        border: "1px solid #e2e8f0",
+                        borderRadius: "10px",
+                        padding: "12px 14px",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "6px",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <strong style={{ fontSize: "13px", color: "#0f172a" }}>{tr.trade}</strong>
+                        <span style={{ fontSize: "11px", fontWeight: 700, color: "#15803d" }}>{tr.dailyRate}</span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "11.5px", color: "#64748b" }}>
+                        <span>{tr.count}</span>
+                        <span>Lead: {tr.supervisor}</span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "2px" }}>
+                        <div
+                          style={{
+                            fontSize: "11px",
+                            fontWeight: 600,
+                            color: "#0369a1",
+                            background: "#f0f9ff",
+                            border: "1px solid #e0f2fe",
+                            padding: "2px 6px",
+                            borderRadius: "4px",
+                            width: "fit-content",
+                          }}
+                        >
+                          {tr.attendance}
+                        </div>
+                        <span
+                          style={{
+                            fontSize: "10.5px",
+                            fontWeight: 600,
+                            color: "#475569",
+                            background: "#f1f5f9",
+                            padding: "2px 6px",
+                            borderRadius: "4px",
+                          }}
+                        >
+                          By: {tr.contractorName}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div
+                  style={{
+                    background: "#f8fafc",
+                    border: "1px dashed #cbd5e1",
+                    borderRadius: "10px",
+                    padding: "24px",
+                    textAlign: "center",
+                    color: "#64748b",
+                    fontSize: "13px",
+                  }}
+                >
+                  <p style={{ margin: 0 }}>No trade crews match the selected filters.</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setHandsContractorFilter("all");
+                      setHandsTradeFilter("all");
+                      setHandsStatusFilter("all");
+                    }}
+                    style={{
+                      marginTop: "8px",
+                      padding: "4px 12px",
+                      background: "#0f172a",
+                      color: "#ffffff",
+                      border: "none",
+                      borderRadius: "6px",
+                      fontSize: "11.5px",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Reset Filters
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* —— TAB 8: BASICS ————————————————————————————————————————————— */}
+        {!isUpcoming && activeTab === "basics" && (
+          <div className={styles.tabSectionGroup}>
+            <ProjectBasicsWorkspace
+              projectId={projectId}
+              projectName={projectName || "Nila Residence"}
+              builtUpArea={statValues?.builtUpArea}
+              timeline={statValues?.duration}
+            />
+          </div>
+        )}
+
+        {/* —— TAB 9: ACTIVITY ——————————————————————————————————————————————————— */}
+        {!isUpcoming && activeTab === "activity" && (
           <div className={styles.activitySection}>
             <div className={styles.activityHeaderRow}>
               <div className={styles.activityTitleGroup}>
