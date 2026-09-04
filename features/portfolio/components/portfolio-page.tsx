@@ -47,6 +47,8 @@ export function PortfolioPage({
     data.profile.coverImageUrl,
   );
   const uploadedCoverRef = useRef<string | null>(null);
+  const uploadedAvatarRef = useRef<string | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const visibleProjects = useMemo(() => {
     return data.projects.filter((project) =>
@@ -58,6 +60,9 @@ export function PortfolioPage({
     return () => {
       if (uploadedCoverRef.current) {
         URL.revokeObjectURL(uploadedCoverRef.current);
+      }
+      if (uploadedAvatarRef.current) {
+        URL.revokeObjectURL(uploadedAvatarRef.current);
       }
     };
   }, []);
@@ -74,6 +79,15 @@ export function PortfolioPage({
     const nextUrl = URL.createObjectURL(file);
     uploadedCoverRef.current = nextUrl;
     setCoverImageUrl(nextUrl);
+  };
+
+  const updateAvatar = (file: File) => {
+    if (uploadedAvatarRef.current) {
+      URL.revokeObjectURL(uploadedAvatarRef.current);
+    }
+    const nextUrl = URL.createObjectURL(file);
+    uploadedAvatarRef.current = nextUrl;
+    setProfile((prev) => ({ ...prev, avatarUrl: nextUrl }));
   };
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -109,9 +123,27 @@ export function PortfolioPage({
             onProfileChange={setProfile}
             isEditingExternal={isEditingProfile}
             onCloseEditingExternal={() => setIsEditingProfile(false)}
+            onCameraClick={() => avatarInputRef.current?.click()}
           />
           <PortfolioPackageSummary onViewPlans={showPricingPlans} />
         </div>
+
+        {isOwner ? (
+          <input
+            className={styles.visuallyHiddenInput}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            aria-label="Upload profile avatar"
+            ref={avatarInputRef}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) {
+                updateAvatar(file);
+              }
+              event.target.value = "";
+            }}
+          />
+        ) : null}
       </section>
 
       <div className={styles.profileContent}>

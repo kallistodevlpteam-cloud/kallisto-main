@@ -442,6 +442,22 @@
   box-shadow: 0 2px 12px rgba(15, 23, 42, 0.03);
 }
 
+.deploymentsCard {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.deploymentsCard .cardHeader {
+  padding: 4px 0 14px 0;
+  border-bottom: none !important;
+}
+
+.deploymentsCard .deploymentToolbar {
+  padding: 0 0 14px 0;
+  border-bottom: none !important;
+}
+
 .cardHeader {
   display: flex;
   min-height: 64px;
@@ -3413,3 +3429,365 @@
   color: #8b5cf6;
   flex-shrink: 0;
 }
+
+/* ==========================================================================
+   Hands Deployment Project Cards & Card Grid (Reference Design Aligned)
+   ========================================================================== */
+
+.deploymentCardsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.deploymentProjectCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 180ms ease;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  text-decoration: none;
+  min-height: 330px;
+}
+
+.deploymentProjectCard:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.deployCardMedia {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: #0f172a;
+  overflow: hidden;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  flex-shrink: 0;
+}
+
+.deployCardGradientOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, 0.72) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.deployCardOverlayRow {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  z-index: 3;
+}
+
+.deployCategoryPill {
+  font-size: 11.5px;
+  font-weight: 650;
+  color: #ffffff;
+  background: rgba(15, 23, 42, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 4px 11px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  max-width: 65%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+.deployStatusBadge {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 4px 11px;
+  border-radius: 9999px;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.deployHealthOnTrack {
+  background: #16a34a;
+}
+
+.deployHealthAttention {
+  background: #d97706;
+}
+
+.deployHealthAwaiting {
+  background: #2563eb;
+}
+
+.deployImageWrap {
+  position: absolute;
+  inset: 0;
+}
+
+.deployImage {
+  object-fit: cover;
+  transition: transform 300ms ease;
+}
+
+.deploymentProjectCard:hover .deployImage {
+  transform: scale(1.03);
+}
+
+.deployMediaPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #64748b;
+  background: #1e293b;
+}
+
+.deployCardContent {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px 14px;
+  background: #ffffff;
+  flex: 1;
+}
+
+.deployTitleRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.deployProjectTitle {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 750;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deployProgressPercent {
+  font-size: 19px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.deploySubtitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.deployLocation {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deployDueChip {
+  font-size: 11px;
+  font-weight: 650;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dueChipOnTrack {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #dcfce7;
+}
+
+.dueChipAttention {
+  background: #fff1f2;
+  color: #e11d48;
+  border: 1px solid #ffe4e6;
+}
+
+.dueChipAwaiting {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #dbeafe;
+}
+
+.deployCardDivider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 12px 0 10px;
+}
+
+.deployWorkersStatsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.deployActiveWorkersPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #dcfce7;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.deployActiveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #16a34a;
+}
+
+.deployLeavePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.deployLeavePillWarning {
+  color: #b45309;
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+}
+
+.deployLeavePillNeutral {
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.deployWorkerTypeRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.35;
+  margin-bottom: 10px;
+}
+
+.deployWorkerTypeLabel {
+  color: #0f172a;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.deployWorkerTypeVal {
+  color: #475569;
+  font-weight: 550;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deployCardFooterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11.5px;
+  color: #64748b;
+  padding-top: 8px;
+  border-top: 1px dashed #f1f5f9;
+  margin-top: auto;
+}
+
+.deploySupervisorText strong {
+  color: #1e293b;
+}
+
+.deployCostTag {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.viewModeToggle {
+  display: flex;
+  align-items: center;
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.viewModeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.viewModeBtn:hover {
+  color: #0f172a;
+}
+
+.viewModeBtnActive {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 1280px) {
+  .deploymentCardsGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 960px) {
+  .deploymentCardsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .deploymentCardsGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+

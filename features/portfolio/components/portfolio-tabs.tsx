@@ -57,7 +57,7 @@ export function PortfolioTabs({
     onTabChange(tab);
 
     // Smoothly scroll the tab bar into the top freeze zone
-    if (toolbarRef.current) {
+    if (typeof toolbarRef.current?.scrollIntoView === "function") {
       toolbarRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",

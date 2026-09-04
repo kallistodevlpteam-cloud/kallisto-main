@@ -50,6 +50,14 @@ export interface Deployment {
   status: DeploymentStatus;
   startDate: string;
   endDate: string;
+  coverImage?: string;
+  category?: string;
+  overallProgress?: number;
+  dueLabel?: string;
+  workerUpdate?: string;
+  activeWorkers?: number;
+  onLeaveWorkers?: number;
+  workerTypes?: string;
 }
 
 export interface WorkforceRequest {

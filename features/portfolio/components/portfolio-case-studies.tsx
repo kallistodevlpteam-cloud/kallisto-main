@@ -120,7 +120,6 @@ export function PortfolioCaseStudies({
                   </span>
                   <h2 className={styles.caseStudyTitle}>{caseStudy.title}</h2>
                 </div>
-                <p className={styles.caseStudySummary}>{summaryText}</p>
               </div>
             </article>
           );

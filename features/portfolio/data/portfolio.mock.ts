@@ -1095,13 +1095,6 @@ const COLLECTIONS: PortfolioCollection[] = [
     hasGradientRing: false,
     projectIds: PROJECTS.filter(isPublicProject).map((project) => project.id),
   },
-  {
-    id: "new-collection",
-    label: "New Collection",
-    imageUrl: "/assets/nila-hero.jpg",
-    hasGradientRing: false,
-    projectIds: PROJECTS.filter(isPublicProject).map((project) => project.id),
-  },
 ];
 
 const CASE_STUDIES: PortfolioCaseStudy[] = [
