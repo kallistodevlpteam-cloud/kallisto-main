@@ -520,6 +520,7 @@
   overflow-x: hidden;
   overscroll-behavior: contain;
   box-sizing: border-box;
+  padding: 0 24px;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -531,10 +532,10 @@
 }
 
 .conversationContentColumn {
-  width: min(100%, var(--studio-content-max-width, 760px));
+  width: min(100%, 760px);
   min-height: 100%;
   margin-inline: auto;
-  padding: 32px var(--studio-edge-inset, 24px) calc(var(--studio-composer-height, 120px) + var(--studio-edge-inset, 24px) + env(safe-area-inset-bottom, 0px) + 24px);
+  padding: 32px 0 calc(var(--studio-composer-height, 120px) + 24px + env(safe-area-inset-bottom, 0px) + 24px) 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -890,3 +891,765 @@
     transform: none !important;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   Hive Studio: 3-Layer Project Intelligence Architecture
+   ───────────────────────────────────────────────────────────── */
+
+.studioIdleContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding-top: 8px;
+  padding-bottom: 24px;
+}
+
+/* ── Layer 1: Project Context & Knowledge Foundation ── */
+.projectContextCard {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 4px 2px 2px 2px;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.projectContextTopRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.projectContextMainMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+}
+
+.projectBadgeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.projectCodeBadge {
+  font-size: 11px;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #475569;
+  padding: 2px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+}
+
+.projectCodeBadgeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #334155;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.projectCodeBadgeButton:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.projectCodeChevron {
+  color: #64748b;
+  transition: transform 0.15s ease;
+}
+
+.projectDropdownMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 100;
+  min-width: 320px;
+  max-width: 400px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(15, 23, 42, 0.04);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: projectDropdownSlideIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes projectDropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.projectDropdownHeader {
+  padding: 6px 10px 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.projectDropdownItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.projectDropdownItem:hover {
+  background: #f8fafc;
+}
+
+.projectDropdownItemActive {
+  background: #f1f5f9;
+}
+
+.projectDropdownItemMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.projectDropdownItemTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.projectDropdownItemName {
+  font-size: 13px;
+  font-weight: 650;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.projectDropdownItemCode {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #64748b;
+  background: rgba(15, 23, 42, 0.05);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.projectDropdownItemPhase {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.projectDropdownCheck {
+  color: #0f172a;
+  flex-shrink: 0;
+}
+
+.projectPhaseBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #16a34a;
+  background: #f0fdf4;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.projectPhaseDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #16a34a;
+}
+
+.projectScopeMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #475569;
+}
+
+.scopeMetaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.scopeMetaDot {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.projectTitleHeading {
+  margin: 4px 0 0;
+  font-size: 22px;
+  font-weight: 750;
+  color: #0f172a;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.projectSubScopeSubtitle {
+  margin: 2px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.odinAccessStrip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 2px 0 0 0;
+  flex-wrap: nowrap;
+  box-shadow: none;
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.odinAccessStrip::-webkit-scrollbar {
+  display: none;
+}
+
+.odinAccessLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #475569;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.odinAccessIcon {
+  color: #7c3aed;
+  flex-shrink: 0;
+}
+
+.odinAccessPills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+}
+
+.odinAccessPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 550;
+  color: #334155;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  padding: 3px 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.odinAccessPill:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(203, 213, 225, 0.9);
+  color: #0f172a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+/* ── Layer 2: Action-Oriented Pathways ── */
+.intentGridSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.intentSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.intentSectionLabel {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.intentGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+@media (max-width: 860px) {
+  .intentGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.intentCard {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 11px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 3px 12px -2px rgba(15, 23, 42, 0.03), 0 1px 3px -1px rgba(15, 23, 42, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  outline: none;
+}
+
+.intentCard:hover {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(203, 213, 225, 0.95);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -3px rgba(15, 23, 42, 0.06), 0 3px 6px -1px rgba(15, 23, 42, 0.02), inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.intentCardActive {
+  border-color: rgba(203, 213, 225, 0.95);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.intentIconWrap {
+  width: 33px;
+  height: 33px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.intentMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.intentTitle {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.intentDescription {
+  margin: 0;
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Layer 3: Active Work & Project Intelligence ── */
+.intelligenceHub {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.nextActionCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #f8fafc;
+  border: none;
+  border-radius: 20px;
+  padding: 12px 16px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  transition: all 0.15s ease;
+}
+
+.nextActionCard:hover {
+  background: #f1f5f9;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+}
+
+.nextActionLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.nextActionIconWrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.nextActionMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nextActionBadge {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.nextActionTitle {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 650;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nextActionDescription {
+  margin: 0;
+  font-size: 11px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nextActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.nextActionBtn:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+}
+
+.intelligenceGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+@media (max-width: 780px) {
+  .intelligenceGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.intelligenceSection {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+}
+
+.intelligenceSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.intelligenceHeaderTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.intelligenceHeaderTitle h4 {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sectionIcon {
+  color: #64748b;
+}
+
+.odinSectionIcon {
+  color: #7c3aed;
+}
+
+.intelligenceHeaderCount {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.odinHeaderBadge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #e11d48;
+  background: #fff1f2;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.recentWorkList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.recentWorkItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.recentWorkItem:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  transform: translateX(2px);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+.recentWorkIconWrap {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.recentWorkMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.recentWorkTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.recentWorkTitle {
+  font-size: 12px;
+  font-weight: 650;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recentWorkBadgeDraft {
+  font-size: 9.5px;
+  font-weight: 650;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 1px 5px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.recentWorkBadgeReady {
+  font-size: 9.5px;
+  font-weight: 650;
+  color: #7c3aed;
+  background: #f5f3ff;
+  padding: 1px 5px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.recentWorkBadgeReview {
+  font-size: 9.5px;
+  font-weight: 650;
+  color: #0284c7;
+  background: #f0f9ff;
+  padding: 1px 5px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.recentWorkSubtitle {
+  font-size: 10.5px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recentWorkArrow {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.odinNoticedList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.odinNoticedCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fafafa;
+  border: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.odinNoticedCard:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+.odinNoticedIconWrap {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.odinNoticedMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.odinNoticedTitle {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.odinNoticedDescription {
+  margin: 0;
+  font-size: 10.5px;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.odinNoticedActionRow {
+  display: flex;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.odinNoticedActionLink {
+  font-size: 10.5px;
+  font-weight: 650;
+  color: #7c3aed;
+}
+

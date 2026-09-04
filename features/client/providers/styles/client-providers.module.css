@@ -1,0 +1,856 @@
+/* ==========================================================================
+   KALLISTO CLIENT PROVIDERS DIRECTORY — MODERN PORTAL STYLES
+   ========================================================================== */
+
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  padding-bottom: 60px;
+}
+
+/* ==========================================================================
+   TOP BAR: LOGO + TAB BAR (LEFT) & SEARCH + CONTROLS (RIGHT)
+   ========================================================================== */
+
+.topNavBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  padding-bottom: 4px;
+}
+
+.topNavLeftGroup {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+}
+
+.brandLogoWrap {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.brandImgLogo {
+  height: 22px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.capsuleTabBar {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 9999px;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.capsuleTabBar::-webkit-scrollbar {
+  display: none;
+}
+
+.capsuleTabBtn {
+  border: none;
+  background: transparent;
+  padding: 5px 16px;
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.capsuleTabBtn:hover {
+  color: #0f172a;
+}
+
+.capsuleTabActive {
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.topRightControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Pill search box with embedded submit button */
+.pillSearchBox {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  padding: 2px 3px 2px 14px;
+  width: 240px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: all 0.15s ease;
+}
+
+.pillSearchBox:focus-within {
+  border-color: #0f172a;
+  box-shadow: 0 0 0 1px #0f172a;
+}
+
+.pillSearchInput {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 12.5px;
+  color: #0f172a;
+  flex: 1;
+  min-width: 0;
+}
+
+.pillSearchInput::placeholder {
+  color: #94a3b8;
+}
+
+.pillSearchSubmitBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.pillSearchSubmitBtn:hover {
+  background: #1e293b;
+  transform: scale(1.05);
+}
+
+.circleActionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.circleActionBtn:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+/* ==========================================================================
+   2-COLUMN MAIN WORKSPACE LAYOUT
+   ========================================================================== */
+
+.portalGrid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 32px;
+  align-items: start;
+  width: 100%;
+}
+
+.mainColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-width: 0;
+}
+
+.sideColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+}
+
+/* ==========================================================================
+   2-IN-A-ROW CINEMATIC HERO BANNERS
+   ========================================================================== */
+
+.heroBannersGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+.cinematicBannerCard {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  border-radius: 22px;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.cinematicBannerCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.2);
+}
+
+.cinematicBannerOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 40%, rgba(15, 23, 42, 0.9) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px 28px;
+  color: #ffffff;
+  z-index: 2;
+}
+
+.cinematicTitle {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+  line-height: 1.15;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.cinematicSubtitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 16px 0;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btnCinematicAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 9px 22px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  width: fit-content;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btnCinematicAction:hover {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   LATEST PRACTICES ANALYZED SECTION
+   ========================================================================== */
+
+.latestSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.sectionHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.sectionTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sectionTitleIcon {
+  color: #64748b;
+}
+
+.sectionMainTitle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.btnShowAllTheme {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #f1f5f9;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  box-shadow: none;
+  transition: all 0.15s ease;
+}
+
+.btnShowAllTheme:hover {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* 4-Card Carousel Grid */
+.latestCardsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+.analyzedCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  min-width: 0;
+}
+
+.analyzedCard:hover {
+  transform: translateY(-4px);
+}
+
+.analyzedCardImageWrap {
+  position: relative;
+  width: 100%;
+  height: 155px;
+  border-radius: 16px;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.analyzedCardImageWrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.65) 100%);
+}
+
+.cardTagsBottomLeft {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+}
+
+.platformPill {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  padding: 3px 7px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.categoryPillHighlight {
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  background: #ea580c;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.glassRatingBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 8px;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cardBottomMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 2px 0 2px;
+}
+
+.cardAvatarBadge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.cardTextGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.analyzedCardTitle {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.analyzedCardSubtitle {
+  font-size: 12.5px;
+  color: #64748b;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   RIGHT SIDEBAR: RECENT NEWS & TOP PRACTICES
+   ========================================================================== */
+
+.sidebarBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sidebarBlockHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebarBlockTitle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.sidebarBlockTitle::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 14px;
+  background: #0f172a;
+  border-radius: 2px;
+}
+
+.moreOptionsBtn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 2px;
+}
+
+/* Recent News Items */
+.recentNewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.newsItemRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+  transition: opacity 0.15s ease;
+}
+
+.newsItemRow:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.newsItemRow:hover {
+  opacity: 0.8;
+}
+
+.newsMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.newsHeadline {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.newsDate {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.newsThumbnail {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Ranked Leaderboard */
+.rankedList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.rankedRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.rankedRow:hover {
+  background: #f8fafc;
+}
+
+.rankNumber {
+  font-size: 13px;
+  font-weight: 800;
+  color: #64748b;
+  width: 16px;
+}
+
+.rankedPracticeName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rankScore {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+}
+
+/* ==========================================================================
+   DRAWER
+   ========================================================================== */
+
+.drawerBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 50;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.drawer {
+  width: 100%;
+  max-width: 580px;
+  height: 100%;
+  background: #ffffff;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+}
+
+.drawerHeader {
+  position: relative;
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.drawerHeaderOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(15, 23, 42, 0.95) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px 24px;
+  color: #ffffff;
+}
+
+.drawerCloseBtn {
+  align-self: flex-end;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.drawerCloseBtn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.drawerTitle {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0;
+  color: #ffffff;
+}
+
+.drawerBody {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+}
+
+.credentialPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.drawerSectionTitle {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+}
+
+.skillsWrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.skillBadge {
+  font-size: 12px;
+  font-weight: 500;
+  background: #f8fafc;
+  color: #475569;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.serviceList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13.5px;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.teamRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  overflow-x: auto;
+}
+
+.teamMemberCard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 12px;
+  min-width: 180px;
+}
+
+.memberMeta {
+  display: flex;
+  flex-direction: column;
+}
+
+.memberName {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.memberRole {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.drawerFooter {
+  position: sticky;
+  bottom: 0;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.btnEnquire {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.15s ease;
+}
+
+.btnEnquire:hover {
+  background: #1e293b;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .portalGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .heroSpotlightCard {
+    height: auto;
+    min-height: 380px;
+  }
+  .heroContentOverlay {
+    max-width: 100%;
+    padding: 24px;
+  }
+  .heroTitle {
+    font-size: 26px;
+  }
+  .heroPlayButton {
+    display: none;
+  }
+  .latestCardsGrid {
+    grid-template-columns: 1fr;
+  }
+}

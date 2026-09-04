@@ -25,6 +25,9 @@ export interface ProjectStatValues {
   builtUpArea?: string;
   budget?: string;
   client?: string;
+  clientLabel?: string;
+  serviceProvider?: string;
+  providerLabel?: string;
   projectType?: string;
 }
 
@@ -60,6 +63,9 @@ export function ProjectStatCardsBar({ values }: ProjectStatCardsBarProps) {
         iconColor: "#4F46E5",
       };
 
+  const fifthCardLabel = values?.providerLabel || values?.clientLabel || (values?.serviceProvider ? "Service Provider" : "Client");
+  const fifthCardValue = values?.serviceProvider || resolvedValues.client || "Arjun Architects";
+
   const cards: StatCard[] = [
     firstCard,
     {
@@ -88,8 +94,8 @@ export function ProjectStatCardsBar({ values }: ProjectStatCardsBarProps) {
     },
     {
       id: "client",
-      label: "Client",
-      value: resolvedValues.client || "Ananya Builders",
+      label: fifthCardLabel,
+      value: fifthCardValue,
       icon: UserDuotoneIcon,
       iconBg: "#ECFEFF",
       iconColor: "#0891B2",

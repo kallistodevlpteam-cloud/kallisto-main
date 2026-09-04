@@ -1,0 +1,834 @@
+/* =========================================================
+   CLIENT OVERVIEW — ODIN CONVERSATIONAL WORKSPACE
+   (Exact Hive Studio Design Language, Spacing & Layout)
+   ========================================================= */
+
+.workspaceRoot {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 64px);
+  min-height: 600px;
+  width: 100%;
+  background: var(--surface-primary, #ffffff);
+  color: var(--text-primary, #0f172a);
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   STATE A — INITIAL CENTERING HERO VIEW
+   ========================================================= */
+.initialHeroContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  text-align: center;
+  box-sizing: border-box;
+  animation: heroFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes heroFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Kallisto Brand Title */
+.odinBrandHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.kallistoHeroLogo {
+  height: 40px;
+  width: auto;
+  max-width: 240px;
+  object-fit: contain;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.odinTagline {
+  margin: 0 auto;
+  color: #64748b;
+  font-size: 15px;
+  font-weight: 450;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+}
+
+/* Composer Wrapper (Recommended Banner + Chatbox Card) */
+.composerWrapperHero {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(100%, 760px);
+  max-width: 760px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* =========================================================
+   EXACT HIVE STUDIO CHATBOX COMPOSER CARD
+   ========================================================= */
+.studioComposerCard {
+  background: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 14px 16px 12px;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.03);
+  width: 100%;
+  box-sizing: border-box;
+  transition: box-shadow 0.18s ease;
+  position: relative;
+  outline: none;
+}
+
+.studioComposerCard:hover {
+  border: none;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.11), 0 2px 4px rgba(15, 23, 42, 0.04);
+}
+
+.studioComposerCard:focus-within {
+  border: none;
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(15, 23, 42, 0.05);
+  outline: none;
+}
+
+.studioComposerForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  outline: none;
+}
+
+.composerTextareaWrap {
+  width: 100%;
+  position: relative;
+  outline: none;
+}
+
+.composerTextarea {
+  width: 100%;
+  min-height: 40px;
+  max-height: 120px;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  resize: none;
+  background: transparent;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 14.5px;
+  line-height: 1.5;
+  font-weight: 450;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.composerTextarea:focus,
+.composerTextarea:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.composerTextarea::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+/* Bottom Toolbar */
+.composerBottomToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.composerToolbarLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.composerPlusBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  background: #0f172a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.composerPlusBtn:hover {
+  background: #1e293b;
+  transform: scale(1.06);
+}
+
+.projectPillWrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.composerProjectPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #ea580c;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.composerProjectPill:hover {
+  background: rgba(234, 88, 12, 0.08);
+}
+
+.composerProjectPillText {
+  color: #ea580c;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+/* Right Toolbar */
+.composerToolbarRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.promptUsageText {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #94a3b8;
+  user-select: none;
+}
+
+.composerMicBtn {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+  padding: 0;
+}
+
+.composerMicBtn:hover {
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+.composerSendBtn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background: #cbd5e1;
+  color: #ffffff;
+  border: none;
+  cursor: not-allowed;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.composerSendBtnActive {
+  background: #0f172a;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.composerSendBtnActive:hover {
+  background: #1e293b;
+  transform: scale(1.06);
+}
+
+/* Floating Project Switcher Dropdown */
+.projectDropdownMenu {
+  position: absolute;
+  bottom: 36px;
+  left: 0;
+  z-index: 100;
+  width: 300px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(15, 23, 42, 0.08);
+  padding: 6px;
+  animation: dropdownIn 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+}
+
+@keyframes dropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.projectDropdownHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 4px;
+}
+
+.projectDropdownItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.projectDropdownItem:hover {
+  background: #f1f5f9;
+}
+
+.projectDropdownItemActive {
+  background: #f8fafc;
+  font-weight: 600;
+}
+
+.projectDropdownItemName {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #0f172a;
+  display: block;
+}
+
+.projectDropdownItemSub {
+  font-size: 11px;
+  color: #64748b;
+  display: block;
+  margin-top: 1px;
+}
+
+/* Quick Action Intent Dock (7 Squircles) */
+.quickActionDock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  flex-wrap: wrap;
+  width: min(100%, 760px);
+  max-width: 760px;
+}
+
+.actionDockItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.actionDockItem:hover {
+  transform: translateY(-3px);
+}
+
+.actionIconSquircle {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--item-bg, #f8fafc);
+  border: none;
+  color: var(--item-accent, #0f172a);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 180ms ease;
+  position: relative;
+}
+
+.actionDockItem:hover .actionIconSquircle {
+  transform: scale(1.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.actionDockLabel {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #475569;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   STATE B — HIVE STUDIO INTELLIGENT WORKSPACE ARCHITECTURE
+   ========================================================= */
+
+.studioSplitWorkspace {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--surface-primary, #ffffff);
+  box-sizing: border-box;
+  transition: grid-template-columns 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.studioSplitWorkspace[data-panel-mode="collapsed"] {
+  grid-template-columns: minmax(0, 1fr) 56px;
+}
+
+.studioSplitWorkspace[data-panel-mode="open"] {
+  grid-template-columns: minmax(0, 1fr) clamp(320px, 28vw, 400px);
+}
+
+@media (max-width: 1100px) {
+  .studioSplitWorkspace,
+  .studioSplitWorkspace[data-panel-mode="collapsed"],
+  .studioSplitWorkspace[data-panel-mode="open"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.studioTaskPane {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Left-Side Vertical Spine (Vertically Center-Aligned) */
+.spinePositioner {
+  position: absolute;
+  top: 50%;
+  left: 24px;
+  transform: translateY(-50%);
+  bottom: auto;
+  z-index: 25;
+}
+
+@media (max-width: 900px) {
+  .spinePositioner {
+    display: none;
+  }
+}
+
+/* Top-Right Floating Controls in Active View */
+.activeTopRightControls {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  z-index: 20;
+}
+
+/* Scrollable Conversation Viewport */
+.taskConversationScrollArea {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  position: relative;
+}
+
+.taskConversationScrollArea::-webkit-scrollbar {
+  width: 6px;
+}
+
+.taskConversationScrollArea::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 4px;
+}
+
+.conversationContentColumn {
+  width: min(100%, 760px);
+  max-width: 760px;
+  margin-inline: auto;
+  padding: 32px 0 140px 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.messageTurnWrap {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Assistant Message Body & Typography */
+.assistantResponseContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+}
+
+.assistantMarkdownText {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #1e293b;
+}
+
+/* Hive Studio Structured Outcome Cards */
+.studioOutcomeCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+  animation: progressiveCardIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.studioOutcomeCardHeader {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* Metrics & Stats Grid */
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.metricItem {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  padding: 9px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metricItemHighlight {
+  background: #fefce8;
+  border: 1px solid #fef08a;
+  border-radius: 10px;
+  padding: 9px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metricLabel {
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.metricVal {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.metricValHighlight {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.escrowProtectedNotice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 550;
+  color: #166534;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.studioActionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.studioActionBtn:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+}
+
+.providerResultCard {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  transition: transform 0.15s ease;
+}
+
+.providerResultCard:hover {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.providerNameTitle {
+  font-size: 13.5px;
+  font-weight: 650;
+  color: #0f172a;
+}
+
+.providerMetaLine {
+  font-size: 11.5px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.verifiedBadge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #16a34a;
+  background: #f0fdf4;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+/* Hive Studio Edge Overlay with Floating Bottom Composer */
+.studioEdgeOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.jumpToLatestBtn {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: all 0.15s ease;
+}
+
+.jumpToLatestBtn:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.composerOverlay {
+  width: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.85) 40%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  padding: 12px 24px 24px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+}
+
+.composerInner {
+  pointer-events: auto;
+  width: min(100%, 760px);
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+@keyframes progressiveCardIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   RIGHT PANEL TOGGLE BUTTON & DRAWER (Hive Studio UI)
+   ========================================================= */
+
+.heroTopRightControls {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  z-index: 20;
+}
+
+.rightPanelToggleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  box-shadow: none;
+  outline: none;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.rightPanelToggleBtn:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: #0f172a;
+}
+
+.rightPanelToggleBtnActive {
+  background: rgba(0, 0, 0, 0.08);
+  color: #0f172a;
+}
+
+.rightPanelToggleBtnActive:hover {
+  background: rgba(0, 0, 0, 0.12);
+  color: #0f172a;
+}
+
+/* Right Column: In-flow Split Sidebar Workspace */
+.rightSidebarPanelWrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-left: 1px solid #f1f5f9;
+  background: #ffffff;
+}
+
+.rightSidebarPanelWrapperCollapsed {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-top: 16px;
+  padding-right: 16px;
+  background: transparent;
+  border-left: none;
+}
+
+@media (max-width: 1100px) {
+  .rightSidebarPanelWrapper {
+    position: fixed;
+    top: 60px;
+    right: 0;
+    bottom: 0;
+    width: min(92vw, 380px);
+    box-shadow: -6px 0 24px rgba(15, 23, 42, 0.12);
+    z-index: 50;
+  }
+  .rightSidebarPanelWrapperCollapsed {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: auto;
+    height: auto;
+    padding: 0;
+    box-shadow: none;
+    z-index: 20;
+  }
+}

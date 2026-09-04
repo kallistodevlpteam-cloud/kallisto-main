@@ -1,0 +1,646 @@
+/* Kallisto Hub Calendar Workspace Styles - Matching Virtual Office Calendar Design */
+
+.calendarWorkspace {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Top Toolbar */
+.calendarTopBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.monthTitle {
+  font-size: 22px;
+  font-weight: 750;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.topBarActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  padding: 5px 12px;
+  width: 180px;
+  transition: all 0.15s ease;
+}
+
+.searchBox:focus-within {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.searchInput {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 12px;
+  color: #0f172a;
+  width: 100%;
+}
+
+.searchInput::placeholder {
+  color: #94a3b8;
+}
+
+.navArrowBtn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.navArrowBtn:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.todayBtn {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.todayBtn:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+}
+
+/* 2-Column Main Layout */
+.calendarMainLayout {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.leftColumn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Weekday Header */
+.weekdayHeaderRow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.weekdayHeaderCell {
+  padding: 8px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+/* Days Grid */
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.dayTile {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  min-height: 100px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+  box-sizing: border-box;
+}
+
+.dayTile:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+}
+
+.dayTileOutside {
+  background: #fafbfc;
+  opacity: 0.55;
+}
+
+.dayTileSelected {
+  border-color: #94a3b8;
+  background: #fcfcfd;
+}
+
+.dayTileHeader {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2px;
+}
+
+.dayNumber {
+  font-size: 11.5px;
+  font-weight: 650;
+  color: #64748b;
+}
+
+.dayNumberOutside {
+  color: #cbd5e1;
+}
+
+.todayBadge {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+/* Activity & Order Pills inside Day Tile */
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.activityPill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #334155;
+  background: #f8fafc;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.12s ease;
+  width: 100%;
+}
+
+.activityPill:hover {
+  background: #f1f5f9;
+}
+
+.activityPillActive {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
+}
+
+.activityPillActive span {
+  color: #ffffff !important;
+}
+
+.activityDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dotBlue {
+  background: #3b82f6;
+}
+
+.dotAmber {
+  background: #f59e0b;
+}
+
+.dotCyan {
+  background: #06b6d4;
+}
+
+.dotOrange {
+  background: #f97316;
+}
+
+.dotGreen {
+  background: #10b981;
+}
+
+.dotPurple {
+  background: #8b5cf6;
+}
+
+.overflowTag {
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  align-self: flex-start;
+  margin-top: auto;
+  cursor: pointer;
+}
+
+/* Category Checkbox Legend */
+.categoryLegend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 12px 0 4px 0;
+  flex-wrap: wrap;
+}
+
+.categoryCheckbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 12.5px;
+  font-weight: 550;
+  color: #475569;
+  transition: all 0.12s ease;
+}
+
+.categoryCheckbox:hover {
+  color: #0f172a;
+}
+
+.categoryBox {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  color: #ffffff;
+  transition: all 0.15s ease;
+}
+
+.boxBlue { background: #3b82f6; }
+.boxAmber { background: #f59e0b; }
+.boxCyan { background: #06b6d4; }
+.boxOrange { background: #f97316; }
+.boxGreen { background: #10b981; }
+
+.boxUnchecked {
+  background: #e2e8f0 !important;
+  color: transparent !important;
+}
+
+/* Right Day Schedule Panel */
+.rightPanel {
+  width: 320px;
+  min-width: 300px;
+  max-width: 340px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.dayScheduleHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.dayScheduleTitle {
+  font-size: 11px;
+  font-weight: 750;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.countBadge {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #ea580c;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.dayScheduleSubtitle {
+  font-size: 12.5px;
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
+}
+
+.dayCardsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+}
+
+.emptyDayBox {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 24px 16px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 12.5px;
+}
+
+/* Expandable Order Card in Day Schedule */
+.expandableCard {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+}
+
+.expandableCard:hover {
+  border-color: #cbd5e1;
+}
+
+.expandableCardOpen {
+  border-color: #e2e8f0;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.cardHeaderBtn {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.cardHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.iconBox {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.iconBoxAmber { background: #fff7ed; color: #ea580c; }
+.iconBoxBlue { background: #eff6ff; color: #2563eb; }
+.iconBoxGreen { background: #f0fdf4; color: #16a34a; }
+.iconBoxCyan { background: #ecfeff; color: #0891b2; }
+.iconBoxPurple { background: #f5f3ff; color: #7c3aed; }
+
+.cardTextStack {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.cardTime {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.cardTitle {
+  font-size: 12px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.statusPill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.pillAmber { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
+.pillGreen { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.pillBlue { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.pillCyan { background: #ecfeff; color: #0891b2; border: 1px solid #a5f3fc; }
+.pillPurple { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+
+.chevronIcon {
+  color: #94a3b8;
+  transition: transform 0.2s ease;
+}
+
+.chevronRotated {
+  transform: rotate(180deg);
+}
+
+/* Expanded Card Body */
+.cardExpandedBody {
+  padding: 0 12px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid #f8fafc;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.orderNotesText {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #475569;
+  margin: 0;
+}
+
+/* Contractor User Row */
+.userRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 8px 10px;
+  gap: 8px;
+}
+
+.userLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.userAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #0f172a;
+  font-size: 10.5px;
+  font-weight: 750;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.userName {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userLocation {
+  font-size: 10.5px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.phoneIconBtn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Project Badge Row */
+.projectRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-size: 11.5px;
+}
+
+.projectLeft {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #0f172a;
+  font-weight: 650;
+}
+
+.orderValuePill {
+  font-size: 11px;
+  font-weight: 750;
+  color: #2563eb;
+}
+
+.openOrderBtn {
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.12s ease;
+  margin-top: 2px;
+}
+
+.openOrderBtn:hover {
+  background: #1e293b;
+}

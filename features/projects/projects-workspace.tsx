@@ -214,10 +214,10 @@ export function ProjectsWorkspace() {
     filters.status === "on-hold" ? "ON_HOLD" : filters.status;
 
   const statusCounts = {
-    active: 0,
-    upcoming: projectCards.length,
-    onHold: 0,
-    completed: 0,
+    active: projectCards.filter((p) => p.status === "ACTIVE").length,
+    upcoming: projectCards.filter((p) => p.status === "UPCOMING").length,
+    onHold: projectCards.filter((p) => p.status === "ON_HOLD").length,
+    completed: projectCards.filter((p) => p.status === "COMPLETED").length,
     all: projectCards.length,
   };
 
@@ -614,7 +614,7 @@ export function ProjectsWorkspace() {
           activeStatus={
             filters.status === "on-hold"
               ? "ON_HOLD"
-              : (filters.status as import("./types/project.types").ProjectStatus | "ALL" | undefined) ?? "UPCOMING"
+              : (filters.status as import("./types/project.types").ProjectStatus | "ALL" | undefined) ?? "ACTIVE"
           }
           locationFilter={filters.location}
           projects={projectCards}

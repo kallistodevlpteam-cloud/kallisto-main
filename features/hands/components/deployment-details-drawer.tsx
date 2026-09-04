@@ -3,11 +3,11 @@
 import {
   CalendarClock,
   HardHat,
-  IndianRupee,
   MapPin,
   UserRound,
   X,
 } from "lucide-react";
+import { RupeeIcon } from "@/components/layout/sidebar-icons";
 import { useRef } from "react";
 import type { Deployment, HandsTab } from "../types/hands.types";
 import {
@@ -127,7 +127,7 @@ export function DeploymentDetailsDrawer({
               </div>
               <div>
                 <dt>
-                  <IndianRupee size={15} aria-hidden="true" />
+                  <RupeeIcon size={15} aria-hidden="true" />
                   Daily cost
                 </dt>
                 <dd>{formatInr(deployment.dailyCost)}</dd>

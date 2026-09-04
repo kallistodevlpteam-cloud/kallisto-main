@@ -4,6 +4,10 @@ import { NextResponse, type NextRequest } from "next/server";
 const PUBLIC_PATHS = [
   "/login",
   "/sign-in",
+  "/client/login",
+  "/client/sign-in",
+  "/partner/login",
+  "/partner/sign-in",
   "/apply",
   "/waitlist",
   "/api/auth",
@@ -41,20 +45,39 @@ export function middleware(request: NextRequest) {
 
   // If user is unauthenticated and attempting to access a protected route
   if (!isAuthenticated && !isPublicPath) {
-    const loginUrl = new URL("/login", request.url);
-    if (pathname !== "/") {
+    let loginTarget = "/login";
+    if (pathname.startsWith("/client")) {
+      loginTarget = "/client/login";
+    } else if (pathname.startsWith("/partner")) {
+      loginTarget = "/partner/login";
+    }
+    const loginUrl = new URL(loginTarget, request.url);
+    if (pathname !== "/" && pathname !== "/client" && pathname !== "/partner") {
       loginUrl.searchParams.set("redirect", pathname);
     }
     return NextResponse.redirect(loginUrl);
   }
 
-  // If user is already authenticated and visits login/sign-in, redirect to home workspace
+  // If user is already authenticated and visits partner login/sign-in, redirect to partner workspace
+  if (isAuthenticated && (pathname === "/partner/login" || pathname === "/partner/sign-in")) {
+    const partnerType = (request.cookies.get("kallisto_partner_type")?.value || "HANDS").toLowerCase();
+    const partnerTarget = partnerType === "hub" ? "/partner/hub" : partnerType === "basics" ? "/partner/basics" : "/partner/hands";
+    return NextResponse.redirect(new URL(partnerTarget, request.url));
+  }
+
+  // If user is already authenticated and visits client login/sign-in, redirect to client overview
+  if (isAuthenticated && (pathname === "/client/login" || pathname === "/client/sign-in")) {
+    return NextResponse.redirect(new URL("/client/overview", request.url));
+  }
+
+  // If user is already authenticated and visits login/sign-in, redirect to provider home workspace
   if (isAuthenticated && (pathname === "/login" || pathname === "/sign-in")) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();
 }
+
 
 export const config = {
   matcher: [

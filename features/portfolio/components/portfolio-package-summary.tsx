@@ -1,5 +1,4 @@
-"use client";
-
+import { Send } from "lucide-react";
 import styles from "./portfolio.module.css";
 
 const PACKAGE_TIERS = [
@@ -10,10 +9,12 @@ const PACKAGE_TIERS = [
 
 interface PortfolioPackageSummaryProps {
   onViewPlans: () => void;
+  onSendEnquiry?: () => void;
 }
 
 export function PortfolioPackageSummary({
   onViewPlans,
+  onSendEnquiry,
 }: PortfolioPackageSummaryProps) {
   return (
     <aside
@@ -44,13 +45,24 @@ export function PortfolioPackageSummary({
           </div>
         </div>
 
-        <button
-          className={styles.viewPlansButton}
-          type="button"
-          onClick={onViewPlans}
-        >
-          <span>View Plans</span>
-        </button>
+        <div className={styles.packageActionsRow}>
+          <button
+            className={styles.sendEnquiryButton}
+            type="button"
+            onClick={onSendEnquiry ?? onViewPlans}
+          >
+            <Send size={13} />
+            <span>Send Enquiry</span>
+          </button>
+
+          <button
+            className={styles.viewPlansButton}
+            type="button"
+            onClick={onViewPlans}
+          >
+            <span>View Plans</span>
+          </button>
+        </div>
       </div>
     </aside>
   );

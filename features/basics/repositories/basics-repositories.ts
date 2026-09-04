@@ -93,33 +93,37 @@ function normalise(value: string): string {
   return value.trim().toLowerCase();
 }
 
+import { matchesFuzzyQuery } from "../lib/basics-search-matcher";
+
 export const basicsProviderRepository: BasicsProviderRepository = {
   async listProviders(filters = {}) {
     let result = providersStore.filter((provider) => {
-      const searchable = [
+      const targetFields = [
         provider.name,
         provider.companyName,
         provider.headline,
+        provider.primaryCategory,
         ...provider.specializations,
         ...provider.projectTypes,
         ...provider.softwareSkills,
         ...provider.codeKnowledge,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
+        provider.location.city,
+        provider.location.state,
+        ...provider.services.map((s) => s.title),
+        ...provider.services.map((s) => s.description),
+      ];
 
-      if (filters.q && !searchable.includes(normalise(filters.q))) return false;
+      if (filters.q && !matchesFuzzyQuery(filters.q, targetFields, provider.primaryCategory)) {
+        return false;
+      }
       if (filters.category && provider.primaryCategory !== filters.category) return false;
       if (
         filters.specialization &&
-        !provider.specializations.some((value) =>
-          normalise(value).includes(normalise(filters.specialization ?? "")),
-        )
+        !matchesFuzzyQuery(filters.specialization, provider.specializations, provider.primaryCategory)
       ) return false;
       if (filters.projectType && !provider.projectTypes.includes(filters.projectType)) return false;
-      if (filters.city && !normalise(provider.location.city).includes(normalise(filters.city))) return false;
-      if (filters.state && !normalise(provider.location.state).includes(normalise(filters.state))) return false;
+      if (filters.city && !matchesFuzzyQuery(filters.city, [provider.location.city])) return false;
+      if (filters.state && !matchesFuzzyQuery(filters.state, [provider.location.state])) return false;
       if (filters.remote && !provider.remoteAvailable) return false;
       if (filters.onsite && !provider.onsiteAvailable) return false;
       if (filters.verified && !provider.verified) return false;
@@ -127,8 +131,8 @@ export const basicsProviderRepository: BasicsProviderRepository = {
       if (filters.minimumExperience && provider.yearsOfExperience < filters.minimumExperience) return false;
       if (filters.availability && provider.availability !== filters.availability) return false;
       if (filters.pricingModel && provider.pricing.model !== filters.pricingModel) return false;
-      if (filters.software && !provider.softwareSkills.includes(filters.software)) return false;
-      if (filters.code && !provider.codeKnowledge.includes(filters.code)) return false;
+      if (filters.software && !matchesFuzzyQuery(filters.software, provider.softwareSkills)) return false;
+      if (filters.code && !matchesFuzzyQuery(filters.code, provider.codeKnowledge)) return false;
       if (filters.language && !provider.languages.includes(filters.language)) return false;
       return true;
     });

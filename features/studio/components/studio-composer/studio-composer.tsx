@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowUp, Check, ChevronDown, ChevronRight, X } from "lucide-react";
+import { ArrowRight, ArrowUp, Check, ChevronDown, ChevronRight, X } from "lucide-react";
 import {
   DocumentsDuotoneIcon,
   EnquiriesDuotoneIcon,
   MicDuotoneIcon,
   ProjectsDuotoneIcon,
+  ZapDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 import { StudioAgentType, StudioProjectOption } from "@/types/domain/studio";
 import { StudioIntent, StudioSource } from "../../types/studio-source";
@@ -14,8 +15,7 @@ import { STUDIO_INTENTS } from "../../lib/studio-intents";
 import { getProjectDisplayName } from "../project-selector";
 import { ComposerAttachmentMenu } from "./composer-attachment-menu";
 import { PromptUsage } from "@/components/ui/prompt";
-
-import { SuggestedPrompts } from "../suggested-prompts";
+import canvasStyles from "../studio-chat-canvas.module.css";
 import { useAnimatedPlaceholder } from "../../hooks/use-animated-placeholder";
 
 const DEFAULT_EXAMPLES = [
@@ -150,11 +150,11 @@ export function StudioComposer({
   const { animatedText, isTyping, isDeleting } = useAnimatedPlaceholder({
     examples,
     enabled: animationEnabled,
-    initialDelay: 1500,
-    typingSpeed: 38,
-    deletingSpeed: 22,
-    holdDuration: 2100,
-    betweenDelay: 650,
+    initialDelay: 300,
+    typingSpeed: 32,
+    deletingSpeed: 18,
+    holdDuration: 2400,
+    betweenDelay: 500,
   });
 
   const staticFallback = isActive
@@ -168,10 +168,6 @@ export function StudioComposer({
 
   const showOverlay = prompt === "" && !isFocused;
   const showCaret = !isActive && !prefersReducedMotion && (isTyping || isDeleting) && showOverlay;
-
-  const handleExampleSelect = (exampleText: string) => {
-    onPromptChange(exampleText);
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -189,10 +185,39 @@ export function StudioComposer({
 
   return (
     <div style={{ width: "100%", position: "relative" }}>
-      {/* Dynamic Example Suggestion Chips (Idle mode) */}
-      {!isActive && (
+      {/* Recommended Next Action Card directly above textbox (Idle mode) */}
+      {!isActive && prompt === "" && (
         <div style={{ marginBottom: "12px" }}>
-          <SuggestedPrompts intent={selectedIntent} onSelectPrompt={handleExampleSelect} />
+          <div className={canvasStyles.nextActionCard}>
+            <div className={canvasStyles.nextActionLeft}>
+              <div className={canvasStyles.nextActionIconWrap}>
+                <ZapDuotoneIcon size={16} aria-hidden="true" />
+              </div>
+              <div className={canvasStyles.nextActionMeta}>
+                <span className={canvasStyles.nextActionBadge}>Recommended Next Action</span>
+                <h3 className={canvasStyles.nextActionTitle}>
+                  Complete the preliminary estimate for {projectDisplay}
+                </h3>
+                <p className={canvasStyles.nextActionDescription}>
+                  Odin can synthesize the structural BOQ, living room material specs, and civil labour rates into an authoritative estimate.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className={canvasStyles.nextActionBtn}
+              onClick={() =>
+                onPromptChange(
+                  `Complete the preliminary estimate for ${projectDisplay} synthesizing the BOQ, material specs and current civil labour rates.`
+                )
+              }
+              aria-label={`Complete the preliminary estimate for ${projectDisplay}`}
+            >
+              <span>Complete estimate</span>
+              <ArrowRight size={14} aria-hidden="true" />
+            </button>
+          </div>
         </div>
       )}
 
@@ -204,9 +229,9 @@ export function StudioComposer({
             display: "flex",
             flexDirection: "column",
             minHeight: isActive ? "94px" : "106px",
-            padding: "16px 20px 12px 20px",
+            padding: "14px 12px 12px 12px",
             border: "none",
-            borderRadius: "26px",
+            borderRadius: "28px",
             background: "#ffffff",
             boxShadow: "0 4px 24px rgba(15, 23, 42, 0.06), 0 1px 4px rgba(15, 23, 42, 0.02)",
             transition: "box-shadow 0.2s ease",

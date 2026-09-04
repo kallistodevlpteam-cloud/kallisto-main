@@ -25,66 +25,53 @@ export function PortfolioHighlights({
       <div className={styles.highlightsHeader}>
         <h2 className={styles.highlightsTitle}>Portfolio Highlights</h2>
         <p className={styles.highlightsSubtitle}>
-          Seleced Work, process and professional focus
+          Selected work, process and professional focus
         </p>
       </div>
 
-      <div className={styles.highlightsRow} role="group" aria-label="Portfolio story highlights">
+      <div className={styles.highlightsRow} role="group" aria-label="Portfolio collection highlights">
         {isOwner ? (
           <button
             type="button"
-            className={styles.highlightItemButton}
+            className={styles.highlightNewRectCard}
             onClick={onAddCollection}
             aria-label="Add new collection"
           >
-            <div className={`${styles.highlightCircleOuter} ${styles.highlightNewOuter}`}>
-              <div className={styles.highlightNewInner}>
-                <Plus size={24} className={styles.highlightPlusIcon} aria-hidden="true" />
-              </div>
-            </div>
-            <span className={styles.highlightLabel}>New</span>
+            <Plus size={22} />
+            <span className={styles.highlightNewRectLabel}>New Collection</span>
           </button>
         ) : null}
 
         {collections.map((collection) => {
           const isSelected = collection.id === selectedCollectionId;
-          const hasRing = collection.hasGradientRing ?? true;
 
           return (
             <button
               key={collection.id}
               type="button"
-              className={styles.highlightItemButton}
+              className={`${styles.highlightRectCard} ${
+                isSelected ? styles.highlightRectCardActive : ""
+              }`}
               onClick={() => onSelect(collection)}
               aria-label={collection.label}
               aria-pressed={isSelected}
             >
-              <div
-                className={`${styles.highlightCircleOuter} ${
-                  hasRing ? styles.highlightGradientRing : styles.highlightSimpleRing
-                } ${isSelected ? styles.highlightSelectedRing : ""}`}
-              >
-                <div className={styles.highlightCircleInner}>
-                  <div className={styles.highlightImageFrame}>
-                    {collection.imageUrl ? (
-                      <Image
-                        src={collection.imageUrl}
-                        alt={collection.label}
-                        fill
-                        className={styles.highlightImage}
-                        sizes="76px"
-                      />
-                    ) : (
-                      <span className={styles.highlightInitial}>
-                        {collection.label[0]}
-                      </span>
-                    )}
-                  </div>
-                </div>
+              {collection.imageUrl ? (
+                <Image
+                  src={collection.imageUrl}
+                  alt={collection.label}
+                  fill
+                  className={styles.highlightCardBg}
+                  sizes="125px"
+                />
+              ) : null}
+
+              <div className={styles.highlightCardOverlay}>
+                <p className={styles.highlightCardLabel}>{collection.label}</p>
+                <span className={styles.highlightCardCount}>
+                  {collection.projectIds?.length ?? 0} {collection.projectIds?.length === 1 ? "project" : "projects"}
+                </span>
               </div>
-              <span className={styles.highlightLabel} title={collection.label}>
-                {collection.label}
-              </span>
             </button>
           );
         })}

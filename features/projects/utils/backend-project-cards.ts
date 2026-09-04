@@ -30,32 +30,56 @@ export const ACCEPTED_PROJECT_STATUS = "UPCOMING" as const;
 export function buildProjectCardsFromBackend(
   projects: BackendProject[]
 ): SampleProjectCard[] {
-  return projects.map((project) => ({
-    id: `prj-${project.id}`,
-    name: project.projectName.trim(),
-    code: "",
-    type: project.projectType ?? "Project",
-    location: project.place ?? "—",
-    clientDisplayName: project.clientName ?? "Client",
-    phase:
-      project.projectCharacter === PROJECT_CHARACTER_PR
-        ? ACCEPTED_PROJECT_PHASE_LABEL
-        : null,
-    status: ACCEPTED_PROJECT_STATUS,
-    health: undefined,
-    phaseProgress: undefined,
-    nextActionTitle: null,
-    dueLabel: null,
-    dueState: "no_due_date",
-    image:
-      project.coverImageUrl ??
-      project.siteImages[0] ??
-      project.inspirationImages[0]?.url ??
-      "",
-    images: [
-      ...(project.coverImageUrl ? [project.coverImageUrl] : []),
-      ...(project.siteImages ?? []),
-      ...(project.inspirationImages ?? []).slice(0, 2).map((img) => img.url),
-    ],
-  }));
+  return projects.map((project) => {
+    let status: "ACTIVE" | "UPCOMING" | "ON_HOLD" | "COMPLETED" | "ARCHIVED" = "ACTIVE";
+    const rawStatus = (project.projectStatus || "").toUpperCase();
+    if (rawStatus === "UPCOMING") status = "UPCOMING";
+    else if (rawStatus === "ON_HOLD" || rawStatus === "ON-HOLD") status = "ON_HOLD";
+    else if (rawStatus === "COMPLETED") status = "COMPLETED";
+    else if (rawStatus === "ARCHIVED") status = "ARCHIVED";
+    else if (project.projectCharacter === "enq") status = "UPCOMING";
+    else status = "ACTIVE";
+
+    let phase = ACCEPTED_PROJECT_PHASE_LABEL;
+    let phaseProgress = 50;
+    if (status === "COMPLETED") {
+      phase = "Handover complete";
+      phaseProgress = 100;
+    } else if (status === "UPCOMING") {
+      phase = "Kickoff & Survey";
+      phaseProgress = 10;
+    } else if (project.buildingType?.includes("Fitout") || project.projectType?.includes("Interior")) {
+      phase = "Interior Fitout & MEP";
+      phaseProgress = 65;
+    } else {
+      phase = "Construction & Structural";
+      phaseProgress = 70;
+    }
+
+    return {
+      id: `prj-${project.id}`,
+      name: project.projectName.trim(),
+      code: `KAL-2026-00${project.id}`,
+      type: project.projectType ?? "Project",
+      location: project.place ?? "—",
+      clientDisplayName: project.clientName ?? "Client",
+      phase,
+      status,
+      health: status === "ACTIVE" ? "ON_TRACK" : undefined,
+      phaseProgress,
+      nextActionTitle: status === "ACTIVE" ? "Client review for drawing revision" : null,
+      dueLabel: status === "ACTIVE" ? "Due in 3d" : null,
+      dueState: status === "ACTIVE" ? "due_soon" : "no_due_date",
+      image:
+        project.coverImageUrl ??
+        project.siteImages[0] ??
+        project.inspirationImages[0]?.url ??
+        "/assets/projectbg.webp",
+      images: [
+        ...(project.coverImageUrl ? [project.coverImageUrl] : []),
+        ...(project.siteImages ?? []),
+        ...(project.inspirationImages ?? []).slice(0, 2).map((img) => img.url),
+      ],
+    };
+  });
 }

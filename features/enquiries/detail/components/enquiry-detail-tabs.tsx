@@ -6,9 +6,13 @@ import styles from "./enquiry-detail-tabs.module.css";
 
 export type EnquiryTabKey =
   | "overview"
+  | "client"
   | "requirements"
   | "evidence"
-  | "client"
+  | "team"
+  | "materials"
+  | "hands"
+  | "basics"
   | "activity";
 
 export interface EnquiryTabItem {
@@ -22,18 +26,34 @@ export const ENQUIRY_TABS: EnquiryTabItem[] = [
   { key: "client", label: "Client Context" },
   { key: "requirements", label: "Requirements" },
   { key: "evidence", label: "Site & Evidence" },
+];
+
+export const UPCOMING_PROJECT_TABS: EnquiryTabItem[] = [
+  { key: "overview", label: "Overview" },
+  { key: "client", label: "Client Context" },
+  { key: "requirements", label: "Requirements" },
+  { key: "evidence", label: "Site & Evidence" },
+];
+
+export const PROJECT_TABS: EnquiryTabItem[] = [
+  { key: "overview", label: "Overview" },
+  { key: "client", label: "Client Context" },
+  { key: "requirements", label: "Requirements" },
+  { key: "evidence", label: "Site & Evidence" },
+  { key: "team", label: "Team members" },
+  { key: "materials", label: "Materials" },
+  { key: "hands", label: "Hands" },
+  { key: "basics", label: "Basics" },
   { key: "activity", label: "Activity" },
 ];
 
-export function resolveValidTabKey(queryTab: string | null): EnquiryTabKey {
+export function resolveValidTabKey(
+  queryTab: string | null,
+  mode: "enquiry" | "project" | "upcoming" = "enquiry",
+): EnquiryTabKey {
   if (!queryTab) return "overview";
-  const validKeys: EnquiryTabKey[] = [
-    "overview",
-    "client",
-    "requirements",
-    "evidence",
-    "activity",
-  ];
+  const tabsList = mode === "project" ? PROJECT_TABS : (mode === "upcoming" ? UPCOMING_PROJECT_TABS : ENQUIRY_TABS);
+  const validKeys = tabsList.map((t) => t.key);
   return validKeys.includes(queryTab as EnquiryTabKey) ? (queryTab as EnquiryTabKey) : "overview";
 }
 
@@ -41,19 +61,24 @@ export interface EnquiryDetailTabsProps {
   activeTab?: EnquiryTabKey;
   onTabChange?: (tab: EnquiryTabKey) => void;
   className?: string;
+  mode?: "enquiry" | "project" | "upcoming";
+  tabs?: EnquiryTabItem[];
 }
 
 export function EnquiryDetailTabs({
   activeTab: controlledTab,
   onTabChange,
   className,
+  mode = "enquiry",
+  tabs: customTabs,
 }: EnquiryDetailTabsProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const tabsList = customTabs || (mode === "project" ? PROJECT_TABS : ENQUIRY_TABS);
   const rawTab = searchParams.get("tab");
-  const currentTab = controlledTab || resolveValidTabKey(rawTab);
+  const currentTab = controlledTab || resolveValidTabKey(rawTab, mode);
 
   function handleTabClick(key: EnquiryTabKey) {
     if (onTabChange) {
@@ -70,7 +95,7 @@ export function EnquiryDetailTabs({
       aria-label="Enquiry detail sections"
     >
       <div className={styles.tabList} role="tablist">
-        {ENQUIRY_TABS.map((tab) => {
+        {tabsList.map((tab) => {
           const isActive = currentTab === tab.key;
           return (
             <button

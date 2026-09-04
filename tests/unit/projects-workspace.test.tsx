@@ -51,6 +51,18 @@ describe("Projects Operational Workspace — UI Components, Layout & Governance"
     expect(screen.getByText("14")).toBeDefined();
   });
 
+  it("defaults to Active tab when currentStatus is undefined on entering the page", () => {
+    render(
+      <ProjectStatusTabs
+        currentStatus={undefined}
+        onSelectTab={vi.fn()}
+      />
+    );
+
+    const activeTab = screen.getByRole("tab", { name: /active/i });
+    expect(activeTab.getAttribute("aria-selected")).toBe("true");
+  });
+
   it("renders ProjectsAttentionStrip when actionable conditions exist", () => {
     const onFilter = vi.fn();
     const counts = { overdueActions: 2, blockedProjects: 1, pendingClientDecisions: 3 };

@@ -1,6 +1,5 @@
-"use client";
-
 import { useState } from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { ImageOff, Layers, MapPin } from "lucide-react";
 import type { PortfolioProject } from "@/features/portfolio/types/portfolio.types";
@@ -15,7 +14,7 @@ import styles from "./portfolio.module.css";
 interface PortfolioInstaTileProps {
   project: PortfolioProject;
   eager: boolean;
-  onOpen: (project: PortfolioProject, trigger: HTMLButtonElement) => void;
+  onOpen?: (project: PortfolioProject, trigger: HTMLElement) => void;
 }
 
 export function PortfolioInstaTile({
@@ -33,11 +32,15 @@ export function PortfolioInstaTile({
 
   return (
     <article className={styles.instaTile}>
-      <button
+      <Link
+        href={`/portfolio/projects/${project.id}`}
         className={styles.instaTileButton}
-        type="button"
         aria-label={`View ${project.title} project`}
-        onClick={(event) => onOpen(project, event.currentTarget)}
+        onClick={(event) => {
+          if (onOpen) {
+            onOpen(project, event.currentTarget);
+          }
+        }}
       >
         <span className={styles.instaMedia}>
           {imageFailed ? (
@@ -81,7 +84,7 @@ export function PortfolioInstaTile({
             </span>
           </span>
         </span>
-      </button>
+      </Link>
     </article>
   );
 }

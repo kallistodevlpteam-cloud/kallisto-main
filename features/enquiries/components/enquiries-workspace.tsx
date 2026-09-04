@@ -9,9 +9,8 @@ import {
   ArrowUp,
   ArrowDown,
   Search,
-  Inbox,
-  Clock,
 } from "lucide-react";
+import { EnquiriesDuotoneIcon, ClockDuotoneIcon } from "@/components/layout/sidebar-icons";
 import { parseEnquiryQuery, serializeEnquiryQuery } from "../utils/enquiry-query-state";
 import { filterEnquiries, sortEnquiries, paginateEnquiries } from "../utils/filter-enquiries";
 import { buildEnquiriesFromProjects } from "../utils/enquiries-from-backend-projects";
@@ -24,16 +23,18 @@ import styles from "./enquiries-workspace.module.css";
 
 interface EnquiriesWorkspaceProps {
   isLoading?: boolean;
+  basePath?: string;
 }
 
 // 2026 Fixed reference time for deterministic date rendering and testing
 const FIXED_NOW = new Date("2026-07-23T12:00:00.000Z");
 const PAGE_SIZE = 10;
 
-export function EnquiriesWorkspace({ isLoading = false }: EnquiriesWorkspaceProps) {
+export function EnquiriesWorkspace({ isLoading = false, basePath }: EnquiriesWorkspaceProps) {
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = usePathname() || "";
   const searchParams = useSearchParams();
+  const effectiveBasePath = basePath || (pathname.startsWith("/client") ? "/client/enquiries" : "/enquiries");
 
   // Ref for first filter control (Status filter)
   const statusFilterRef = useRef<HTMLButtonElement | null>(null);
@@ -111,7 +112,7 @@ export function EnquiriesWorkspace({ isLoading = false }: EnquiriesWorkspaceProp
     ? testEnquiries
     : buildEnquiriesFromProjects(backendProjects);
 
-  const showLoading = isLoading || !projectsLoaded;
+  const showLoading = isLoading || (!testEnquiries && !projectsLoaded);
 
   const newTabCount = sourceRecords.filter(
     (item: EnquiryRecord) => item.stage !== "won" && item.stage !== "lost"
@@ -205,14 +206,18 @@ export function EnquiriesWorkspace({ isLoading = false }: EnquiriesWorkspaceProp
 
   const activeTab = searchParams.get("tab") === "history" ? "history" : "new";
 
+  const isClient = basePath?.startsWith("/client") || pathname.startsWith("/client");
+
   return (
     <div className={`${styles.workspace} enquiriesWorkspaceRoot`}>
       {/* 1. Enquiries Page Header */}
       <div className={styles.pageHeader}>
         <div className={styles.pageHeaderLeft}>
-          <h1 className={styles.pageHeaderTitle}>Enquiries</h1>
+          <h1 className={styles.pageHeaderTitle}>{isClient ? "My Enquiries" : "Enquiries"}</h1>
           <p className={styles.pageHeaderDesc}>
-            Review and qualify incoming project leads and requirement reviews.
+            {isClient
+              ? "Track your project enquiries, feasibility reviews, and proposals from verified service providers."
+              : "Review and qualify incoming project leads and requirement reviews."}
           </p>
         </div>
 
@@ -222,7 +227,7 @@ export function EnquiriesWorkspace({ isLoading = false }: EnquiriesWorkspaceProp
             <Search size={16} className={styles.headerSearchIcon} />
             <input
               type="text"
-              placeholder="Search by client, requirement or location..."
+              placeholder={isClient ? "Search by project, provider, or location..." : "Search by client, requirement or location..."}
               className={styles.headerSearchInput}
               value={localSearch}
               onChange={(e) => setLocalSearch(e.target.value)}
@@ -240,7 +245,7 @@ export function EnquiriesWorkspace({ isLoading = false }: EnquiriesWorkspaceProp
           className={`${styles.tabBtn} ${activeTab === "new" ? styles.tabBtnActive : ""}`}
           onClick={() => handleTabSwitch("new")}
         >
-          <Inbox size={16} className={styles.tabIcon} />
+          <EnquiriesDuotoneIcon size={16} className={styles.tabIcon} />
           <span>New</span>
           <span className={styles.countBadge}>{newTabCount}</span>
         </button>
@@ -251,7 +256,7 @@ export function EnquiriesWorkspace({ isLoading = false }: EnquiriesWorkspaceProp
           className={`${styles.tabBtn} ${activeTab === "history" ? styles.tabBtnActive : ""}`}
           onClick={() => handleTabSwitch("history")}
         >
-          <Clock size={16} className={styles.tabIcon} />
+          <ClockDuotoneIcon size={16} className={styles.tabIcon} />
           <span>History</span>
         </button>
       </div>
@@ -264,9 +269,9 @@ export function EnquiriesWorkspace({ isLoading = false }: EnquiriesWorkspaceProp
         {showLoading ? (
           <div className={styles.tableWrapper}>
             <div className={styles.tableHeader}>
-              <div>Enquiry</div>
-              <div>Next Action</div>
-              <div>Received</div>
+              <div>{isClient ? "Project / Enquiry" : "Enquiry"}</div>
+              <div>{isClient ? "Next Step" : "Next Action"}</div>
+              <div>{isClient ? "Submitted" : "Received"}</div>
               <div className={styles.budgetHeader}>Budget</div>
               <div>Project Type</div>
               <div className={styles.actionsHeader}>Actions</div>
@@ -303,17 +308,17 @@ export function EnquiriesWorkspace({ isLoading = false }: EnquiriesWorkspaceProp
             {/* Desktop/Tablet Grid View */}
             <div className={styles.tableWrapper} role="grid" aria-label="Enquiries List">
               <div className={styles.tableHeader} role="row">
-                <div role="columnheader">Enquiry</div>
-                <div role="columnheader">Next Action</div>
+                <div role="columnheader">{isClient ? "Project / Enquiry" : "Enquiry"}</div>
+                <div role="columnheader">{isClient ? "Next Step" : "Next Action"}</div>
                 <div role="columnheader">
                   <button
                     type="button"
-                    aria-label="Sort enquiries by received date"
+                    aria-label={`Sort enquiries by ${isClient ? "submission" : "received"} date`}
                     aria-pressed={queryState.sort === "received_asc"}
                     className={styles.sortBtn}
                     onClick={handleToggleSort}
                   >
-                    <span>Received</span>
+                    <span>{isClient ? "Submitted" : "Received"}</span>
                     {queryState.sort === "received_asc" ? (
                       <ArrowUp size={13} />
                     ) : queryState.sort === "received_desc" ? (
@@ -334,7 +339,12 @@ export function EnquiriesWorkspace({ isLoading = false }: EnquiriesWorkspaceProp
 
               <div className={styles.tableBody}>
                 {paginated.map((enquiry: EnquiryRecord) => (
-                  <EnquiryTableRow key={enquiry.id} enquiry={enquiry} now={FIXED_NOW} />
+                  <EnquiryTableRow
+                    key={enquiry.id}
+                    enquiry={enquiry}
+                    now={FIXED_NOW}
+                    basePath={effectiveBasePath}
+                  />
                 ))}
               </div>
             </div>
@@ -342,7 +352,12 @@ export function EnquiriesWorkspace({ isLoading = false }: EnquiriesWorkspaceProp
             {/* Mobile Stacked list view */}
             <div className={styles.mobileList} role="list">
               {paginated.map((enquiry: EnquiryRecord) => (
-                <EnquiryMobileCard key={enquiry.id} enquiry={enquiry} now={FIXED_NOW} />
+                <EnquiryMobileCard
+                  key={enquiry.id}
+                  enquiry={enquiry}
+                  now={FIXED_NOW}
+                  basePath={effectiveBasePath}
+                />
               ))}
             </div>
           </>

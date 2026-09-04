@@ -1,18 +1,18 @@
 import {
-  BriefcaseBusiness,
-  HardHat,
-  IndianRupee,
-  UserRoundSearch,
-} from "lucide-react";
+  BriefcaseDuotoneIcon,
+  HandsDuotoneIcon,
+  RupeeDuotoneIcon,
+  UserDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
 import type { HandsMetric } from "../types/hands.types";
 import { formatInr } from "../utils/hands-formatters";
 import styles from "./hands-overview.module.css";
 
 const METRIC_ICONS = {
-  workers: HardHat,
-  deployments: BriefcaseBusiness,
-  positions: UserRoundSearch,
-  cost: IndianRupee,
+  workers: HandsDuotoneIcon,
+  deployments: BriefcaseDuotoneIcon,
+  positions: UserDuotoneIcon,
+  cost: RupeeDuotoneIcon,
 } as const;
 
 interface HandsMetricCardProps {

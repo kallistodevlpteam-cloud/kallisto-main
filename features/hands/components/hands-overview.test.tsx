@@ -47,7 +47,26 @@ describe("Hands overview", () => {
     });
   }
 
-  it("renders the loading skeleton before the operational overview", async () => {
+  it("renders the centered hero searchbox landing page on /hands by default", () => {
+    render(<HandsOverview />);
+
+    expect(
+      screen.getByLabelText("Kallisto Hands Command Hub"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("textbox", {
+        name: "Search trades, workforce, site supervisors or projects",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "MEP" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Masonry" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "MEP" }));
+    expect(mockPush).toHaveBeenCalledWith("/hands/trades?q=Electricians");
+  });
+
+  it("renders the loading skeleton before the operational dashboard", async () => {
+    mockSearchParams = new URLSearchParams("view=dashboard");
     render(<HandsOverview />);
 
     expect(
@@ -64,11 +83,11 @@ describe("Hands overview", () => {
     expect(screen.getByText("Upcoming workforce demand")).toBeInTheDocument();
   });
 
-  it("opens the workforce request drawer and exposes required-field errors", () => {
+  it("opens the workforce request drawer from landing and exposes required-field errors", async () => {
     render(<HandsOverview />);
 
     fireEvent.click(
-      screen.getByRole("button", { name: "Request workforce" }),
+      screen.getByRole("button", { name: "Request more workers" }),
     );
 
     const drawer = screen.getByRole("dialog", {
@@ -92,7 +111,8 @@ describe("Hands overview", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("opens deployment details from a semantic table row", async () => {
+  it("opens deployment details from a semantic table row in dashboard view", async () => {
+    mockSearchParams = new URLSearchParams("view=dashboard");
     render(<HandsOverview />);
     await finishOverviewLoad();
 
@@ -106,18 +126,21 @@ describe("Hands overview", () => {
     expect(screen.getByText("Two workers have not checked in. Review today's attendance before confirming the daily record.")).toBeInTheDocument();
   });
 
-  it("synchronizes tab selections through the Hands URL", () => {
+  it("synchronizes tab selections through the Hands URL in dashboard view", async () => {
+    mockSearchParams = new URLSearchParams("tab=deployments");
     render(<HandsOverview />);
+    await finishOverviewLoad();
 
     fireEvent.click(screen.getByRole("tab", { name: "Attendance" }));
 
     expect(mockPush).toHaveBeenCalledWith("/hands?tab=attendance");
   });
 
-  it("renders a clean placeholder for non-overview tabs", () => {
+  it("renders a clean placeholder for non-overview tabs", async () => {
     mockSearchParams = new URLSearchParams("tab=payments");
 
     render(<HandsOverview />);
+    await finishOverviewLoad();
 
     expect(
       screen.getByRole("heading", { name: "Labour payments" }),

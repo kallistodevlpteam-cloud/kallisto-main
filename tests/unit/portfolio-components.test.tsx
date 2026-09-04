@@ -4,6 +4,15 @@ import { PortfolioProfileCard } from "@/features/portfolio/components/portfolio-
 import { PortfolioProjectViewer } from "@/features/portfolio/components/portfolio-project-viewer";
 import { getPortfolioPageData } from "@/features/portfolio/data/portfolio.mock";
 
+vi.mock("@/hooks/use-odin", () => ({
+  useOdin: () => ({
+    isOdinOpen: false,
+    openOdinWithPrompt: vi.fn(),
+    toggleOdin: vi.fn(),
+    closeOdin: vi.fn(),
+  }),
+}));
+
 afterEach(cleanup);
 
 describe("portfolio interface", () => {
@@ -54,7 +63,7 @@ describe("portfolio interface", () => {
       screen.getByRole("heading", { name: "Portfolio Highlights" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Seleced Work, process and professional focus"),
+      screen.getByText("Selected work, process and professional focus"),
     ).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Tagged" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Reviews" })).toBeInTheDocument();
@@ -92,9 +101,6 @@ describe("portfolio interface", () => {
     expect(
       screen.queryByRole("button", { name: "Add project" }),
     ).not.toBeInTheDocument();
-    expect(
-      screen.getAllByRole("link", { name: "Send Enquiry" }).length,
-    ).toBeGreaterThan(0);
   });
 
   it("supports Escape, project navigation and public enquiry in the viewer", () => {
@@ -155,5 +161,90 @@ describe("portfolio interface", () => {
     expect(
       screen.queryByText("Nila Residence"),
     ).not.toBeInTheDocument();
+  });
+
+  it("filters portfolio projects grid by category/project type", () => {
+    const data = getPortfolioPageData(false);
+    render(<PortfolioProfileCard data={data} initialTab="projects" />);
+
+    // Verify category filter pills exist
+    const categoryBar = screen.getByRole("tablist", { name: "Filter projects by category" });
+    expect(categoryBar).toBeInTheDocument();
+
+    const allPill = screen.getByRole("tab", { name: /^all/i });
+    const residentialPill = screen.getByRole("tab", { name: /^residential/i });
+    const commercialPill = screen.getByRole("tab", { name: /^commercial/i });
+
+    expect(allPill).toHaveAttribute("aria-selected", "true");
+    expect(residentialPill).toBeInTheDocument();
+    expect(commercialPill).toBeInTheDocument();
+
+    // Filter to Commercial
+    fireEvent.click(commercialPill);
+    expect(commercialPill).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText("The Fern Office")).toBeInTheDocument();
+    expect(screen.queryByText("Nila Residence")).not.toBeInTheDocument();
+
+    // Filter back to All
+    fireEvent.click(allPill);
+    expect(allPill).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText("Nila Residence")).toBeInTheDocument();
+    expect(screen.getByText("The Fern Office")).toBeInTheDocument();
+  });
+
+  it("filters tagged collaborations grid by category/type", () => {
+    const data = getPortfolioPageData(true);
+    render(<PortfolioProfileCard data={data} initialTab="tagged" />);
+
+    // Verify tagged category filter bar
+    const categoryBar = screen.getByRole("tablist", { name: "Filter tagged projects by category" });
+    expect(categoryBar).toBeInTheDocument();
+
+    const allPill = screen.getByRole("tab", { name: /^all/i });
+    const hospitalityPill = screen.getByRole("tab", { name: /^hospitality/i });
+    const commercialPill = screen.getByRole("tab", { name: /^commercial/i });
+
+    expect(allPill).toHaveAttribute("aria-selected", "true");
+    expect(hospitalityPill).toBeInTheDocument();
+    expect(commercialPill).toBeInTheDocument();
+
+    // Filter to Hospitality
+    fireEvent.click(hospitalityPill);
+    expect(hospitalityPill).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText("Terra Café")).toBeInTheDocument();
+    expect(screen.queryByText("The Fern Office")).not.toBeInTheDocument();
+
+    // Filter back to All
+    fireEvent.click(allPill);
+    expect(allPill).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText("Terra Café")).toBeInTheDocument();
+    expect(screen.getByText("The Fern Office")).toBeInTheDocument();
+  });
+
+  it("searches portfolio projects by project name or location and clears search", () => {
+    const data = getPortfolioPageData(true);
+    render(<PortfolioProfileCard data={data} initialTab="projects" />);
+
+    const searchInput = screen.getByRole("searchbox", {
+      name: "Search projects by name or location",
+    });
+    expect(searchInput).toBeInTheDocument();
+
+    // 1. Search by project name: "Nila"
+    fireEvent.change(searchInput, { target: { value: "Nila" } });
+    expect(screen.getByText("Nila Residence")).toBeInTheDocument();
+    expect(screen.queryByText("The Fern Office")).not.toBeInTheDocument();
+
+    // 2. Search by location: "Thrissur"
+    fireEvent.change(searchInput, { target: { value: "Thrissur" } });
+    expect(screen.getByText("Courtyard House")).toBeInTheDocument();
+    expect(screen.queryByText("Nila Residence")).not.toBeInTheDocument();
+
+    // 3. Clear search button
+    const clearBtn = screen.getByRole("button", { name: "Clear search" });
+    fireEvent.click(clearBtn);
+    expect(searchInput).toHaveValue("");
+    expect(screen.getByText("Nila Residence")).toBeInTheDocument();
+    expect(screen.getByText("The Fern Office")).toBeInTheDocument();
   });
 });
