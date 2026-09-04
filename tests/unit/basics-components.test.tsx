@@ -21,14 +21,9 @@ describe("Basics shared interface", () => {
       screen.getByRole("heading", { name: provider.name }),
     ).toBeInTheDocument();
     expect(screen.getByText(`${provider.yearsOfExperience} years`)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "View profile" })).toHaveAttribute(
-      "href",
-      `/basics/experts/${provider.id}?projectId=proj-001`,
-    );
-    expect(screen.getByRole("link", { name: "Invite" })).toHaveAttribute(
-      "href",
-      expect.stringContaining("/basics/requirements/new?"),
-    );
+    expect(
+      screen.getByRole("button", { name: `View ${provider.name} specialist profile` }),
+    ).toBeInTheDocument();
   });
 
   it("gives empty states one clear next action", () => {

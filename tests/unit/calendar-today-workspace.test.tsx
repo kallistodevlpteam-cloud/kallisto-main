@@ -83,7 +83,7 @@ describe("Calendar Today operations workspace", () => {
     });
     expect(onCategoryChange).toHaveBeenCalledWith("meetings");
 
-    fireEvent.click(screen.getByRole("button", { name: "Mark complete" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Mark complete" })[0]);
     expect(onMarkComplete).toHaveBeenCalledWith("act-review");
   });
 
@@ -97,5 +97,32 @@ describe("Calendar Today operations workspace", () => {
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Add activity" }));
     expect(onAddActivity).toHaveBeenCalledTimes(1);
+  });
+
+  it("expands activity details inline in the agenda list and allows collapsing", () => {
+    render(
+      <TodayTab
+        activities={[primaryActivity]}
+        projectsList={[{ id: "proj-201", name: "Nila Residence" }]}
+      />
+    );
+
+    // Initial state: details not expanded
+    expect(screen.queryByText(/NOTES & INSTRUCTIONS/i)).not.toBeInTheDocument();
+
+    // Click the agenda row
+    const agendaBtn = screen.getByRole("button", { name: /Client design review/i });
+    fireEvent.click(agendaBtn);
+
+    // Now expanded inline
+    expect(screen.getByText(/NOTES & INSTRUCTIONS/i)).toBeInTheDocument();
+    expect(screen.getByText("OWNER")).toBeInTheDocument();
+    expect(screen.getByText("ASSIGNEES")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
+
+    // Click the Close button inside expanded section
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    expect(screen.queryByText(/NOTES & INSTRUCTIONS/i)).not.toBeInTheDocument();
+    expect(screen.queryByText("OWNER")).not.toBeInTheDocument();
   });
 });

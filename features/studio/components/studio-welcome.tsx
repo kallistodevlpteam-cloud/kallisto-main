@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Terminal } from "lucide-react";
+import { OdinDuotoneIcon } from "@/components/layout/sidebar-icons";
 import { StudioProjectOption } from "@/types/domain/studio";
 import { ProjectSelector } from "./project-selector";
 
@@ -28,22 +28,17 @@ export function StudioWelcome({
         marginBottom: "28px",
       }}
     >
-      {/* Top Center Speech Bubble / Terminal Badge Icon */}
+      {/* Top Center Ask Odin Icon */}
       <div
         style={{
-          display: "grid",
-          placeItems: "center",
-          width: "38px",
-          height: "38px",
-          borderRadius: "12px",
-          border: "1px solid #e2e8f0",
-          background: "#ffffff",
-          color: "#64748b",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#0f172a",
           marginBottom: "16px",
-          boxShadow: "0 1px 3px rgba(15, 23, 42, 0.03)",
         }}
       >
-        <Terminal size={18} strokeWidth={1.5} />
+        <OdinDuotoneIcon size={24} />
       </div>
 
       {/* Main Welcome Heading */}

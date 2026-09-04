@@ -1,28 +1,19 @@
+"use client";
+
 import {
   Bookmark,
   Check,
   Columns3,
-  Send,
+  Star,
 } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { BasicsProvider } from "../types/basics.types";
-import { formatCurrency, pricingLabels } from "../utils/basics-formatters";
 import {
-  ProviderAvailabilityBadge,
-  ProviderEvidence,
-  ProviderVerificationBadge,
-} from "./basics-shared";
+  formatCurrency,
+  pricingLabels,
+} from "../utils/basics-formatters";
 import styles from "./basics-workspace.module.css";
-
-function initials(name: string): string {
-  return name
-    .split(" ")
-    .slice(0, 2)
-    .map((part) => part.charAt(0))
-    .join("")
-    .toUpperCase();
-}
+import { ProviderLogoTile } from "./provider-logo-tile";
 
 export function ProviderCard({
   provider,
@@ -43,113 +34,140 @@ export function ProviderCard({
   onToggleCompare?: (providerId: string) => void;
   onToggleSave?: (providerId: string) => void;
 }) {
+  const router = useRouter();
   const profileHref = `/basics/experts/${provider.id}${
     projectId ? `?projectId=${encodeURIComponent(projectId)}` : ""
   }`;
-  const inviteParams = new URLSearchParams({ providerId: provider.id });
-  if (projectId) inviteParams.set("projectId", projectId);
+
+  function handleCardClick(e: React.MouseEvent) {
+    const target = e.target as HTMLElement;
+    if (target.closest("button")) {
+      return;
+    }
+    router.push(profileHref);
+  }
 
   return (
-    <article className={styles.providerCard}>
-      <div className={styles.providerIdentity}>
-        <span className={styles.avatar} aria-hidden="true">
-          {initials(provider.name)}
-        </span>
-        <div className={styles.identityCopy}>
-          <h3>{provider.name}</h3>
-          <p>{provider.companyName ?? "Independent specialist"}</p>
-          {provider.verified ? (
-            <ProviderVerificationBadge level={provider.verificationLevel} />
-          ) : null}
+    <article
+      className={styles.refPortraitCard}
+      onClick={handleCardClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          router.push(profileHref);
+        }
+      }}
+      aria-label={`View ${provider.name} specialist profile`}
+    >
+      {/* Top Rounded Brand Logo Tile Container */}
+      <div className={styles.refPortraitWrap}>
+        <ProviderLogoTile name={provider.name} />
+
+        {/* Top-Right Badge: Star Rating */}
+        <div className={styles.refPortraitBadgeWrap}>
+          <span className={styles.refRatingBadge}>
+            <Star size={11} className={styles.refRatingStar} fill="currentColor" aria-hidden="true" />
+            <span>{provider.rating.toFixed(1)}</span>
+          </span>
         </div>
-        {discovery && onToggleSave ? (
-          <button
-            type="button"
-            className={styles.iconButton}
-            aria-label={saved ? `Remove ${provider.name} from saved experts` : `Save ${provider.name}`}
-            aria-pressed={saved}
-            onClick={() => onToggleSave(provider.id)}
-          >
-            {saved ? <Check size={14} aria-hidden="true" /> : <Bookmark size={14} aria-hidden="true" />}
-          </button>
-        ) : (
-          <ProviderAvailabilityBadge availability={provider.availability} />
-        )}
       </div>
 
-      <p className={styles.providerHeadline}>{provider.headline}</p>
+      {/* Card Body */}
+      <div className={styles.refPortraitBody}>
+        {/* Title Section: Name, Domain Subtitle & Right-Aligned Bookmark Save Button */}
+        <div className={styles.refTitleSection}>
+          <div className={styles.refTitleTextGroup}>
+            <h3 className={styles.refProviderName}>
+              <span>{provider.name}</span>
+            </h3>
+            <p className={styles.refProviderSubtitle}>
+              {provider.specializations[0] ?? (provider.companyName && provider.companyName !== provider.name ? provider.companyName : "Specialist")}
+            </p>
+          </div>
 
-      <ProviderEvidence
-        location={`${provider.location.city}, ${provider.location.state}`}
-        rating={provider.rating}
-        reviewCount={provider.reviewCount}
-        experience={provider.yearsOfExperience}
-        completed={provider.completedEngagements}
-      />
-
-      <div className={styles.tagRow} aria-label="Provider capabilities">
-        {provider.projectTypes.slice(0, 2).map((projectType) => (
-          <span key={projectType} className={styles.tag}>
-            {projectType}
-          </span>
-        ))}
-        {provider.softwareSkills.slice(0, 2).map((software) => (
-          <span key={software} className={styles.tag}>
-            {software}
-          </span>
-        ))}
-      </div>
-
-      {discovery ? (
-        <div className={styles.portfolioStrip} aria-label="Portfolio preview">
-          {provider.portfolio.slice(0, 3).map((item) => (
-            <span className={styles.portfolioThumb} key={item.id}>
-              <Image
-                src={item.imageUrls[0]}
-                alt={`${item.title} portfolio preview`}
-                fill
-                sizes="100px"
-              />
-            </span>
-          ))}
-        </div>
-      ) : null}
-
-      <div className={styles.cardFooter}>
-        <span className={styles.pricing}>
-          <span>{pricingLabels[provider.pricing.model]}</span>
-          <strong>
-            {provider.pricing.startingFrom
-              ? `From ${formatCurrency(provider.pricing.startingFrom, provider.pricing.currency)}`
-              : "Request quote"}
-          </strong>
-        </span>
-        <div className={styles.cardActions}>
-          {discovery && onToggleCompare ? (
+          {onToggleSave ? (
             <button
               type="button"
-              className={styles.selectAction}
-              aria-pressed={selected}
-              disabled={compareDisabled && !selected}
-              onClick={() => onToggleCompare(provider.id)}
+              className={`${styles.refTitleSaveBtn} ${saved ? styles.refTitleSaveBtnActive : ""}`}
+              aria-label={saved ? `Remove ${provider.name} from saved experts` : `Save ${provider.name}`}
+              aria-pressed={saved}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleSave(provider.id);
+              }}
             >
-              <Columns3 size={12} aria-hidden="true" />
-              {selected ? "Selected" : "Compare"}
+              {saved ? (
+                <Bookmark size={15} fill="currentColor" style={{ color: "#0f172a" }} aria-hidden="true" />
+              ) : (
+                <Bookmark size={15} aria-hidden="true" />
+              )}
             </button>
           ) : null}
-          <Link className={styles.secondaryButton} href={profileHref}>
-            View profile
-          </Link>
-          <Link
-            className={styles.primaryButton}
-            href={`/basics/requirements/new?${inviteParams.toString()}`}
-          >
-            <Send size={13} aria-hidden="true" />
-            Invite
-          </Link>
+        </div>
+
+        {/* 3-Column Stats Metadata Section (Experience | Consults | Location) */}
+        <div className={styles.refStatsGrid}>
+          <div className={styles.refStatCol}>
+            <span className={styles.refStatValue}>
+              {provider.yearsOfExperience} yrs
+              <span className="sr-only">{provider.yearsOfExperience} years</span>
+            </span>
+            <span className={styles.refStatLabel}>experience</span>
+          </div>
+
+          <div className={styles.refStatDivider} aria-hidden="true" />
+
+          <div className={styles.refStatCol}>
+            <span className={styles.refStatValue}>
+              {provider.completedEngagements}+
+            </span>
+            <span className={styles.refStatLabel}>consults</span>
+          </div>
+
+          <div className={styles.refStatDivider} aria-hidden="true" />
+
+          <div className={styles.refStatCol}>
+            <span className={styles.refStatValue} title={`${provider.location.city}, ${provider.location.state}`}>
+              {provider.location.city}
+            </span>
+            <span className={styles.refStatLabel}>location</span>
+          </div>
+        </div>
+
+        {/* Footer: Price & Compare Action */}
+        <div className={styles.refCardFooter}>
+          <div className={styles.refPricingGroup}>
+            <span className={styles.refPriceAmount}>
+              {provider.pricing.startingFrom
+                ? formatCurrency(provider.pricing.startingFrom, provider.pricing.currency)
+                : "Quote"}
+            </span>
+            <span className={styles.refPriceSubtext}>
+              {pricingLabels[provider.pricing.model] || "Fixed fee"}
+            </span>
+          </div>
+
+          {discovery && onToggleCompare ? (
+            <div className={styles.refCardActions}>
+              <button
+                type="button"
+                className={`${styles.refCompareBtn} ${selected ? styles.refCompareBtnActive : ""}`}
+                aria-pressed={selected}
+                disabled={compareDisabled && !selected}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleCompare(provider.id);
+                }}
+              >
+                {selected ? <Check size={11} aria-hidden="true" /> : <Columns3 size={11} aria-hidden="true" />}
+                <span>{selected ? "Selected" : "Compare"}</span>
+              </button>
+            </div>
+          ) : null}
         </div>
       </div>
     </article>
   );
 }
-

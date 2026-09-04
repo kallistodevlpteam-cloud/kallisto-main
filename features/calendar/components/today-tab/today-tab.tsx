@@ -4,15 +4,21 @@ import Image from "next/image";
 import React, { useMemo, useState } from "react";
 import {
   ArrowRight,
+  Building2,
+  Calendar,
   Check,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  Square,
+  Clock,
+  Link2,
+  X,
 } from "lucide-react";
 import {
   ClockDuotoneIcon,
+  DocumentsDuotoneIcon,
   MapPinDuotoneIcon,
+  TeamDuotoneIcon,
   UserDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 import type { CalendarActivityType } from "@/types/domain/calendar";
@@ -22,6 +28,7 @@ import type {
 } from "../../hooks/use-calendar-query-state";
 import type { PresentableActivity } from "../../services/calendar-activity.service";
 import type { PresentableScheduleItem } from "../../services/project-schedule.service";
+import { ThemeSelect } from "@/components/ui/theme-select";
 import styles from "../calendar-workspace-page.module.css";
 
 const REFERENCE_TODAY = "2026-07-24";
@@ -119,9 +126,7 @@ function getEndMinutesForActivity(activity: PresentableActivity) {
 
 function formatTimePart(value: string) {
   const [hours, minutes] = value.split(":").map(Number);
-  const suffix = hours >= 12 ? "PM" : "AM";
-  const normalizedHours = hours % 12 || 12;
-  return `${normalizedHours}:${String(minutes).padStart(2, "0")} ${suffix}`;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 }
 
 function formatActivityTime(activity: PresentableActivity) {
@@ -182,6 +187,67 @@ function getActivityState(
   return startMinutes > REFERENCE_NOW_MINUTES ? "upcoming" : "overdue";
 }
 
+export interface DateActivityState {
+  scheduled: number;
+  active: number;
+  completed: number;
+  blocked: number;
+  cancelled: number;
+  total: number;
+}
+
+export function calculateDateActivityState(
+  dateActivities: PresentableActivity[],
+  scheduleItems: PresentableScheduleItem[],
+  dateStr: string
+): DateActivityState {
+  let scheduled = 0;
+  let active = 0;
+  let completed = 0;
+  let blocked = 0;
+  let cancelled = 0;
+
+  for (const activity of dateActivities) {
+    if (activity.status === "cancelled") {
+      cancelled++;
+      continue;
+    }
+    if (activity.status === "completed") {
+      completed++;
+      continue;
+    }
+
+    const linkedSchedule = scheduleItems.find(
+      (item) => item.id === activity.linkedScheduleItemId
+    );
+    if (linkedSchedule?.status === "blocked") {
+      blocked++;
+      continue;
+    }
+
+    const state = getActivityState(activity, scheduleItems, dateStr);
+    if (state === "inProgress" || state === "overdue") {
+      active++;
+    } else {
+      scheduled++;
+    }
+  }
+
+  return {
+    scheduled,
+    active,
+    completed,
+    blocked,
+    cancelled,
+    total: dateActivities.length,
+  };
+}
+
+export function shouldShowCalendarDateIndicator(state?: DateActivityState): boolean {
+  if (!state) return false;
+  return state.scheduled > 0 || state.active > 0;
+}
+
 export function TodayTab({
   activities = [],
   scheduleItems = [],
@@ -200,6 +266,7 @@ export function TodayTab({
 }: TodayTabProps) {
   const [visibleMonthOffset, setVisibleMonthOffset] = useState(0);
   const [completingId, setCompletingId] = useState<string | null>(null);
+  const [expandedActivityId, setExpandedActivityId] = useState<string | null>(null);
 
   const selectedMonth = new Date(`${selectedDate.substring(0, 7)}-01T12:00:00`);
   const visibleMonth = new Date(
@@ -226,6 +293,31 @@ export function TodayTab({
     });
   }, [activities, category, scope]);
 
+  const activityStateByDate = useMemo(() => {
+    const map = new Map<string, DateActivityState>();
+    const activitiesByDate = new Map<string, PresentableActivity[]>();
+
+    for (const act of filteredActivities) {
+      const d = getDateForActivity(act);
+      const list = activitiesByDate.get(d) || [];
+      list.push(act);
+      activitiesByDate.set(d, list);
+    }
+
+    activitiesByDate.forEach((dateActs, dateStr) => {
+      map.set(dateStr, calculateDateActivityState(dateActs, scheduleItems, dateStr));
+    });
+
+    return map;
+  }, [filteredActivities, scheduleItems]);
+
+  const selectedDateActivityState = useMemo(() => {
+    const dayActs = filteredActivities.filter(
+      (act) => getDateForActivity(act) === selectedDate
+    );
+    return calculateDateActivityState(dayActs, scheduleItems, selectedDate);
+  }, [filteredActivities, scheduleItems, selectedDate]);
+
   const dayActivities = useMemo(
     () =>
       filteredActivities
@@ -247,30 +339,6 @@ export function TodayTab({
     ) ??
     dayActivities[0];
 
-  const linkedScheduleIds = new Set(
-    dayActivities
-      .map((activity) => activity.linkedScheduleItemId)
-      .filter((value): value is string => Boolean(value))
-  );
-
-  const laterItems = scheduleItems
-    .filter(
-      (item) =>
-        !linkedScheduleIds.has(item.id) &&
-        item.status !== "completed" &&
-        (item.startDate === selectedDate || item.dueDate === selectedDate)
-    )
-    .slice(0, 3);
-
-  const completedCount = dayActivities.filter(
-    (activity) => activity.status === "completed"
-  ).length;
-  const blockedCount = dayActivities.filter(
-    (activity) =>
-      getActivityState(activity, scheduleItems, selectedDate) === "blocked"
-  ).length;
-
-  const activityDates = new Set(filteredActivities.map(getDateForActivity));
   const firstDay = new Date(
     visibleMonth.getFullYear(),
     visibleMonth.getMonth(),
@@ -313,49 +381,229 @@ export function TodayTab({
       .filter((member): member is { name: string; initials: string } => Boolean(member));
     const projectName = activity.projectId
       ? projectsById.get(activity.projectId) ?? activity.projectId
-      : "Studio";
+      : "";
+    const displayTitle = projectName
+      ? activity.title && activity.title !== projectName
+        ? `${projectName} — ${activity.title}`
+        : projectName
+      : activity.title;
 
-    const isCurrentActive = activityState === "inProgress";
+    const isExpanded = expandedActivityId === activity.id;
+    const isCurrentActive = activityState === "inProgress" || isExpanded;
     const maxVisibleAvatars = 2;
     const overflowAvatars = assignees.length > maxVisibleAvatars ? assignees.length - maxVisibleAvatars : 0;
+    const isAllDay = activity.time.allDay;
+    const startStr = isAllDay ? "All day" : formatTimePart(activity.time.startAt.substring(11, 16));
+    const endStr = isAllDay ? "" : formatTimePart(activity.time.endAt.substring(11, 16));
+
+    const handleRowClick = () => {
+      setExpandedActivityId(isExpanded ? null : activity.id);
+      onSelectActivity?.(activity.id);
+    };
 
     scheduleRows.push(
-      <button
-        type="button"
+      <div
         key={activity.id}
-        className={`${styles.agendaRow} ${
-          activityState === "completed" ? styles.agendaRowCompleted : ""
-        } ${isCurrentActive ? styles.agendaRowActive : ""}`}
-        onClick={() => onSelectActivity?.(activity.id)}
+        className={`${styles.agendaRowContainer} ${
+          isAllDay ? styles.agendaRowContainerAllDay : ""
+        } ${isExpanded ? styles.agendaRowContainerExpanded : ""}`}
       >
-        <span className={styles.agendaTime}>{formatActivityTime(activity)}</span>
-        <span
-          className={`${styles.agendaStatusDot} ${STATUS_CLASS_NAMES[activityState]}`}
-          aria-hidden="true"
-        />
-        <span className={styles.agendaActivity}>
-          <strong>{activity.title}</strong>
-          <small>
-            {projectName} · {TYPE_LABELS[activity.activityType]}
-          </small>
-        </span>
-        <span
-          className={styles.agendaAvatars}
-          aria-label={`Assigned to ${assignees.map((member) => member.name).join(", ")}`}
+        <button
+          type="button"
+          className={`${styles.agendaRow} ${
+            isAllDay ? styles.agendaRowAllDay : ""
+          } ${activityState === "completed" ? styles.agendaRowCompleted : ""} ${
+            isCurrentActive ? styles.agendaRowActive : ""
+          }`}
+          onClick={handleRowClick}
+          aria-expanded={isExpanded}
         >
-          {assignees.slice(0, 2).map((member) => (
-            <span key={member.initials}>{member.initials}</span>
-          ))}
-          {overflowAvatars > 0 && (
-            <span className={styles.agendaAvatarOverflow}>+{overflowAvatars}</span>
+          <div
+            className={`${styles.eventVerticalPill} ${STATUS_CLASS_NAMES[activityState]}`}
+            aria-hidden="true"
+          />
+          {isAllDay ? (
+            <>
+              <div className={styles.allDayTimeStack}>
+                <span className={styles.allDayCapsule}>ALL DAY</span>
+              </div>
+              <div className={styles.allDayInnerWhiteCard}>
+                <div className={styles.eventCardMain}>
+                  <div className={styles.eventCategoryTag}>
+                    <Calendar size={13} className={styles.eventCategoryIcon} />
+                    <span className={styles.eventCategoryName}>
+                      {TYPE_LABELS[activity.activityType]?.toUpperCase()}
+                    </span>
+                  </div>
+                  <strong className={styles.eventTitleText}>{displayTitle}</strong>
+                </div>
+                <span
+                  className={styles.agendaAvatars}
+                  aria-label={`Assigned to ${assignees.map((member) => member.name).join(", ")}`}
+                >
+                  {assignees.slice(0, 2).map((member) => (
+                    <span key={member.initials}>{member.initials}</span>
+                  ))}
+                  {overflowAvatars > 0 && (
+                    <span className={styles.agendaAvatarOverflow}>+{overflowAvatars}</span>
+                  )}
+                </span>
+                <span className={`${styles.agendaStatusPill} ${STATUS_CLASS_NAMES[activityState]}`}>
+                  <span className={styles.statusPillDot} />
+                  {STATUS_LABELS[activityState]}
+                </span>
+                <ChevronRight
+                  className={`${styles.agendaOpenIcon} ${
+                    isExpanded ? styles.agendaOpenIconRotated : ""
+                  }`}
+                  size={16}
+                  aria-hidden="true"
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className={styles.eventTimeStack}>
+                <span className={styles.eventStartTime}>{startStr}</span>
+                {endStr && (
+                  <>
+                    <span className={styles.eventTimeDivider}>–</span>
+                    <span className={styles.eventEndTime}>{endStr}</span>
+                  </>
+                )}
+              </div>
+              <div className={styles.eventCardMain}>
+                <div className={styles.eventCategoryTag}>
+                  <Calendar size={13} className={styles.eventCategoryIcon} />
+                  <span className={styles.eventCategoryName}>
+                    {TYPE_LABELS[activity.activityType]?.toUpperCase()}
+                  </span>
+                </div>
+                <strong className={styles.eventTitleText}>{displayTitle}</strong>
+              </div>
+              <span
+                className={styles.agendaAvatars}
+                aria-label={`Assigned to ${assignees.map((member) => member.name).join(", ")}`}
+              >
+                {assignees.slice(0, 2).map((member) => (
+                  <span key={member.initials}>{member.initials}</span>
+                ))}
+                {overflowAvatars > 0 && (
+                  <span className={styles.agendaAvatarOverflow}>+{overflowAvatars}</span>
+                )}
+              </span>
+              <span className={`${styles.agendaStatusPill} ${STATUS_CLASS_NAMES[activityState]}`}>
+                <span className={styles.statusPillDot} />
+                {STATUS_LABELS[activityState]}
+              </span>
+              <ChevronRight
+                className={`${styles.agendaOpenIcon} ${
+                  isExpanded ? styles.agendaOpenIconRotated : ""
+                }`}
+                size={16}
+                aria-hidden="true"
+              />
+            </>
           )}
-        </span>
-        <span className={`${styles.agendaStatusText} ${STATUS_CLASS_NAMES[activityState]}`}>
-          {activityState === "completed" && <Check size={13} />}
-          {STATUS_LABELS[activityState]}
-        </span>
-        <ChevronRight className={styles.agendaOpenIcon} size={15} aria-hidden="true" />
-      </button>
+        </button>
+
+        {isExpanded && (
+          <div className={styles.agendaExpandedPanel}>
+            {/* 3-Column Metadata Tiles */}
+            <div className={styles.expandedMetaColumnsGrid}>
+              {/* Location */}
+              <div className={styles.expandedField}>
+                <span className={styles.expandedFieldLabel}>LOCATION</span>
+                <div className={styles.expandedFieldValueBox}>
+                  <MapPinDuotoneIcon size={16} className={styles.expandedFieldIcon} />
+                  <span>{activity.location || "Kallisto Studio, Kochi"}</span>
+                </div>
+              </div>
+
+              {/* Owner */}
+              <div className={styles.expandedField}>
+                <span className={styles.expandedFieldLabel}>OWNER</span>
+                <div className={styles.expandedFieldValueBox}>
+                  <UserDuotoneIcon size={16} className={styles.expandedFieldIcon} />
+                  <span>{TEAM_MEMBERS[activity.ownerId]?.name ?? activity.ownerId}</span>
+                </div>
+              </div>
+
+              {/* Assignees */}
+              <div className={styles.expandedField}>
+                <span className={styles.expandedFieldLabel}>ASSIGNEES</span>
+                <div className={styles.expandedFieldValueBox}>
+                  <TeamDuotoneIcon size={16} className={styles.expandedFieldIcon} />
+                  <span>
+                    {assignees.length > 0
+                      ? assignees.map((m) => m.name).join(", ")
+                      : "Unassigned"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Notes & Instructions */}
+            {activity.notes && (
+              <div className={styles.expandedNotesSection}>
+                <div className={styles.expandedNotesHeader}>
+                  <DocumentsDuotoneIcon size={15} className={styles.expandedNotesHeaderIcon} />
+                  <span className={styles.expandedNotesTitle}>NOTES & INSTRUCTIONS</span>
+                </div>
+                <div className={styles.expandedNotesCard}>
+                  <div className={styles.expandedNotesAccentBar} />
+                  <p className={styles.expandedNotesText}>{activity.notes}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Linked Schedule Item */}
+            {activity.linkedScheduleItemId && (
+              <div className={styles.expandedLinkedNoticeBox}>
+                <div className={styles.linkedNoticeHeader}>
+                  <Link2 size={14} />
+                  <strong>Linked Schedule Item</strong>
+                </div>
+                <p>ID: {activity.linkedScheduleItemId} (Authoritative sync enabled)</p>
+              </div>
+            )}
+
+            {/* Action Row */}
+            <div className={styles.expandedActionRow}>
+              {activity.status !== "completed" && onMarkComplete && (
+                <button
+                  type="button"
+                  className={styles.expandedCompleteBtn}
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    setCompletingId(activity.id);
+                    try {
+                      await onMarkComplete(activity.id);
+                    } finally {
+                      setCompletingId(null);
+                    }
+                  }}
+                  disabled={completingId === activity.id}
+                >
+                  <CheckCircle2 size={15} />
+                  <span>{completingId === activity.id ? "Completing..." : "Mark complete"}</span>
+                </button>
+              )}
+              <button
+                type="button"
+                className={styles.expandedCloseBtn}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setExpandedActivityId(null);
+                }}
+              >
+                <X size={14} />
+                <span>Close</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     );
   });
 
@@ -435,17 +683,17 @@ export function TodayTab({
 
                 <dl className={styles.focusMetadata}>
                   <div>
-                    <ClockDuotoneIcon size={15} />
+                    <ClockDuotoneIcon size={16} />
                     <dt>Time</dt>
                     <dd>{formatActivityRange(primaryActivity)}</dd>
                   </div>
                   <div>
-                    <MapPinDuotoneIcon size={15} />
+                    <MapPinDuotoneIcon size={16} />
                     <dt>Location</dt>
                     <dd>{primaryActivity.location ?? "Project workspace"}</dd>
                   </div>
                   <div>
-                    <UserDuotoneIcon size={15} />
+                    <TeamDuotoneIcon size={16} />
                     <dt>Assigned to</dt>
                     <dd>
                       {primaryActivity.assigneeIds
@@ -459,7 +707,10 @@ export function TodayTab({
                   <button
                     type="button"
                     className={styles.focusPrimaryAction}
-                    onClick={() => onSelectActivity?.(primaryActivity.id)}
+                    onClick={() => {
+                      setExpandedActivityId(primaryActivity.id);
+                      onSelectActivity?.(primaryActivity.id);
+                    }}
                   >
                     Open activity
                     <ArrowRight size={15} />
@@ -496,52 +747,6 @@ export function TodayTab({
             </section>
           </>
         )}
-
-        <section className={styles.laterSection} aria-labelledby="later-today-title">
-          <div className={styles.sectionHeading}>
-            <div>
-              <p className={styles.sectionEyebrow}>Unscheduled and waiting</p>
-              <h2 id="later-today-title">Later today</h2>
-            </div>
-          </div>
-
-          {laterItems.length > 0 ? (
-            <div className={styles.laterList}>
-              {laterItems.map((item) => (
-                <button
-                  type="button"
-                  key={item.id}
-                  onClick={() => onSelectScheduleItem?.(item.id)}
-                >
-                  <Square size={15} className={styles.laterCheckboxIcon} aria-hidden="true" />
-                  <span>
-                    <strong>{item.title}</strong>
-                    <small>
-                      {projectsById.get(item.projectId) ?? item.projectId} ·{" "}
-                      {item.status === "waiting" ? "Waiting for confirmation" : "Unscheduled task"}
-                    </small>
-                  </span>
-                  <ChevronRight size={15} aria-hidden="true" />
-                </button>
-              ))}
-            </div>
-          ) : (
-            <p className={styles.laterEmpty}>
-              No additional reminders or unscheduled tasks for this date.
-            </p>
-          )}
-
-          {onViewAllSchedule && (
-            <button
-              type="button"
-              className={styles.viewCalendarActionTextLink}
-              onClick={onViewAllSchedule}
-            >
-              <span>View full calendar</span>
-              <ArrowRight size={13} />
-            </button>
-          )}
-        </section>
       </main>
 
       <aside className={styles.todayUtilityRail} aria-label="Calendar tools">
@@ -598,14 +803,16 @@ export function TodayTab({
               const dateString = toDateString(date);
               const isToday = dateString === REFERENCE_TODAY;
               const isSelected = dateString === selectedDate;
+              const dateState = activityStateByDate.get(dateString);
+              const showIndicator = shouldShowCalendarDateIndicator(dateState);
 
               return (
                 <button
                   type="button"
                   key={dateString}
                   className={`${styles.squircleDayCard} ${
-                    isSelected ? styles.squircleDaySelected : ""
-                  }`}
+                    isToday ? styles.squircleDayToday : ""
+                  } ${isSelected ? styles.squircleDaySelected : ""}`}
                   aria-label={formatLongDate(dateString)}
                   aria-current={isToday ? "date" : undefined}
                   aria-pressed={isSelected}
@@ -615,7 +822,7 @@ export function TodayTab({
                   }}
                 >
                   <span className={styles.squircleDayNumber}>{day}</span>
-                  {activityDates.has(dateString) && (
+                  {showIndicator && (
                     <span className={styles.squircleEventDot} aria-label="Activities scheduled" />
                   )}
                 </button>
@@ -625,80 +832,67 @@ export function TodayTab({
         </section>
 
         <section className={styles.utilityControls} aria-label="Calendar scope and filters">
-          <label>
-            <span>Calendar scope</span>
-            <select
+          <div className={styles.utilityControlGroup}>
+            <label htmlFor="calendar-scope-select" className={styles.utilityControlLabel}>
+              Calendar scope
+            </label>
+            <ThemeSelect
+              id="calendar-scope-select"
+              ariaLabel="Calendar scope"
               value={scope}
-              onChange={(event) =>
-                onScopeChange?.(event.target.value as "mine" | "team")
-              }
-            >
-              <option value="mine">My work</option>
-              <option value="team">Team</option>
-            </select>
-          </label>
-          <label>
-            <span>Activity type</span>
-            <select
+              options={[
+                { value: "mine", label: "My work" },
+                { value: "team", label: "Team" },
+              ]}
+              onChange={(val) => onScopeChange?.(val as "mine" | "team")}
+              fullWidth
+            />
+          </div>
+          <div className={styles.utilityControlGroup}>
+            <label htmlFor="activity-type-select" className={styles.utilityControlLabel}>
+              Activity type
+            </label>
+            <ThemeSelect
+              id="activity-type-select"
+              ariaLabel="Activity type"
               value={category}
-              onChange={(event) =>
-                onCategoryChange?.(event.target.value as TodayCategoryId)
-              }
-            >
-              {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </label>
+              options={Object.entries(CATEGORY_LABELS).map(([value, label]) => ({
+                value: value as TodayCategoryId,
+                label,
+              }))}
+              onChange={(val) => onCategoryChange?.(val as TodayCategoryId)}
+              fullWidth
+            />
+          </div>
         </section>
 
         <section className={styles.daySummary} aria-labelledby="day-summary-title">
           <h2 id="day-summary-title">Day summary</h2>
           <div className={styles.daySummaryGrid}>
             <div className={styles.daySummaryCol}>
-              <span className={styles.daySummaryNumber}>{dayActivities.length}</span>
+              <span className={styles.daySummaryNumber}>
+                {selectedDateActivityState.scheduled + selectedDateActivityState.active}
+              </span>
               <span className={styles.daySummaryLabel}>
                 <i className={styles.summaryDotScheduled} aria-hidden="true" />
                 Scheduled
               </span>
             </div>
             <div className={styles.daySummaryCol}>
-              <span className={styles.daySummaryNumber}>{completedCount}</span>
+              <span className={styles.daySummaryNumber}>{selectedDateActivityState.completed}</span>
               <span className={styles.daySummaryLabel}>
                 <i className={styles.summaryDotCompleted} aria-hidden="true" />
                 Completed
               </span>
             </div>
             <div className={styles.daySummaryCol}>
-              <span className={styles.daySummaryNumber}>{blockedCount}</span>
+              <span className={styles.daySummaryNumber}>{selectedDateActivityState.blocked}</span>
               <span className={styles.daySummaryLabel}>
                 <i className={styles.summaryDotBlocked} aria-hidden="true" />
                 Blocked
               </span>
             </div>
           </div>
-        </section>
-
-        <section className={styles.activityLegend} aria-labelledby="activity-legend-title">
-          <h2 id="activity-legend-title">Activity legend</h2>
-          <ul>
-            {(
-              [
-                ["meeting", "Meeting"],
-                ["site", "Site activity"],
-                ["task", "Task"],
-                ["deadline", "Deadline"],
-                ["deliverable", "Deliverable"],
-              ] as const
-            ).map(([legendType, label]) => (
-              <li key={legendType}>
-                <i className={styles[`legend${legendType[0].toUpperCase()}${legendType.slice(1)}`]} />
-                {label}
-              </li>
-            ))}
-          </ul>
         </section>
       </aside>
     </div>

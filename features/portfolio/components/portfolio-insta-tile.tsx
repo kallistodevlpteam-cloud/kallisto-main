@@ -52,7 +52,7 @@ export function PortfolioInstaTile({
               priority={eager}
               loading={eager ? "eager" : "lazy"}
               className={styles.instaImage}
-              sizes="(max-width: 640px) 33vw, (max-width: 980px) 33vw, 30vw"
+              sizes="(max-width: 600px) 50vw, (max-width: 900px) 33vw, (max-width: 1200px) 25vw, 20vw"
               onError={() => setImageFailed(true)}
             />
           )}

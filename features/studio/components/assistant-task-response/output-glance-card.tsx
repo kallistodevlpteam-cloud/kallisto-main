@@ -58,6 +58,7 @@ export function OutputGlanceCard({
 
   const shouldAnimate = isAnimated && !prefersReducedMotion;
   const [step, setStep] = useState<AssemblyStep>(shouldAnimate ? "skeleton" : "complete");
+  const [previewBtnHovered, setPreviewBtnHovered] = useState(false);
   const onAssemblyCompleteRef = useRef(onAssemblyComplete);
   onAssemblyCompleteRef.current = onAssemblyComplete;
 
@@ -298,15 +299,17 @@ export function OutputGlanceCard({
         <button
           type="button"
           onClick={onPreviewClick}
+          onMouseEnter={() => setPreviewBtnHovered(true)}
+          onMouseLeave={() => setPreviewBtnHovered(false)}
           style={{
             display: "inline-flex",
             alignItems: "center",
             gap: "6px",
             height: "32px",
             padding: "0 16px",
-            borderRadius: "8px",
-            background: "#0f172a",
-            color: "#ffffff",
+            borderRadius: "9999px",
+            background: previewBtnHovered ? "#e2e8f0" : "#f1f5f9",
+            color: "#0f172a",
             fontSize: "12.5px",
             fontWeight: 600,
             border: "none",
@@ -314,7 +317,7 @@ export function OutputGlanceCard({
             transition: "background-color 0.15s ease",
           }}
         >
-          <Eye size={14} />
+          <Eye size={14} strokeWidth={1.8} />
           <span>Preview</span>
         </button>
 
