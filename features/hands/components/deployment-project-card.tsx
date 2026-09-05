@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import { Building2 } from "lucide-react";
 import type { Deployment, DeploymentStatus } from "../types/hands.types";
@@ -44,6 +44,18 @@ export function DeploymentProjectCard({
   onSelect,
 }: DeploymentProjectCardProps) {
   const [imageError, setImageError] = useState(false);
+
+  const contractors = useMemo(() => {
+    if (deployment.contractors && deployment.contractors.length > 0) {
+      return deployment.contractors.map((c) =>
+        typeof c === "string" ? { name: c } : c,
+      );
+    }
+    if (deployment.contractorName) {
+      return [{ name: deployment.contractorName }];
+    }
+    return [];
+  }, [deployment.contractors, deployment.contractorName]);
 
   const statusInfo = resolveStatusToken(deployment.status);
   const progressPct =
@@ -177,6 +189,48 @@ export function DeploymentProjectCard({
             {workerTypes}
           </span>
         </div>
+
+        {/* Row 5: Labour Contractor(s) */}
+        {contractors.length > 0 ? (
+          <div className={styles.deployContractorRow}>
+            <span className={styles.deployContractorLabel}>
+              {contractors.length > 1
+                ? `Labour Contractors (${contractors.length}) :`
+                : "Labour Contractor :"}
+            </span>
+            <span
+              className={styles.deployContractorVal}
+              title={contractors
+                .map(
+                  (c) =>
+                    `${c.name}${
+                      c.trade || c.workerCount
+                        ? ` (${c.workerCount ? `${c.workerCount} ` : ""}${
+                            c.trade || "workers"
+                          })`
+                        : ""
+                    }`,
+                )
+                .join(" · ")}
+            >
+              {contractors.map((c, idx) => (
+                <React.Fragment key={idx}>
+                  {idx > 0 && (
+                    <span className={styles.deployContractorDot}> · </span>
+                  )}
+                  <span className={styles.deployContractorName}>{c.name}</span>
+                  {c.trade || c.workerCount ? (
+                    <span className={styles.deployContractorMeta}>
+                      {" "}
+                      ({c.workerCount ? `${c.workerCount} ` : ""}
+                      {c.trade || "workers"})
+                    </span>
+                  ) : null}
+                </React.Fragment>
+              ))}
+            </span>
+          </div>
+        ) : null}
 
         {/* Footer info: Supervisor & Daily Cost */}
         <div className={styles.deployCardFooterRow}>

@@ -50,4 +50,40 @@ describe("Workforce request validation", () => {
   it("accepts a complete valid request", () => {
     expect(validateWorkforceRequest(validRequest)).toEqual({});
   });
+
+  it("validates multi-trade requests and accepts valid tradesBreakdown", () => {
+    const validMultiRequest: WorkforceRequestDraft = {
+      ...validRequest,
+      isMultiTrade: true,
+      trade: "",
+      workerCount: "",
+      tradesBreakdown: [
+        { trade: "Masons", workerCount: "4", skillLevel: "skilled" },
+        { trade: "Electricians", workerCount: "2", skillLevel: "skilled" },
+      ],
+    };
+
+    expect(validateWorkforceRequest(validMultiRequest)).toEqual({});
+  });
+
+  it("rejects multi-trade requests when no valid trade row is provided", () => {
+    const invalidMultiRequest: WorkforceRequestDraft = {
+      ...validRequest,
+      isMultiTrade: true,
+      trade: "",
+      workerCount: "",
+      tradesBreakdown: [
+        { trade: "", workerCount: "0", skillLevel: "" },
+      ],
+    };
+
+    const errors = validateWorkforceRequest(invalidMultiRequest);
+    expect(errors.trade).toBe(
+      "Add at least one labour trade with a valid worker count.",
+    );
+    expect(errors.workerCount).toBe(
+      "Enter a worker count greater than zero.",
+    );
+  });
 });
+

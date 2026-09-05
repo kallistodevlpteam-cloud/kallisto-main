@@ -37,6 +37,39 @@ export interface AttendanceSummary {
   total?: number;
 }
 
+export interface DeploymentActivityTask {
+  id: string;
+  title: string;
+  status: "completed" | "in-progress" | "pending" | "delayed";
+  time?: string;
+  trade?: string;
+}
+
+export interface DeploymentTodayActivity {
+  headline: string;
+  description?: string;
+  tasks?: DeploymentActivityTask[];
+  siteLog?: string;
+  loggedAt?: string;
+}
+
+export interface DeploymentContractor {
+  id?: string;
+  name: string;
+  trade?: string;
+  workerCount?: number;
+  crewId?: string;
+  rating?: number;
+  reviewCount?: number;
+  leadName?: string;
+  experienceYears?: number;
+  verified?: boolean;
+  badge?: string;
+  avatar?: string;
+  contactPhone?: string;
+  specialization?: string;
+}
+
 export interface Deployment {
   id: string;
   projectId: string;
@@ -58,17 +91,40 @@ export interface Deployment {
   activeWorkers?: number;
   onLeaveWorkers?: number;
   workerTypes?: string;
+  contractorName?: string;
+  contractors?: (DeploymentContractor | string)[];
+  todayActivity?: DeploymentTodayActivity;
+}
+
+export interface RequestTradeItem {
+  trade: WorkerTrade;
+  quantity: number;
+  fulfilled?: number;
+  skillLevel?: string;
+  dailyRate?: number;
 }
 
 export interface WorkforceRequest {
   id: string;
   projectId: string;
   projectName: string;
-  trade: WorkerTrade;
+  location?: string;
+  trade: WorkerTrade | string;
   requiredDate: string;
   quantity: number;
   fulfilled: number;
   status: RequestStatus;
+  contractorName?: string;
+  contractorBrand?: string;
+  contractorCoverImage?: string;
+  contractorRating?: number;
+  contractorExperienceYears?: number;
+  dailyRate?: number;
+  skillLevel?: string;
+  shiftTiming?: string;
+  duration?: string;
+  isMultiTrade?: boolean;
+  tradesBreakdown?: RequestTradeItem[];
 }
 
 export interface WorkforceDemand {
@@ -107,10 +163,17 @@ export interface HandsOverviewData {
   demand: WorkforceDemand[];
 }
 
+export interface WorkforceRequestDraftItem {
+  trade: WorkerTrade | string;
+  workerCount: string;
+  skillLevel?: string;
+  dailyRate?: string;
+}
+
 export interface WorkforceRequestDraft {
   projectId: string;
   siteLocation: string;
-  trade: WorkerTrade | "";
+  trade: WorkerTrade | string;
   workerCount: string;
   skillLevel: string;
   startDate: string;
@@ -119,12 +182,15 @@ export interface WorkforceRequestDraft {
   requiredToolsOrCertifications: string;
   siteContact: string;
   notes: string;
+  contractorName?: string;
+  isMultiTrade?: boolean;
+  tradesBreakdown?: WorkforceRequestDraftItem[];
 }
 
 export interface WorkforceRequestSubmission {
   projectId: string;
   siteLocation: string;
-  trade: WorkerTrade;
+  trade: WorkerTrade | string;
   workerCount: number;
   skillLevel: string;
   startDate: string;
@@ -133,6 +199,9 @@ export interface WorkforceRequestSubmission {
   requiredToolsOrCertifications: string;
   siteContact: string;
   notes: string;
+  contractorName?: string;
+  isMultiTrade?: boolean;
+  tradesBreakdown?: RequestTradeItem[];
 }
 
 export type WorkforceRequestField = keyof WorkforceRequestDraft;

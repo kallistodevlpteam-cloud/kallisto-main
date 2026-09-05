@@ -100,7 +100,7 @@ export function CalendarWorkspacePage() {
           onSelectActivity={(id) => handleSelectItem(id, "activity")}
           onAddActivity={(date) => {
             if (date) setQueryState({ date });
-            handleOpenAddModal("schedule_event");
+            handleOpenAddModal("add_task");
           }}
         />
       )}
@@ -112,7 +112,20 @@ export function CalendarWorkspacePage() {
           initialDate={queryState.date}
           projectsList={MOCK_PROJECTS}
           onClose={() => setAddModalOpen(false)}
-          onSubmit={createActivity}
+          onSubmit={async (actInput, schInput, idemp) => {
+            const res = await createActivity(actInput, schInput, idemp);
+            if (actInput.time) {
+              const targetDate = actInput.time.allDay
+                ? actInput.time.startDate
+                : actInput.time.startAt.substring(0, 10);
+              if (targetDate) {
+                setQueryState({ date: targetDate });
+              }
+            }
+            if (res?.activity?.id) {
+              handleSelectItem(res.activity.id, "activity");
+            }
+          }}
         />
       )}
     </div>

@@ -41,66 +41,22 @@ interface TradeCrewDetailProps {
   packageId?: string;
 }
 
+import { WorkerTrade } from "../types/hands.types";
+
 type HandsProfileTab = "services" | "overview" | "experience" | "reviews";
 
-function SakuraBonsaiTree() {
-  return (
-    <svg width="46" height="46" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      {/* Trunk */}
-      <path d="M24 41C24 35 21 30 22 24C22.5 21 24.5 19 25 16" stroke="#451a03" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M22 28C19 26 17 24 16 22" stroke="#451a03" strokeWidth="2" strokeLinecap="round" />
-      <path d="M23 22C26 20 28 19 30 18" stroke="#451a03" strokeWidth="2" strokeLinecap="round" />
-      {/* Foliage / Blossoms */}
-      <circle cx="25" cy="14" r="7.5" fill="#f472b6" opacity="0.9" />
-      <circle cx="17" cy="19" r="6" fill="#fb7185" opacity="0.85" />
-      <circle cx="32" cy="17" r="6" fill="#f43f5e" opacity="0.85" />
-      <circle cx="22" cy="10" r="5" fill="#fda4af" />
-      <circle cx="29" cy="11" r="4.5" fill="#fbcfe8" />
-      {/* Falling petals */}
-      <circle cx="11" cy="27" r="1.2" fill="#fb7185" opacity="0.7" />
-      <circle cx="36" cy="26" r="1.2" fill="#f43f5e" opacity="0.7" />
-      <circle cx="39" cy="33" r="1" fill="#fda4af" opacity="0.6" />
-      {/* Ground line */}
-      <ellipse cx="24" cy="41" rx="8" ry="1.5" fill="#cbd5e1" />
-    </svg>
-  );
+function getTradePackageIcon(trade: string): React.ElementType {
+  const t = trade.toLowerCase();
+  if (t.includes("electric") || t.includes("mep")) return Zap;
+  if (t.includes("plumb") || t.includes("drain") || t.includes("sanitary")) return Droplets;
+  if (t.includes("carpent") || t.includes("wood") || t.includes("join")) return Layers;
+  if (t.includes("paint") || t.includes("finish")) return Sparkles;
+  if (t.includes("mason") || t.includes("brick") || t.includes("civil")) return Building2;
+  if (t.includes("steel") || t.includes("rebar") || t.includes("weld")) return Grid3X3;
+  return Users;
 }
 
-function AutumnBonsaiTree() {
-  return (
-    <svg width="46" height="46" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      {/* Trunk */}
-      <path d="M24 41C24 35 22 31 23 25C23.5 22 25.5 20 26 17" stroke="#451a03" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M23 29C20 27 18 25 17 23" stroke="#451a03" strokeWidth="2" strokeLinecap="round" />
-      <path d="M24 23C27 21 29 20 31 19" stroke="#451a03" strokeWidth="2" strokeLinecap="round" />
-      {/* Foliage */}
-      <circle cx="25" cy="14" r="7.5" fill="#f59e0b" opacity="0.9" />
-      <circle cx="17" cy="19" r="6" fill="#d97706" opacity="0.85" />
-      <circle cx="32" cy="17" r="6" fill="#b45309" opacity="0.85" />
-      <circle cx="22" cy="10" r="5" fill="#fbbf24" />
-      <circle cx="29" cy="11" r="4.5" fill="#fde68a" />
-      {/* Falling leaves */}
-      <circle cx="12" cy="27" r="1.2" fill="#d97706" opacity="0.7" />
-      <circle cx="37" cy="26" r="1.2" fill="#f59e0b" opacity="0.7" />
-      <circle cx="38" cy="34" r="1" fill="#fbbf24" opacity="0.6" />
-      {/* Ground line */}
-      <ellipse cx="24" cy="41" rx="8" ry="1.5" fill="#cbd5e1" />
-    </svg>
-  );
-}
-
-function DiamondBulletIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 16 16" fill="#94a3b8" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style={{ flexShrink: 0 }}>
-      <path d="M8 1L10 6L8 8L6 6L8 1Z" />
-      <path d="M15 8L10 10L8 8L10 6L15 8Z" />
-      <path d="M8 15L6 10L8 8L10 10L8 15Z" />
-      <path d="M1 8L6 6L8 8L6 10L1 8Z" />
-    </svg>
-  );
-}
-
-function TradeCrewLogoTile({ name, trade }: { name: string; trade: string }) {
+function TradeCrewLogoTile({ name }: { name: string; trade?: string }) {
   const initials = name
     .split(" ")
     .slice(0, 2)
@@ -122,6 +78,7 @@ export function TradeCrewDetail({ crewId, projectId, tab = "services", packageId
   );
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [isSaved, setIsSaved] = useState<boolean>(false);
+  const [selectedPackageId, setSelectedPackageId] = useState<string | null>(packageId || null);
 
   const profileTabs: { id: HandsProfileTab; label: string; count?: number }[] = [
     { id: "services", label: "Services", count: 2 },
@@ -155,7 +112,7 @@ export function TradeCrewDetail({ crewId, projectId, tab = "services", packageId
       title: `${crew.trade} Standard Gang`,
       startingPrice: crew.dailyRate * (crew.crewSizeMin || 4) * 12,
       durationText: "12 working days",
-      pricingModelText: "per gang / shift",
+      pricingModelText: "12-day gang shift package",
       features: [
         `Verified squad of ${crew.crewSizeMin || 4} tradesmen & helpers`,
         "Daily shift progress reporting",
@@ -163,14 +120,14 @@ export function TradeCrewDetail({ crewId, projectId, tab = "services", packageId
         "12 working days typical turnaround",
         "2 site inspection checkpoints included",
       ],
-      iconType: "sakura",
+      iconType: "standard",
     },
     {
       id: "scaled-squad",
       title: `${crew.trade} Fast-Track Squad`,
       startingPrice: crew.dailyRate * Math.min(crew.crewSizeMax || 16, (crew.crewSizeMin || 4) * 2) * 6,
       durationText: "6 working days",
-      pricingModelText: "per gang / shift",
+      pricingModelText: "6-day fast-track deployment",
       features: [
         `High-capacity squad of ${Math.min(crew.crewSizeMax || 16, (crew.crewSizeMin || 4) * 2)} workers`,
         "Rapid mobilization in 48 hours",
@@ -178,7 +135,7 @@ export function TradeCrewDetail({ crewId, projectId, tab = "services", packageId
         "6 working days fast-track execution",
         "Daily productivity sign-offs",
       ],
-      iconType: "autumn",
+      iconType: "fast",
     },
   ];
 
@@ -324,11 +281,17 @@ export function TradeCrewDetail({ crewId, projectId, tab = "services", packageId
           {activeTab === "services" ? (
             <div className={styles.profileServicesContainer}>
               <section className={styles.profileServicesGrid}>
-                {tradePackages.map((pkg, idx) => {
-                  const isSelected = (packageId || "std-gang") === pkg.id;
+                {tradePackages.map((pkg) => {
+                  const isSelected = selectedPackageId === pkg.id;
+                  const PkgIcon = getTradePackageIcon(crew.trade);
 
                   return (
-                    <article className={styles.servicePackageCard} key={pkg.id}>
+                    <article
+                      className={`${styles.servicePackageCard} ${
+                        isSelected ? styles.servicePackageCardSelected : ""
+                      }`}
+                      key={pkg.id}
+                    >
                       <div className={styles.serviceCardHeader}>
                         <div className={styles.serviceCardTitleGroup}>
                           <h2 className={styles.serviceCardTitle}>{pkg.title}</h2>
@@ -336,35 +299,49 @@ export function TradeCrewDetail({ crewId, projectId, tab = "services", packageId
                             <span className={styles.servicePriceMain}>
                               ₹{pkg.startingPrice.toLocaleString("en-IN")}
                             </span>
-                            <span className={styles.servicePriceSub}>{pkg.pricingModelText}</span>
+                            <span className={styles.servicePriceSub}>
+                              {pkg.pricingModelText}
+                            </span>
                           </div>
                         </div>
 
-                        <div className={styles.serviceCardArtWrap} aria-hidden="true">
-                          {pkg.iconType === "sakura" ? <SakuraBonsaiTree /> : <AutumnBonsaiTree />}
+                        <div
+                          className={styles.serviceCardBadgeWrap}
+                          aria-hidden="true"
+                        >
+                          <div className={styles.serviceCardIconBadge}>
+                            <PkgIcon size={20} />
+                          </div>
                         </div>
                       </div>
 
                       <div className={styles.serviceScopeDescription}>
-                        Coordinated professional {crew.trade.toLowerCase()} gang with defined deliverables, site foreman supervision, and muster log reports.
+                        Coordinated professional {crew.trade.toLowerCase()} gang with
+                        defined deliverables, site foreman supervision, and muster log
+                        reports.
                       </div>
 
                       <ul className={styles.serviceFeatureList}>
                         {pkg.features.map((feature, fIdx) => (
                           <li key={fIdx} className={styles.serviceFeatureItem}>
-                            <DiamondBulletIcon />
+                            <CheckCircle2
+                              size={15}
+                              className={styles.serviceCheckIcon}
+                              aria-hidden="true"
+                            />
                             <span>{feature}</span>
                           </li>
                         ))}
                       </ul>
 
                       <Link
-                        className={isSelected ? styles.serviceActionButtonActive : styles.serviceActionButtonSecondary}
-                        href={`/hands/trades/${crew.id}/request?packageId=${encodeURIComponent(pkg.id)}${
-                          projectId ? `&projectId=${projectId}` : ""
-                        }`}
+                        className={styles.serviceActionButtonActive}
+                        href={`/hands/trades/${crew.id}/request?packageId=${encodeURIComponent(
+                          pkg.id,
+                        )}${projectId ? `&projectId=${projectId}` : ""}`}
+                        onClick={() => setSelectedPackageId(pkg.id)}
                       >
-                        {isSelected ? "Selected ✓" : "Request Gang"}
+                        {isSelected ? "Selected ✓" : "Select Plan"}
                       </Link>
                     </article>
                   );
@@ -373,10 +350,15 @@ export function TradeCrewDetail({ crewId, projectId, tab = "services", packageId
 
               {/* Unique Request Banner Card */}
               <article className={styles.uniqueRequestCard}>
-                <h3 className={styles.uniqueRequestTitle}>Custom Workforce Scope</h3>
-                <p className={styles.uniqueRequestDesc}>
-                  Need a specialized trade squad, multi-shift deployment, or custom gang scale? Talk with our workforce deployment desk.
-                </p>
+                <div className={styles.uniqueRequestTextGroup}>
+                  <h3 className={styles.uniqueRequestTitle}>
+                    Custom Workforce Scope
+                  </h3>
+                  <p className={styles.uniqueRequestDesc}>
+                    Need a specialized trade squad, multi-shift deployment, or
+                    custom gang scale? Talk with our workforce deployment desk.
+                  </p>
+                </div>
                 <button
                   type="button"
                   className={styles.uniqueRequestButton}
@@ -694,7 +676,7 @@ export function TradeCrewDetail({ crewId, projectId, tab = "services", packageId
         <TradeCrewOrderPanel
           crew={crew}
           projectId={projectId}
-          initialPackageId={packageId}
+          initialPackageId={selectedPackageId || undefined}
           onOpenDrawer={() => setDrawerOpen(true)}
         />
       </div>
@@ -702,7 +684,7 @@ export function TradeCrewDetail({ crewId, projectId, tab = "services", packageId
       {/* Interactive Workforce Request Drawer Modal */}
       {drawerOpen && (
         <WorkforceRequestDrawer
-          initialTrade={crew.trade as any}
+          initialTrade={crew.trade as WorkerTrade}
           initialWorkerCount={crew.crewSizeMin || 4}
           initialStartDate="2026-09-12"
           initialDuration="12 days"

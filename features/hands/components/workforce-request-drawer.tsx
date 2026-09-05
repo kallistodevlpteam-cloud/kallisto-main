@@ -1,14 +1,16 @@
 "use client";
 
-import { CheckCircle2, LoaderCircle, X } from "lucide-react";
+import { CheckCircle2, Layers3, LoaderCircle, Plus, Trash2, Users, X } from "lucide-react";
 import { useRef, useState, type FormEvent } from "react";
 import {
   saveWorkforceRequestDraft,
   submitWorkforceRequest,
 } from "../services/hands.mock";
 import type {
+  RequestTradeItem,
   WorkerTrade,
   WorkforceRequestDraft,
+  WorkforceRequestDraftItem,
   WorkforceRequestErrors,
 } from "../types/hands.types";
 import { validateWorkforceRequest } from "../utils/hands-validation";
@@ -37,6 +39,16 @@ const TRADES: readonly WorkerTrade[] = [
   "Tile workers",
 ];
 
+const CONTRACTORS = [
+  { name: "Apex Integrated Civil & Finishing Crew", trade: "Civil & Masonry" },
+  { name: "Forma MEP & Woodworks Contractor", trade: "MEP & Woodworks" },
+  { name: "Circuit MEP Solutions", trade: "Electrical & MEP" },
+  { name: "Chroma Finishes & Paint Crew", trade: "Painting & Finishing" },
+  { name: "Master Masons & Brickwork Team", trade: "Masonry & Brickwork" },
+  { name: "Malabar Site Crew", trade: "Helpers & General Labour" },
+  { name: "Heritage Joinery Gang", trade: "Carpentry & Joinery" },
+] as const;
+
 const INITIAL_VALUES: WorkforceRequestDraft = {
   projectId: "",
   siteLocation: "",
@@ -49,6 +61,12 @@ const INITIAL_VALUES: WorkforceRequestDraft = {
   requiredToolsOrCertifications: "",
   siteContact: "",
   notes: "",
+  contractorName: "",
+  isMultiTrade: false,
+  tradesBreakdown: [
+    { trade: "Masons", workerCount: "4", skillLevel: "skilled" },
+    { trade: "Helpers", workerCount: "4", skillLevel: "helper" },
+  ],
 };
 
 type SubmissionState =
@@ -95,9 +113,19 @@ export function WorkforceRequestDrawer({
       base.expectedDuration = initialDuration;
     }
     if (initialProjectId) {
-      base.projectId = initialProjectId;
-      const matched = PROJECTS.find((p) => p.id === initialProjectId);
-      if (matched) base.siteLocation = matched.location;
+      const matched = PROJECTS.find(
+        (p) =>
+          p.id === initialProjectId ||
+          p.name.toLowerCase() === initialProjectId.toLowerCase(),
+      );
+      if (matched) {
+        base.projectId = matched.id;
+        if (!base.siteLocation) {
+          base.siteLocation = matched.location;
+        }
+      } else {
+        base.projectId = initialProjectId;
+      }
     }
     return base;
   });
@@ -133,6 +161,44 @@ export function WorkforceRequestDrawer({
     setErrors((current) => ({ ...current, projectId: undefined }));
   }
 
+  function handleAddTradeRow() {
+    setValues((current) => ({
+      ...current,
+      tradesBreakdown: [
+        ...(current.tradesBreakdown || []),
+        { trade: "Electricians", workerCount: "2", skillLevel: "skilled" },
+      ],
+    }));
+  }
+
+  function handleRemoveTradeRow(index: number) {
+    setValues((current) => ({
+      ...current,
+      tradesBreakdown: (current.tradesBreakdown || []).filter(
+        (_, idx) => idx !== index,
+      ),
+    }));
+  }
+
+  function handleUpdateTradeRow(
+    index: number,
+    field: keyof WorkforceRequestDraftItem,
+    value: string,
+  ) {
+    setValues((current) => {
+      const updated = [...(current.tradesBreakdown || [])];
+      if (updated[index]) {
+        updated[index] = { ...updated[index], [field]: value };
+      }
+      return { ...current, tradesBreakdown: updated };
+    });
+  }
+
+  const multiTradeTotalWorkers = (values.tradesBreakdown || []).reduce(
+    (acc, row) => acc + (Number(row.workerCount) || 0),
+    0,
+  );
+
   async function handleSaveDraft() {
     setSubmissionState("saving-draft");
     setStatusMessage("");
@@ -162,24 +228,39 @@ export function WorkforceRequestDrawer({
       return;
     }
 
-    if (
-      !values.projectId ||
-      !values.trade ||
-      !values.startDate ||
-      !values.expectedDuration
-    ) {
+    if (!values.projectId || !values.startDate || !values.expectedDuration) {
+      return;
+    }
+
+    if (!values.isMultiTrade && !values.trade) {
       return;
     }
 
     setSubmissionState("submitting");
     setStatusMessage("");
 
+    const isMulti = Boolean(values.isMultiTrade);
+    const formattedTradesBreakdown: RequestTradeItem[] | undefined = isMulti
+      ? (values.tradesBreakdown || [])
+          .filter((t) => Boolean(t.trade) && Number(t.workerCount) > 0)
+          .map((t) => ({
+            trade: t.trade as WorkerTrade,
+            quantity: Number(t.workerCount),
+            fulfilled: 0,
+            skillLevel: t.skillLevel || "Skilled",
+          }))
+      : undefined;
+
+    const totalWorkerCount = isMulti
+      ? multiTradeTotalWorkers
+      : Number(values.workerCount);
+
     try {
       await submitWorkforceRequest({
         projectId: values.projectId,
         siteLocation: values.siteLocation,
-        trade: values.trade,
-        workerCount: Number(values.workerCount),
+        trade: isMulti ? "Multi-Trade Squad" : (values.trade as WorkerTrade),
+        workerCount: totalWorkerCount,
         skillLevel: values.skillLevel,
         startDate: values.startDate,
         expectedDuration: values.expectedDuration,
@@ -188,6 +269,9 @@ export function WorkforceRequestDrawer({
           values.requiredToolsOrCertifications,
         siteContact: values.siteContact,
         notes: values.notes,
+        contractorName: values.contractorName,
+        isMultiTrade: isMulti,
+        tradesBreakdown: formattedTradesBreakdown,
       });
       setSubmissionState("success");
       setStatusMessage(
@@ -202,6 +286,7 @@ export function WorkforceRequestDrawer({
       );
     }
   }
+
 
   return (
     <div
@@ -264,6 +349,40 @@ export function WorkforceRequestDrawer({
               </div>
             ) : null}
 
+            <div className={styles.requestModeToggleWrap}>
+              <span className={styles.requestModeToggleLabel}>Request mode</span>
+              <div
+                className={styles.requestModeSegmentedControl}
+                role="radiogroup"
+                aria-label="Request mode"
+              >
+                <button
+                  type="button"
+                  className={`${styles.requestModeBtn} ${
+                    !values.isMultiTrade ? styles.requestModeBtnActive : ""
+                  }`}
+                  onClick={() => updateField("isMultiTrade", false)}
+                  aria-checked={!values.isMultiTrade}
+                  role="radio"
+                >
+                  <Users size={13} aria-hidden="true" />
+                  <span>Single trade</span>
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.requestModeBtn} ${
+                    values.isMultiTrade ? styles.requestModeBtnActive : ""
+                  }`}
+                  onClick={() => updateField("isMultiTrade", true)}
+                  aria-checked={Boolean(values.isMultiTrade)}
+                  role="radio"
+                >
+                  <Layers3 size={13} aria-hidden="true" />
+                  <span>Multi-trade gang (multiple labour types)</span>
+                </button>
+              </div>
+            </div>
+
             <div className={styles.formGrid}>
               <label className={styles.formField}>
                 <span>
@@ -308,79 +427,218 @@ export function WorkforceRequestDrawer({
               </label>
 
               <label className={styles.formField}>
-                <span>
-                  Trade / category <em aria-hidden="true">*</em>
-                </span>
+                <span>Preferred contractor</span>
                 <select
-                  value={values.trade}
+                  value={values.contractorName || ""}
                   onChange={(event) =>
-                    updateField(
-                      "trade",
-                      event.target.value as WorkerTrade | "",
-                    )
+                    updateField("contractorName", event.target.value)
                   }
-                  aria-invalid={Boolean(errors.trade)}
-                  aria-describedby={errors.trade ? "trade-error" : undefined}
                   disabled={isBusy}
                 >
-                  <option value="">Select trade</option>
-                  {TRADES.map((trade) => (
-                    <option key={trade} value={trade}>
-                      {trade}
+                  <option value="">Auto-match verified contractor (Recommended)</option>
+                  {CONTRACTORS.map((c) => (
+                    <option key={c.name} value={c.name}>
+                      {c.name} ({c.trade})
                     </option>
                   ))}
                 </select>
-                {errors.trade ? (
-                  <small id="trade-error" className={styles.fieldError}>
-                    {errors.trade}
-                  </small>
-                ) : null}
               </label>
 
-              <label className={styles.formField}>
-                <span>
-                  Number of workers <em aria-hidden="true">*</em>
-                </span>
-                <input
-                  type="number"
-                  min="1"
-                  inputMode="numeric"
-                  value={values.workerCount}
-                  onChange={(event) =>
-                    updateField("workerCount", event.target.value)
-                  }
-                  placeholder="0"
-                  aria-invalid={Boolean(errors.workerCount)}
-                  aria-describedby={
-                    errors.workerCount ? "worker-count-error" : undefined
-                  }
-                  disabled={isBusy}
-                />
-                {errors.workerCount ? (
-                  <small
-                    id="worker-count-error"
-                    className={styles.fieldError}
-                  >
-                    {errors.workerCount}
-                  </small>
-                ) : null}
-              </label>
+              {!values.isMultiTrade ? (
+                <>
+                  <label className={styles.formField}>
+                    <span>
+                      Trade / category <em aria-hidden="true">*</em>
+                    </span>
+                    <select
+                      value={values.trade}
+                      onChange={(event) =>
+                        updateField(
+                          "trade",
+                          event.target.value as WorkerTrade | "",
+                        )
+                      }
+                      aria-invalid={Boolean(errors.trade)}
+                      aria-describedby={errors.trade ? "trade-error" : undefined}
+                      disabled={isBusy}
+                    >
+                      <option value="">Select trade</option>
+                      {TRADES.map((trade) => (
+                        <option key={trade} value={trade}>
+                          {trade}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.trade ? (
+                      <small id="trade-error" className={styles.fieldError}>
+                        {errors.trade}
+                      </small>
+                    ) : null}
+                  </label>
 
-              <label className={styles.formField}>
-                <span>Skill level</span>
-                <select
-                  value={values.skillLevel}
-                  onChange={(event) =>
-                    updateField("skillLevel", event.target.value)
-                  }
-                  disabled={isBusy}
+                  <label className={styles.formField}>
+                    <span>
+                      Number of workers <em aria-hidden="true">*</em>
+                    </span>
+                    <input
+                      type="number"
+                      min="1"
+                      inputMode="numeric"
+                      value={values.workerCount}
+                      onChange={(event) =>
+                        updateField("workerCount", event.target.value)
+                      }
+                      placeholder="0"
+                      aria-invalid={Boolean(errors.workerCount)}
+                      aria-describedby={
+                        errors.workerCount ? "worker-count-error" : undefined
+                      }
+                      disabled={isBusy}
+                    />
+                    {errors.workerCount ? (
+                      <small
+                        id="worker-count-error"
+                        className={styles.fieldError}
+                      >
+                        {errors.workerCount}
+                      </small>
+                    ) : null}
+                  </label>
+
+                  <label className={styles.formField}>
+                    <span>Skill level</span>
+                    <select
+                      value={values.skillLevel}
+                      onChange={(event) =>
+                        updateField("skillLevel", event.target.value)
+                      }
+                      disabled={isBusy}
+                    >
+                      <option value="">Any suitable level</option>
+                      <option value="helper">Helper</option>
+                      <option value="skilled">Skilled</option>
+                      <option value="senior">Senior / lead</option>
+                    </select>
+                  </label>
+                </>
+              ) : (
+                <div
+                  className={`${styles.formFieldWide} ${styles.multiTradeBuilderSection}`}
                 >
-                  <option value="">Any suitable level</option>
-                  <option value="helper">Helper</option>
-                  <option value="skilled">Skilled</option>
-                  <option value="senior">Senior / lead</option>
-                </select>
-              </label>
+                  <div className={styles.multiTradeBuilderHeader}>
+                    <div>
+                      <h4 className={styles.multiTradeBuilderTitle}>
+                        Contractor labour trades breakdown
+                      </h4>
+                      <span className={styles.multiTradeBuilderSub}>
+                        Configure multiple trade types (e.g. Masons, Electricians, Helpers) under this contractor
+                      </span>
+                    </div>
+                    <span className={styles.multiTradeCrewSummaryBadge}>
+                      {multiTradeTotalWorkers} workers · {values.tradesBreakdown?.length || 0} trades
+                    </span>
+                  </div>
+
+                  <div className={styles.multiTradeRowsList}>
+                    {(values.tradesBreakdown || []).map((row, idx) => (
+                      <div key={idx} className={styles.multiTradeRow}>
+                        <div className={styles.multiTradeRowColTrade}>
+                          <label className={styles.formFieldCompact}>
+                            <span>Trade {idx + 1}</span>
+                            <select
+                              value={row.trade}
+                              onChange={(e) =>
+                                handleUpdateTradeRow(idx, "trade", e.target.value)
+                              }
+                              disabled={isBusy}
+                            >
+                              <option value="">Select trade</option>
+                              {TRADES.map((trade) => (
+                                <option key={trade} value={trade}>
+                                  {trade}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                        </div>
+
+                        <div className={styles.multiTradeRowColCount}>
+                          <label className={styles.formFieldCompact}>
+                            <span>Workers</span>
+                            <input
+                              type="number"
+                              min="1"
+                              value={row.workerCount}
+                              onChange={(e) =>
+                                handleUpdateTradeRow(
+                                  idx,
+                                  "workerCount",
+                                  e.target.value,
+                                )
+                              }
+                              placeholder="0"
+                              disabled={isBusy}
+                            />
+                          </label>
+                        </div>
+
+                        <div className={styles.multiTradeRowColSkill}>
+                          <label className={styles.formFieldCompact}>
+                            <span>Skill level</span>
+                            <select
+                              value={row.skillLevel || "skilled"}
+                              onChange={(e) =>
+                                handleUpdateTradeRow(
+                                  idx,
+                                  "skillLevel",
+                                  e.target.value,
+                                )
+                              }
+                              disabled={isBusy}
+                            >
+                              <option value="helper">Helper</option>
+                              <option value="skilled">Skilled</option>
+                              <option value="senior">Senior / lead</option>
+                            </select>
+                          </label>
+                        </div>
+
+                        {(values.tradesBreakdown || []).length > 1 ? (
+                          <button
+                            type="button"
+                            className={styles.multiTradeRemoveRowBtn}
+                            onClick={() => handleRemoveTradeRow(idx)}
+                            aria-label={`Remove trade ${row.trade || idx + 1}`}
+                            title="Remove trade"
+                            disabled={isBusy}
+                          >
+                            <Trash2 size={14} aria-hidden="true" />
+                          </button>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    className={styles.addTradeRowBtn}
+                    onClick={handleAddTradeRow}
+                    disabled={isBusy}
+                  >
+                    <Plus size={14} aria-hidden="true" />
+                    <span>
+                      Add another labour type (e.g. Electrician, Carpenter, Helper)
+                    </span>
+                  </button>
+
+                  {errors.trade ? (
+                    <small className={styles.fieldError}>
+                      {errors.trade}
+                    </small>
+                  ) : null}
+                </div>
+              )}
+
 
               <label className={styles.formField}>
                 <span>
@@ -439,52 +697,6 @@ export function WorkforceRequestDrawer({
                     updateField("shiftTiming", event.target.value)
                   }
                   placeholder="8:00 AM – 5:00 PM"
-                  disabled={isBusy}
-                />
-              </label>
-
-              <label
-                className={`${styles.formField} ${styles.formFieldWide}`}
-              >
-                <span>Required tools or certifications</span>
-                <input
-                  type="text"
-                  value={values.requiredToolsOrCertifications}
-                  onChange={(event) =>
-                    updateField(
-                      "requiredToolsOrCertifications",
-                      event.target.value,
-                    )
-                  }
-                  placeholder="Safety card, licence, or specialist tools"
-                  disabled={isBusy}
-                />
-              </label>
-
-              <label className={styles.formField}>
-                <span>Site contact</span>
-                <input
-                  type="text"
-                  value={values.siteContact}
-                  onChange={(event) =>
-                    updateField("siteContact", event.target.value)
-                  }
-                  placeholder="Name and phone"
-                  disabled={isBusy}
-                />
-              </label>
-
-              <label
-                className={`${styles.formField} ${styles.formFieldWide}`}
-              >
-                <span>Notes</span>
-                <textarea
-                  value={values.notes}
-                  onChange={(event) =>
-                    updateField("notes", event.target.value)
-                  }
-                  rows={4}
-                  placeholder="Access instructions, scope details, or site constraints"
                   disabled={isBusy}
                 />
               </label>

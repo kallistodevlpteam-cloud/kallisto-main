@@ -172,6 +172,13 @@ export function TradeCrewOrderPanel({
   const defaultPkg = packages.find((p) => p.id === initialPackageId) || packages[0];
   const [selectedPackage, setSelectedPackage] = useState<TradePackage>(defaultPkg);
 
+  useEffect(() => {
+    if (initialPackageId) {
+      const pkg = packages.find((p) => p.id === initialPackageId);
+      if (pkg) setSelectedPackage(pkg);
+    }
+  }, [initialPackageId]);
+
   // Completed / Active Stages in the timeline
   const [hasReviewed, setHasReviewed] = useState(false);
   const [hasPlacedOrder, setHasPlacedOrder] = useState(false);

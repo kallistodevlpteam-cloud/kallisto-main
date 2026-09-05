@@ -1301,12 +1301,18 @@ textarea:focus-visible {
 
 .app-shell.has-project-dashboard-profile .workspace,
 .workspace.basics-route-workspace,
-.workspace.hands-route-workspace,
 .workspace:has(.basicsShell),
 .workspace:has(.documentsBoundedRoute),
 .workspace:has(.calendarWorkspaceRoot) {
   padding: 0;
   overflow: hidden;
+  height: 100%;
+}
+
+.workspace.hands-route-workspace {
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   height: 100%;
 }
 

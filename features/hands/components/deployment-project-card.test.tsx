@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DeploymentProjectCard } from "./deployment-project-card";
+import { DeploymentDetailsDrawer } from "./deployment-details-drawer";
 import { ActiveDeploymentsCard } from "./active-deployments-card";
 import type { Deployment } from "../types/hands.types";
 
@@ -66,6 +67,50 @@ describe("DeploymentProjectCard", () => {
     fireEvent.click(screen.getByRole("button"));
     expect(handleSelect).toHaveBeenCalledWith(sampleDeployment);
   });
+
+  it("renders single labour contractor name when one contractor is assigned", () => {
+    const singleContractorDep: Deployment = {
+      ...sampleDeployment,
+      contractorName: "Chroma Finishes & Paint Crew",
+      contractors: [
+        { name: "Chroma Finishes & Paint Crew", trade: "Painters", workerCount: 6 },
+      ],
+    };
+
+    render(
+      <DeploymentProjectCard
+        deployment={singleContractorDep}
+        onSelect={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Labour Contractor :")).toBeInTheDocument();
+    expect(screen.getByText("Chroma Finishes & Paint Crew")).toBeInTheDocument();
+    expect(screen.getByText("(6 Painters)")).toBeInTheDocument();
+  });
+
+  it("renders multiple labour contractor names and badges when multiple contractors work on the same project", () => {
+    const multiContractorDep: Deployment = {
+      ...sampleDeployment,
+      contractors: [
+        { name: "Apex Integrated Civil", trade: "Masonry", workerCount: 8 },
+        { name: "Malabar Site Crew", trade: "Helpers", workerCount: 10 },
+      ],
+    };
+
+    render(
+      <DeploymentProjectCard
+        deployment={multiContractorDep}
+        onSelect={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Labour Contractors (2) :")).toBeInTheDocument();
+    expect(screen.getByText("Apex Integrated Civil")).toBeInTheDocument();
+    expect(screen.getByText("(8 Masonry)")).toBeInTheDocument();
+    expect(screen.getByText("Malabar Site Crew")).toBeInTheDocument();
+    expect(screen.getByText("(10 Helpers)")).toBeInTheDocument();
+  });
 });
 
 describe("ActiveDeploymentsCard with Grid & Table views", () => {
@@ -102,5 +147,78 @@ describe("ActiveDeploymentsCard with Grid & Table views", () => {
     const gridToggle = screen.getByRole("button", { name: "Cards grid view" });
     fireEvent.click(gridToggle);
     expect(screen.getByText("Construction & Structural")).toBeInTheDocument();
+  });
+});
+
+describe("DeploymentDetailsDrawer Contractor Profiles", () => {
+  it("renders rich contractor profiles with rating, lead, experience and profile links", () => {
+    const multiContractorDep: Deployment = {
+      ...sampleDeployment,
+      contractors: [
+        {
+          id: "contractor-apex",
+          name: "Apex Integrated Civil",
+          trade: "Masonry",
+          workerCount: 8,
+          crewId: "crew-masons-01",
+          rating: 4.9,
+          reviewCount: 42,
+          leadName: "Rajan K.",
+          experienceYears: 14,
+          verified: true,
+          badge: "Kallisto Civil Guild",
+          specialization: "Structural Brickwork & AAC Blockwork",
+        },
+        {
+          id: "contractor-malabar",
+          name: "Malabar Site Crew",
+          trade: "Helpers",
+          workerCount: 10,
+          crewId: "crew-helpers-01",
+          rating: 4.8,
+          reviewCount: 54,
+          leadName: "Gireesh Kumar",
+          experienceYears: 7,
+          verified: true,
+          badge: "Verified Site Workforce",
+          specialization: "Material Staging & Site Handling",
+        },
+      ],
+    };
+
+    render(
+      <DeploymentDetailsDrawer
+        deployment={multiContractorDep}
+        onClose={vi.fn()}
+        onNavigateTab={vi.fn()}
+      />,
+    );
+
+    // Section header
+    expect(
+      screen.getByText("Labour Contractor Profiles (2)"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("2 contractors")).toBeInTheDocument();
+
+    // Contractor 1
+    expect(screen.getByText("Apex Integrated Civil")).toBeInTheDocument();
+    expect(screen.getByText("Kallisto Civil Guild")).toBeInTheDocument();
+    expect(screen.getByText("8 Masonry Deployed")).toBeInTheDocument();
+    expect(screen.getByText("Rajan K.")).toBeInTheDocument();
+    expect(screen.getByText("14+ yrs verified")).toBeInTheDocument();
+    expect(
+      screen.getByText("Structural Brickwork & AAC Blockwork"),
+    ).toBeInTheDocument();
+
+    // Contractor 2
+    expect(screen.getByText("Malabar Site Crew")).toBeInTheDocument();
+    expect(screen.getByText("Verified Site Workforce")).toBeInTheDocument();
+    expect(screen.getByText("10 Helpers Deployed")).toBeInTheDocument();
+    expect(screen.getByText("Gireesh Kumar")).toBeInTheDocument();
+    expect(screen.getByText("7+ yrs verified")).toBeInTheDocument();
+
+    // Profile links
+    const profileLinks = screen.getAllByText("View Contractor Profile");
+    expect(profileLinks.length).toBe(2);
   });
 });
