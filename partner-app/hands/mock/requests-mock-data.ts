@@ -473,12 +473,7 @@ export function calculateRequestMatch(
   request.requirements.forEach((req) => {
     totalRequired += req.requiredCount;
 
-    // Count available workers matching the requested trade
-    const availableMatchingWorkers = workersList.filter(
-      (w) => w.trade === req.trade && w.availability === "Available"
-    );
-
-    const availCount = Math.min(req.requiredCount, availableMatchingWorkers.length);
+    const availCount = Math.min(req.requiredCount, req.availableCount);
     totalAvailable += availCount;
 
     if (availCount < req.requiredCount) {

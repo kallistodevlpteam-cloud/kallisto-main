@@ -5,7 +5,6 @@ const OWNER_TABS: PortfolioTab[] = [
   "case-studies",
   "tagged",
   "reviews",
-  "pricing",
 ];
 
 const PUBLIC_TABS: PortfolioTab[] = [
@@ -13,7 +12,6 @@ const PUBLIC_TABS: PortfolioTab[] = [
   "case-studies",
   "tagged",
   "reviews",
-  "pricing",
 ];
 
 export function getPortfolioTabs(isOwner: boolean): PortfolioTab[] {

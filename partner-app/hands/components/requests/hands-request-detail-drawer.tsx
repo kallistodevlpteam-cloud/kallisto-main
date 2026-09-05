@@ -84,11 +84,23 @@ export function HandsRequestDetailDrawer({
   const totalWorkers = request.requirements.reduce((acc, r) => acc + r.requiredCount, 0);
 
   // Find candidate available workers for this request
-  const candidateWorkers = INITIAL_WORKERS.filter(
-    (w) =>
-      w.availability === "Available" &&
-      request.requirements.some((req) => req.trade === w.trade)
-  ).slice(0, 4);
+  const candidateWorkers = request.requirements.flatMap((req) =>
+    (req.matchingWorkerIds || []).map((id) => {
+      const existing = INITIAL_WORKERS.find((w) => w.id === id);
+      if (existing && existing.trade === req.trade) {
+        return existing;
+      }
+      return {
+        id,
+        name: existing ? existing.name : `Candidate ${id.split("-").pop()}`,
+        trade: req.trade,
+        level: existing?.level || "Skilled",
+        experienceYears: existing?.experienceYears || 5,
+        availability: "Available",
+        dailyRate: existing?.dailyRate || 850,
+      } as any;
+    })
+  );
 
   const handleConfirmAccept = () => {
     setShowAcceptConfirm(false);
@@ -107,7 +119,28 @@ export function HandsRequestDetailDrawer({
         {/* Header */}
         <div className={styles.detailModalHeader}>
           <div className={styles.detailModalHeaderLeft}>
-            <span className={styles.detailModalId}>Request {request.id}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <span className={styles.detailModalId}>Request {request.id}</span>
+              <button
+                type="button"
+                onClick={() => router.push("/partner/hands/profile")}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  border: "none",
+                  background: "transparent",
+                  color: "#2563eb",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  padding: 0,
+                }}
+              >
+                <span>View Profile</span>
+                <ExternalLink size={12} />
+              </button>
+            </div>
             <h2 id="detail-title" className={styles.detailModalTitle}>
               {request.projectName}
             </h2>
@@ -383,8 +416,8 @@ export function HandsRequestDetailDrawer({
                           </div>
                         </div>
                       </div>
-                      <span style={{ fontSize: "11px", fontWeight: 650, color: "#059669", padding: "2px 8px", backgroundColor: "#ecfdf5", borderRadius: "9999px" }}>
-                        Ready for assignment
+                      <span style={{ fontSize: "11px", fontWeight: 650, color: request.status === "new" ? "#059669" : "#475569", padding: "2px 8px", backgroundColor: request.status === "new" ? "#ecfdf5" : "#f1f5f9", borderRadius: "9999px" }}>
+                        {request.status === "new" ? "Ready for assignment" : request.status === "accepted" ? "Assigned" : "Unassigned"}
                       </span>
                     </div>
                   ))}
@@ -397,7 +430,7 @@ export function HandsRequestDetailDrawer({
         {/* Footer Actions */}
         {!isAcceptedSuccess && (
           <div className={styles.detailModalFooter}>
-            {request.status !== "closed" && (
+            {request.status !== "closed" && request.status !== "accepted" && (
               <button
                 type="button"
                 className={styles.declineSecondaryBtn}

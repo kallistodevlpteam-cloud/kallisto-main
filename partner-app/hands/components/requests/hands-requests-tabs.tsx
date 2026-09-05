@@ -42,12 +42,11 @@ function ClosedDuotoneIcon({
 }
 
 interface HandsRequestsTabsProps {
-  activeTab: LabourRequestStatus;
-  onTabChange: (tab: LabourRequestStatus) => void;
+  activeTab: string;
+  onTabChange: (tab: string) => void;
   counts: {
     new: number;
-    accepted: number;
-    closed: number;
+    history: number;
   };
 }
 
@@ -57,14 +56,13 @@ export function HandsRequestsTabs({
   counts,
 }: HandsRequestsTabsProps) {
   const tabs: {
-    id: LabourRequestStatus;
+    id: string;
     label: string;
-    count: number;
+    count?: number;
     icon: React.ElementType;
   }[] = [
     { id: "new", label: "Requests", count: counts.new, icon: EnquiriesDuotoneIcon },
-    { id: "accepted", label: "Accepted", count: counts.accepted, icon: ShieldDuotoneIcon },
-    { id: "closed", label: "Closed", count: counts.closed, icon: ClosedDuotoneIcon },
+    { id: "history", label: "History", icon: ClosedDuotoneIcon },
   ];
 
   return (
@@ -84,11 +82,13 @@ export function HandsRequestsTabs({
           >
             <Icon size={14} className={isSelected ? styles.tabIconActive : styles.tabIconInactive} />
             <span>{tab.label}</span>
-            <span
-              className={`${styles.segmentedTabCount} ${isSelected ? styles.segmentedTabCountActive : ""}`}
-            >
-              {tab.count}
-            </span>
+            {tab.count !== undefined && (
+              <span
+                className={`${styles.segmentedTabCount} ${isSelected ? styles.segmentedTabCountActive : ""}`}
+              >
+                {tab.count}
+              </span>
+            )}
           </button>
         );
       })}
