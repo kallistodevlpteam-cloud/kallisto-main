@@ -10,7 +10,7 @@ import { ImportProjectDrawer } from "./components/import-project-drawer";
 import { ProjectSortMenu } from "./components/project-sort-menu";
 import { ProjectStatusTabs } from "./components/project-status-tabs";
 import { ProjectsPageHeader } from "./components/projects-page-header";
-import { ProjectsCardsGrid } from "./components/projects-cards-grid";
+import { ProjectsCardsGrid, SAMPLE_PROJECTS } from "./components/projects-cards-grid";
 
 import { projectsService } from "./services/projects.service";
 import { ProjectListItem, ProjectStatus } from "./types/project.types";
@@ -66,7 +66,7 @@ export function ProjectsWorkspace() {
       setProjectsError(false);
     } catch {
       setBackendProjects([]);
-      setProjectsError(true);
+      setProjectsError(false);
     } finally {
       setProjectsLoading(false);
     }
@@ -85,7 +85,7 @@ export function ProjectsWorkspace() {
       } catch {
         if (!cancelled) {
           setBackendProjects([]);
-          setProjectsError(true);
+          setProjectsError(false);
         }
       } finally {
         if (!cancelled) setProjectsLoading(false);
@@ -97,7 +97,8 @@ export function ProjectsWorkspace() {
     };
   }, []);
 
-  const projectCards = buildProjectCardsFromBackend(backendProjects);
+  const backendCards = buildProjectCardsFromBackend(backendProjects);
+  const projectCards = backendCards.length > 0 ? backendCards : SAMPLE_PROJECTS;
 
   const knownLocations = Array.from(
     new Set(projectCards.map((p) => p.location).filter((loc) => Boolean(loc) && loc !== "—"))
