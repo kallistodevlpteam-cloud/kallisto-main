@@ -128,46 +128,42 @@ export function OpenRequestsCard({
           <h2 id="open-requests-title">Open requests</h2>
           <p>Unfulfilled site workforce requirements & contractor matching</p>
         </div>
-        <div className={styles.cardHeaderActions}>
+        <div className={styles.cardHeaderActions} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div
+            className={styles.viewModeToggle}
+            role="group"
+            aria-label="Requests layout view"
+          >
+            <button
+              type="button"
+              className={`${styles.viewModeBtn} ${
+                viewMode === "grid" ? styles.viewModeBtnActive : ""
+              }`}
+              onClick={() => setViewMode("grid")}
+              aria-label="Cards grid view"
+              title="Cards grid view"
+            >
+              <LayoutGrid size={15} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              className={`${styles.viewModeBtn} ${
+                viewMode === "list" ? styles.viewModeBtnActive : ""
+              }`}
+              onClick={() => setViewMode("list")}
+              aria-label="List view"
+              title="List view"
+            >
+              <List size={15} aria-hidden="true" />
+            </button>
+          </div>
+
           <button
             type="button"
             className={styles.textButton}
             onClick={() => onNavigateTab("requests")}
           >
             View all
-          </button>
-        </div>
-      </div>
-
-      {/* Toolbar with Grid/List toggle */}
-      <div className={styles.deploymentToolbar} style={{ justifyContent: "flex-end" }}>
-
-        <div
-          className={styles.viewModeToggle}
-          role="group"
-          aria-label="Requests layout view"
-        >
-          <button
-            type="button"
-            className={`${styles.viewModeBtn} ${
-              viewMode === "grid" ? styles.viewModeBtnActive : ""
-            }`}
-            onClick={() => setViewMode("grid")}
-            aria-label="Cards grid view"
-            title="Cards grid view"
-          >
-            <LayoutGrid size={15} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            className={`${styles.viewModeBtn} ${
-              viewMode === "list" ? styles.viewModeBtnActive : ""
-            }`}
-            onClick={() => setViewMode("list")}
-            aria-label="List view"
-            title="List view"
-          >
-            <List size={15} aria-hidden="true" />
           </button>
         </div>
       </div>
