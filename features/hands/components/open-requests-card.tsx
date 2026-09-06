@@ -139,52 +139,8 @@ export function OpenRequestsCard({
         </div>
       </div>
 
-      {/* Toolbar with Filters, History button, and Grid/List toggle */}
-      <div className={styles.deploymentToolbar}>
-        <div className={styles.filterGroup}>
-          <SlidersHorizontal size={14} aria-hidden="true" />
-          <label className={styles.selectControl}>
-            <span className={styles.visuallyHidden}>Filter by project</span>
-            <select
-              value={projectFilter}
-              onChange={(event) => setProjectFilter(event.target.value)}
-            >
-              <option value="all">All projects</option>
-              {projects.map(([projectId, projectName]) => (
-                <option key={projectId} value={projectId}>
-                  {projectName}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={13} aria-hidden="true" />
-          </label>
-          <label className={styles.selectControl}>
-            <span className={styles.visuallyHidden}>Filter by trade</span>
-            <select
-              value={tradeFilter}
-              onChange={(event) => setTradeFilter(event.target.value)}
-            >
-              <option value="all">All trades</option>
-              {trades.map((trade) => (
-                <option key={trade} value={trade}>
-                  {trade}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={13} aria-hidden="true" />
-          </label>
-
-          {/* Request History Button next to All trades */}
-          <Link
-            href="/hands/requests/history"
-            className={styles.requestHistoryBtn}
-            title="View Request History across trades"
-            aria-label="View request history"
-          >
-            <History size={13} aria-hidden="true" />
-            <span>Request History</span>
-          </Link>
-        </div>
+      {/* Toolbar with Grid/List toggle */}
+      <div className={styles.deploymentToolbar} style={{ justifyContent: "flex-end" }}>
 
         <div
           className={styles.viewModeToggle}
