@@ -1,6 +1,8 @@
-import { WorkerTrade, WorkerProfile } from "./worker-domain";
+import { WorkerTrade } from "./worker-domain";
 
-export type LabourRequestStatus = "new" | "reviewing" | "accepted" | "closed";
+export type LabourRequestStatus = "new" | "reviewing" | "accepted" | "closed" | "rejected";
+
+export type HandsRequestTabType = "requests" | "history";
 
 export type WorkforceMatchState = "full" | "partial" | "none";
 

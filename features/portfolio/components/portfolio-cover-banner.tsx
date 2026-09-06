@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import { Camera } from "lucide-react";
 import type { PortfolioProfile } from "@/features/portfolio/types/portfolio.types";
 import { PortfolioProfileActions } from "./portfolio-profile-actions";
 import styles from "./portfolio.module.css";
@@ -13,6 +12,7 @@ interface PortfolioCoverBannerProps {
   coverImageUrl?: string;
   onCoverSelected: (file: File) => void;
   onEdit: () => void;
+  shareOnly?: boolean;
 }
 
 export function PortfolioCoverBanner({
@@ -21,6 +21,7 @@ export function PortfolioCoverBanner({
   coverImageUrl,
   onCoverSelected,
   onEdit,
+  shareOnly = false,
 }: PortfolioCoverBannerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -51,6 +52,7 @@ export function PortfolioCoverBanner({
             profile={profile}
             onEdit={onEdit}
             onUploadCover={() => fileInputRef.current?.click()}
+            shareOnly={shareOnly}
           />
         </div>
 

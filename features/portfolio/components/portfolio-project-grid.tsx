@@ -22,6 +22,7 @@ interface PortfolioProjectGridProps {
   ) => void;
   selectedCategory?: string;
   onSelectCategory?: (category: string) => void;
+  basePath?: string;
 }
 
 export function PortfolioProjectGrid({
@@ -30,6 +31,7 @@ export function PortfolioProjectGrid({
   onOpenProject,
   selectedCategory: controlledCategory,
   onSelectCategory,
+  basePath,
 }: PortfolioProjectGridProps) {
   const [internalCategory, setInternalCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -173,6 +175,7 @@ export function PortfolioProjectGrid({
               project={project}
               eager={index < 4}
               onOpen={onOpenProject}
+              basePath={basePath}
               key={project.id}
             />
           ))}

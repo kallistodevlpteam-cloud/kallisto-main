@@ -269,4 +269,40 @@ describe("portfolio interface", () => {
       screen.queryByRole("tab", { name: /pricing/i }),
     ).not.toBeInTheDocument();
   });
+
+  it("hides Edit Portfolio and overflow menu leaving only share button when shareOnly is true", () => {
+    const data = getPortfolioPageData(true);
+    render(
+      <PortfolioProfileCard
+        data={data}
+        initialTab="projects"
+        shareOnly={true}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Edit Portfolio" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "More portfolio actions" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Share" }),
+    ).toBeInTheDocument();
+  });
+
+  it("hides Add project button when hideAddProject is true", () => {
+    const data = getPortfolioPageData(true);
+    render(
+      <PortfolioProfileCard
+        data={data}
+        initialTab="projects"
+        hideAddProject={true}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Add project" }),
+    ).not.toBeInTheDocument();
+  });
 });

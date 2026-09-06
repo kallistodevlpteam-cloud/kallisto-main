@@ -1,24 +1,21 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import {
   X,
   Phone,
-  Calendar,
   AlertTriangle,
   CheckCircle2,
   AlertCircle,
-  MapPin,
-  Clock,
-  Users,
+  ExternalLink,
 } from "lucide-react";
 import {
-  TeamDuotoneIcon,
   LocationDuotoneIcon,
   CalendarDuotoneIcon,
-  AnalyticsDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 import { AssignmentDeployment } from "../../types/assignment-domain";
+import { getProviderDisplayDetails } from "../../mock/provider-profiles-mock-data";
 import styles from "./hands-assignments.module.css";
 
 interface HandsAssignmentDrawerProps {
@@ -32,7 +29,11 @@ export function HandsAssignmentDrawer({
   isOpen,
   onClose,
 }: HandsAssignmentDrawerProps) {
+  const router = useRouter();
+
   if (!isOpen || !assignment) return null;
+
+  const providerDisplay = getProviderDisplayDetails(assignment.clientName);
 
   return (
     <div className={styles.drawerOverlay} onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-assignment-title">
@@ -43,21 +44,43 @@ export function HandsAssignmentDrawer({
         {/* 1. Modal Header (Exact Match to Request Modal Header) */}
         <div className={styles.drawerHeader}>
           <div style={{ display: "flex", flexDirection: "column", gap: "3px", minWidth: 0 }}>
-            {/* Top Badges: Status + Day count */}
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "3px", flexWrap: "wrap" }}>
+            {/* Top Badges: Status + Day count + View Profile */}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "3px", flexWrap: "wrap" }}>
               <span className={styles.statusActiveBadge}>{assignment.status.toUpperCase()}</span>
               <span className={styles.timelineDayPill}>
                 Day {assignment.currentDay} of {assignment.totalDays}
               </span>
+              <button
+                type="button"
+                onClick={() => {
+                  router.push(`/partner/hands/profile/${providerDisplay.slug}`);
+                }}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  border: "none",
+                  background: "transparent",
+                  color: "#2563eb",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  padding: 0,
+                  marginLeft: "4px",
+                }}
+              >
+                <span>View Profile</span>
+                <ExternalLink size={12} />
+              </button>
             </div>
 
             <h2 id="modal-assignment-title" style={{ margin: 0, fontSize: "19px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>
-              {assignment.projectName}
+              {assignment.clientName}
             </h2>
 
             <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", color: "#64748b", fontWeight: 500 }}>
               <LocationDuotoneIcon size={14} style={{ color: "#2563eb", flexShrink: 0 }} />
-              <span>{assignment.location} · {assignment.clientName}</span>
+              <span><strong>{assignment.projectName}</strong> · {assignment.location}</span>
             </div>
           </div>
 

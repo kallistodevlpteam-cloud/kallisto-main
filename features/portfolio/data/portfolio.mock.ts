@@ -1035,7 +1035,7 @@ const COLLECTIONS: PortfolioCollection[] = [
   {
     id: "all",
     label: "Featured",
-    imageUrl: "/assets/projects/greenfield_villa.png",
+    imageUrl: "/assets/studio/drawing-analysis.jpg",
     hasGradientRing: true,
     projectIds: PROJECTS.filter(isPublicProject).map((project) => project.id),
   },
@@ -1049,7 +1049,7 @@ const COLLECTIONS: PortfolioCollection[] = [
   {
     id: "commercial",
     label: "Commercial",
-    imageUrl: "/assets/projects/residence_24.png",
+    imageUrl: "/assets/hero-architecture-banner.webp",
     hasGradientRing: true,
     projectIds: ["fern-office", "riverstone-clinic", "atelier-workspace"],
   },
@@ -1084,14 +1084,14 @@ const COLLECTIONS: PortfolioCollection[] = [
   {
     id: "awards",
     label: "Awards",
-    imageUrl: "/assets/project-banner.jpg",
+    imageUrl: "/assets/feed-coffee.jpg",
     hasGradientRing: false,
     projectIds: PROJECTS.filter(isPublicProject).map((project) => project.id),
   },
   {
     id: "about",
     label: "About",
-    imageUrl: "/assets/hero-desk.png",
+    imageUrl: "",
     hasGradientRing: false,
     projectIds: PROJECTS.filter(isPublicProject).map((project) => project.id),
   },

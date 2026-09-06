@@ -12,7 +12,6 @@ import {
   Calendar,
   Users,
   ArrowRight,
-  HelpCircle,
 } from "lucide-react";
 import {
   TeamDuotoneIcon,
@@ -22,7 +21,9 @@ import {
   ShieldDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 import { LabourRequest } from "../../types/request-domain";
+import { WorkerProfile } from "../../types/worker-domain";
 import { calculateRequestMatch } from "../../mock/requests-mock-data";
+import { getProviderDisplayDetails } from "../../mock/provider-profiles-mock-data";
 import { INITIAL_WORKERS } from "../workers/../../mock/workers-mock-data";
 import styles from "./hands-requests.module.css";
 
@@ -90,7 +91,7 @@ export function HandsRequestDetailDrawer({
       if (existing && existing.trade === req.trade) {
         return existing;
       }
-      return {
+      const fallbackWorker: WorkerProfile = {
         id,
         name: existing ? existing.name : `Candidate ${id.split("-").pop()}`,
         trade: req.trade,
@@ -98,7 +99,18 @@ export function HandsRequestDetailDrawer({
         experienceYears: existing?.experienceYears || 5,
         availability: "Available",
         dailyRate: existing?.dailyRate || 850,
-      } as any;
+        phone: existing?.phone || "+91 98470 00000",
+        location: existing?.location || "Trivandrum, Kerala",
+        skills: existing?.skills || [req.trade],
+        verificationStatus: existing?.verificationStatus || "Verified",
+        verificationDetails: existing?.verificationDetails || {
+          identityVerified: true,
+          phoneVerified: true,
+          tradeCertified: true,
+        },
+        recentWork: existing?.recentWork || [],
+      };
+      return fallbackWorker;
     })
   );
 
@@ -113,6 +125,9 @@ export function HandsRequestDetailDrawer({
     onDeclineRequest(request);
   };
 
+  const primaryTrade = request.requirements[0]?.trade || "Workforce";
+  const providerDisplay = getProviderDisplayDetails(request.clientName, primaryTrade);
+
   return (
     <div className={styles.modalOverlay} role="dialog" aria-modal="true" aria-labelledby="detail-title">
       <div className={styles.detailCardModal}>
@@ -121,9 +136,21 @@ export function HandsRequestDetailDrawer({
           <div className={styles.detailModalHeaderLeft}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <span className={styles.detailModalId}>Request {request.id}</span>
+              {request.status === "rejected" && (
+                <span className={`${styles.cardStatusPill} ${styles.cardStatusRejected}`}>
+                  Rejected
+                </span>
+              )}
+              {request.status === "closed" && (
+                <span className={`${styles.cardStatusPill} ${styles.cardStatusClosed}`}>
+                  Closed
+                </span>
+              )}
               <button
                 type="button"
-                onClick={() => router.push("/partner/hands/profile")}
+                onClick={() => {
+                  router.push(`/partner/hands/profile/${providerDisplay.slug}`);
+                }}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -142,11 +169,10 @@ export function HandsRequestDetailDrawer({
               </button>
             </div>
             <h2 id="detail-title" className={styles.detailModalTitle}>
-              {request.projectName}
+              {providerDisplay.name}
             </h2>
             <div className={styles.detailModalLocation}>
-              <LocationDuotoneIcon size={14} style={{ color: "#2563eb" }} />
-              <span>{request.location}</span>
+              <span style={{ fontWeight: 600, color: "#475569" }}>{providerDisplay.profession}</span>
             </div>
           </div>
 
@@ -235,7 +261,7 @@ export function HandsRequestDetailDrawer({
                     <span className={styles.activePhaseDot} />
                     <span>Construction Stage · Superstructure Phase</span>
                   </div>
-                  <span className={styles.clientTag}>{request.clientName}</span>
+                  <span className={styles.clientTag}>{request.projectName}</span>
                 </div>
 
                 {request.notes && (
@@ -430,7 +456,7 @@ export function HandsRequestDetailDrawer({
         {/* Footer Actions */}
         {!isAcceptedSuccess && (
           <div className={styles.detailModalFooter}>
-            {request.status !== "closed" && request.status !== "accepted" && (
+            {request.status !== "closed" && request.status !== "rejected" && request.status !== "accepted" && (
               <button
                 type="button"
                 className={styles.declineSecondaryBtn}
@@ -452,7 +478,7 @@ export function HandsRequestDetailDrawer({
               </button>
             )}
 
-            {request.status !== "accepted" && request.status !== "closed" && (
+            {request.status !== "accepted" && request.status !== "closed" && request.status !== "rejected" && (
               <button
                 type="button"
                 className={styles.acceptPrimaryBtn}

@@ -1,14 +1,11 @@
 "use client";
 
 import React from "react";
-import {
-  EnquiriesDuotoneIcon,
-  ShieldDuotoneIcon,
-} from "@/components/layout/sidebar-icons";
-import { LabourRequestStatus } from "../../types/request-domain";
+import { EnquiriesDuotoneIcon } from "@/components/layout/sidebar-icons";
+import { HandsRequestTabType } from "../../types/request-domain";
 import styles from "./hands-requests.module.css";
 
-function ClosedDuotoneIcon({
+function HistoryDuotoneIcon({
   size = 14,
   className = "",
 }: {
@@ -24,30 +21,33 @@ function ClosedDuotoneIcon({
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* Tinted archive box base */}
+      {/* Tinted circle base */}
+      <circle cx="12" cy="12" r="9.5" fill="currentColor" opacity="0.25" />
+      {/* Clock hands */}
       <path
-        d="M4 8H20V19C20 20.1 19.1 21 18 21H6C4.9 21 4 20.1 4 19V8Z"
-        fill="currentColor"
-        opacity="0.38"
+        d="M12 7V12L15.5 14.2"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
-      {/* Solid lid */}
+      {/* Rewind counter-clockwise arc */}
       <path
-        d="M2 4C2 3.4 2.4 3 3 3H21C21.6 3 22 3.4 22 4V7C22 7.6 21.6 8 21 8H3C2.4 8 2 7.6 2 7V4Z"
-        fill="currentColor"
+        d="M3.5 12A8.5 8.5 0 0 1 12 3.5"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
       />
-      {/* Handle slot */}
-      <rect x="9.5" y="11.5" width="5" height="2" rx="1" fill="#ffffff" />
     </svg>
   );
 }
 
-interface HandsRequestsTabsProps {
-  activeTab: LabourRequestStatus;
-  onTabChange: (tab: LabourRequestStatus) => void;
+export interface HandsRequestsTabsProps {
+  activeTab: HandsRequestTabType;
+  onTabChange: (tab: HandsRequestTabType) => void;
   counts: {
-    new: number;
-    accepted: number;
-    closed: number;
+    requests: number;
+    history?: number;
   };
 }
 
@@ -57,14 +57,13 @@ export function HandsRequestsTabs({
   counts,
 }: HandsRequestsTabsProps) {
   const tabs: {
-    id: LabourRequestStatus;
+    id: HandsRequestTabType;
     label: string;
-    count: number;
+    count?: number;
     icon: React.ElementType;
   }[] = [
-    { id: "new", label: "Requests", count: counts.new, icon: EnquiriesDuotoneIcon },
-    { id: "accepted", label: "Accepted", count: counts.accepted, icon: ShieldDuotoneIcon },
-    { id: "closed", label: "Closed", count: counts.closed, icon: ClosedDuotoneIcon },
+    { id: "requests", label: "Requests", count: counts.requests, icon: EnquiriesDuotoneIcon },
+    { id: "history", label: "History", icon: HistoryDuotoneIcon },
   ];
 
   return (

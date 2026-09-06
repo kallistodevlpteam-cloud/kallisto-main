@@ -15,12 +15,14 @@ interface PortfolioInstaTileProps {
   project: PortfolioProject;
   eager: boolean;
   onOpen?: (project: PortfolioProject, trigger: HTMLElement) => void;
+  basePath?: string;
 }
 
 export function PortfolioInstaTile({
   project,
   eager,
   onOpen,
+  basePath,
 }: PortfolioInstaTileProps) {
   const [imageFailed, setImageFailed] = useState(false);
   const galleryCount = project.gallery?.length ?? 0;
@@ -29,15 +31,20 @@ export function PortfolioInstaTile({
   const projectYear = formatProjectYear(project);
   const builtUpArea = formatBuiltUpArea(project);
   const projectTypeLabel = formatProjectType(project.projectType);
+  const targetSlug = project.slug || project.id;
+  const projectHref = basePath
+    ? `${basePath}/${targetSlug}`
+    : `/portfolio/projects/${targetSlug}`;
 
   return (
     <article className={styles.instaTile}>
       <Link
-        href={`/portfolio/projects/${project.id}`}
+        href={projectHref}
         className={styles.instaTileButton}
         aria-label={`View ${project.title} project`}
         onClick={(event) => {
           if (onOpen) {
+            event.preventDefault();
             onOpen(project, event.currentTarget);
           }
         }}

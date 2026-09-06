@@ -20,11 +20,13 @@ interface PortfolioProjectOverviewProps {
   profile?: PortfolioProfile;
   relatedProjects?: PortfolioProject[];
   isOwner?: boolean;
+  basePath?: string;
 }
 
 export function PortfolioProjectOverview({
   project,
   relatedProjects = [],
+  basePath,
 }: PortfolioProjectOverviewProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxInitialIndex, setLightboxInitialIndex] = useState(0);
@@ -76,7 +78,7 @@ export function PortfolioProjectOverview({
         <PortfolioProjectFeedback project={project} />
 
         {/* 7. Related Projects */}
-        <PortfolioProjectRelated relatedProjects={relatedProjects} />
+        <PortfolioProjectRelated relatedProjects={relatedProjects} basePath={basePath} />
       </main>
 
       {/* Fullscreen Lightbox (triggered from Hero 'View Gallery') */}

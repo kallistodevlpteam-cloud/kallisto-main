@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { LabourRequest, LabourRequestStatus } from "../../types/request-domain";
+import { LabourRequest, LabourRequestStatus, HandsRequestTabType } from "../../types/request-domain";
 import { INITIAL_LABOUR_REQUESTS, calculateRequestsMetrics } from "../../mock/requests-mock-data";
 import { HandsRequestsTabs } from "./hands-requests-tabs";
 import { HandsRequestsSummaryCards } from "./hands-requests-summary-cards";
@@ -12,7 +12,7 @@ import styles from "./hands-requests.module.css";
 
 export function HandsRequestsWorkspace() {
   const [requests, setRequests] = useState<LabourRequest[]>(INITIAL_LABOUR_REQUESTS);
-  const [activeTab, setActiveTab] = useState<LabourRequestStatus>("new");
+  const [activeTab, setActiveTab] = useState<HandsRequestTabType>("requests");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTrade, setSelectedTrade] = useState("All");
   const [selectedSort, setSelectedSort] = useState("default");
@@ -25,9 +25,8 @@ export function HandsRequestsWorkspace() {
   // Tab counts
   const tabCounts = useMemo(() => {
     return {
-      new: requests.filter((r) => r.status === "new").length,
-      accepted: requests.filter((r) => r.status === "accepted").length,
-      closed: requests.filter((r) => r.status === "closed").length,
+      requests: requests.filter((r) => r.status === "new" || r.status === "reviewing").length,
+      history: requests.filter((r) => r.status === "rejected" || r.status === "closed").length,
     };
   }, [requests]);
 
@@ -40,8 +39,14 @@ export function HandsRequestsWorkspace() {
   const filteredRequests = useMemo(() => {
     let list = requests.filter((req) => {
       // 1. Status tab filter
-      if (req.status !== activeTab) {
-        return false;
+      if (activeTab === "requests") {
+        if (req.status !== "new" && req.status !== "reviewing") {
+          return false;
+        }
+      } else if (activeTab === "history") {
+        if (req.status !== "rejected" && req.status !== "closed") {
+          return false;
+        }
       }
 
       // 2. Search query filter
@@ -81,7 +86,7 @@ export function HandsRequestsWorkspace() {
         return aTotal - bTotal;
       });
     } else if (selectedSort === "urgency") {
-      list = [...list].sort((a, b) => (a.urgency === "urgent" ? -1 : 1));
+      list = [...list].sort((a) => (a.urgency === "urgent" ? -1 : 1));
     }
 
     return list;
@@ -101,19 +106,17 @@ export function HandsRequestsWorkspace() {
     setRequests((prev) =>
       prev.map((r) => (r.id === req.id ? updated : r))
     );
-    setIsDetailOpen(false);
     setSelectedRequest(updated);
-    setActiveTab("accepted");
   };
 
   const handleDeclineRequest = (req: LabourRequest) => {
-    const updated = { ...req, status: "closed" as LabourRequestStatus };
+    const updated = { ...req, status: "rejected" as LabourRequestStatus };
     setRequests((prev) =>
       prev.map((r) => (r.id === req.id ? updated : r))
     );
     setIsDetailOpen(false);
     setSelectedRequest(updated);
-    setActiveTab("closed");
+    setActiveTab("history");
   };
 
   return (

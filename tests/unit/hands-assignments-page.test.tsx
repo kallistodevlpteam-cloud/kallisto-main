@@ -79,8 +79,9 @@ describe("Kallisto Hands - Assignments Workspace & Structured Cards", () => {
     );
 
     // Greenwood Residency card checks
+    expect(screen.getByText("Greenwood Infra Projects Ltd")).toBeDefined();
     expect(screen.getByText("Greenwood Residency")).toBeDefined();
-    expect(screen.getByText("Kazhakkoottam, Kerala")).toBeDefined();
+    expect(screen.getByText(/Kazhakkoottam, Kerala/i)).toBeDefined();
     expect(screen.getByText("12 Workers")).toBeDefined();
     expect(screen.getByText("Day 12 of 30")).toBeDefined();
     expect(screen.getAllByText(/Attendance Today:/i).length).toBeGreaterThan(0);
@@ -143,5 +144,19 @@ describe("Kallisto Hands - Assignments Workspace & Structured Cards", () => {
     expect(screen.getByText(/Deployed Crew Roster/i)).toBeDefined();
     expect(screen.getAllByText("Greenwood Residency").length).toBeGreaterThan(1);
     expect(screen.getByText("Suresh Nair")).toBeDefined();
+  });
+
+  it("renders View Profile button for service provider in assignment detail drawer", () => {
+    render(
+      <PartnerAuthProvider>
+        <HandsAssignmentsWorkspace />
+      </PartnerAuthProvider>
+    );
+
+    const openBtns = screen.getAllByRole("button", { name: /Open Assignment/i });
+    fireEvent.click(openBtns[0]);
+
+    const viewProfileBtn = screen.getByRole("button", { name: /View Profile/i });
+    expect(viewProfileBtn).toBeDefined();
   });
 });

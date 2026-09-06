@@ -47,7 +47,7 @@ describe("Kallisto Hands - Requests Page & Workforce Match Intelligence", () => 
     expect(screen.getByText(/Edit/i)).toBeDefined();
   });
 
-  it("renders workflow-based status navigation pill tabs (Requests, Accepted, Closed)", () => {
+  it("renders workflow-based status navigation pill tabs (Requests, History; no Accepted or Closed)", () => {
     render(
       <PartnerAuthProvider>
         <HandsRequestsWorkspace />
@@ -55,8 +55,9 @@ describe("Kallisto Hands - Requests Page & Workforce Match Intelligence", () => 
     );
 
     expect(screen.getByRole("tab", { name: /^Requests/i })).toBeDefined();
-    expect(screen.getByRole("tab", { name: /Accepted/i })).toBeDefined();
-    expect(screen.getByRole("tab", { name: /Closed/i })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /History/i })).toBeDefined();
+    expect(screen.queryByRole("tab", { name: /^Accepted/i })).toBeNull();
+    expect(screen.queryByRole("tab", { name: /^Closed/i })).toBeNull();
     expect(screen.queryByRole("tab", { name: /Under Review/i })).toBeNull();
     expect(screen.queryByRole("tab", { name: /All Requests/i })).toBeNull();
   });
@@ -86,8 +87,8 @@ describe("Kallisto Hands - Requests Page & Workforce Match Intelligence", () => 
     expect(screen.getByText("Azure Waterfront Towers")).toBeDefined();
 
     // Verify worker counts
-    expect(screen.getByText("12 Workers")).toBeDefined();
-    expect(screen.getByText("6 Workers")).toBeDefined();
+    expect(screen.getAllByText("12 Workers").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("6 Workers").length).toBeGreaterThan(0);
   });
 
   it("filters request list when searching by keyword or project name", () => {
@@ -104,17 +105,22 @@ describe("Kallisto Hands - Requests Page & Workforce Match Intelligence", () => 
     expect(screen.queryByText("Greenwood Residency")).toBeNull();
   });
 
-  it("switches status tabs and updates request list accordingly", () => {
+  it("switches to History tab and displays rejected and closed requests", () => {
     render(
       <PartnerAuthProvider>
         <HandsRequestsWorkspace />
       </PartnerAuthProvider>
     );
 
-    const acceptedTab = screen.getByRole("tab", { name: /Accepted/i });
-    fireEvent.click(acceptedTab);
+    const historyTab = screen.getByRole("tab", { name: /History/i });
+    fireEvent.click(historyTab);
 
-    expect(screen.getByText("Prestige CyberGreen Phase 1")).toBeDefined();
+    // Displays closed request
+    expect(screen.getByText("CyberGateway IT Center")).toBeDefined();
+    // Displays rejected request
+    expect(screen.getByText("National Highway Flyover Pier 42")).toBeDefined();
+
+    // Active requests from Requests tab should not be in History
     expect(screen.queryByText("Greenwood Residency")).toBeNull();
   });
 
@@ -135,7 +141,7 @@ describe("Kallisto Hands - Requests Page & Workforce Match Intelligence", () => 
     expect(screen.getByRole("button", { name: /Decline/i })).toBeDefined();
   });
 
-  it("accepts request, updates status to accepted, and moves to Accepted tab automatically", () => {
+  it("declining a request marks it as rejected and moves to History tab automatically", () => {
     render(
       <PartnerAuthProvider>
         <HandsRequestsWorkspace />
@@ -145,15 +151,16 @@ describe("Kallisto Hands - Requests Page & Workforce Match Intelligence", () => 
     const reviewBtns = screen.getAllByRole("button", { name: /Review Request/i });
     fireEvent.click(reviewBtns[0]);
 
-    const acceptBtn = screen.getByRole("button", { name: /Accept Request/i });
-    fireEvent.click(acceptBtn);
+    const declineBtn = screen.getByRole("button", { name: /Decline/i });
+    fireEvent.click(declineBtn);
 
     // Confirm in the confirmation pop-up
-    const confirmBtn = screen.getByRole("button", { name: /Confirm & Accept/i });
+    const confirmBtn = screen.getByRole("button", { name: /Confirm Decline/i });
     fireEvent.click(confirmBtn);
 
-    // Directly visible in the automatically selected Accepted tab
+    // Newly rejected request is visible in the automatically selected History tab
     expect(screen.getAllByText("Greenwood Residency").length).toBeGreaterThan(0);
+    expect(screen.getByRole("tab", { name: /History/i }).getAttribute("aria-selected")).toBe("true");
   });
 
   it("renders a clean full-width workforce requests workspace", () => {

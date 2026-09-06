@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type {
   PortfolioCollection,
@@ -27,6 +27,9 @@ interface PortfolioPageProps {
   initialTab: PortfolioTab;
   initialCollectionId?: string;
   hidePricing?: boolean;
+  shareOnly?: boolean;
+  hideAddProject?: boolean;
+  projectBasePath?: string;
 }
 
 export function PortfolioPage({
@@ -34,6 +37,9 @@ export function PortfolioPage({
   initialTab,
   initialCollectionId,
   hidePricing = false,
+  shareOnly = false,
+  hideAddProject = false,
+  projectBasePath,
 }: PortfolioPageProps) {
   const router = useRouter();
   const isOwner = data.mode === "owner";
@@ -73,7 +79,8 @@ export function PortfolioPage({
 
   const openProject = (project: PortfolioProject) => {
     const targetSlug = project.slug || project.id;
-    router.push(`/portfolio/projects/${targetSlug}`);
+    const base = projectBasePath || "/portfolio/projects";
+    router.push(`${base}/${targetSlug}`);
   };
 
   const updateCover = (file: File) => {
@@ -118,9 +125,14 @@ export function PortfolioPage({
           coverImageUrl={coverImageUrl}
           onCoverSelected={updateCover}
           onEdit={() => setIsEditingProfile(true)}
+          shareOnly={shareOnly}
         />
 
-        <div className={styles.portfolioHeroContent}>
+        <div
+          className={`${styles.portfolioHeroContent} ${
+            hidePricing ? styles.portfolioHeroContentNoPricing : ""
+          }`}
+        >
           <PortfolioProfileHeader
             isOwner={isOwner}
             profile={profile}
@@ -171,6 +183,7 @@ export function PortfolioPage({
           activeTab={activeTab}
           isOwner={isOwner}
           hidePricing={hidePricing}
+          hideAddProject={hideAddProject}
           onAddProject={() => {
             router.push("/portfolio/projects/new");
           }}
@@ -189,6 +202,7 @@ export function PortfolioPage({
               profile={profile}
               isOwner={isOwner}
               onOpenProject={openProject}
+              basePath={projectBasePath}
             />
           ) : null}
           {activeTab === "case-studies" ? (

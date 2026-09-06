@@ -38,6 +38,7 @@ export interface AssignmentDeployment {
     phone: string;
   };
   crew: AssignedWorkerRecord[];
+  coverImage?: string;
 }
 
 export interface AssignmentSummaryMetrics {

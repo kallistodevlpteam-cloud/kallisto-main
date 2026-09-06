@@ -116,6 +116,7 @@ export function HandsRequestOdinPanel({
   const [inputQuery, setInputQuery] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const streamEndRef = useRef<HTMLDivElement>(null);
+  const messageCounterRef = useRef(1);
 
   const match = selectedRequest ? calculateRequestMatch(selectedRequest) : null;
 
@@ -139,7 +140,7 @@ export function HandsRequestOdinPanel({
     setInputQuery("");
 
     const userMsg: ChatMessage = {
-      id: `usr-${Date.now()}`,
+      id: `usr-${++messageCounterRef.current}`,
       sender: "user",
       text: promptText,
       timestamp: "Just now",
@@ -191,7 +192,7 @@ export function HandsRequestOdinPanel({
       }
 
       const odinMsg: ChatMessage = {
-        id: `odn-${Date.now()}`,
+        id: `odn-${++messageCounterRef.current}`,
         sender: "odin",
         text: replyText,
         timestamp: "Just now",
@@ -270,10 +271,10 @@ export function HandsRequestOdinPanel({
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                       <div>
                         <div style={{ fontSize: "13px", fontWeight: 700, color: "#ffffff" }}>
-                          {selectedRequest.projectName}
+                          {selectedRequest.clientName}
                         </div>
                         <div style={{ fontSize: "11px", color: "#94a3b8" }}>
-                          {selectedRequest.location} · Start {selectedRequest.startDate}
+                          {selectedRequest.projectName} · {selectedRequest.location} · Start {selectedRequest.startDate}
                         </div>
                       </div>
                       <button

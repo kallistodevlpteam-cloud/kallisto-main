@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import {
   Archive,
   Camera,
@@ -12,10 +11,6 @@ import {
   Share2,
 } from "lucide-react";
 import type { PortfolioProfile } from "@/features/portfolio/types/portfolio.types";
-import {
-  buildPortfolioEnquiryHref,
-  buildProviderServicesHref,
-} from "@/features/portfolio/utils/portfolio-enquiry-state";
 import styles from "./portfolio.module.css";
 
 interface PortfolioProfileActionsProps {
@@ -23,6 +18,7 @@ interface PortfolioProfileActionsProps {
   profile: PortfolioProfile;
   onEdit: () => void;
   onUploadCover?: () => void;
+  shareOnly?: boolean;
 }
 
 export function PortfolioProfileActions({
@@ -30,6 +26,7 @@ export function PortfolioProfileActions({
   profile,
   onEdit,
   onUploadCover,
+  shareOnly = false,
 }: PortfolioProfileActionsProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [shareLabel, setShareLabel] = useState("Share");
@@ -72,7 +69,7 @@ export function PortfolioProfileActions({
 
   return (
     <div className={styles.bannerActionsPillGroup} aria-label="Portfolio actions">
-      {isOwner ? (
+      {isOwner && !shareOnly ? (
         <button
           className={styles.bannerActionButton}
           type="button"
@@ -93,7 +90,7 @@ export function PortfolioProfileActions({
         <Share2 size={15} aria-hidden="true" />
       </button>
 
-      {isOwner ? (
+      {isOwner && !shareOnly ? (
         <div className={styles.actionMenu} ref={menuRef}>
           <button
             className={styles.bannerIconButton}

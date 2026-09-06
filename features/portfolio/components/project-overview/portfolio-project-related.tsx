@@ -8,10 +8,12 @@ import styles from "./portfolio-project-overview.module.css";
 
 interface PortfolioProjectRelatedProps {
   relatedProjects: PortfolioProject[];
+  basePath?: string;
 }
 
 export function PortfolioProjectRelated({
   relatedProjects,
+  basePath,
 }: PortfolioProjectRelatedProps) {
   if (!relatedProjects || relatedProjects.length === 0) return null;
 
@@ -36,10 +38,15 @@ export function PortfolioProjectRelated({
             proj.completionYear ?? proj.expectedCompletionYear ?? "2026",
           );
 
+          const targetSlug = proj.slug || proj.id;
+          const href = basePath
+            ? `${basePath}/${targetSlug}`
+            : `/portfolio/projects/${targetSlug}`;
+
           return (
             <Link
               key={proj.id}
-              href={`/portfolio/projects/${proj.id}`}
+              href={href}
               className={styles.relatedCard}
             >
               <div className={styles.relatedImageWrapper}>

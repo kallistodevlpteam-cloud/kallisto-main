@@ -32,6 +32,7 @@ interface PortfolioTabsProps {
   activeTab: PortfolioTab;
   isOwner: boolean;
   hidePricing?: boolean;
+  hideAddProject?: boolean;
   onAddProject: () => void;
   onTabChange: (tab: PortfolioTab) => void;
 }
@@ -40,6 +41,7 @@ export function PortfolioTabs({
   activeTab,
   isOwner,
   hidePricing,
+  hideAddProject = false,
   onAddProject,
   onTabChange,
 }: PortfolioTabsProps) {
@@ -118,7 +120,7 @@ export function PortfolioTabs({
           );
         })}
       </div>
-      {isOwner ? (
+      {isOwner && !hideAddProject ? (
         <button
           className={styles.addProjectDedicatedBtn}
           type="button"

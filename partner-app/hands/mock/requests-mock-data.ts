@@ -1,6 +1,5 @@
 import { LabourRequest, RequestMatchSummary, RequestSummaryMetrics } from "../types/request-domain";
-import { INITIAL_WORKERS } from "./workers-mock-data";
-import { WorkerProfile, WorkerTrade } from "../types/worker-domain";
+import { WorkerTrade } from "../types/worker-domain";
 
 export const INITIAL_LABOUR_REQUESTS: LabourRequest[] = [
   {
@@ -414,7 +413,7 @@ export const INITIAL_LABOUR_REQUESTS: LabourRequest[] = [
     status: "accepted",
     createdAt: "1w ago",
   },
-  // Closed / Past Requests
+  // History: Rejected & Closed Requests
   {
     id: "KH-R-1001",
     projectName: "CyberGateway IT Center",
@@ -453,9 +452,51 @@ export const INITIAL_LABOUR_REQUESTS: LabourRequest[] = [
     estimatedDuration: "60 Days",
     workingHours: "8:00 AM – 5:00 PM",
     urgency: "urgent",
-    status: "closed",
+    status: "rejected",
     createdAt: "1mo ago",
     notes: "Declined due to heavy ongoing demand at Kazhakkoottam site.",
+  },
+  {
+    id: "KH-R-1003",
+    projectName: "Kochi Metro Phase 2 Extension",
+    clientName: "KMRL Civil Works",
+    location: "Kaloor, Kochi",
+    requirements: [
+      {
+        trade: "Mason",
+        requiredCount: 8,
+        availableCount: 2,
+        matchingWorkerIds: ["KH-W-1042", "KH-W-1132"],
+      },
+    ],
+    startDate: "Jun 20, 2026",
+    estimatedDuration: "45 Days",
+    workingHours: "8:00 AM – 5:00 PM",
+    urgency: "urgent",
+    status: "rejected",
+    createdAt: "2mo ago",
+    notes: "Declined due to shift schedule conflict.",
+  },
+  {
+    id: "KH-R-1004",
+    projectName: "Lulu Twin Tower Fitout",
+    clientName: "Lulu Real Estate",
+    location: "Edappally, Kochi",
+    requirements: [
+      {
+        trade: "Painter",
+        requiredCount: 5,
+        availableCount: 5,
+        matchingWorkerIds: ["KH-W-1180", "KH-W-1182", "KH-W-1184", "KH-W-1186", "KH-W-1188"],
+      },
+    ],
+    startDate: "May 10, 2026",
+    estimatedDuration: "25 Days",
+    workingHours: "8:30 AM – 5:30 PM",
+    urgency: "normal",
+    status: "closed",
+    createdAt: "3mo ago",
+    notes: "Project completed and final handover signed off.",
   },
 ];
 
@@ -463,8 +504,7 @@ export const INITIAL_LABOUR_REQUESTS: LabourRequest[] = [
  * Dynamically computes workforce match state for a given request against available workers.
  */
 export function calculateRequestMatch(
-  request: LabourRequest,
-  workersList: WorkerProfile[] = INITIAL_WORKERS
+  request: LabourRequest
 ): RequestMatchSummary {
   let totalRequired = 0;
   let totalAvailable = 0;
@@ -506,7 +546,7 @@ export function calculateRequestMatch(
  * Computes the 4 operational summary metrics for the requests dashboard.
  */
 export function calculateRequestsMetrics(requests: LabourRequest[]): RequestSummaryMetrics {
-  const newRequests = requests.filter((r) => r.status === "new");
+  const newRequests = requests.filter((r) => r.status === "new" || r.status === "reviewing");
 
   let workersNeeded = 0;
   let canFulfil = 0;

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import {
   ProjectsDuotoneIcon,
@@ -12,6 +13,7 @@ import {
   HubDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 import { AssignmentDeployment } from "../../types/assignment-domain";
+import { getProviderDisplayDetails } from "../../mock/provider-profiles-mock-data";
 import styles from "./hands-assignments.module.css";
 
 interface HandsAssignmentCardProps {
@@ -111,8 +113,10 @@ export function HandsAssignmentCard({
   onSelect,
   onOpenDetail,
 }: HandsAssignmentCardProps) {
+  const router = useRouter();
   const theme = getProjectTheme(assignment.id);
   const ProjectIcon = theme.icon;
+  const providerDisplay = getProviderDisplayDetails(assignment.clientName);
 
   const getHealthTag = () => {
     switch (assignment.health) {
@@ -161,7 +165,7 @@ export function HandsAssignmentCard({
         }
       }}
     >
-      {/* 1. Header: Project Icon + Names + Timeline Day */}
+      {/* 1. Header: Project Icon + Service Provider Details + Timeline Day */}
       <div className={styles.cardHeaderRow}>
         <div className={styles.cardHeaderLeft}>
           <div
@@ -171,11 +175,18 @@ export function HandsAssignmentCard({
             <ProjectIcon size={18} />
           </div>
           <div className={styles.cardTitleCol}>
-            <h3 className={styles.cardProjectTitle} title={assignment.projectName}>
-              {assignment.projectName}
+            <h3
+              className={styles.cardProjectTitle}
+              title={`View ${providerDisplay.name} Profile`}
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/partner/hands/profile/${providerDisplay.slug}`);
+              }}
+            >
+              {providerDisplay.name}
             </h3>
-            <span className={styles.cardClientSubtitle} title={assignment.clientName}>
-              {assignment.clientName || assignment.tradesBreakdown}
+            <span className={styles.cardClientSubtitle} title={providerDisplay.profession}>
+              {providerDisplay.profession}
             </span>
           </div>
         </div>
@@ -201,38 +212,41 @@ export function HandsAssignmentCard({
         </div>
       </div>
 
-      {/* 3. Structured Key Properties List (Kallisto Duotone Theme) */}
+      {/* 3. Structured Key Properties List */}
       <div className={styles.cardPropertiesList}>
         <div className={styles.propertyRow}>
-          <TeamDuotoneIcon size={15} className={styles.propertyDuotoneIcon} />
+          <TeamDuotoneIcon size={14} className={styles.propertyDuotoneIcon} />
           <span className={styles.propertyValue}>
-            <strong>{assignment.totalWorkersAssigned} Members</strong> ({assignment.tradesBreakdown})
+            Trades: <strong>{assignment.tradesBreakdown}</strong>
           </span>
         </div>
 
         <div className={styles.propertyRow}>
-          <CalendarDuotoneIcon size={15} className={styles.propertyDuotoneIcon} />
+          <CalendarDuotoneIcon size={14} className={styles.propertyDuotoneIcon} />
           <span className={styles.propertyValue}>
             <strong>{assignment.startDate} – {assignment.endDate}</strong>
           </span>
         </div>
 
         <div className={styles.propertyRow}>
-          <LocationDuotoneIcon size={15} className={styles.propertyDuotoneIcon} />
-          <span className={styles.propertyValue} title={assignment.location}>
-            {assignment.location}
+          <LocationDuotoneIcon size={14} className={styles.propertyDuotoneIcon} />
+          <span
+            className={styles.propertyValue}
+            title={`${assignment.projectName} · ${assignment.location}`}
+          >
+            <strong>{assignment.projectName}</strong> · {assignment.location}
           </span>
         </div>
 
         <div className={styles.propertyRow}>
-          <AnalyticsDuotoneIcon size={15} className={styles.propertyDuotoneIcon} />
+          <AnalyticsDuotoneIcon size={14} className={styles.propertyDuotoneIcon} />
           <span className={styles.propertyValue}>
             Attendance Today: <strong>{assignment.attendance.present} / {assignment.attendance.total} Present</strong>
           </span>
         </div>
       </div>
 
-      {/* 4. Assignment Health Status Callout Box */}
+      {/* 4. Health Status Callout Box */}
       <div className={`${styles.healthBox} ${healthConfig.boxClass}`}>
         <HealthIcon size={15} className={styles.healthIcon} />
         <div className={styles.healthTexts}>
@@ -243,7 +257,7 @@ export function HandsAssignmentCard({
         </div>
       </div>
 
-      {/* 5. Full-Width Card Action Button */}
+      {/* 5. Open Assignment Button */}
       <button
         type="button"
         className={styles.cardActionBtn}

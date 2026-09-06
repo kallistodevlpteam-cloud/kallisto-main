@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import {
   Building2,
   Briefcase,
@@ -12,6 +13,7 @@ import {
 } from "@/components/layout/sidebar-icons";
 import { LabourRequest } from "../../types/request-domain";
 import { calculateRequestMatch } from "../../mock/requests-mock-data";
+import { getProviderDisplayDetails } from "../../mock/provider-profiles-mock-data";
 import styles from "./hands-requests.module.css";
 
 interface HandsRequestCardProps {
@@ -45,12 +47,14 @@ export function HandsRequestCard({
   onSelect,
   onReview,
 }: HandsRequestCardProps) {
+  const router = useRouter();
   const match = calculateRequestMatch(request);
   const theme = getProjectTheme(request.id);
   const ProjectIcon = theme.icon;
 
   const totalWorkers = request.requirements.reduce((acc, r) => acc + r.requiredCount, 0);
   const primaryTrade = request.requirements[0]?.trade || "Workforce";
+  const providerDisplay = getProviderDisplayDetails(request.clientName, primaryTrade);
 
   return (
     <article
@@ -58,7 +62,7 @@ export function HandsRequestCard({
       onClick={() => onSelect(request)}
       tabIndex={0}
       role="button"
-      aria-label={`Request for ${request.projectName}`}
+      aria-label={`Request from ${providerDisplay.name} for ${request.projectName}`}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -66,7 +70,7 @@ export function HandsRequestCard({
         }
       }}
     >
-      {/* 1. Header: Project Icon + Names + Timestamp */}
+      {/* 1. Header: Project Icon + Service Provider Details + Timestamp */}
       <div className={styles.cardHeaderRow}>
         <div className={styles.cardHeaderLeft}>
           <div
@@ -76,11 +80,18 @@ export function HandsRequestCard({
             <ProjectIcon size={18} />
           </div>
           <div className={styles.cardTitleCol}>
-            <h3 className={styles.cardProjectTitle} title={request.projectName}>
-              {request.projectName}
+            <h3
+              className={styles.cardProjectTitle}
+              title={`View ${providerDisplay.name} Profile`}
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/partner/hands/profile/${providerDisplay.slug}`);
+              }}
+            >
+              {providerDisplay.name}
             </h3>
-            <span className={styles.cardClientSubtitle} title={request.clientName}>
-              {request.clientName || `${primaryTrade} Project`}
+            <span className={styles.cardClientSubtitle} title={providerDisplay.profession}>
+              {providerDisplay.profession}
             </span>
           </div>
         </div>
@@ -95,6 +106,16 @@ export function HandsRequestCard({
           <TeamDuotoneIcon size={13} style={{ color: "#2563eb", flexShrink: 0 }} />
           <span>{totalWorkers} Workers</span>
         </div>
+        {request.status === "rejected" && (
+          <span className={`${styles.cardStatusPill} ${styles.cardStatusRejected}`}>
+            Rejected
+          </span>
+        )}
+        {request.status === "closed" && (
+          <span className={`${styles.cardStatusPill} ${styles.cardStatusClosed}`}>
+            Closed
+          </span>
+        )}
       </div>
 
       {/* 3. Structured Key Properties (Icon Only with Kallisto Duotone Theme) */}
@@ -115,8 +136,11 @@ export function HandsRequestCard({
 
         <div className={styles.propertyRow}>
           <LocationDuotoneIcon size={15} className={styles.propertyDuotoneIcon} />
-          <span className={styles.propertyValue} title={request.location}>
-            {request.location}
+          <span
+            className={styles.propertyValue}
+            title={`${request.projectName} · ${request.location}`}
+          >
+            <strong>{request.projectName}</strong> · {request.location}
           </span>
         </div>
       </div>
@@ -129,9 +153,13 @@ export function HandsRequestCard({
           e.stopPropagation();
           onReview(request);
         }}
-        aria-label={`Review Request for ${request.projectName}`}
+        aria-label={`${request.status === "rejected" || request.status === "closed" ? "View Details" : "Review Request"} for ${request.projectName}`}
       >
-        <span>Review Request</span>
+        <span>
+          {request.status === "rejected" || request.status === "closed"
+            ? "View Details"
+            : "Review Request"}
+        </span>
       </button>
     </article>
   );
