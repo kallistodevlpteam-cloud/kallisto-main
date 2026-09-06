@@ -42,11 +42,12 @@ function ClosedDuotoneIcon({
 }
 
 interface HandsRequestsTabsProps {
-  activeTab: string;
-  onTabChange: (tab: string) => void;
+  activeTab: LabourRequestStatus;
+  onTabChange: (tab: LabourRequestStatus) => void;
   counts: {
     new: number;
-    history: number;
+    accepted: number;
+    closed: number;
   };
 }
 
@@ -56,13 +57,14 @@ export function HandsRequestsTabs({
   counts,
 }: HandsRequestsTabsProps) {
   const tabs: {
-    id: string;
+    id: LabourRequestStatus;
     label: string;
-    count?: number;
+    count: number;
     icon: React.ElementType;
   }[] = [
     { id: "new", label: "Requests", count: counts.new, icon: EnquiriesDuotoneIcon },
-    { id: "history", label: "History", icon: ClosedDuotoneIcon },
+    { id: "accepted", label: "Accepted", count: counts.accepted, icon: ShieldDuotoneIcon },
+    { id: "closed", label: "Closed", count: counts.closed, icon: ClosedDuotoneIcon },
   ];
 
   return (

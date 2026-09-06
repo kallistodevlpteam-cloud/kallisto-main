@@ -12,6 +12,8 @@ import type {
 import { PortfolioCaseStudies } from "./portfolio-case-studies";
 import { PortfolioCoverBanner } from "./portfolio-cover-banner";
 import { PortfolioHighlights } from "./portfolio-highlights";
+import { PortfolioPackageSummary } from "./portfolio-package-summary";
+import { PortfolioPricing } from "./portfolio-pricing";
 import { PortfolioProfileHeader } from "./portfolio-profile-header";
 import { PortfolioProjectGrid } from "./portfolio-project-grid";
 import { PortfolioReviews } from "./portfolio-reviews";
@@ -123,6 +125,7 @@ export function PortfolioPage({
             onCloseEditingExternal={() => setIsEditingProfile(false)}
             onCameraClick={() => avatarInputRef.current?.click()}
           />
+          <PortfolioPackageSummary onViewPlans={showPricingPlans} />
         </div>
 
         {isOwner ? (
@@ -196,6 +199,9 @@ export function PortfolioPage({
             />
           ) : null}
           {activeTab === "reviews" ? <PortfolioReviews /> : null}
+          {activeTab === "pricing" ? (
+            <PortfolioPricing profile={profile} isOwner={isOwner} />
+          ) : null}
         </section>
       </main>
     </div>

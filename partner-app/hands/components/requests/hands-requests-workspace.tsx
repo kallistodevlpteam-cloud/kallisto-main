@@ -12,7 +12,7 @@ import styles from "./hands-requests.module.css";
 
 export function HandsRequestsWorkspace() {
   const [requests, setRequests] = useState<LabourRequest[]>(INITIAL_LABOUR_REQUESTS);
-  const [activeTab, setActiveTab] = useState<string>("new");
+  const [activeTab, setActiveTab] = useState<LabourRequestStatus>("new");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTrade, setSelectedTrade] = useState("All");
   const [selectedSort, setSelectedSort] = useState("default");
@@ -26,7 +26,8 @@ export function HandsRequestsWorkspace() {
   const tabCounts = useMemo(() => {
     return {
       new: requests.filter((r) => r.status === "new").length,
-      history: requests.filter((r) => r.status === "closed" || r.status === "accepted").length,
+      accepted: requests.filter((r) => r.status === "accepted").length,
+      closed: requests.filter((r) => r.status === "closed").length,
     };
   }, [requests]);
 
@@ -39,10 +40,7 @@ export function HandsRequestsWorkspace() {
   const filteredRequests = useMemo(() => {
     let list = requests.filter((req) => {
       // 1. Status tab filter
-      if (activeTab === "new" && req.status !== "new") {
-        return false;
-      }
-      if (activeTab === "history" && req.status !== "closed" && req.status !== "accepted") {
+      if (req.status !== activeTab) {
         return false;
       }
 
@@ -105,7 +103,7 @@ export function HandsRequestsWorkspace() {
     );
     setIsDetailOpen(false);
     setSelectedRequest(updated);
-    setActiveTab("history");
+    setActiveTab("accepted");
   };
 
   const handleDeclineRequest = (req: LabourRequest) => {
@@ -115,7 +113,7 @@ export function HandsRequestsWorkspace() {
     );
     setIsDetailOpen(false);
     setSelectedRequest(updated);
-    setActiveTab("history");
+    setActiveTab("closed");
   };
 
   return (
