@@ -9,6 +9,7 @@ interface PortfolioProfileCardProps {
   initialTab: PortfolioTab;
   initialCollectionId?: string;
   initialProjectId?: string;
+  hidePricing?: boolean;
 }
 
 export function PortfolioProfileCard(props: PortfolioProfileCardProps) {

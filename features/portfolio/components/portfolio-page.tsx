@@ -26,17 +26,21 @@ interface PortfolioPageProps {
   data: PortfolioPageData;
   initialTab: PortfolioTab;
   initialCollectionId?: string;
+  hidePricing?: boolean;
 }
 
 export function PortfolioPage({
   data,
   initialTab,
   initialCollectionId,
+  hidePricing = false,
 }: PortfolioPageProps) {
   const router = useRouter();
   const isOwner = data.mode === "owner";
   const [profile, setProfile] = useState<PortfolioProfile>(data.profile);
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const [activeTab, setActiveTab] = useState(
+    hidePricing && initialTab === "pricing" ? "projects" : initialTab,
+  );
   const [selectedCollection, setSelectedCollection] =
     useState<PortfolioCollection>(
       data.collections.find(
@@ -125,7 +129,9 @@ export function PortfolioPage({
             onCloseEditingExternal={() => setIsEditingProfile(false)}
             onCameraClick={() => avatarInputRef.current?.click()}
           />
-          <PortfolioPackageSummary onViewPlans={showPricingPlans} />
+          {!hidePricing && (
+            <PortfolioPackageSummary onViewPlans={showPricingPlans} />
+          )}
         </div>
 
         {isOwner ? (
@@ -164,6 +170,7 @@ export function PortfolioPage({
         <PortfolioTabs
           activeTab={activeTab}
           isOwner={isOwner}
+          hidePricing={hidePricing}
           onAddProject={() => {
             router.push("/portfolio/projects/new");
           }}
@@ -199,7 +206,7 @@ export function PortfolioPage({
             />
           ) : null}
           {activeTab === "reviews" ? <PortfolioReviews /> : null}
-          {activeTab === "pricing" ? (
+          {!hidePricing && activeTab === "pricing" ? (
             <PortfolioPricing profile={profile} isOwner={isOwner} />
           ) : null}
         </section>

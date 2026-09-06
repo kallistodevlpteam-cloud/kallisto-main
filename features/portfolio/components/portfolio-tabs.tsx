@@ -31,6 +31,7 @@ const TAB_CONFIG: Record<
 interface PortfolioTabsProps {
   activeTab: PortfolioTab;
   isOwner: boolean;
+  hidePricing?: boolean;
   onAddProject: () => void;
   onTabChange: (tab: PortfolioTab) => void;
 }
@@ -38,6 +39,7 @@ interface PortfolioTabsProps {
 export function PortfolioTabs({
   activeTab,
   isOwner,
+  hidePricing,
   onAddProject,
   onTabChange,
 }: PortfolioTabsProps) {
@@ -46,7 +48,8 @@ export function PortfolioTabs({
   const searchParams = useSearchParams();
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
-  const tabs = getPortfolioTabs(isOwner);
+  const allTabs = getPortfolioTabs(isOwner);
+  const tabs = hidePricing ? allTabs.filter((tab) => tab !== "pricing") : allTabs;
 
   const selectTab = (tab: PortfolioTab) => {
     const query = buildPortfolioQuery(

@@ -15,6 +15,7 @@ export default async function PartnerProfilePage() {
             initialTab="projects"
             initialCollectionId={undefined}
             initialProjectId={undefined}
+            hidePricing={true}
           />
         </Suspense>
       </div>

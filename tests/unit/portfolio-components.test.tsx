@@ -247,4 +247,26 @@ describe("portfolio interface", () => {
     expect(screen.getByText("Nila Residence")).toBeInTheDocument();
     expect(screen.getByText("The Fern Office")).toBeInTheDocument();
   });
+
+  it("hides package summary card and pricing section when hidePricing is true", () => {
+    const data = getPortfolioPageData(false);
+    render(
+      <PortfolioProfileCard
+        data={data}
+        initialTab="projects"
+        hidePricing={true}
+      />,
+    );
+
+    // Package summary card should not be present
+    expect(
+      screen.queryByText(/Design packages starting from/i),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/View Plans/i)).not.toBeInTheDocument();
+
+    // Pricing tab should not be present
+    expect(
+      screen.queryByRole("tab", { name: /pricing/i }),
+    ).not.toBeInTheDocument();
+  });
 });
