@@ -128,90 +128,42 @@ export function OpenRequestsCard({
           <h2 id="open-requests-title">Open requests</h2>
           <p>Unfulfilled site workforce requirements & contractor matching</p>
         </div>
-        <div className={styles.cardHeaderActions}>
+        <div className={styles.cardHeaderActions} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div
+            className={styles.viewModeToggle}
+            role="group"
+            aria-label="Requests layout view"
+          >
+            <button
+              type="button"
+              className={`${styles.viewModeBtn} ${
+                viewMode === "grid" ? styles.viewModeBtnActive : ""
+              }`}
+              onClick={() => setViewMode("grid")}
+              aria-label="Cards grid view"
+              title="Cards grid view"
+            >
+              <LayoutGrid size={15} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              className={`${styles.viewModeBtn} ${
+                viewMode === "list" ? styles.viewModeBtnActive : ""
+              }`}
+              onClick={() => setViewMode("list")}
+              aria-label="List view"
+              title="List view"
+            >
+              <List size={15} aria-hidden="true" />
+            </button>
+          </div>
+
           <button
             type="button"
             className={styles.textButton}
             onClick={() => onNavigateTab("requests")}
           >
             View all
-          </button>
-        </div>
-      </div>
-
-      {/* Toolbar with Filters, History button, and Grid/List toggle */}
-      <div className={styles.deploymentToolbar}>
-        <div className={styles.filterGroup}>
-          <SlidersHorizontal size={14} aria-hidden="true" />
-          <label className={styles.selectControl}>
-            <span className={styles.visuallyHidden}>Filter by project</span>
-            <select
-              value={projectFilter}
-              onChange={(event) => setProjectFilter(event.target.value)}
-            >
-              <option value="all">All projects</option>
-              {projects.map(([projectId, projectName]) => (
-                <option key={projectId} value={projectId}>
-                  {projectName}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={13} aria-hidden="true" />
-          </label>
-          <label className={styles.selectControl}>
-            <span className={styles.visuallyHidden}>Filter by trade</span>
-            <select
-              value={tradeFilter}
-              onChange={(event) => setTradeFilter(event.target.value)}
-            >
-              <option value="all">All trades</option>
-              {trades.map((trade) => (
-                <option key={trade} value={trade}>
-                  {trade}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={13} aria-hidden="true" />
-          </label>
-
-          {/* Request History Button next to All trades */}
-          <Link
-            href="/hands/requests/history"
-            className={styles.requestHistoryBtn}
-            title="View Request History across trades"
-            aria-label="View request history"
-          >
-            <History size={13} aria-hidden="true" />
-            <span>Request History</span>
-          </Link>
-        </div>
-
-        <div
-          className={styles.viewModeToggle}
-          role="group"
-          aria-label="Requests layout view"
-        >
-          <button
-            type="button"
-            className={`${styles.viewModeBtn} ${
-              viewMode === "grid" ? styles.viewModeBtnActive : ""
-            }`}
-            onClick={() => setViewMode("grid")}
-            aria-label="Cards grid view"
-            title="Cards grid view"
-          >
-            <LayoutGrid size={15} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            className={`${styles.viewModeBtn} ${
-              viewMode === "list" ? styles.viewModeBtnActive : ""
-            }`}
-            onClick={() => setViewMode("list")}
-            aria-label="List view"
-            title="List view"
-          >
-            <List size={15} aria-hidden="true" />
           </button>
         </div>
       </div>
