@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ChevronDown, ChevronRight, History, LayoutGrid, List, Plus, SlidersHorizontal, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { HandsTab, WorkforceRequest } from "../types/hands.types";
@@ -174,16 +175,15 @@ export function OpenRequestsCard({
           </label>
 
           {/* Request History Button next to All trades */}
-          <button
-            type="button"
+          <Link
+            href="/hands/requests/history"
             className={styles.requestHistoryBtn}
-            onClick={() => setShowHistoryModal(true)}
             title="View Request History across trades"
             aria-label="View request history"
           >
             <History size={13} aria-hidden="true" />
             <span>Request History</span>
-          </button>
+          </Link>
         </div>
 
         <div
