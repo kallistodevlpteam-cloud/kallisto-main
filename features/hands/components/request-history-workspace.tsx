@@ -31,6 +31,8 @@ import {
 import type { HandsTab, WorkforceRequest } from "../types/hands.types";
 import { getFulfilmentPercentage } from "../utils/hands-formatters";
 import { getTradeIcon } from "./workforce-request-card";
+import { HandsPageHeader } from "./hands-page-header";
+import { HandsPageTabs } from "./hands-page-tabs";
 import styles from "./hands-overview.module.css";
 
 interface RequestHistoryItem {
@@ -264,6 +266,20 @@ export function RequestHistoryWorkspace() {
 
   return (
     <div className={`workspace-container ${styles.handsLandingPage}`}>
+      {/* ── Sticky Top Header Bar ── */}
+      <HandsPageHeader
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
+
+      {/* ── Sub Navigation Tabs ── */}
+      <div style={{ marginTop: 12, marginBottom: 16 }}>
+        <HandsPageTabs
+          activeTab="requests"
+          onSelect={(tab) => router.push(`/hands?tab=${tab}`)}
+        />
+      </div>
+
       {/* ── Top Navigation Bar ── */}
       <div className={styles.historyWorkspaceHeader}>
         <div className={styles.historyBreadcrumbRow}>
