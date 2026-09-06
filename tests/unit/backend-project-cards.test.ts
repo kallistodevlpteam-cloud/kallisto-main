@@ -99,4 +99,21 @@ describe("buildProjectCardsFromBackend", () => {
     ]);
     expect(nonPrCard[0].phase).toBeNull();
   });
+
+  it("dynamically maps projectStatus from backend when provided", () => {
+    const activeCards = buildProjectCardsFromBackend([
+      makeProject({ projectStatus: "ACTIVE" }),
+    ]);
+    expect(activeCards[0].status).toBe("ACTIVE");
+
+    const completedCards = buildProjectCardsFromBackend([
+      makeProject({ projectStatus: "COMPLETED" }),
+    ]);
+    expect(completedCards[0].status).toBe("COMPLETED");
+
+    const onHoldCards = buildProjectCardsFromBackend([
+      makeProject({ projectStatus: "ON_HOLD" }),
+    ]);
+    expect(onHoldCards[0].status).toBe("ON_HOLD");
+  });
 });

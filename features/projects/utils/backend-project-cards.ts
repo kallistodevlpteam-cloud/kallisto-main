@@ -41,7 +41,16 @@ export function buildProjectCardsFromBackend(
       project.projectCharacter === PROJECT_CHARACTER_PR
         ? ACCEPTED_PROJECT_PHASE_LABEL
         : null,
-    status: ACCEPTED_PROJECT_STATUS,
+    status: project.projectStatus
+      ? (() => {
+          const s = project.projectStatus.toUpperCase();
+          if (s === "ACTIVE") return "ACTIVE";
+          if (s === "UPCOMING") return "UPCOMING";
+          if (s === "ON_HOLD" || s === "ON-HOLD") return "ON_HOLD";
+          if (s === "COMPLETED") return "COMPLETED";
+          return ACCEPTED_PROJECT_STATUS;
+        })()
+      : ACCEPTED_PROJECT_STATUS,
     health: undefined,
     phaseProgress: undefined,
     nextActionTitle: null,
