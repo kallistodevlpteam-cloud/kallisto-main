@@ -163,11 +163,11 @@ describe("Calendar Today Tab UI Indicator Integration", () => {
     render(<TodayTab activities={acts} selectedDate="2026-07-24" />);
 
     // Friday 24 July (scheduled) has the indicator
-    const jul24Btn = screen.getByRole("button", { name: /Friday, 24 July 2026/i });
+    const jul24Btn = screen.getByRole("button", { name: /Friday,? 24 July 2026/i });
     expect(jul24Btn.querySelector("[aria-label='Activities scheduled']")).toBeInTheDocument();
 
     // Saturday 25 July (completed only) has NO indicator
-    const jul25Btn = screen.getByRole("button", { name: /Saturday, 25 July 2026/i });
+    const jul25Btn = screen.getByRole("button", { name: /Saturday,? 25 July 2026/i });
     expect(jul25Btn.querySelector("[aria-label='Activities scheduled']")).not.toBeInTheDocument();
   });
 
@@ -176,7 +176,7 @@ describe("Calendar Today Tab UI Indicator Integration", () => {
 
     render(<TodayTab activities={acts} selectedDate="2026-07-24" />);
 
-    const jul24Btn = screen.getByRole("button", { name: /Friday, 24 July 2026/i });
+    const jul24Btn = screen.getByRole("button", { name: /Friday,? 24 July 2026/i });
     expect(jul24Btn).toHaveAttribute("aria-pressed", "true");
     expect(jul24Btn.querySelector("[aria-label='Activities scheduled']")).toBeInTheDocument();
   });
@@ -184,7 +184,7 @@ describe("Calendar Today Tab UI Indicator Integration", () => {
   it("does NOT display dot for a date with no scheduled/active activities even if selected or today", () => {
     render(<TodayTab activities={[]} selectedDate="2026-07-24" />);
 
-    const jul24Btn = screen.getByRole("button", { name: /Friday, 24 July 2026/i });
+    const jul24Btn = screen.getByRole("button", { name: /Friday,? 24 July 2026/i });
     expect(jul24Btn.querySelector("[aria-label='Activities scheduled']")).not.toBeInTheDocument();
   });
 
