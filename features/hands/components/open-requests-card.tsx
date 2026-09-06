@@ -65,6 +65,7 @@ interface OpenRequestsCardProps {
   onRequestWorkforce: () => void;
   onSelectRequest?: (request: WorkforceRequest) => void;
   defaultViewMode?: "grid" | "list";
+  showFilters?: boolean;
 }
 
 export function OpenRequestsCard({
@@ -73,6 +74,7 @@ export function OpenRequestsCard({
   onRequestWorkforce,
   onSelectRequest,
   defaultViewMode = "grid",
+  showFilters = false,
 }: OpenRequestsCardProps) {
   const [viewMode, setViewMode] = useState<"grid" | "list">(defaultViewMode);
   const [projectFilter, setProjectFilter] = useState("all");
@@ -167,6 +169,55 @@ export function OpenRequestsCard({
           </button>
         </div>
       </div>
+
+      {showFilters && (
+        <div className={styles.deploymentToolbar} style={{ padding: "12px 22px", borderBottom: "1px solid #f1f5f9" }}>
+          <div className={styles.filterGroup}>
+            <SlidersHorizontal size={14} aria-hidden="true" />
+            <label className={styles.selectControl}>
+              <span className={styles.visuallyHidden}>Filter by project</span>
+              <select
+                value={projectFilter}
+                onChange={(event) => setProjectFilter(event.target.value)}
+              >
+                <option value="all">All projects</option>
+                {projects.map(([projectId, projectName]) => (
+                  <option key={projectId} value={projectId}>
+                    {projectName}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown size={13} aria-hidden="true" />
+            </label>
+            <label className={styles.selectControl}>
+              <span className={styles.visuallyHidden}>Filter by trade</span>
+              <select
+                value={tradeFilter}
+                onChange={(event) => setTradeFilter(event.target.value)}
+              >
+                <option value="all">All trades</option>
+                {trades.map((trade) => (
+                  <option key={trade} value={trade}>
+                    {trade}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown size={13} aria-hidden="true" />
+            </label>
+
+            {/* Request History Button next to All trades */}
+            <Link
+              href="/hands/requests/history"
+              className={styles.requestHistoryBtn}
+              title="View Request History across trades"
+              aria-label="View request history"
+            >
+              <History size={13} aria-hidden="true" />
+              <span>Request History</span>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {filteredRequests.length > 0 ? (
         <>
