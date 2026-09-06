@@ -70,7 +70,7 @@ describe("Calendar Today operations workspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "Open activity" }));
     expect(onSelectActivity).toHaveBeenCalledWith("act-review");
 
-    fireEvent.click(screen.getByRole("button", { name: "Saturday, 25 July 2026" }));
+    fireEvent.click(screen.getByRole("button", { name: /Saturday,? 25 July 2026/i }));
     expect(onDateChange).toHaveBeenCalledWith("2026-07-25");
 
     fireEvent.change(screen.getByLabelText("Calendar scope"), {
