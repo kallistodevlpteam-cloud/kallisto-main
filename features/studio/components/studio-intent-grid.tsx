@@ -2,33 +2,43 @@
 
 import React from "react";
 import {
-  BuildDuotoneIcon,
   ExploreDuotoneIcon,
   ResolveDuotoneIcon,
   ReviewDuotoneIcon,
+  StudioDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 import { StudioIntent } from "../types/studio-source";
+import styles from "./studio-chat-canvas.module.css";
 
 export interface StudioIntentGridProps {
   selectedIntent: StudioIntent;
   onSelectIntent: (intent: StudioIntent) => void;
+  onSelectPrompt?: (promptText: string) => void;
+  projectName?: string;
 }
 
 const INTENT_ICONS: Record<StudioIntent, React.ElementType> = {
   create: ExploreDuotoneIcon,
-  analyse: BuildDuotoneIcon,
+  analyse: StudioDuotoneIcon,
   review: ReviewDuotoneIcon,
   resolve: ResolveDuotoneIcon,
 };
 
-const INTENT_ACCENTS: Record<StudioIntent, { color: string }> = {
-  create: { color: "#2563eb" },
-  analyse: { color: "#7c3aed" },
-  review: { color: "#16a34a" },
-  resolve: { color: "#ea580c" },
+const INTENT_ACCENTS: Record<StudioIntent, { color: string; bg: string; activeBorder: string; activeBg: string }> = {
+  create: { color: "#2563eb", bg: "#eff6ff", activeBorder: "rgba(37, 99, 235, 0.45)", activeBg: "rgba(239, 246, 255, 0.85)" },
+  analyse: { color: "#7c3aed", bg: "#f5f3ff", activeBorder: "rgba(124, 58, 237, 0.45)", activeBg: "rgba(245, 243, 255, 0.85)" },
+  review: { color: "#16a34a", bg: "#f0fdf4", activeBorder: "rgba(22, 163, 74, 0.45)", activeBg: "rgba(240, 253, 244, 0.85)" },
+  resolve: { color: "#ea580c", bg: "#fff7ed", activeBorder: "rgba(234, 88, 12, 0.45)", activeBg: "rgba(255, 247, 237, 0.85)" },
 };
 
 const CONCISE_TITLES: Record<StudioIntent, string> = {
+  create: "Explore",
+  analyse: "Create",
+  review: "Review",
+  resolve: "Solve",
+};
+
+const FULL_TITLES: Record<StudioIntent, string> = {
   create: "Explore project",
   analyse: "Create an output",
   review: "Review or improve",
@@ -36,95 +46,91 @@ const CONCISE_TITLES: Record<StudioIntent, string> = {
 };
 
 const INTENT_DESCRIPTIONS: Record<StudioIntent, string> = {
-  create: "Understand drawings, files, scope and project context.",
-  analyse: "Generate BOQs, estimates, proposals and reports.",
-  review: "Check drawings and refine existing outputs.",
-  resolve: "Get help with planning, coordination and site problems.",
+  create: "Understand this project",
+  analyse: "Generate project outputs",
+  review: "Check and improve work",
+  resolve: "Resolve project problems",
+};
+
+const INTENT_PROMPTS: Record<StudioIntent, (project: string) => string> = {
+  create: (p) => `Help me explore and understand the design requirements, drawings, and scope for ${p}.`,
+  analyse: (p) => `Prepare a preliminary estimate and BOQ for ${p} based on current drawings and specifications.`,
+  review: (p) => `Review the BOQ, drawings, and scope for ${p} to check for missing items or inconsistencies.`,
+  resolve: (p) => `Identify likely project coordination risks and suggest next recovery actions for ${p}.`,
 };
 
 export function StudioIntentGrid({
   selectedIntent,
   onSelectIntent,
+  onSelectPrompt,
+  projectName = "Luxury Villa Horizon",
 }: StudioIntentGridProps) {
   const intents: StudioIntent[] = ["create", "analyse", "review", "resolve"];
 
+  const handleCardClick = (intentKey: StudioIntent) => {
+    onSelectIntent(intentKey);
+    if (onSelectPrompt) {
+      const promptGen = INTENT_PROMPTS[intentKey];
+      if (promptGen) {
+        onSelectPrompt(promptGen(projectName));
+      }
+    }
+  };
+
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(4, 1fr)",
-        gap: "12px",
-        width: "100%",
-        marginBottom: "24px",
-      }}
-    >
-      {intents.map((intentKey) => {
-        const IconComp = INTENT_ICONS[intentKey];
-        const isSelected = selectedIntent === intentKey;
-        const accents = INTENT_ACCENTS[intentKey];
-        const displayTitle = CONCISE_TITLES[intentKey];
-        const displayDescription = INTENT_DESCRIPTIONS[intentKey];
+    <div className={styles.intentGridSection} aria-label="What do you want to accomplish?">
+      <div className={styles.intentSectionHeader}>
+        <span className={styles.intentSectionLabel}>What do you want to accomplish?</span>
+      </div>
 
-        return (
-          <div
-            key={intentKey}
-            onClick={() => onSelectIntent(intentKey)}
-            tabIndex={0}
-            role="button"
-            aria-selected={isSelected}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                onSelectIntent(intentKey);
+      <div className={styles.intentGrid}>
+        {intents.map((intentKey) => {
+          const IconComp = INTENT_ICONS[intentKey];
+          const isSelected = selectedIntent === intentKey;
+          const accents = INTENT_ACCENTS[intentKey];
+          const displayTitle = CONCISE_TITLES[intentKey];
+          const displayDescription = INTENT_DESCRIPTIONS[intentKey];
+
+          return (
+            <div
+              key={intentKey}
+              onClick={() => handleCardClick(intentKey)}
+              tabIndex={0}
+              role="button"
+              aria-selected={isSelected}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleCardClick(intentKey);
+                }
+              }}
+              className={`${styles.intentCard} ${isSelected ? styles.intentCardActive : ""}`}
+              style={
+                isSelected
+                  ? {
+                      borderColor: accents.activeBorder,
+                      background: accents.activeBg,
+                    }
+                  : undefined
               }
-            }}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              padding: "16px",
-              height: "120px",
-              border: "1px solid #e5e7eb",
-              borderRadius: "16px",
-              background: "#ffffff",
-              boxShadow: "0 1px 2px rgba(15, 23, 42, 0.02)",
-              cursor: "pointer",
-              transition: "all 0.15s ease",
-              outline: "none",
-            }}
-          >
-            <div style={{ color: accents.color }}>
-              <IconComp size={16} />
-            </div>
+            >
+              <div
+                className={styles.intentIconWrap}
+                style={{ color: accents.color, background: accents.bg }}
+              >
+                <IconComp size={18} aria-hidden="true" />
+              </div>
 
-            <h3
-              style={{
-                margin: 0,
-                fontSize: "12.5px",
-                fontWeight: 600,
-                color: "#1e293b",
-                lineHeight: 1.35,
-              }}
-            >
-              {displayTitle}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "11px",
-                color: "#64748b",
-                lineHeight: 1.4,
-                display: "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-              }}
-            >
-              {displayDescription}
-            </p>
-          </div>
-        );
-      })}
+              <div className={styles.intentMeta}>
+                <h3 className={styles.intentTitle}>{displayTitle}</h3>
+                <span className="sr-only">{FULL_TITLES[intentKey]}</span>
+                <p className={styles.intentDescription}>{displayDescription}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
+

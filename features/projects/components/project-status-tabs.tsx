@@ -20,7 +20,7 @@ export function ProjectStatusTabs({
   counts,
   onSelectTab,
 }: ProjectStatusTabsProps) {
-  const activeStatus = currentStatus || "UPCOMING";
+  const activeStatus = currentStatus || "ACTIVE";
 
   return (
     <div className={styles.segmentedControl} role="tablist" aria-label="Project status views">

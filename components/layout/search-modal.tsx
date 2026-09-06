@@ -99,13 +99,13 @@ const COMMAND_ITEMS: CommandItem[] = [
     },
   },
   {
-    id: "view-home",
-    label: "Home Dashboard",
-    subtitle: "Go to workspace overview dashboard",
-    icon: HomeDuotoneIcon,
+    id: "view-studio",
+    label: "Hive Studio",
+    subtitle: "AI-assisted design, drawing, BOQ and proposal workspace",
+    icon: StudioDuotoneIcon,
     section: "Pages",
     action: (router, _, onClose) => {
-      router.push("/home");
+      router.push("/studio");
       onClose();
     },
   },

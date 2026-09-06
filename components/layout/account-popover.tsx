@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronRight,
   ChevronLeft,
@@ -59,6 +59,9 @@ export function AccountPopover({
   onOpenDevConsole,
   initialView = "main",
 }: AccountPopoverProps) {
+  const pathname = usePathname();
+  const isClient = pathname?.startsWith("/client");
+  const isPartner = pathname?.startsWith("/partner");
   const [currentView, setCurrentView] = useState<"main" | "switcher">(initialView);
   const [prevInitialView, setPrevInitialView] = useState<"main" | "switcher">(initialView);
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState("ws-1");
@@ -67,6 +70,24 @@ export function AccountPopover({
 
   const handleNavigate = (tab: string, sub?: string) => {
     onClose();
+    if (isPartner) {
+      if (tab === "help") {
+        router.push("/partner/help");
+        return;
+      }
+      router.push("/partner/settings");
+      return;
+    }
+
+    if (isClient) {
+      if (tab === "help") {
+        router.push("/client/help");
+        return;
+      }
+      router.push(`/client/settings/${tab}`);
+      return;
+    }
+
     let path = `/settings/${tab}`;
 
     if (tab === "profile") {
@@ -152,122 +173,277 @@ export function AccountPopover({
         {/* Central scrollable container */}
         <div className={styles.centralScrollArea}>
           {currentView === "main" ? (
-            <>
-              {/* Group 1: Workspace settings & Team */}
-              <div className={styles.menuGroup}>
-                <button type="button" className={styles.menuRow} onClick={() => handleNavigate("workspace")}>
-                  <span className={styles.menuLabel}>Workspace settings</span>
-                </button>
-                <button type="button" className={styles.menuRow} onClick={() => handleNavigate("team")}>
-                  <span className={styles.menuLabel}>Team and permissions</span>
-                </button>
-              </div>
-
-              <div className={styles.menuDivider} />
-
-              {/* Group 2: Business profile & Services */}
-              <div className={styles.menuGroup}>
-                <button type="button" className={styles.menuRow} onClick={() => handleNavigate("profile")}>
-                  <span className={styles.menuLabel}>Business profile</span>
-                </button>
-                <button type="button" className={styles.menuRow} onClick={() => handleNavigate("services")}>
-                  <span className={styles.menuLabel}>Services and portfolio</span>
-                </button>
-              </div>
-
-              <div className={styles.menuDivider} />
-
-              {/* Group 3: Billing & Preferences */}
-              <div className={styles.menuGroup}>
-                <button type="button" className={styles.menuRow} onClick={() => handleNavigate("billing")}>
-                  <span className={styles.menuLabel}>Billing and payouts</span>
-                </button>
-                <button
-                  type="button"
-                  className={styles.menuRow}
-                  onClick={() => toggleSection("preferences")}
-                  aria-expanded={expandedSection === "preferences"}
-                >
-                  <span className={styles.menuLabel}>Preferences</span>
-                  <ChevronRight
-                    size={13}
-                    className={`${styles.chevronIcon} ${expandedSection === "preferences" ? styles.expanded : ""}`}
-                  />
-                </button>
-
-                {/* Preferences Accordion Panel */}
-                <div className={`${styles.accordionPanel} ${expandedSection === "preferences" ? styles.open : ""}`}>
-                  <div className={styles.accordionContent}>
-                    <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("preferences", "notifications")}>
-                      <span className={styles.subMenuLabel}>Notifications</span>
-                    </button>
-                    <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("preferences", "appearance")}>
-                      <span className={styles.subMenuLabel}>Appearance</span>
-                    </button>
-                    <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("preferences", "language")}>
-                      <span className={styles.subMenuLabel}>Language and region</span>
-                    </button>
-                    <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("preferences", "security")}>
-                      <span className={styles.subMenuLabel}>Security and login</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.menuDivider} />
-
-              {/* Group 4: Help and support */}
-              <div className={styles.menuGroup}>
-                <button
-                  type="button"
-                  className={styles.menuRow}
-                  onClick={() => toggleSection("support")}
-                  aria-expanded={expandedSection === "support"}
-                >
-                  <span className={styles.menuLabel}>Help and support</span>
-                  <ChevronRight
-                    size={13}
-                    className={`${styles.chevronIcon} ${expandedSection === "support" ? styles.expanded : ""}`}
-                  />
-                </button>
-
-                {/* Help & Support Accordion Panel */}
-                <div className={`${styles.accordionPanel} ${expandedSection === "support" ? styles.open : ""}`}>
-                  <div className={styles.accordionContent}>
-                    <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("help", "centre")}>
-                      <span className={styles.subMenuLabel}>Help centre</span>
-                    </button>
-                    <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("help", "support")}>
-                      <span className={styles.subMenuLabel}>Contact Kallisto support</span>
-                    </button>
-                    <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("help", "report")}>
-                      <span className={styles.subMenuLabel}>Report an issue</span>
-                    </button>
-                    <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("help", "privacy")}>
-                      <span className={styles.subMenuLabel}>Privacy and terms</span>
-                    </button>
-                  </div>
+            isPartner ? (
+              <>
+                {/* Partner Group 1: Profile & Business */}
+                <div className={styles.menuGroup}>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("profile")}>
+                    <span className={styles.menuLabel}>Partner profile</span>
+                  </button>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("business")}>
+                    <span className={styles.menuLabel}>Business & licensing</span>
+                  </button>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("security")}>
+                    <span className={styles.menuLabel}>Security & login</span>
+                  </button>
                 </div>
 
-                {showDevConsoleLink && (
-                  <>
-                    <div className={styles.menuDivider} />
-                    <button
-                      type="button"
-                      className={styles.menuRow}
-                      onClick={() => {
-                        onClose();
-                        onOpenDevConsole();
-                      }}
-                    >
-                      <span className={styles.menuLabel} style={{ color: "#d97706", fontWeight: 600 }}>
-                        Developer Readiness Console
-                      </span>
-                    </button>
-                  </>
-                )}
-              </div>
-            </>
+                <div className={styles.menuDivider} />
+
+                {/* Partner Group 2: Switch Ecosystem */}
+                <div className={styles.menuGroup}>
+                  <div style={{ padding: "4px 8px 6px", fontSize: "11px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Switch Ecosystem
+                  </div>
+                  <button
+                    type="button"
+                    className={styles.menuRow}
+                    onClick={() => {
+                      onClose();
+                      document.cookie = "kallisto_partner_type=HANDS; path=/;";
+                      if (typeof window !== "undefined") localStorage.setItem("kallisto_partner_type", "HANDS");
+                      router.push("/partner/hands");
+                    }}
+                  >
+                    <span className={styles.menuLabel}>Kallisto Hands</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.menuRow}
+                    onClick={() => {
+                      onClose();
+                      document.cookie = "kallisto_partner_type=HUB; path=/;";
+                      if (typeof window !== "undefined") localStorage.setItem("kallisto_partner_type", "HUB");
+                      router.push("/partner/hub");
+                    }}
+                  >
+                    <span className={styles.menuLabel}>Kallisto Hub</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.menuRow}
+                    onClick={() => {
+                      onClose();
+                      document.cookie = "kallisto_partner_type=BASICS; path=/;";
+                      if (typeof window !== "undefined") localStorage.setItem("kallisto_partner_type", "BASICS");
+                      router.push("/partner/basics");
+                    }}
+                  >
+                    <span className={styles.menuLabel}>Kallisto Basics</span>
+                  </button>
+                </div>
+
+                <div className={styles.menuDivider} />
+
+                {/* Partner Group 3: Help */}
+                <div className={styles.menuGroup}>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("help")}>
+                    <span className={styles.menuLabel}>Help and documentation</span>
+                  </button>
+                </div>
+              </>
+            ) : isClient ? (
+              <>
+                {/* Client Group 1: Profile & Security */}
+                <div className={styles.menuGroup}>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("profile")}>
+                    <span className={styles.menuLabel}>Profile</span>
+                  </button>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("security")}>
+                    <span className={styles.menuLabel}>Security and login</span>
+                  </button>
+                </div>
+
+                <div className={styles.menuDivider} />
+
+                {/* Client Group 2: Project Preferences & Access */}
+                <div className={styles.menuGroup}>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("project-preferences")}>
+                    <span className={styles.menuLabel}>Project preferences</span>
+                  </button>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("project-access")}>
+                    <span className={styles.menuLabel}>Project access</span>
+                  </button>
+                </div>
+
+                <div className={styles.menuDivider} />
+
+                {/* Client Group 3: Payments & Billing */}
+                <div className={styles.menuGroup}>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("payment-methods")}>
+                    <span className={styles.menuLabel}>Payment methods</span>
+                  </button>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("billing")}>
+                    <span className={styles.menuLabel}>Billing and invoices</span>
+                  </button>
+                </div>
+
+                <div className={styles.menuDivider} />
+
+                {/* Client Group 4: Preferences */}
+                <div className={styles.menuGroup}>
+                  <button
+                    type="button"
+                    className={styles.menuRow}
+                    onClick={() => toggleSection("preferences")}
+                    aria-expanded={expandedSection === "preferences"}
+                  >
+                    <span className={styles.menuLabel}>Preferences</span>
+                    <ChevronRight
+                      size={13}
+                      className={`${styles.chevronIcon} ${expandedSection === "preferences" ? styles.expanded : ""}`}
+                    />
+                  </button>
+
+                  {/* Preferences Accordion Panel */}
+                  <div className={`${styles.accordionPanel} ${expandedSection === "preferences" ? styles.open : ""}`}>
+                    <div className={styles.accordionContent}>
+                      <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("notifications")}>
+                        <span className={styles.subMenuLabel}>Notifications</span>
+                      </button>
+                      <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("communication")}>
+                        <span className={styles.subMenuLabel}>Communication preferences</span>
+                      </button>
+                      <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("appearance")}>
+                        <span className={styles.subMenuLabel}>Appearance</span>
+                      </button>
+                      <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("language-region")}>
+                        <span className={styles.subMenuLabel}>Language and region</span>
+                      </button>
+                      <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("privacy")}>
+                        <span className={styles.subMenuLabel}>Privacy and data</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.menuDivider} />
+
+                {/* Client Group 5: Help and support */}
+                <div className={styles.menuGroup}>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("help")}>
+                    <span className={styles.menuLabel}>Help and support</span>
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Group 1: Workspace settings & Team */}
+                <div className={styles.menuGroup}>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("workspace")}>
+                    <span className={styles.menuLabel}>Workspace settings</span>
+                  </button>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("team")}>
+                    <span className={styles.menuLabel}>Team and permissions</span>
+                  </button>
+                </div>
+
+                <div className={styles.menuDivider} />
+
+                {/* Group 2: Business profile & Services */}
+                <div className={styles.menuGroup}>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("profile")}>
+                    <span className={styles.menuLabel}>Business profile</span>
+                  </button>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("services")}>
+                    <span className={styles.menuLabel}>Services and portfolio</span>
+                  </button>
+                </div>
+
+                <div className={styles.menuDivider} />
+
+                {/* Group 3: Billing & Preferences */}
+                <div className={styles.menuGroup}>
+                  <button type="button" className={styles.menuRow} onClick={() => handleNavigate("billing")}>
+                    <span className={styles.menuLabel}>Billing and payouts</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.menuRow}
+                    onClick={() => toggleSection("preferences")}
+                    aria-expanded={expandedSection === "preferences"}
+                  >
+                    <span className={styles.menuLabel}>Preferences</span>
+                    <ChevronRight
+                      size={13}
+                      className={`${styles.chevronIcon} ${expandedSection === "preferences" ? styles.expanded : ""}`}
+                    />
+                  </button>
+
+                  {/* Preferences Accordion Panel */}
+                  <div className={`${styles.accordionPanel} ${expandedSection === "preferences" ? styles.open : ""}`}>
+                    <div className={styles.accordionContent}>
+                      <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("preferences", "notifications")}>
+                        <span className={styles.subMenuLabel}>Notifications</span>
+                      </button>
+                      <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("preferences", "appearance")}>
+                        <span className={styles.subMenuLabel}>Appearance</span>
+                      </button>
+                      <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("preferences", "language")}>
+                        <span className={styles.subMenuLabel}>Language and region</span>
+                      </button>
+                      <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("preferences", "security")}>
+                        <span className={styles.subMenuLabel}>Security and login</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.menuDivider} />
+
+                {/* Group 4: Help and support */}
+                <div className={styles.menuGroup}>
+                  <button
+                    type="button"
+                    className={styles.menuRow}
+                    onClick={() => toggleSection("support")}
+                    aria-expanded={expandedSection === "support"}
+                  >
+                    <span className={styles.menuLabel}>Help and support</span>
+                    <ChevronRight
+                      size={13}
+                      className={`${styles.chevronIcon} ${expandedSection === "support" ? styles.expanded : ""}`}
+                    />
+                  </button>
+
+                  {/* Help & Support Accordion Panel */}
+                  <div className={`${styles.accordionPanel} ${expandedSection === "support" ? styles.open : ""}`}>
+                    <div className={styles.accordionContent}>
+                      <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("help", "centre")}>
+                        <span className={styles.subMenuLabel}>Help centre</span>
+                      </button>
+                      <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("help", "support")}>
+                        <span className={styles.subMenuLabel}>Contact Kallisto support</span>
+                      </button>
+                      <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("help", "report")}>
+                        <span className={styles.subMenuLabel}>Report an issue</span>
+                      </button>
+                      <button type="button" className={styles.subMenuRow} onClick={() => handleNavigate("help", "privacy")}>
+                        <span className={styles.subMenuLabel}>Privacy and terms</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {showDevConsoleLink && (
+                    <>
+                      <div className={styles.menuDivider} />
+                      <button
+                        type="button"
+                        className={styles.menuRow}
+                        onClick={() => {
+                          onClose();
+                          onOpenDevConsole();
+                        }}
+                      >
+                        <span className={styles.menuLabel} style={{ color: "#d97706", fontWeight: 600 }}>
+                          Developer Readiness Console
+                        </span>
+                      </button>
+                    </>
+                  )}
+                </div>
+              </>
+            )
           ) : (
             /* Workspace Switcher view */
             <div className={styles.switcherContainer}>
@@ -337,7 +513,7 @@ export function AccountPopover({
                 localStorage.removeItem("kallisto_auth_token");
                 localStorage.removeItem("kallisto_provider_id");
               }
-              window.location.href = "/login";
+              window.location.href = isPartner ? "/partner/login" : isClient ? "/client/login" : "/login";
             }}
           >
             <LogOut size={14} className={styles.signOutIcon} />

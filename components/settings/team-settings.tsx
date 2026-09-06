@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import styles from "../../app/settings/settings.module.css";
 import { UserPlus, Trash2 } from "lucide-react";
+import styles from "../../app/settings/settings.module.css";
 
 interface TeamSettingsProps {
   workspace: {
@@ -41,7 +41,7 @@ export function TeamSettings({ workspace, permissions }: TeamSettingsProps) {
       id: String(Date.now()),
       name: inviteEmail.split("@")[0],
       email: inviteEmail.trim(),
-      role: inviteRole as any,
+      role: inviteRole,
     };
     setTeamMembers((prev) => [...prev, newMember]);
     setInviteEmail("");
@@ -60,18 +60,21 @@ export function TeamSettings({ workspace, permissions }: TeamSettingsProps) {
   };
 
   return (
-    <div className={styles.settingsContentOutlet}>
-      <div className={styles.profileCleanContainer}>
-        <section>
-          <div className={styles.profileSectionHeader}>
-            <h2 className={styles.profileSectionTitle}>Invite Member</h2>
-            <p className={styles.profileSectionSubtitle}>
+    <div className={styles.contentScrollArea}>
+      {/* 1. Invite Member */}
+      <div className={styles.card}>
+        <div className={styles.cardHeader}>
+          <div>
+            <h2 className={styles.cardHeaderTitle}>Invite Member</h2>
+            <p className={styles.cardHeaderSubtitle}>
               Bring team members into your workspace.
             </p>
           </div>
+        </div>
 
+        <div className={styles.cardBody}>
           <form onSubmit={handleInviteMember} className={styles.cleanFormGrid}>
-            <div className={styles.cleanFieldGroup} style={{ gridColumn: "span 1" }}>
+            <div className={styles.cleanFieldGroup}>
               <label className={styles.cleanFieldLabel}>Member Email</label>
               <input
                 type="email"
@@ -83,7 +86,7 @@ export function TeamSettings({ workspace, permissions }: TeamSettingsProps) {
               />
             </div>
 
-            <div className={styles.cleanFieldGroup} style={{ gridColumn: "span 1" }}>
+            <div className={styles.cleanFieldGroup}>
               <label className={styles.cleanFieldLabel}>Role</label>
               <select
                 className={styles.cleanSelect}
@@ -97,116 +100,81 @@ export function TeamSettings({ workspace, permissions }: TeamSettingsProps) {
             </div>
 
             <div className={styles.fullWidthField} style={{ marginTop: "4px" }}>
-              <button
-                type="submit"
-                style={{
-                  background: "#111827",
-                  color: "#ffffff",
-                  height: "40px",
-                  padding: "0 18px",
-                  borderRadius: "8px",
-                  fontWeight: 600,
-                  border: "none",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  cursor: "pointer",
-                }}
-              >
-                <UserPlus size={16} />
+              <button type="submit" className={styles.btnPrimary}>
+                <UserPlus size={14} />
                 <span>Invite Member</span>
               </button>
             </div>
           </form>
-        </section>
+        </div>
+      </div>
 
-        <section style={{ marginTop: "12px" }}>
-          <div className={styles.profileSectionHeader}>
-            <h2 className={styles.profileSectionTitle}>Team Members</h2>
-            <p className={styles.profileSectionSubtitle}>
+      {/* 2. Team Members List */}
+      <div className={styles.card} style={{ marginTop: "16px" }}>
+        <div className={styles.cardHeader}>
+          <div>
+            <h2 className={styles.cardHeaderTitle}>Team Members</h2>
+            <p className={styles.cardHeaderSubtitle}>
               Manage access and roles of current collaborators.
             </p>
           </div>
+        </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {teamMembers.map((member) => (
-              <div
-                key={member.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "14px 18px",
-                  background: "#ffffff",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: "10px",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                  <div
-                    style={{
-                      width: "36px",
-                      height: "36px",
-                      borderRadius: "50%",
-                      background: "#f3f4f6",
-                      color: "#111827",
-                      fontWeight: 700,
-                      fontSize: "13px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {member.name.substring(0, 2).toUpperCase()}
-                  </div>
-                  <div>
-                    <div style={{ fontSize: "14px", fontWeight: 600, color: "#111827" }}>
-                      {member.name}
+        <div className={styles.cardBody}>
+          <table className={styles.deviceTable}>
+            <thead>
+              <tr>
+                <th>MEMBER</th>
+                <th>ROLE</th>
+                <th style={{ textAlign: "right" }}>ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              {teamMembers.map((member) => (
+                <tr key={member.id}>
+                  <td>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                      <span style={{ fontWeight: 600 }}>{member.name}</span>
+                      <span style={{ fontSize: "12px", color: "#64748b" }}>{member.email}</span>
                     </div>
-                    <div style={{ fontSize: "12.5px", color: "#6b7280" }}>{member.email}</div>
-                  </div>
-                </div>
-
-                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <span
-                    style={{
-                      padding: "3px 8px",
-                      background: "#f3f4f6",
-                      border: "1px solid #e5e7eb",
-                      color: "#374151",
-                      borderRadius: "6px",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                    }}
-                  >
-                    {member.role}
-                  </span>
-
-                  {permissions.canManageMembers && member.role !== "Workspace Owner" && (
-                    <button
-                      type="button"
+                  </td>
+                  <td>
+                    <span
                       style={{
-                        background: "transparent",
-                        border: "none",
-                        color: "#ef4444",
-                        cursor: "pointer",
-                        padding: "6px",
+                        padding: "2px 8px",
+                        background: "#f1f5f9",
                         borderRadius: "6px",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        fontSize: "12px",
+                        fontWeight: 600,
+                        color: "#334155",
                       }}
-                      title="Remove member"
-                      onClick={() => handleRemoveMember(member.id, member.name)}
                     >
-                      <Trash2 size={16} />
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+                      {member.role}
+                    </span>
+                  </td>
+                  <td style={{ textAlign: "right" }}>
+                    {permissions.canManageMembers && member.role !== "Workspace Owner" && (
+                      <button
+                        type="button"
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          color: "#ef4444",
+                          cursor: "pointer",
+                          padding: "6px",
+                        }}
+                        title={`Remove ${member.name}`}
+                        onClick={() => handleRemoveMember(member.id, member.name)}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

@@ -108,7 +108,7 @@ export function ClientPrioritiesBar({ priorities, className }: ClientPrioritiesB
               {/* Main Card Content (Icon + Text Column with Title & Description) */}
               <div className={styles.cardMain}>
                 <div className={styles.iconBox}>
-                  <Icon size={15} className={styles.headerIcon} />
+                  <Icon size={18} className={styles.headerIcon} />
                 </div>
                 <div className={styles.contentCol}>
                   <h4 className={styles.cardTitle}>{prio.label}</h4>

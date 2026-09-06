@@ -459,7 +459,11 @@ export function ProjectDocumentsWorkspace({
             <DocumentsTitleRowActions />
           </div>
         </header>
-      ) : null}
+      ) : (
+        <div className={styles.compactTitleRow} style={{ display: "contents" }}>
+          <h1 className="sr-only">Documents</h1>
+        </div>
+      )}
 
       {!isOnline ? (
         <div className={styles.offlineBanner} role="status">

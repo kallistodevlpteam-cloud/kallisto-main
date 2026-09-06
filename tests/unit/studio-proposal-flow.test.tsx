@@ -21,6 +21,16 @@ describe("Hive Studio Proposal Conversational Flow", () => {
     cleanup();
     mockPush.mockReset();
     mockSearchParams = new URLSearchParams("intent=create_proposal&enquiryId=enq-1");
+    window.matchMedia = vi.fn().mockImplementation((query) => ({
+      matches: query.includes("prefers-reduced-motion"),
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
   });
 
   it("shows compact proposal context modal over Hive Studio when intent is create_proposal", () => {
@@ -57,15 +67,14 @@ describe("Hive Studio Proposal Conversational Flow", () => {
     // Verify submission succeeded without error message
     expect(screen.queryByText(/Submission failed/i)).not.toBeInTheDocument();
 
-    // Verify conversation includes concise assistant message
+    // Verify conversation includes concise assistant message and output glance card
     await waitFor(() => {
       expect(screen.getByText(/The proposal draft is ready/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Villa Design Proposal/i)[0]).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Preview" })).toBeInTheDocument();
     });
 
-    // Verify compact output glance card and Preview CTA button are present
-    expect(screen.getAllByText(/Villa Design Proposal/i)[0]).toBeInTheDocument();
     const previewBtn = screen.getByRole("button", { name: "Preview" });
-    expect(previewBtn).toBeInTheDocument();
 
     // Verify default active-task mode sets data-panel-mode="collapsed" (hidden right rail view by default)
     const workspaceEl = screen.getByRole("button", { name: "Preview" }).closest("[data-panel-mode]");
@@ -255,6 +264,7 @@ describe("Hive Studio Proposal Conversational Flow", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/The proposal draft is ready/i)).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Preview" })).toBeInTheDocument();
     });
 
     const previewBtn = screen.getByRole("button", { name: "Preview" });

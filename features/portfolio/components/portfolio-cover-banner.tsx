@@ -31,15 +31,18 @@ export function PortfolioCoverBanner({
     <div className={styles.coverBannerContainer}>
       <div className={styles.coverBanner} aria-label="Portfolio cover">
         {activeBannerUrl ? (
-          <Image
-            src={activeBannerUrl}
-            alt="Architecture portfolio cover banner"
-            fill
-            priority
-            unoptimized={activeBannerUrl.startsWith("blob:")}
-            className={styles.coverImage}
-            sizes="(max-width: 640px) 100vw, (max-width: 1160px) 90vw, 1120px"
-          />
+          <>
+            <Image
+              src={activeBannerUrl}
+              alt="Architecture portfolio cover banner"
+              fill
+              priority
+              unoptimized={activeBannerUrl.startsWith("blob:")}
+              className={styles.coverImage}
+              sizes="(max-width: 640px) 100vw, (max-width: 1160px) 90vw, 1200px"
+            />
+            <div className={styles.coverBannerOverlay} aria-hidden="true" />
+          </>
         ) : null}
 
         <div className={styles.bannerActionsOverlay}>
@@ -47,6 +50,7 @@ export function PortfolioCoverBanner({
             isOwner={isOwner}
             profile={profile}
             onEdit={onEdit}
+            onUploadCover={() => fileInputRef.current?.click()}
           />
         </div>
 

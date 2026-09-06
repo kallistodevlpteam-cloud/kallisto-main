@@ -22,14 +22,46 @@
   --radius-md: 12px;
   --radius-lg: 16px;
   --control-hit-area: 40px;
+  --project-drawer-duration: 220ms;
   --project-composer-min-height: 48px;
   --project-composer-max-height: 144px;
-  --project-drawer-duration: 220ms;
   color-scheme: light;
+}
+
+[data-theme="dark"],
+.dark {
+  --ink: #f8fafc;
+  --muted: #94a3b8;
+  --soft: #64748b;
+  --line: #1e293b;
+  --line-strong: #334155;
+  --page: #090d16;
+  --surface: #0f172a;
+  --surface-subtle: #1e293b;
+  --surface-hover: #1e293b;
+  --surface-primary: #0f172a;
+  --accent: #38bdf8;
+  --accent-soft: rgba(56, 189, 248, 0.15);
+  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.5), 0 6px 16px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+
+[data-density="compact"] {
+  --topbar-height: 42px;
+  --control-hit-area: 32px;
+  font-size: 13px;
 }
 
 * {
   box-sizing: border-box;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 html,
@@ -373,11 +405,16 @@ textarea:focus-visible {
 }
 
 .nav-icon {
-  color: #6b7280;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.nav-row:hover .nav-icon {
+  transform: scale(1.08);
 }
 
 .nav-row.is-active .nav-icon {
-  color: var(--ink);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.12));
 }
 
 .nav-label {
@@ -396,6 +433,36 @@ textarea:focus-visible {
   color: #4b5563;
   font-size: 10.5px;
   font-weight: 600;
+}
+
+.nav-row.nav-row--locked {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.nav-row.nav-row--locked:hover {
+  background: var(--surface-subtle);
+  color: var(--ink);
+}
+
+.nav-lock-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  padding: 2px 3px;
+  border-radius: 4px;
+  transition: color 0.15s ease, transform 0.15s ease;
+  margin-left: auto;
+}
+
+.nav-row.nav-row--locked:hover .nav-lock-badge {
+  color: #d97706;
+  transform: scale(1.1);
 }
 
 .nav-section-header {
@@ -520,6 +587,9 @@ textarea:focus-visible {
   align-items: center;
   width: var(--sidebar-rail);
   padding: 8px 6px;
+  overflow: visible !important;
+  position: relative;
+  z-index: 70;
 }
 
 .rail-top {
@@ -528,6 +598,8 @@ textarea:focus-visible {
   align-items: center;
   margin-bottom: 12px;
   width: 100%;
+  position: relative;
+  overflow: visible;
 }
 
 .rail-toggle-btn {
@@ -541,6 +613,8 @@ textarea:focus-visible {
   color: #6b7280;
   cursor: pointer;
   transition: background 0.12s, color 0.12s;
+  position: relative;
+  overflow: visible;
 }
 
 .rail-toggle-btn:hover {
@@ -556,6 +630,7 @@ textarea:focus-visible {
 }
 
 .rail-brand-btn {
+  position: relative;
   display: grid;
   place-items: center;
   width: 100%;
@@ -566,6 +641,7 @@ textarea:focus-visible {
   color: var(--ink, #0f172a);
   cursor: pointer;
   transition: background 0.12s ease, transform 0.12s ease;
+  overflow: visible;
 }
 
 .rail-brand-btn:hover {
@@ -578,6 +654,8 @@ textarea:focus-visible {
   align-items: center;
   gap: 3px;
   width: 100%;
+  position: relative;
+  overflow: visible;
 }
 
 .rail-button {
@@ -592,6 +670,7 @@ textarea:focus-visible {
   color: #4b5563;
   cursor: pointer;
   transition: background 0.12s, color 0.12s;
+  overflow: visible;
 }
 
 .rail-button:hover {
@@ -614,6 +693,100 @@ textarea:focus-visible {
   background: #3b82f6;
 }
 
+.rail-button--locked {
+  position: relative;
+}
+
+.rail-lock-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #94a3b8;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+}
+
+.rail-button--locked:hover .rail-lock-dot {
+  color: #d97706;
+  border-color: #fde68a;
+  background: #fffbeb;
+  transform: scale(1.1);
+}
+
+/* ─── Sleek floating hover indicator for Rail Sidebar buttons ─── */
+.rail-tooltip {
+  position: absolute;
+  left: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-6px);
+  background: #0f172a;
+  color: #ffffff;
+  height: 32px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s cubic-bezier(0.16, 1, 0.3, 1), transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.15s;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 999999;
+}
+
+.rail-tooltip::before {
+  content: "";
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-right-color: #0f172a;
+}
+
+.rail-button:hover .rail-tooltip,
+.rail-brand-btn:hover .rail-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(0);
+}
+
+.rail-tooltip-badge {
+  font-size: 10.5px;
+  font-weight: 650;
+  line-height: 1;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: #334155;
+  color: #f1f5f9;
+}
+
+.rail-tooltip-locked-badge {
+  font-size: 10.5px;
+  font-weight: 650;
+  line-height: 1;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: rgba(245, 158, 11, 0.22);
+  color: #fbbf24;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .rail-spacer {
   flex: 1;
 }
@@ -624,6 +797,8 @@ textarea:focus-visible {
   align-items: center;
   gap: 6px;
   margin-top: auto;
+  position: relative;
+  overflow: visible;
 }
 
 .rail-upgrade-btn {
@@ -1129,9 +1304,17 @@ textarea:focus-visible {
 .workspace.basics-route-workspace,
 .workspace.hands-route-workspace,
 .workspace:has(.basicsShell),
-.workspace:has(.documentsBoundedRoute) {
+.workspace:has(.documentsBoundedRoute),
+.workspace:has(.calendarWorkspaceRoot) {
   padding: 0;
   overflow: hidden;
+  height: 100%;
+}
+
+.workspace.hands-route-workspace {
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   height: 100%;
 }
 
@@ -1149,8 +1332,8 @@ textarea:focus-visible {
 }
 
 .workspace-container.boqBoundedRoute {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   height: 100%;
   min-height: 0;
   padding: 24px;
@@ -1159,8 +1342,12 @@ textarea:focus-visible {
 }
 
 .boqBoundedRoute > .route-content-wrap {
+  flex: 1;
   min-height: 0;
+  height: 100%;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .workspace-container {
@@ -1187,24 +1374,36 @@ textarea:focus-visible {
   flex-direction: column;
 }
 
-.workspace-container.enquiries-page-container {
+.workspace-container.enquiries-page-container,
+.workspace-container.hands-page-container {
   width: 100%;
   max-width: 100%;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
+  min-height: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
-  padding: 24px;
+  padding: 16px 20px 32px 20px;
   box-sizing: border-box;
 }
 
-.workspace-container.enquiries-page-container > .route-content-wrap {
+.workspace-container.enquiries-page-container > .route-content-wrap,
+.workspace-container.hands-page-container > .route-content-wrap {
   flex: 1 1 auto;
   min-height: 0;
-  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
+}
+
+/* Workers page: own split-column scroll layout with sticky Odin panel */
+.workspace-container.hands-page-container:has(.hands-workers-workspace-root) {
+  height: 100%;
+  overflow: hidden;
+  padding: 16px 20px;
+}
+
+.workspace-container.hands-page-container:has(.hands-workers-workspace-root) > .route-content-wrap {
+  height: 100%;
   overflow: hidden;
 }
 

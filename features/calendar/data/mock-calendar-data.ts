@@ -8,6 +8,45 @@ export interface MockProject {
   progress: number;
 }
 
+export interface CalendarTeamMember {
+  id: string;
+  name: string;
+  role: string;
+  location: string;
+  avatar: string;
+}
+
+export const CALENDAR_TEAM_MEMBERS: Record<string, CalendarTeamMember> = {
+  "usr-1": {
+    id: "usr-1",
+    name: "Brandon Russell",
+    role: "Lead Architect",
+    location: "834 Boyer Shore Suite 076",
+    avatar: "BR",
+  },
+  "usr-2": {
+    id: "usr-2",
+    name: "Rithvik Menon",
+    role: "Site Coordinator",
+    location: "Kallisto Studio, Kochi",
+    avatar: "RM",
+  },
+  "usr-3": {
+    id: "usr-3",
+    name: "Ananya Roy",
+    role: "Structural Consultant",
+    location: "Structural Lab, Kochi",
+    avatar: "AR",
+  },
+  "usr-4": {
+    id: "usr-4",
+    name: "Devika Nair",
+    role: "Project Designer",
+    location: "Design Studio, Calicut",
+    avatar: "DN",
+  },
+};
+
 export const MOCK_PROJECTS: MockProject[] = [
   { id: "proj-101", name: "Skyline Apartments — Site B", code: "KAL-2026-001", phase: "Construction", progress: 45 },
   { id: "proj-102", name: "Greenfield Luxury Villa", code: "KAL-2026-002", phase: "Structural Review", progress: 68 },

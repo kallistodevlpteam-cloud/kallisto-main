@@ -1,12 +1,13 @@
 "use client";
 
-import { ChevronDown, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, LayoutGrid, List, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
 import type {
   Deployment,
   DeploymentStatus,
   HandsTab,
 } from "../types/hands.types";
+import { DeploymentCardsGrid } from "./deployment-cards-grid";
 import { DeploymentMobileCard } from "./deployment-mobile-card";
 import { DeploymentTable } from "./deployment-table";
 import styles from "./hands-overview.module.css";
@@ -28,6 +29,7 @@ export function ActiveDeploymentsCard({
 }: ActiveDeploymentsCardProps) {
   const [projectFilter, setProjectFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
 
   const projects = useMemo(
     () =>
@@ -108,26 +110,56 @@ export function ActiveDeploymentsCard({
             <ChevronDown size={13} aria-hidden="true" />
           </label>
         </div>
+
+        <div className={styles.viewModeToggle} role="group" aria-label="Deployment layout view">
+          <button
+            type="button"
+            className={`${styles.viewModeBtn} ${viewMode === "grid" ? styles.viewModeBtnActive : ""}`}
+            onClick={() => setViewMode("grid")}
+            aria-label="Cards grid view"
+            title="Cards grid view"
+          >
+            <LayoutGrid size={15} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className={`${styles.viewModeBtn} ${viewMode === "table" ? styles.viewModeBtnActive : ""}`}
+            onClick={() => setViewMode("table")}
+            aria-label="Table list view"
+            title="Table list view"
+          >
+            <List size={15} aria-hidden="true" />
+          </button>
+        </div>
       </div>
 
       {filteredDeployments.length > 0 ? (
         <>
-          <div className={styles.desktopDeployments}>
-            <DeploymentTable
+          {viewMode === "grid" ? (
+            <DeploymentCardsGrid
               deployments={filteredDeployments}
-              onSelect={onSelectDeployment}
-              onNavigateTab={onNavigateTab}
+              onSelectDeployment={onSelectDeployment}
             />
-          </div>
-          <div className={styles.mobileDeployments}>
-            {filteredDeployments.map((deployment) => (
-              <DeploymentMobileCard
-                key={deployment.id}
-                deployment={deployment}
-                onSelect={onSelectDeployment}
-              />
-            ))}
-          </div>
+          ) : (
+            <>
+              <div className={styles.desktopDeployments}>
+                <DeploymentTable
+                  deployments={filteredDeployments}
+                  onSelect={onSelectDeployment}
+                  onNavigateTab={onNavigateTab}
+                />
+              </div>
+              <div className={styles.mobileDeployments}>
+                {filteredDeployments.map((deployment) => (
+                  <DeploymentMobileCard
+                    key={deployment.id}
+                    deployment={deployment}
+                    onSelect={onSelectDeployment}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </>
       ) : (
         <div className={styles.compactEmptyState}>

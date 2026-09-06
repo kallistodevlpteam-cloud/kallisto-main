@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getStoredAuthToken } from "@/lib/auth/authed-fetch";
 import { OdinProvider } from "@/contexts/odin-context";
 import { useOdin } from "@/hooks/use-odin";
@@ -17,6 +17,8 @@ import { TopBar } from "./top-bar";
 import "../../developer-console/developer-console.css";
 import { useDeveloperConsole } from "../../developer-console/hooks/useDeveloperConsole";
 import { DeveloperReadinessDrawer } from "../../developer-console/components/DeveloperReadinessDrawer";
+import { LockedFeatureModal } from "./locked-feature-modal";
+import { type SidebarNavigationItem } from "./sidebar-navigation";
 import {
   useShellResponsiveState,
 } from "@/lib/layout/shell-responsive-contract";
@@ -29,15 +31,22 @@ interface AppShellProps {
 
 function AppShellContent({ children, layoutProfile = "default" }: AppShellProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [userSidebarCollapsed, setUserSidebarCollapsed] = useState(false);
 
   // Client-side authentication gate
   useEffect(() => {
     const token = getStoredAuthToken();
     if (!token) {
-      router.replace("/login");
+      if (pathname.startsWith("/client")) {
+        router.replace("/client/login");
+      } else if (pathname.startsWith("/partner")) {
+        router.replace("/partner/login");
+      } else {
+        router.replace("/login");
+      }
     }
-  }, [router]);
+  }, [router, pathname]);
   const { assistantOpen, odinPinned, toggleAssistant, closeOdin } = useOdin();
   const responsiveState = useShellResponsiveState(userSidebarCollapsed, odinPinned);
   const { shellMode, sidebarMode, odinMode, canDockOdin } = responsiveState;
@@ -53,6 +62,32 @@ function AppShellContent({ children, layoutProfile = "default" }: AppShellProps)
   // Account Popover state
   const [accountOpen, setAccountOpen] = useState(false);
   const [accountInitialView, setAccountInitialView] = useState<"main" | "switcher">("main");
+
+  // Locked Feature Modal state
+  const [lockedModalData, setLockedModalData] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    featureName: string;
+    perks?: string[];
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    featureName: "",
+    perks: [],
+  });
+
+  const handleLockedItemClick = (item: SidebarNavigationItem) => {
+    setMobileNavigationOpen(false);
+    setLockedModalData({
+      isOpen: true,
+      title: item.lockedTitle || `${item.label} Locked`,
+      description: item.lockedMessage || `${item.label} is locked on your current plan tier.`,
+      featureName: item.label,
+      perks: item.lockedPerks,
+    });
+  };
 
   const handleToggleAccountPopover = (view: "main" | "switcher" = "main") => {
     if (!accountOpen) {
@@ -108,12 +143,17 @@ function AppShellContent({ children, layoutProfile = "default" }: AppShellProps)
     >
       <MobileScreenGuard />
       {sidebarIsCollapsed ? (
-        <SidebarRail onToggleSidebar={handleSidebarToggle} pendingEnquiryCount={pendingEnquiryCount} />
+        <SidebarRail
+          onToggleSidebar={handleSidebarToggle}
+          pendingEnquiryCount={pendingEnquiryCount}
+          onLockedItemClick={handleLockedItemClick}
+        />
       ) : (
         <SidebarExpanded
           pendingEnquiryCount={pendingEnquiryCount}
           onToggleAccountPopover={handleToggleAccountPopover}
           onToggleSidebar={handleSidebarToggle}
+          onLockedItemClick={handleLockedItemClick}
         />
       )}
 
@@ -147,6 +187,15 @@ function AppShellContent({ children, layoutProfile = "default" }: AppShellProps)
         onToggleAssistant={toggleAssistant}
       />
 
+      <LockedFeatureModal
+        isOpen={lockedModalData.isOpen}
+        onClose={() => setLockedModalData((prev) => ({ ...prev, isOpen: false }))}
+        title={lockedModalData.title}
+        description={lockedModalData.description}
+        featureName={lockedModalData.featureName}
+        perks={lockedModalData.perks}
+      />
+
       {showMobileDrawer && (
         <button
           className="mobile-nav-backdrop"
@@ -160,6 +209,7 @@ function AppShellContent({ children, layoutProfile = "default" }: AppShellProps)
           <SidebarExpanded
             pendingEnquiryCount={pendingEnquiryCount}
             onToggleAccountPopover={handleToggleAccountPopover}
+            onLockedItemClick={handleLockedItemClick}
           />
         </div>
       )}

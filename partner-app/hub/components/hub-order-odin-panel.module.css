@@ -1,0 +1,221 @@
+/* =========================================================================
+   HUB ORDER ODIN PANEL STYLES
+   Contextual AI order assistant with 3-card container layout
+   ========================================================================= */
+
+.aiOrderPanelContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.minimalBookingCard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  background: #f8fafc;
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  border: none;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+/* =========================================================================
+   1. TOP HEADER CARD
+   ========================================================================= */
+.minimalBookingHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #ffffff;
+  border-radius: 16px;
+  margin: 5px 5px 6px 5px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.07), 0 1px 2px rgba(15, 23, 42, 0.03);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.minimalBookingHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.minimalOdinAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.minimalBookingHeaderTitles {
+  display: flex;
+  flex-direction: column;
+}
+
+.minimalBookingTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.minimalBookingSub {
+  font-size: 10.5px;
+  color: #64748b;
+  margin: 0;
+}
+
+.minimalHeaderActionBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.minimalHeaderActionBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* =========================================================================
+   2. MIDDLE CHAT & CONTEXT STREAM CARD
+   ========================================================================= */
+.minimalChatStream {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #ffffff;
+  border-radius: 16px;
+  margin: 0 5px 6px 5px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.07), 0 1px 2px rgba(15, 23, 42, 0.03);
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.minimalChatStream::-webkit-scrollbar {
+  width: 5px;
+}
+
+.minimalChatStream::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.minimalChatStream::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+.odinChatRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+.odinAvatarIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #0f172a;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.odinChatContent {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  color: #1e293b;
+  line-height: 1.5;
+}
+
+/* =========================================================================
+   3. BOTTOM COMPOSER CARD
+   ========================================================================= */
+.minimalComposer {
+  background: #ffffff;
+  border-radius: 16px;
+  margin: 0 5px 5px 5px;
+  padding: 8px 10px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.07), 0 1px 2px rgba(15, 23, 42, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.minimalComposerRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.minimalComposerInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 12.5px;
+  color: #0f172a;
+  font-family: inherit;
+}
+
+.minimalComposerInput::placeholder {
+  color: #94a3b8;
+}
+
+.minimalSendBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #2563eb;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 140ms ease;
+  flex-shrink: 0;
+}
+
+.minimalSendBtnActive {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border-color: #2563eb !important;
+}
+
+.minimalSendBtn:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}

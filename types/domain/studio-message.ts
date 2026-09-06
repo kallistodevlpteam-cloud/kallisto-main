@@ -25,6 +25,17 @@ export interface StudioOutputReference {
   eventType: "created" | "revised" | "linked";
 }
 
+export interface StudioProviderCardReference {
+  providerId: string;
+  name: string;
+  avatarUrl?: string;
+  rating?: number;
+  reviewsCount?: number;
+  packageTitle: string;
+  packagePrice: string;
+  isVerified?: boolean;
+}
+
 export interface StudioChatMessage {
   id: string;
   taskId: string;
@@ -35,6 +46,7 @@ export interface StudioChatMessage {
   actions?: StudioMessageAction[];
   outputId?: string;
   outputReference?: StudioOutputReference;
+  providerCard?: StudioProviderCardReference;
   sources?: StudioSource[];
   retryPayload?: StudioRetryPayload;
 }

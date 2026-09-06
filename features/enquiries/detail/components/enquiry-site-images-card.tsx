@@ -61,6 +61,7 @@ export function EnquirySiteImagesCard({
             <PortfolioDuotoneIcon size={16} />
           </span>
           <h3 className={styles.headerTitle}>{title}</h3>
+          <span className="sr-only">Site Images Preview</span>
         </div>
         <div className={styles.headerRight}>
           <span className={styles.countBadge}>
@@ -75,6 +76,7 @@ export function EnquirySiteImagesCard({
             aria-controls="site-images-gallery"
             aria-label={expanded ? "Collapse gallery" : "Expand gallery"}
           >
+            <span className="sr-only">{title}</span>
             {expanded ? (
               <ChevronUp size={15} className={styles.chevron} />
             ) : (
@@ -86,11 +88,11 @@ export function EnquirySiteImagesCard({
 
       {/* ── 4-Column Image Gallery Grid ── */}
       {expanded && !hasImages && (
-        <div className={styles.emptyContainer} aria-label="No site images available">
+        <div className={styles.emptyContainer}>
           <div className={styles.emptyIconBox}>
             <PortfolioDuotoneIcon size={24} />
           </div>
-          <p className={styles.emptyTitle}>No site images shared yet</p>
+          <p className={styles.emptyTitle} aria-label="No site images available">No site images have been shared yet.</p>
           <p className={styles.emptySubText}>
             Site photographs and contextual media uploaded by the client will appear here.
           </p>

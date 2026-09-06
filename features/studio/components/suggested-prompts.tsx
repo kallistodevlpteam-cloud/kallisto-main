@@ -58,15 +58,17 @@ export function SuggestedPrompts({
               gap: "6px",
               height: "34px",
               padding: "0 14px",
-              border: "1px solid #e2e8f0",
+              border: "1px solid rgba(226, 232, 240, 0.85)",
               borderRadius: "9999px",
-              background: "#ffffff",
+              background: "rgba(255, 255, 255, 0.78)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
               color: "#334155",
-              fontSize: "13px",
-              fontWeight: 500,
+              fontSize: "12.5px",
+              fontWeight: 550,
               cursor: "pointer",
               transition: "all 0.15s ease",
-              boxShadow: "0 1px 2px rgba(15, 23, 42, 0.02)",
+              boxShadow: "0 2px 6px rgba(15, 23, 42, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.9)",
             }}
           >
             <span>{promptText}</span>

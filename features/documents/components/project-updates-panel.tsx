@@ -649,14 +649,25 @@ export function ProjectUpdatesPanel({
                     <SendHorizontal size={15} style={{ marginLeft: "1px" }} aria-hidden="true" />
                   </button>
                 ) : (
-                  <button
-                    type="button"
-                    className="chatgpt-voice-wave-btn"
-                    aria-label="Voice Mode"
-                    title="Voice Mode"
-                  >
-                    <AudioLines size={18} strokeWidth={2.2} aria-hidden="true" />
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      className="chatgpt-voice-wave-btn"
+                      aria-label="Voice Mode"
+                      title="Voice Mode"
+                    >
+                      <AudioLines size={18} strokeWidth={2.2} aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      className="sr-only"
+                      onClick={state.handleSendUpdate}
+                      aria-label="Submit update"
+                      tabIndex={-1}
+                    >
+                      Submit update
+                    </button>
+                  </>
                 )}
               </div>
             </div>

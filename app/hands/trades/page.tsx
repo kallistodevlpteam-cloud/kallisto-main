@@ -5,7 +5,7 @@ import styles from "@/features/hands/components/hands-overview.module.css";
 
 export default function HandsTradesPage() {
   return (
-    <div className={styles.page}>
+    <div className={`workspace-container ${styles.page}`}>
       <Suspense fallback={<HandsOverviewSkeleton />}>
         <HandsTradeDiscovery />
       </Suspense>

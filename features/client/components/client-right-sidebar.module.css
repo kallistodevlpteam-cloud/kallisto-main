@@ -1,0 +1,530 @@
+/* ── Client Right Sidebar (Hive Studio Theme & Layout) ── */
+.sidebarContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  padding: 14px 16px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  isolation: isolate;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sidebarContainer::-webkit-scrollbar {
+  display: none;
+}
+
+/* Header & Tab Switcher Bar */
+.sidebarTopBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding-bottom: 10px;
+}
+
+.tabsRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tabBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #64748b;
+  font-size: 12.5px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tabBtn:hover {
+  color: #0f172a;
+  background: #f7f7f5;
+}
+
+.activeTabBtn {
+  background: #f7f7f5;
+  color: #0f172a;
+  border: none;
+  font-weight: 650;
+}
+
+.collapseToggleBtn {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  outline: none;
+}
+
+.collapseToggleBtn:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: #0f172a;
+}
+
+/* Project Intelligence View Body */
+.sidebarBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Project Snapshot Header Card */
+.projectSnapshotCard {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.snapshotTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stageBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 650;
+  color: #16a34a;
+  background: #f0fdf4;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.stageDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #16a34a;
+}
+
+.projectTitle {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.projectSubMeta {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.projectMetricsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid #edf2f7;
+}
+
+.metricItem {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.metricLabel {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.metricValue {
+  font-size: 12px;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+/* New Chat Action Button in Project Section */
+.newChatBannerBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #0f172a;
+  color: #ffffff;
+  border: 1px solid #0f172a;
+  border-radius: 14px;
+  padding: 9px 13px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  transition: all 0.14s ease;
+}
+
+.newChatBannerBtn:hover {
+  background: #1e293b;
+  border-color: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+}
+
+.newChatBannerLeft {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.newChatIconWrap {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.newChatMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.newChatTitle {
+  font-size: 11.5px;
+  font-weight: 650;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.newChatSubtitle {
+  font-size: 10px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Sidebar Section Container */
+.sidebarSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebarSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebarHeaderTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sidebarSectionCount {
+  font-size: 10.5px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.badgeAlert {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #e11d48;
+  background: #fff1f2;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* Work List */
+.sidebarWorkList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebarWorkItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.sidebarWorkItem:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  transform: translateX(2px);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+}
+
+.sidebarWorkIcon {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sidebarWorkMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.sidebarWorkTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sidebarWorkTitle {
+  font-size: 11.5px;
+  font-weight: 650;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badgeDraft {
+  font-size: 9px;
+  font-weight: 650;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 1px 4px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.badgeReady {
+  font-size: 9px;
+  font-weight: 650;
+  color: #7c3aed;
+  background: #f5f3ff;
+  padding: 1px 4px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.badgeReview {
+  font-size: 9px;
+  font-weight: 650;
+  color: #0284c7;
+  background: #f0f9ff;
+  padding: 1px 4px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.sidebarWorkSubtitle {
+  font-size: 10px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebarArrow {
+  color: #94a3b8;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Odin Noticed List */
+.sidebarNoticedList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebarNoticedCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  background: #fafafa;
+  border: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.sidebarNoticedCard:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+.sidebarNoticedIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.sidebarNoticedMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebarNoticedTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.sidebarNoticedDesc {
+  font-size: 10px;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.sidebarActionLink {
+  font-size: 10px;
+  font-weight: 650;
+  color: #7c3aed;
+  margin-top: 2px;
+  display: inline-block;
+}
+
+/* Milestone Escrow */
+.milestoneCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.14s ease;
+}
+
+.milestoneCard:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+.milestoneTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.milestoneTitle {
+  font-size: 12px;
+  font-weight: 650;
+  color: #0f172a;
+}
+
+.milestoneAmount {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.milestoneStatusRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10.5px;
+}
+
+.milestoneActionBtn {
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 4px 10px;
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.milestoneActionBtn:hover {
+  background: #1e293b;
+}
+
+/* Financial summary bar */
+.financialSummaryCard {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progressBarContainer {
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: #ea580c;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.emptySidebarState {
+  padding: 32px 16px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.5;
+}

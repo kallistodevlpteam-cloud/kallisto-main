@@ -72,9 +72,112 @@ export type ConstructionProject = {
   visibility: "public" | "private";
 };
 
+export type PortfolioGalleryCategory =
+  | "All"
+  | "Exterior"
+  | "Interior"
+  | "Floor Plans"
+  | "3D Visuals"
+  | "Construction Progress";
+
+export interface PortfolioGalleryItem {
+  id: string;
+  url: string;
+  category: "Exterior" | "Interior" | "Floor Plans" | "3D Visuals" | "Construction Progress";
+  caption: string;
+  featured?: boolean;
+  aspectRatio?: "square" | "landscape" | "portrait";
+}
+
+export type MilestoneStatus = "Completed" | "In Progress" | "Upcoming" | "Delayed";
+
+export interface PortfolioTimelineMilestone {
+  id: string;
+  stepNumber: string;
+  title: string;
+  date: string;
+  status: MilestoneStatus;
+  description: string;
+}
+
+export interface PortfolioProgressStage {
+  stage: string;
+  percent: number;
+}
+
+export interface PortfolioServiceScope {
+  name: string;
+  description: string;
+  deliverables: string[];
+  status: "Delivered" | "In Progress" | "Upcoming";
+}
+
+export interface PortfolioMaterialItem {
+  name: string;
+  application: string;
+  image?: string;
+  colorSwatch?: string;
+}
+
+export interface PortfolioTeamMember {
+  role: string;
+  name: string;
+  organization: string;
+  service: string;
+  status: "Verified" | "Partner" | "External";
+  providerId?: string;
+  isKallistoProvider?: boolean;
+}
+
+export interface PortfolioProjectUpdate {
+  id: string;
+  date: string;
+  title: string;
+  description: string;
+  images: string[];
+  addedBy: string;
+  milestone: string;
+}
+
+export interface PortfolioProjectDocument {
+  id: string;
+  name: string;
+  fileType: string;
+  size: string;
+  updatedDate: string;
+  version: string;
+  url: string;
+}
+
+export interface PortfolioClientFeedback {
+  rating: number;
+  quote: string;
+  clientName: string;
+  projectContext: string;
+  date?: string;
+}
+
 export interface PortfolioProject extends ConstructionProject {
   lastEditedAt?: string;
   completionPercent?: number;
+  floors?: string;
+  bedrooms?: string;
+  detailedGallery?: PortfolioGalleryItem[];
+  editorialSummary?: {
+    vision: string;
+    approach: string;
+    context: string;
+  };
+  milestones?: PortfolioTimelineMilestone[];
+  progressStages?: PortfolioProgressStage[];
+  serviceScopes?: PortfolioServiceScope[];
+  materialItems?: PortfolioMaterialItem[];
+  teamMembers?: PortfolioTeamMember[];
+  updates?: PortfolioProjectUpdate[];
+  documents?: PortfolioProjectDocument[];
+  outcomesSummary?: string;
+  clientFeedback?: PortfolioClientFeedback;
+  relatedProjectIds?: string[];
 }
 
 export interface PortfolioProfile {
@@ -167,6 +270,8 @@ export interface TaggedPortfolioItem {
   role: string;
   originalOwner: string;
   status: TaggedPortfolioStatus;
+  projectType?: ConstructionProjectType;
+  category?: string;
 }
 
 export interface PortfolioPageData {

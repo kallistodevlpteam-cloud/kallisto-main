@@ -380,12 +380,30 @@ export function useProjectUpdatesPanelState(
   const handleSendUpdate = async () => {
     if (!updateText.trim() && attachedFiles.length === 0 && !selectedAction && selectedMentions.length === 0) return;
 
-    const imageFiles = attachedFiles.filter((file) => file.type.startsWith("image/"));
+    const currentText = updateText.trim();
+    const currentFiles = [...attachedFiles];
+    const currentAction = selectedAction;
+    const currentMentions = [...selectedMentions];
+    const currentAudience = selectedAudience;
+    const currentCategory = activeCategory;
+
+    setUpdateText("");
+    setAttachedFiles([]);
+    setSelectedAction(null);
+    setSelectedMentions([]);
+    if (textareaRef.current) {
+      textareaRef.current.value = "";
+      textareaRef.current.style.height = `${PROJECT_UPDATE_TEXTAREA_MIN_HEIGHT}px`;
+      textareaRef.current.style.overflowX = "hidden";
+      textareaRef.current.style.overflowY = "hidden";
+    }
+
+    const imageFiles = currentFiles.filter((file) => file.type.startsWith("image/"));
     const createdMediaImages = imageFiles.map((file) => URL.createObjectURL(file));
     const firstImageFile = imageFiles[0];
     const previewUrl = firstImageFile ? URL.createObjectURL(firstImageFile) : (createdMediaImages[0] ?? undefined);
 
-    const nonImageFiles = attachedFiles.filter((file) => !file.type.startsWith("image/"));
+    const nonImageFiles = currentFiles.filter((file) => !file.type.startsWith("image/"));
     const attachedFilesList: AttachedDocument[] = nonImageFiles.map((f) => ({
       name: f.name,
       size: `${(f.size / 1024).toFixed(0)} KB`,
@@ -393,15 +411,15 @@ export function useProjectUpdatesPanelState(
       url: URL.createObjectURL(f),
     }));
 
-    let tagText = activeCategory.tag || "Site Update";
-    if (selectedAction) tagText = `Action: ${selectedAction.label}`;
-    else if (selectedMentions.length > 0) tagText = `Mention (${selectedMentions.length})`;
-    else if (selectedAudience.id !== "all") tagText = `${selectedAudience.label} • ${activeCategory.tag}`;
+    let tagText = currentCategory.tag || "Site Update";
+    if (currentAction) tagText = `Action: ${currentAction.label}`;
+    else if (currentMentions.length > 0) tagText = `Mention (${currentMentions.length})`;
+    else if (currentAudience.id !== "all") tagText = `${currentAudience.label} • ${currentCategory.tag}`;
 
     // Upload files to durable mock file storage and prepare attachments for publishing
     const preparedAttachments: ProjectUpdateAttachment[] = [];
-    for (let i = 0; i < attachedFiles.length; i++) {
-      const f = attachedFiles[i];
+    for (let i = 0; i < currentFiles.length; i++) {
+      const f = currentFiles[i];
       const storageRes = await mockProjectFileStorage.uploadFile(projectId, f);
       preparedAttachments.push({
         id: `att-dash-${Date.now()}-${i}`,
@@ -412,7 +430,7 @@ export function useProjectUpdatesPanelState(
         storageObjectId: storageRes.storageObjectId,
         downloadUrl: storageRes.downloadUrl,
         url: storageRes.downloadUrl,
-        documentCategory: activeCategory.id,
+        documentCategory: currentCategory.id,
       });
     }
 
@@ -425,10 +443,10 @@ export function useProjectUpdatesPanelState(
           authorName: actor.name,
           authorRole: actor.role,
           authorAvatar: actor.avatarUrl,
-          type: attachedFiles.length > 0 ? "document_uploaded" : "general",
+          type: currentFiles.length > 0 ? "document_uploaded" : "general",
           title: tagText,
-          body: updateText.trim() || undefined,
-          visibility: selectedAudience.id === "internal" ? "internal" : selectedAudience.id === "client" ? "client_visible" : "project_team",
+          body: currentText || undefined,
+          visibility: currentAudience.id === "internal" ? "internal" : currentAudience.id === "client" ? "client_visible" : "project_team",
           attachments: preparedAttachments,
         },
         actor,
@@ -444,24 +462,15 @@ export function useProjectUpdatesPanelState(
       role: actor.role,
       date: "Just now",
       tag: tagText,
-      text: updateText.trim() || (selectedAction
-        ? `Initiated action: ${selectedAction.label}`
-        : `Uploaded ${attachedFiles.length} ${activeCategory.label.toLowerCase()} file${attachedFiles.length > 1 ? "s" : ""}.`),
+      text: currentText || (currentAction
+        ? `Initiated action: ${currentAction.label}`
+        : `Uploaded ${currentFiles.length} ${currentCategory.label.toLowerCase()} file${currentFiles.length > 1 ? "s" : ""}.`),
       mediaImg: previewUrl,
       mediaImages: createdMediaImages.length > 0 ? createdMediaImages : undefined,
       attachedFilesList: attachedFilesList.length > 0 ? attachedFilesList : undefined,
-      mediaBadge: attachedFiles.length > 0 ? `${attachedFiles.length} ${activeCategory.label}` : undefined,
+      mediaBadge: currentFiles.length > 0 ? `${currentFiles.length} ${currentCategory.label}` : undefined,
     }, ...current]);
 
-    setUpdateText("");
-    setAttachedFiles([]);
-    setSelectedAction(null);
-    setSelectedMentions([]);
-    if (textareaRef.current) {
-      textareaRef.current.style.height = `${PROJECT_UPDATE_TEXTAREA_MIN_HEIGHT}px`;
-      textareaRef.current.style.overflowX = "hidden";
-      textareaRef.current.style.overflowY = "hidden";
-    }
     const reducedMotion =
       typeof window.matchMedia === "function" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;

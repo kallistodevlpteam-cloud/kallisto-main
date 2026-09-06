@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useRef } from "react";
+import { Plus } from "lucide-react";
 import {
   DocumentsDuotoneIcon,
   DrawingsDuotoneIcon,
-  PlusDuotoneIcon,
   PortfolioDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 import { StudioSource, StudioSourceType } from "../../types/studio-source";
@@ -64,20 +64,30 @@ export function ComposerAttachmentMenu({
         style={{
           display: "grid",
           placeItems: "center",
-          width: "28px",
-          height: "28px",
+          width: "32px",
+          height: "32px",
           border: "none",
           borderRadius: "50%",
-          background: "transparent",
-          color: "#475569",
+          background: "#18181b",
+          color: "#ffffff",
           cursor: "pointer",
           padding: 0,
-          transition: "color 0.15s ease, background-color 0.15s ease",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
+          transition: "transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease",
+          flexShrink: 0,
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)")}
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = "#000000";
+          e.currentTarget.style.transform = "scale(1.05)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = "#18181b";
+          e.currentTarget.style.transform = "scale(1)";
+        }}
+        onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.96)")}
+        onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
       >
-        <PlusDuotoneIcon size={18} />
+        <Plus size={16} strokeWidth={2.4} />
       </button>
 
       {attachments.map((source) => (

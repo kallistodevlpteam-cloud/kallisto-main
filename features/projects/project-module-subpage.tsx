@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { Share2, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import {
   MapPinDuotoneIcon,
   CalendarDuotoneIcon,
@@ -58,7 +58,7 @@ export function ProjectModuleSubpage({ projectId, module, customTitle }: Project
   const pathname = usePathname();
   const isGantt = module === "gantt" || Boolean(pathname?.endsWith("/timeline/gantt"));
   const effectiveModule = isGantt ? "gantt" : module;
-  const [searchQuery, setSearchQuery] = useState(searchParams?.get("q") || "");
+  const searchQuery = searchParams?.get("q") || "";
   const [project, setProject] = useState<Project | null>(() => {
     return typeof projectService?.getProjectByIdSync === "function"
       ? projectService.getProjectByIdSync("ws-default", projectId)
@@ -67,12 +67,7 @@ export function ProjectModuleSubpage({ projectId, module, customTitle }: Project
   const [loading, setLoading] = useState(!project);
   const [error, setError] = useState(false);
 
-  useEffect(() => {
-    setSearchQuery(searchParams?.get("q") || "");
-  }, [searchParams]);
-
   const handleSearchChange = (val: string) => {
-    setSearchQuery(val);
     const params = new URLSearchParams(searchParams ? searchParams.toString() : "");
     if (val.trim()) {
       params.set("q", val);
@@ -143,7 +138,6 @@ export function ProjectModuleSubpage({ projectId, module, customTitle }: Project
     PROJECT_MODULE_TITLES[module] ||
     project.name ||
     "Nila Residence";
-  const displayTitle = project.name || "Calicut Retail Interior";
 
   return (
     <RoutePageContainer
@@ -160,7 +154,11 @@ export function ProjectModuleSubpage({ projectId, module, customTitle }: Project
     >
       <div className="project-subpage-root">
         {/* Persistent Top Header pinned in the EXACT same spot as the Overview page */}
-        <div className="poc-left-header-sticky project-subpage-header-sticky">
+        <div
+          className={`poc-left-header-sticky project-subpage-header-sticky ${
+            module !== "documents" ? "page-heading" : ""
+          }`}
+        >
           <div className={enquiryStyles.headerBlock}>
             <div className={enquiryStyles.titleRow}>
               <h1 className={enquiryStyles.projectTitle}>{title}</h1>
@@ -245,7 +243,13 @@ export function ProjectModuleSubpage({ projectId, module, customTitle }: Project
               hideHeaderTitleRow={true}
             />
           ) : (
-            <ProjectOverviewCard />
+            <ProjectOverviewCard
+              projectId={project.id}
+              projectName={project.name}
+              description={project.description}
+              projectStatus={project.status}
+              isUpcoming={project.status === "upcoming"}
+            />
           )}
         </div>
       </div>

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Archive,
+  Camera,
   Copy,
   Ellipsis,
   Eye,
@@ -21,12 +22,14 @@ interface PortfolioProfileActionsProps {
   isOwner: boolean;
   profile: PortfolioProfile;
   onEdit: () => void;
+  onUploadCover?: () => void;
 }
 
 export function PortfolioProfileActions({
   isOwner,
   profile,
   onEdit,
+  onUploadCover,
 }: PortfolioProfileActionsProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [shareLabel, setShareLabel] = useState("Share");
@@ -78,22 +81,16 @@ export function PortfolioProfileActions({
           <Pencil size={14} aria-hidden="true" />
           <span>Edit Portfolio</span>
         </button>
-      ) : (
-        <Link
-          className={styles.bannerActionButton}
-          href={buildPortfolioEnquiryHref(profile, "proposal")}
-        >
-          <span>Send Enquiry</span>
-        </Link>
-      )}
+      ) : null}
 
       <button
-        className={styles.bannerActionButton}
+        className={styles.bannerIconButton}
         type="button"
         onClick={sharePortfolio}
+        title={shareLabel}
+        aria-label={shareLabel}
       >
-        <Share2 size={14} aria-hidden="true" />
-        <span>{shareLabel}</span>
+        <Share2 size={15} aria-hidden="true" />
       </button>
 
       {isOwner ? (
@@ -110,6 +107,19 @@ export function PortfolioProfileActions({
           </button>
           {menuOpen ? (
             <div className={styles.actionMenuPanel} role="menu">
+              {onUploadCover ? (
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onUploadCover();
+                  }}
+                >
+                  <Camera size={15} aria-hidden="true" />
+                  Change cover image
+                </button>
+              ) : null}
               <button type="button" role="menuitem">
                 <Eye size={15} aria-hidden="true" />
                 Preview public profile

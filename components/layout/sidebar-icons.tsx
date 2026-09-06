@@ -1150,6 +1150,27 @@ export function LayersDuotoneIcon({ size = 17, className = "", ...props }: Sideb
 }
 
 /**
+ * Official Indian Rupee Symbol Vector Icon (Matching requested asset)
+ */
+export function RupeeIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      <path d="M6 3h12v2.5h-4.3c.7.7 1.2 1.6 1.4 2.5H18v2.5h-2.8c-.5 2.5-2.5 4.5-5.2 4.8l6.5 7.7h-3.8l-6.2-7.4v-2.6h1.8c1.9 0 3.5-1.3 4-3H6V8h6.2c-.4-.9-1.3-1.6-2.4-1.8H6V3z" />
+    </svg>
+  );
+}
+
+export const IndianRupeeIcon = RupeeIcon;
+
+/**
  * 37. Rupee / Budget — Duotone Indian Rupee coin with tinted background halo
  */
 export function RupeeDuotoneIcon({ size = 17, className = "", ...props }: SidebarIconProps) {
@@ -1164,14 +1185,11 @@ export function RupeeDuotoneIcon({ size = 17, className = "", ...props }: Sideba
       {...props}
     >
       {/* Tinted circular coin background */}
-      <circle cx="12" cy="12" r="9" fill="currentColor" opacity="0.2" />
-      {/* Precision authentic Indian Rupee glyph */}
+      <circle cx="12" cy="12" r="9.5" fill="currentColor" opacity="0.25" />
+      {/* Solid authentic Indian Rupee glyph */}
       <path
-        d="M6.5 4.5H17.5M6.5 8.5H15M6.5 4.5V13H9C14.2 13 14.2 4.5 9 4.5M6.5 13L14.5 20.5"
-        stroke="currentColor"
-        strokeWidth="1.9"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        d="M7 4.5h10v2.2h-3.6c.6.6 1 1.4 1.2 2.2H17v2.2h-2.4c-.4 2.1-2.1 3.8-4.4 4.1l5.4 6.3h-3.2l-5.2-6.1v-2.2h1.5c1.6 0 2.9-1.1 3.3-2.5H7V8.9h5.2c-.3-.8-1.1-1.3-2-1.5H7V4.5z"
+        fill="currentColor"
       />
     </svg>
   );
@@ -1509,7 +1527,7 @@ export function SiteDuotoneIcon({ size = 17, className = "", ...props }: Sidebar
 }
 
 /**
- * Fullscreen Expand — 4-way directional arrows (Outward) in Kallisto duotone theme
+ * Fullscreen Expand — 4 diagonal outward arrows with center dot
  */
 export function FullscreenExpandDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
   return (
@@ -1522,70 +1540,66 @@ export function FullscreenExpandDuotoneIcon({ size = 16, className = "", ...prop
       className={className}
       {...props}
     >
-      {/* Tinted center cross / stems */}
+      {/* Center circle */}
+      <circle cx="12" cy="12" r="2.4" fill="currentColor" />
+
+      {/* Top-Left Arrow (Outward ↖) */}
       <path
-        d="M12 7.5V11.5M12 16.5V12.5M7.5 12H11.5M16.5 12H12.5"
+        d="M3 8.5V3H8.5"
         stroke="currentColor"
-        strokeWidth="2.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0.38"
-      />
-      {/* Solid 4-way outward arrowheads with stems */}
-      {/* Up */}
-      <path
-        d="M8.5 7L12 3.5L15.5 7"
-        stroke="currentColor"
-        strokeWidth="2.4"
+        strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M12 4.5V10.5"
+        d="M3.5 3.5L8.5 8.5"
         stroke="currentColor"
-        strokeWidth="2.4"
+        strokeWidth="2.5"
         strokeLinecap="round"
       />
-      {/* Down */}
+
+      {/* Top-Right Arrow (Outward ↗) */}
       <path
-        d="M8.5 17L12 20.5L15.5 17"
+        d="M15.5 3H21V8.5"
         stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M12 19.5V13.5"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-      />
-      {/* Left */}
-      <path
-        d="M7 8.5L3.5 12L7 15.5"
-        stroke="currentColor"
-        strokeWidth="2.4"
+        strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M4.5 12H10.5"
+        d="M20.5 3.5L15.5 8.5"
         stroke="currentColor"
-        strokeWidth="2.4"
+        strokeWidth="2.5"
         strokeLinecap="round"
       />
-      {/* Right */}
+
+      {/* Bottom-Right Arrow (Outward ↘) */}
       <path
-        d="M17 8.5L20.5 12L17 15.5"
+        d="M21 15.5V21H15.5"
         stroke="currentColor"
-        strokeWidth="2.4"
+        strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M19.5 12H13.5"
+        d="M20.5 20.5L15.5 15.5"
         stroke="currentColor"
-        strokeWidth="2.4"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+
+      {/* Bottom-Left Arrow (Outward ↙) */}
+      <path
+        d="M8.5 21H3V15.5"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3.5 20.5L8.5 15.5"
+        stroke="currentColor"
+        strokeWidth="2.5"
         strokeLinecap="round"
       />
     </svg>
@@ -1593,7 +1607,7 @@ export function FullscreenExpandDuotoneIcon({ size = 16, className = "", ...prop
 }
 
 /**
- * Fullscreen Exit — 4-way directional arrows (Inward) in Kallisto duotone theme
+ * Fullscreen Exit — 4 diagonal inward arrows with center dot
  */
 export function FullscreenExitDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
   return (
@@ -1606,70 +1620,66 @@ export function FullscreenExitDuotoneIcon({ size = 16, className = "", ...props 
       className={className}
       {...props}
     >
-      {/* Tinted outer stems */}
+      {/* Center circle */}
+      <circle cx="12" cy="12" r="3.2" fill="currentColor" />
+
+      {/* Top-Left Arrow (Inward ↘) */}
       <path
-        d="M12 3V6.5M12 21V17.5M3 12H6.5M21 12H17.5"
+        d="M8.5 3.5V8.5H3.5"
         stroke="currentColor"
-        strokeWidth="2.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0.38"
-      />
-      {/* Solid inward arrowheads */}
-      {/* Top pointing down */}
-      <path
-        d="M8.5 7.5L12 10.5L15.5 7.5"
-        stroke="currentColor"
-        strokeWidth="2.4"
+        strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M12 4V10"
+        d="M3.5 3.5L8.5 8.5"
         stroke="currentColor"
-        strokeWidth="2.4"
+        strokeWidth="2.5"
         strokeLinecap="round"
       />
-      {/* Bottom pointing up */}
+
+      {/* Top-Right Arrow (Inward ↙) */}
       <path
-        d="M8.5 16.5L12 13.5L15.5 16.5"
+        d="M15.5 3.5V8.5H20.5"
         stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M12 20V14"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-      />
-      {/* Left pointing right */}
-      <path
-        d="M7.5 8.5L10.5 12L7.5 15.5"
-        stroke="currentColor"
-        strokeWidth="2.4"
+        strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M4 12H10"
+        d="M20.5 3.5L15.5 8.5"
         stroke="currentColor"
-        strokeWidth="2.4"
+        strokeWidth="2.5"
         strokeLinecap="round"
       />
-      {/* Right pointing left */}
+
+      {/* Bottom-Right Arrow (Inward ↖) */}
       <path
-        d="M16.5 8.5L13.5 12L16.5 15.5"
+        d="M15.5 20.5V15.5H20.5"
         stroke="currentColor"
-        strokeWidth="2.4"
+        strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M20 12H14"
+        d="M20.5 20.5L15.5 15.5"
         stroke="currentColor"
-        strokeWidth="2.4"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+
+      {/* Bottom-Left Arrow (Inward ↗) */}
+      <path
+        d="M8.5 20.5V15.5H3.5"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3.5 20.5L8.5 15.5"
+        stroke="currentColor"
+        strokeWidth="2.5"
         strokeLinecap="round"
       />
     </svg>
@@ -2391,6 +2401,7 @@ export function SidebarToggleDuotoneIcon({ size = 18, className = "", ...props }
   );
 }
 
+
 export const PanelLeftDuotoneIcon = SidebarToggleDuotoneIcon;
 
 
@@ -2569,3 +2580,329 @@ export function StarDuotoneIcon({ size = 16, className = "", ...props }: Sidebar
     </svg>
   );
 }
+
+/**
+ * Quick Action / Lightning (Zap) — Solid precision bolt with tinted energy layer
+ */
+export function ZapDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted background energy overlay */}
+      <path
+        d="M13 2L3 14H12L11 22L21 10H12L13 2Z"
+        fill="currentColor"
+        opacity="0.32"
+      />
+      {/* Solid precision lightning bolt */}
+      <path
+        d="M12.5 3L4.5 13H11.5L10.5 21L18.5 11H11.5L12.5 3Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Settings — Precision duotone mechanical gear with tinted outer teeth & solid core hub
+ */
+export function SettingsDuotoneIcon({ size = 17, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted outer gear wheel & precision teeth */}
+      <path
+        d="M12 2C11.3 2 10.7 2.5 10.6 3.2L10.3 4.6C9.6 4.9 8.9 5.3 8.3 5.8L7 5.1C6.4 4.7 5.6 4.9 5.2 5.4L3.8 6.8C3.4 7.4 3.4 8.2 3.9 8.7L5 9.6C4.8 10.3 4.7 11.1 4.7 11.8L3.3 12.2C2.6 12.4 2.1 13 2.1 13.7V15.7C2.1 16.4 2.6 17 3.3 17.2L4.7 17.6C4.8 18.3 5 19 5.3 19.7L4.4 20.8C3.9 21.3 4 22.1 4.5 22.6L6 23.9C6.5 24.4 7.3 24.3 7.8 23.8L8.8 22.8C9.5 23.1 10.2 23.3 10.9 23.4L11.3 24.8C11.5 25.5 12.1 26 12.8 26H14.8C15.5 26 16.1 25.5 16.3 24.8L16.7 23.4C17.4 23.3 18.1 23.1 18.8 22.8L19.8 23.8C20.3 24.3 21.1 24.4 21.6 23.9L23.1 22.6C23.6 22.1 23.7 21.3 23.2 20.8L22.3 19.7C22.6 19 22.8 18.3 22.9 17.6L24.3 17.2C25 17 25.5 16.4 25.5 15.7V13.7C25.5 13 25 12.4 24.3 12.2L22.9 11.8C22.8 11.1 22.6 10.3 22.3 9.6L23.4 8.7C23.9 8.2 24 7.4 23.5 6.8L22.1 5.4C21.6 4.9 20.8 4.7 20.3 5.1L19 5.8C18.4 5.3 17.7 4.9 17 4.6L16.7 3.2C16.6 2.5 16 2 15.3 2H12Z"
+        fill="currentColor"
+        opacity="0.38"
+        transform="scale(0.85) translate(2, 0.5)"
+      />
+      {/* Solid inner core hub with center aperture */}
+      <path
+        d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7ZM12 14.2C10.79 14.2 9.8 13.21 9.8 12C9.8 10.79 10.79 9.8 12 9.8C13.21 9.8 14.2 10.79 14.2 12C14.2 13.21 13.21 14.2 12 14.2Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Help & Support — Duotone support beacon / question mark with tinted halo
+ */
+export function HelpDuotoneIcon({ size = 17, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted circular badge base */}
+      <circle cx="12" cy="12" r="9.5" fill="currentColor" opacity="0.38" />
+      {/* Solid bold question mark glyph */}
+      <path
+        d="M12 6.5C10.2 6.5 8.8 7.6 8.5 9.4C8.4 9.9 8.8 10.4 9.4 10.4C9.9 10.4 10.3 10.1 10.4 9.6C10.5 8.9 11.1 8.4 12 8.4C12.8 8.4 13.5 8.9 13.5 9.7C13.5 10.4 13 11 12.3 11.5C11.4 12.1 10.8 13 10.8 14V14.4C10.8 14.9 11.2 15.3 11.8 15.3C12.3 15.3 12.7 14.9 12.7 14.4V14.1C12.7 13.6 13 13.1 13.6 12.7C14.6 12 15.4 11 15.4 9.7C15.4 7.9 13.9 6.5 12 6.5ZM11.8 16.8C11.1 16.8 10.6 17.3 10.6 18C10.6 18.7 11.1 19.2 11.8 19.2C12.5 19.2 13 18.7 13 18C13 17.3 12.5 16.8 11.8 16.8Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Pre-Construction — Duotone architectural drafting plan & design compass
+ */
+export function PreConstructionDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted blueprint background page */}
+      <rect x="3" y="3" width="18" height="18" rx="3.5" fill="currentColor" opacity="0.38" />
+      {/* Solid drafting compass & architectural lines */}
+      <path
+        d="M12 7V9M12 9L9 16M12 9L15 16M10 13.5H14M7 21H17"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="7" r="1.5" fill="currentColor" />
+    </svg>
+  );
+}
+
+/**
+ * Construction — Duotone hard hat silhouette with structural reinforcement
+ */
+export function ConstructionDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted helmet dome shell */}
+      <path
+        d="M4 14C4 9.58 7.58 6 12 6C16.42 6 20 9.58 20 14V16H4V14Z"
+        fill="currentColor"
+        opacity="0.38"
+      />
+      {/* Solid helmet visor brim & center reinforcement ridge */}
+      <rect x="2" y="15" width="20" height="3" rx="1.5" fill="currentColor" />
+      <path
+        d="M10.5 4.5C10.5 3.95 10.95 3.5 11.5 3.5H12.5C13.05 3.5 13.5 3.95 13.5 4.5V11H10.5V4.5Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Post-Construction — Duotone verified certificate with handover key
+ */
+export function PostConstructionDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted circular badge base */}
+      <circle cx="12" cy="12" r="9" fill="currentColor" opacity="0.38" />
+      {/* Solid verification checkmark */}
+      <path
+        d="M8.5 12.3L10.8 14.6L15.5 9.5"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+/**
+ * Edit / Pencil — Duotone pencil with tinted upper barrel and solid writing tip
+ */
+export function EditDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted upper barrel / eraser body */}
+      <path
+        d="M14.06 2.94C15.23 1.77 17.13 1.77 18.3 2.94L21.06 5.7C22.23 6.87 22.23 8.77 21.06 9.94L18.5 12.5L11.5 5.5L14.06 2.94Z"
+        fill="currentColor"
+        opacity="0.38"
+      />
+      {/* Solid lower pen shaft & precision nib tip */}
+      <path
+        d="M17.09 13.91L10.09 6.91L3 14V21H10L17.09 13.91ZM4.8 19.2L4.8 14.7L9.3 19.2H4.8Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Boxes / Inventory — Duotone isometric boxes with tinted top faces and solid side planes
+ */
+export function BoxesDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted top facets of stacked packages */}
+      <path
+        d="M12 2L3 6.5L12 11L21 6.5L12 2Z"
+        fill="currentColor"
+        opacity="0.38"
+      />
+      {/* Solid front-left and front-right crate panels with seam */}
+      <path
+        d="M3 7.5V17L11.5 21.5V12L3 7.5Z"
+        fill="currentColor"
+        opacity="0.9"
+      />
+      <path
+        d="M12.5 12V21.5L21 17V7.5L12.5 12Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Supplier / Storefront — Duotone supplier store / warehouse with tinted roof canopy and solid columns
+ */
+export function SupplierDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted awning / roof pediment */}
+      <path
+        d="M4 4C4 3.45 4.45 3 5 3H19C19.55 3 20 3.45 20 4V8.5C20 9.88 18.88 11 17.5 11C16.12 11 15 9.88 15 8.5C15 9.88 13.88 11 12.5 11C11.12 11 10 9.88 10 8.5C10 9.88 8.88 11 7.5 11C6.12 11 5 9.88 5 8.5V4H4Z"
+        fill="currentColor"
+        opacity="0.38"
+      />
+      {/* Solid pillars, entrance, and floor base */}
+      <path
+        d="M3 20H21V22H3V20ZM5 11.5C5.74 11.5 6.4 11.15 6.84 10.6C7.29 11.15 7.95 11.5 8.69 11.5C9.43 11.5 10.09 11.15 10.53 10.6C10.98 11.15 11.64 11.5 12.38 11.5C13.12 11.5 13.78 11.15 14.22 10.6C14.67 11.15 15.33 11.5 16.07 11.5C16.81 11.5 17.47 11.15 17.91 10.6C18.36 11.15 19.02 11.5 19.76 11.5H20V19H4V11.5H5ZM9 19V14H15V19H9Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Archive / Box — Duotone archive storage box with tinted lid and solid box with cutout
+ */
+export function ArchiveDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted top lid */}
+      <rect x="2" y="3" width="20" height="5" rx="1.5" fill="currentColor" opacity="0.38" />
+      {/* Solid lower box with central grip slot */}
+      <path
+        d="M3.5 9H20.5L19.2 20.2C19.1 20.7 18.6 21 18.1 21H5.9C5.4 21 4.9 20.7 4.8 20.2L3.5 9ZM9.5 13C9.5 13.55 9.95 14 10.5 14H13.5C14.05 14 14.5 13.55 14.5 13V12H9.5V13Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+/**
+ * 47. Palette / Theme & Appearance — Duotone painter palette with tinted base plate and solid swatch wells
+ */
+export function PaletteDuotoneIcon({ size = 16, className = "", ...props }: SidebarIconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* Tinted palette base plate */}
+      <path
+        d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C13.1 22 14 21.1 14 20C14 19.45 13.78 18.95 13.41 18.59C13.05 18.22 12.82 17.72 12.82 17.18C12.82 16.08 13.72 15.18 14.82 15.18H16.5C19.54 15.18 22 12.72 22 9.68C22 5.44 17.52 2 12 2Z"
+        fill="currentColor"
+        opacity="0.32"
+      />
+      {/* Solid palette outline & swatch dots */}
+      <path
+        d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C13.1 22 14 21.1 14 20C14 19.45 13.78 18.95 13.41 18.59C13.05 18.22 12.82 17.72 12.82 17.18C12.82 16.08 13.72 15.18 14.82 15.18H16.5C19.54 15.18 22 12.72 22 9.68C22 5.44 17.52 2 12 2Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="7.5" cy="11.5" r="1.5" fill="currentColor" />
+      <circle cx="10.5" cy="7.5" r="1.5" fill="currentColor" />
+      <circle cx="14.5" cy="7.5" r="1.5" fill="currentColor" />
+      <circle cx="17.5" cy="11.5" r="1.5" fill="currentColor" />
+    </svg>
+  );
+}
+

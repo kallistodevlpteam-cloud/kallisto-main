@@ -1572,23 +1572,30 @@
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
   z-index: 600;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 20px;
+  box-sizing: border-box;
 }
 
 .modalBox {
-  width: 520px;
+  width: 580px;
   max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 24px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
   display: flex;
   flex-direction: column;
   gap: 16px;
+  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
 }
 
 .overflowModalBox {
@@ -1602,7 +1609,9 @@
 .modalHeader {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .modalHeader h3 {
@@ -1612,9 +1621,26 @@
   margin: 0;
 }
 
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  transition: all 0.15s ease;
+}
+
+.closeBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
 .modalTypeSelector {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   background: #f1f5f9;
   padding: 4px;
   border-radius: 8px;
@@ -1634,6 +1660,7 @@
   color: #64748b;
   border-radius: 6px;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .typeSelectorActive {
@@ -1644,70 +1671,359 @@
 }
 
 .errorAlertBox {
-  padding: 10px 12px;
-  background: #fee2e2;
+  padding: 10px 14px;
+  background: #fef2f2;
   border: 1px solid #fecaca;
   color: #991b1b;
-  border-radius: 6px;
-  font-size: 12.5px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.modalFormContent {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.formGridTwo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 640px) {
+  .formGridTwo {
+    grid-template-columns: 1fr;
+  }
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .formLabel {
   font-size: 12.5px;
   font-weight: 600;
   color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .formInput,
 .formSelect {
+  width: 100%;
   height: 38px;
   padding: 0 12px;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  font-size: 13.5px;
+  border-radius: 7px;
+  font-size: 13px;
   color: #0f172a;
   background: #ffffff;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .formInput:focus,
 .formSelect:focus {
-  outline: 2px solid #0f172a;
-  outline-offset: 1px;
+  outline: none;
+  border-color: #0f172a;
+  box-shadow: 0 0 0 1px #0f172a;
+}
+
+.formTextarea {
+  width: 100%;
+  min-height: 72px;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #0f172a;
+  background: #ffffff;
+  box-sizing: border-box;
+  resize: vertical;
+  line-height: 1.5;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.formTextarea:focus {
+  outline: none;
+  border-color: #0f172a;
+  box-shadow: 0 0 0 1px #0f172a;
+}
+
+.teamMemberPreviewCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.teamMemberAvatarBadge {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.teamMemberInfoCol {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.teamMemberName {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.teamMemberRoleMeta {
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.3;
+  margin-top: 1px;
+}
+
+.allDayToggleBox {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+  box-sizing: border-box;
+}
+
+.checkboxLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  user-select: none;
+  width: 100%;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #0f172a;
+  cursor: pointer;
+  margin: 0;
+}
+
+.checklistInputRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.checklistInputRow input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+.addChecklistBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 16px;
+  height: 38px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.addChecklistBtn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.checklistItemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.checklistItemRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+}
+
+.checklistBullet {
+  color: #10b981;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.checklistItemText {
+  flex: 1;
+  font-size: 12.5px;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+.checklistRemoveBtn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  transition: color 0.12s ease;
+}
+
+.checklistRemoveBtn:hover {
+  color: #ef4444;
 }
 
 .modalFooter {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
 }
 
 .btnPrimary {
+  padding: 9px 18px;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btnPrimary:hover {
+  background: #1e293b;
+}
+
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnSecondary {
+  padding: 9px 18px;
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btnSecondary:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.mockupAddTaskBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.mockupAddTaskBtn:hover {
+  background: #1e293b;
+}
+
+.hiveStudioAddBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 10px;
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.hiveStudioAddBtn:hover {
+  background: #e2e8f0;
+}
+
+.hiveEmptyAddTaskBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
   padding: 8px 16px;
   background: #0f172a;
   color: #ffffff;
   border: none;
-  border-radius: 6px;
-  font-size: 13px;
+  border-radius: 8px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
-.btnSecondary {
-  padding: 8px 16px;
-  background: #ffffff;
-  color: #334155;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
+.hiveEmptyAddTaskBtn:hover {
+  background: #1e293b;
 }
 
 /* Reference-aligned Today operations workspace */

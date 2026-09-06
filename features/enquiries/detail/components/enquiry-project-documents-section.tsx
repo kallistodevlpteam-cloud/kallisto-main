@@ -242,7 +242,7 @@ export function EnquiryProjectDocumentsSection({
                       <div className={styles.emptyIconBox}>
                         <DocumentsDuotoneIcon size={24} />
                       </div>
-                      <p className={styles.emptyTitle}>No documents shared yet</p>
+                      <p className={styles.emptyTitle} aria-label="No documents available">No documents have been shared yet.</p>
                       <p className={styles.emptySubText}>
                         Drawings, site reports, and project specifications uploaded by the client will appear here.
                       </p>

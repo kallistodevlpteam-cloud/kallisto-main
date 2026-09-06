@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type {
   PortfolioCollection,
   PortfolioPageData,
@@ -15,7 +16,6 @@ import { PortfolioPackageSummary } from "./portfolio-package-summary";
 import { PortfolioPricing } from "./portfolio-pricing";
 import { PortfolioProfileHeader } from "./portfolio-profile-header";
 import { PortfolioProjectGrid } from "./portfolio-project-grid";
-import { PortfolioProjectViewer } from "./portfolio-project-viewer";
 import { PortfolioReviews } from "./portfolio-reviews";
 import { PortfolioStatistics } from "./portfolio-statistics";
 import { PortfolioTabs } from "./portfolio-tabs";
@@ -26,15 +26,14 @@ interface PortfolioPageProps {
   data: PortfolioPageData;
   initialTab: PortfolioTab;
   initialCollectionId?: string;
-  initialProjectId?: string;
 }
 
 export function PortfolioPage({
   data,
   initialTab,
   initialCollectionId,
-  initialProjectId,
 }: PortfolioPageProps) {
+  const router = useRouter();
   const isOwner = data.mode === "owner";
   const [profile, setProfile] = useState<PortfolioProfile>(data.profile);
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -44,15 +43,12 @@ export function PortfolioPage({
         (collection) => collection.id === initialCollectionId,
       ) ?? data.collections[0],
     );
-  const [selectedProject, setSelectedProject] =
-    useState<PortfolioProject | null>(
-      data.projects.find((project) => project.id === initialProjectId) ?? null,
-    );
   const [coverImageUrl, setCoverImageUrl] = useState(
     data.profile.coverImageUrl,
   );
-  const projectTriggerRef = useRef<HTMLButtonElement | null>(null);
   const uploadedCoverRef = useRef<string | null>(null);
+  const uploadedAvatarRef = useRef<string | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const visibleProjects = useMemo(() => {
     return data.projects.filter((project) =>
@@ -60,67 +56,20 @@ export function PortfolioPage({
     );
   }, [data.projects, selectedCollection]);
 
-  const restoreProjectFocus = useCallback(() => {
-    window.requestAnimationFrame(() => {
-      projectTriggerRef.current?.focus();
-    });
-  }, []);
-
-  const dismissProject = useCallback(() => {
-    setSelectedProject(null);
-    restoreProjectFocus();
-  }, [restoreProjectFocus]);
-
-  const closeProject = useCallback(() => {
-    if (window.history.state?.portfolioProjectViewer) {
-      window.history.back();
-      return;
-    }
-
-    const url = new URL(window.location.href);
-    url.searchParams.delete("project");
-    window.history.replaceState(window.history.state, "", url);
-    dismissProject();
-  }, [dismissProject]);
-
-  useEffect(() => {
-    const handlePopState = () => {
-      if (selectedProject) {
-        dismissProject();
-      }
-    };
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [dismissProject, selectedProject]);
-
   useEffect(() => {
     return () => {
       if (uploadedCoverRef.current) {
         URL.revokeObjectURL(uploadedCoverRef.current);
       }
+      if (uploadedAvatarRef.current) {
+        URL.revokeObjectURL(uploadedAvatarRef.current);
+      }
     };
   }, []);
 
-  const openProject = (
-    project: PortfolioProject,
-    trigger: HTMLButtonElement,
-  ) => {
-    projectTriggerRef.current = trigger;
-    setSelectedProject(project);
-    const url = new URL(window.location.href);
-    url.searchParams.set("project", project.id);
-    window.history.pushState(
-      { ...window.history.state, portfolioProjectViewer: true },
-      "",
-      url,
-    );
-  };
-
-  const navigateProject = (project: PortfolioProject) => {
-    setSelectedProject(project);
-    const url = new URL(window.location.href);
-    url.searchParams.set("project", project.id);
-    window.history.replaceState(window.history.state, "", url);
+  const openProject = (project: PortfolioProject) => {
+    const targetSlug = project.slug || project.id;
+    router.push(`/portfolio/projects/${targetSlug}`);
   };
 
   const updateCover = (file: File) => {
@@ -130,6 +79,15 @@ export function PortfolioPage({
     const nextUrl = URL.createObjectURL(file);
     uploadedCoverRef.current = nextUrl;
     setCoverImageUrl(nextUrl);
+  };
+
+  const updateAvatar = (file: File) => {
+    if (uploadedAvatarRef.current) {
+      URL.revokeObjectURL(uploadedAvatarRef.current);
+    }
+    const nextUrl = URL.createObjectURL(file);
+    uploadedAvatarRef.current = nextUrl;
+    setProfile((prev) => ({ ...prev, avatarUrl: nextUrl }));
   };
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -165,9 +123,27 @@ export function PortfolioPage({
             onProfileChange={setProfile}
             isEditingExternal={isEditingProfile}
             onCloseEditingExternal={() => setIsEditingProfile(false)}
+            onCameraClick={() => avatarInputRef.current?.click()}
           />
           <PortfolioPackageSummary onViewPlans={showPricingPlans} />
         </div>
+
+        {isOwner ? (
+          <input
+            className={styles.visuallyHiddenInput}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            aria-label="Upload profile avatar"
+            ref={avatarInputRef}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) {
+                updateAvatar(file);
+              }
+              event.target.value = "";
+            }}
+          />
+        ) : null}
       </section>
 
       <div className={styles.profileContent}>
@@ -180,12 +156,16 @@ export function PortfolioPage({
         />
       </div>
 
-      <main className={styles.portfolioContent}>
+      <main
+        className={`${styles.portfolioContent} ${
+          activeTab === "case-studies" ? styles.portfolioContentFixed : ""
+        }`}
+      >
         <PortfolioTabs
           activeTab={activeTab}
           isOwner={isOwner}
           onAddProject={() => {
-            window.location.hash = "add-project";
+            router.push("/portfolio/projects/new");
           }}
           onTabChange={setActiveTab}
         />
@@ -219,21 +199,11 @@ export function PortfolioPage({
             />
           ) : null}
           {activeTab === "reviews" ? <PortfolioReviews /> : null}
-          {activeTab === "pricing" ? <PortfolioPricing /> : null}
+          {activeTab === "pricing" ? (
+            <PortfolioPricing profile={profile} isOwner={isOwner} />
+          ) : null}
         </section>
       </main>
-
-      {selectedProject ? (
-        <PortfolioProjectViewer
-          key={selectedProject.id}
-          project={selectedProject}
-          projects={visibleProjects.length > 0 ? visibleProjects : data.projects}
-          profile={profile}
-          isOwner={isOwner}
-          onClose={closeProject}
-          onNavigate={navigateProject}
-        />
-      ) : null}
     </div>
   );
 }

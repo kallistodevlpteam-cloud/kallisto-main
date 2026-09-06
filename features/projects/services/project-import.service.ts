@@ -118,6 +118,7 @@ export const projectImportService = {
         });
       }
     });
+    matchingClientCandidates.sort((a, b) => b.matchScore - a.matchScore);
 
     if (matchingClientCandidates.length > 0) {
       warnings.push(`Found ${matchingClientCandidates.length} existing client(s) matching your input details.`);

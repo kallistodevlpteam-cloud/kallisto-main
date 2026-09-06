@@ -1,0 +1,708 @@
+/* ── Client Project Detail Workspace (Exact 2-Column Split Matching Screenshot) ── */
+.detailContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 20px 28px 60px;
+  box-sizing: border-box;
+}
+
+/* ── Top Header Row with Title & Quick Utility Badges ── */
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 750;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.shareBtn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.12s ease;
+}
+
+.shareBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: #64748b;
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2563eb;
+}
+
+/* Header Utilities on Right: Tasks, Drive, BOQ, Finance, Site */
+.headerUtilities {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.utilityPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.utilityPill:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+/* ── Inner Navigation Tabs (Overview, Client Context, Requirements, Site & Evidence, Activity) ── */
+.innerNavTabs {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  min-height: 42px;
+  border-bottom: 1px solid #e2e8f0;
+  background: transparent;
+  padding: 0;
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.innerNavTabs::-webkit-scrollbar {
+  display: none;
+}
+
+.innerTabBtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  min-height: 42px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  padding: 0 2px 2px;
+  white-space: nowrap;
+}
+
+.innerTabBtn:hover {
+  color: #0f172a;
+}
+
+.innerTabBtnActive {
+  color: #0f172a;
+  font-weight: 650;
+}
+
+.innerTabBtnActive::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  background: #0f172a;
+  border-radius: 2px 2px 0 0;
+}
+
+/* ── 2-Column Split Workspace ── */
+.twoColSplit {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(360px, 1fr);
+  gap: 28px;
+  align-items: start;
+  width: 100%;
+}
+
+@media (max-width: 1120px) {
+  .twoColSplit {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── LEFT COLUMN ── */
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+/* 1. Odin Project Brief Card */
+.odinBriefCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+}
+
+.odinBriefHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.odinBriefTag {
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  color: #475569;
+  text-transform: uppercase;
+}
+
+.odinBriefSubtitle {
+  font-size: 11.5px;
+  color: #94a3b8;
+}
+
+.odinBriefText {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #334155;
+}
+
+/* 2. Section Titles */
+.sectionHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 750;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.sectionBadge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+/* 3. Project Snapshot Metric Tiles Grid */
+.snapshotGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+@media (max-width: 1280px) {
+  .snapshotGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .snapshotGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.snapshotTile {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
+}
+
+.tileIconBox {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tileMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tileLabel {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.tileValue {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 4. Client Context & Priorities Cards Grid */
+.prioritiesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+@media (max-width: 1280px) {
+  .prioritiesGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .prioritiesGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.priorityCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
+}
+
+.priorityHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.priorityIconSquircle {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.priorityTitle {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.priorityDesc {
+  margin: 0;
+  font-size: 11.5px;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.priorityTagsRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+.tagPill {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+.confirmedTag {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #16a34a;
+}
+
+.inferredTag {
+  background: #faf5ff;
+  border-color: #e9d5ff;
+  color: #9333ea;
+}
+
+/* 5. Scope Breakdown Bar */
+.scopeCategoriesRow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+@media (max-width: 800px) {
+  .scopeCategoriesRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.scopeCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.scopeBadge {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #475569;
+}
+
+/* ── RIGHT COLUMN: PROJECT UPDATES FEED ── */
+.rightColumn {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+.updatesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.updatesTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 750;
+  color: #0f172a;
+}
+
+/* Timeline Feed List */
+.feedList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.feedItem {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.feedItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.authorRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.authorMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #0f172a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.authorDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.authorNameLine {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.authorRole {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.feedBadge {
+  font-size: 10.5px;
+  font-weight: 650;
+  padding: 1.5px 7px;
+  border-radius: 9999px;
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #dcfce7;
+}
+
+.feedText {
+  margin: 0;
+  font-size: 12.5px;
+  color: #334155;
+  line-height: 1.45;
+}
+
+/* Media Thumbnails Grid */
+.mediaGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  width: 100%;
+}
+
+.mediaThumbWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+.mediaThumbImg {
+  object-fit: cover;
+}
+
+.mediaCountOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 750;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Actions Row */
+.feedActionsRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  padding-top: 4px;
+}
+
+.actionLink {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  transition: color 0.12s ease;
+}
+
+.actionLink:hover {
+  color: #0f172a;
+}
+
+/* Quick Post / Ask Odin Input Dock */
+.postDock {
+  margin-top: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.postInput {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 12.5px;
+  color: #0f172a;
+  outline: none;
+  resize: none;
+  box-sizing: border-box;
+}
+
+.postInput::placeholder {
+  color: #94a3b8;
+}
+
+.dockFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 4px;
+}
+
+.dockToolsLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dockIconBtn {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.12s ease;
+}
+
+.dockIconBtn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.sendBtn {
+  background: #0f172a;
+  border: none;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 11.5px;
+  font-weight: 650;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.sendBtn:hover {
+  background: #1e293b;
+}

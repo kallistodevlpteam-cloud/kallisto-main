@@ -2642,6 +2642,7 @@
   font-weight: 450;
   line-height: 1.45;
   white-space: nowrap;
+  max-width: 520px;
   text-align: center;
   letter-spacing: -0.01em;
 }
@@ -5358,6 +5359,7 @@
   display: flex;
   align-items: center;
   gap: 28px;
+  border-bottom: 1px solid #e2e8f0;
   margin: 6px 0 20px;
   overflow-x: auto;
   scrollbar-width: none;
@@ -5369,7 +5371,7 @@
 
 .profileTab {
   position: relative;
-  padding: 6px 0 8px;
+  padding: 8px 2px 12px;
   color: #64748b;
   font-size: 14px;
   font-weight: 550;
@@ -5389,12 +5391,12 @@
 
 .profileTabActive::after {
   position: absolute;
-  bottom: 0;
+  bottom: -1px;
   left: 0;
   right: 0;
   height: 2px;
   background: #0f172a;
-  border-radius: 2px;
+  border-radius: 2px 2px 0 0;
   content: "";
 }
 
@@ -5543,6 +5545,21 @@
   line-height: 1.55;
 }
 
+.serviceCard h3 {
+  font-size: 16px;
+  font-weight: 750;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.serviceCard p {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.55;
+}
+
 .serviceCheckList {
   display: flex;
   flex-direction: column;
@@ -5637,6 +5654,15 @@
   white-space: nowrap;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
   transition: all 140ms ease;
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid #f8fafc;
+  gap: 12px;
 }
 
 .portfolioGrid {

@@ -1,0 +1,415 @@
+/* ==========================================================================
+   KALLISTO PROVIDER PROFILE FULL PAGE STYLES
+   ========================================================================== */
+
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-bottom: 60px;
+}
+
+.topBackRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f1f5f9;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.backBtn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Full Hero Banner */
+.heroBanner {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  border-radius: 20px;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(15, 23, 42, 0.92) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 32px;
+  color: #ffffff;
+}
+
+.verificationBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  width: fit-content;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.heroTitle {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+}
+
+.heroSubtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+
+/* 2-Column Content Layout */
+.profileGrid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 32px;
+  align-items: start;
+  width: 100%;
+}
+
+.mainCol {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  min-width: 0;
+}
+
+.sideCol {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 24px;
+}
+
+/* Card Sections */
+.sectionCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionHeading {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.bodyText {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #334155;
+  margin: 0;
+}
+
+.philosophyQuote {
+  background: #f8fafc;
+  border-left: 3px solid #0f172a;
+  padding: 16px;
+  border-radius: 0 12px 12px 0;
+  font-style: italic;
+  font-size: 13.5px;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* Bullet list */
+.servicesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.serviceItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.checkIcon {
+  color: #0f172a;
+  flex-shrink: 0;
+}
+
+/* Chips */
+.chipsWrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skillChip {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 8px;
+}
+
+/* Projects Gallery */
+.projectsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.projectCard {
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.projectImage {
+  height: 140px;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.projectMeta {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.projectTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.projectSubtitle {
+  font-size: 11.5px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Team */
+.teamList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.teamRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.teamAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Reviews */
+.reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reviewItem {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reviewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.clientName {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.reviewStars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #0f172a;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.reviewComment {
+  font-size: 12.5px;
+  color: #475569;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Right Sticky Action Card */
+.actionCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.feeBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.feeLabel {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  margin: 0;
+}
+
+.feeValue {
+  font-size: 26px;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.feeUnit {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.btnPrimaryConnect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+  transition: all 0.15s ease;
+}
+
+.btnPrimaryConnect:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+}
+
+.btnSecondaryOdin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #f1f5f9;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btnSecondaryOdin:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+}
+
+.credentialsWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.credentialRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.credentialValue {
+  font-weight: 600;
+  color: #0f172a;
+}

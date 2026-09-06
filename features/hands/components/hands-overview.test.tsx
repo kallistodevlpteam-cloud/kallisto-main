@@ -4,6 +4,7 @@ import {
   fireEvent,
   render,
   screen,
+  within,
 } from "@testing-library/react";
 import {
   afterEach,
@@ -111,7 +112,7 @@ describe("Hands overview", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("opens deployment details from a semantic table row in dashboard view", async () => {
+  it("opens deployment details from a semantic table row in dashboard view and allows requesting replacement workers", async () => {
     mockSearchParams = new URLSearchParams("view=dashboard");
     render(<HandsOverview />);
     await finishOverviewLoad();
@@ -123,7 +124,94 @@ describe("Hands overview", () => {
     expect(
       screen.getByRole("dialog", { name: "Nila Residence" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Two workers have not checked in. Review today's attendance before confirming the daily record.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Two workers have not checked in. Review today's attendance before confirming the daily record.",
+      ),
+    ).toBeInTheDocument();
+
+    // Verify Today's Activity section
+    expect(screen.getByText("Today's activity")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "First-floor brick masonry & lintel level preparation",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Perimeter brick masonry & plumb line verification",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Site supervisor log"),
+    ).toBeInTheDocument();
+
+    const requestReplacementBtn = screen.getByRole("button", {
+      name: "Request replacement / extra workers",
+    });
+    expect(requestReplacementBtn).toBeInTheDocument();
+
+    fireEvent.click(requestReplacementBtn);
+
+    // Deployment drawer should be closed and workforce request drawer opened with prefilled fields
+    expect(
+      screen.queryByRole("dialog", { name: "Nila Residence" }),
+    ).not.toBeInTheDocument();
+
+    const workforceDrawer = screen.getByRole("dialog", {
+      name: "Request workforce",
+    });
+    expect(workforceDrawer).toBeInTheDocument();
+
+    // Verify prefilled project, trade and worker count inside the drawer
+    const drawerScope = within(workforceDrawer);
+    const projectSelect = drawerScope.getByLabelText(/Project/i);
+    expect(projectSelect).toHaveValue("proj-001");
+
+    const tradeSelect = drawerScope.getByLabelText(/Trade \/ category/i);
+    expect(tradeSelect).toHaveValue("Masons");
+
+    const countInput = drawerScope.getByLabelText(/Number of workers/i);
+    expect(countInput).toHaveValue(2);
+  });
+
+  it("renders pending requests in card format on the requests tab and opens request details drawer", async () => {
+    mockSearchParams = new URLSearchParams("tab=requests");
+    render(<HandsOverview />);
+    await finishOverviewLoad();
+
+    const cardsGrid = screen.getByLabelText("Pending workforce request cards");
+    expect(cardsGrid).toBeInTheDocument();
+
+    // Verify project names and requested workers count on cards
+    const gridScope = within(cardsGrid);
+    expect(gridScope.getByText("Nila Residence")).toBeInTheDocument();
+    expect(gridScope.getByText("10 workers")).toBeInTheDocument();
+    expect(gridScope.getByText("Green Courtyard")).toBeInTheDocument();
+    expect(gridScope.getByText("7 workers")).toBeInTheDocument();
+
+    // Click on a multi-trade request card to open details drawer
+    fireEvent.click(
+      gridScope.getByRole("button", {
+        name: /Multi-trade workforce request for Nila Residence/i,
+      }),
+    );
+
+    const requestDrawer = screen.getByRole("dialog", {
+      name: "Nila Residence",
+    });
+    expect(requestDrawer).toBeInTheDocument();
+    expect(
+      within(requestDrawer).getByText(
+        "Apex Integrated Civil & Finishing Crew",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(requestDrawer).getByText("Labour types breakdown"),
+    ).toBeInTheDocument();
+    expect(
+      within(requestDrawer).getByText("Request specification"),
+    ).toBeInTheDocument();
   });
 
   it("synchronizes tab selections through the Hands URL in dashboard view", async () => {

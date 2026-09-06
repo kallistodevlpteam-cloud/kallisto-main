@@ -321,7 +321,6 @@ export function ExpertDiscovery() {
               <span>Verified only</span>
             </button>
           </div>
-
           {/* Right-Aligned Icon-Only Filter Trigger with Standard Popover */}
           <div className={styles.tabFilterWrap}>
             <button

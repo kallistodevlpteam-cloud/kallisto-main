@@ -144,6 +144,7 @@ describe("StudioChatView", () => {
 
     expect(screen.queryByText("Upgrade to Pro")).toBeNull();
     expect(screen.queryByText("Add Credits")).toBeNull();
-    expect(screen.getByText("Kallisto Virtual Office")).toBeDefined();
+    expect(screen.getAllByText("Kallisto Virtual Office")[0]).toBeDefined();
   });
 });
+

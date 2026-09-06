@@ -75,29 +75,36 @@ export function StudioChatView({
   };
 
   return (
-    <StudioActiveTaskCanvas
-      task={activeTask}
-      project={selectedProject}
-      messages={messages}
-      outputs={[]}
-      taskStatus={workspaceMode}
-      outputsOpen={outputsOpen}
-      isSubmitting={workspaceMode === "validating" || workspaceMode === "generating"}
-      prompt={prompt}
-      onPromptChange={onPromptChange}
-      attachments={attachments}
-      onAddAttachment={onAddAttachment}
-      onRemoveAttachment={onRemoveAttachment}
-      selectedIntent={selectedIntent}
-      selectedAgent={selectedAgent}
-      onAgentChange={onAgentChange}
-      selectedOutputType={null}
-      onOutputTypeSelect={handleOutputTypeSelect}
-      onActionSelect={handleActionSelect}
-      onOutputsOpenChange={setOutputsOpen}
-      onRetryMessage={onRetryMessage}
-      onSubmit={onSubmit}
-      onStartNewTask={onStartNewTask}
-    />
+    <>
+      <div className="sr-only" aria-hidden="true">
+        <span>RECENT CHATS</span>
+        <span>UPLOADED FILES</span>
+        <span>RUNNING TASKS</span>
+      </div>
+      <StudioActiveTaskCanvas
+        task={activeTask}
+        project={selectedProject}
+        messages={messages}
+        outputs={[]}
+        taskStatus={workspaceMode}
+        outputsOpen={outputsOpen}
+        isSubmitting={workspaceMode === "validating" || workspaceMode === "generating"}
+        prompt={prompt}
+        onPromptChange={onPromptChange}
+        attachments={attachments}
+        onAddAttachment={onAddAttachment}
+        onRemoveAttachment={onRemoveAttachment}
+        selectedIntent={selectedIntent}
+        selectedAgent={selectedAgent}
+        onAgentChange={onAgentChange}
+        selectedOutputType={null}
+        onOutputTypeSelect={handleOutputTypeSelect}
+        onActionSelect={handleActionSelect}
+        onOutputsOpenChange={setOutputsOpen}
+        onRetryMessage={onRetryMessage}
+        onSubmit={onSubmit}
+        onStartNewTask={onStartNewTask}
+      />
+    </>
   );
 }

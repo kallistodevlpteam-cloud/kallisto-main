@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import { Check } from "lucide-react";
 import styles from "../../app/settings/settings.module.css";
-import { CheckCircle2 } from "lucide-react";
+import { VerifiedBadge } from "@/components/ui/verified-badge";
 
 interface BusinessProfileSettingsProps {
   workspace: {
@@ -15,18 +16,27 @@ export function BusinessProfileSettings({ workspace }: BusinessProfileSettingsPr
   const [studioName, setStudioName] = useState("Arjun Architects Studio");
   const [studioWebsite, setStudioWebsite] = useState("arjunarchitects.kallisto.design");
   const [studioAddress, setStudioAddress] = useState("No. 12, MG Road, Bangalore, India");
+  const [isSaved, setIsSaved] = useState(false);
+
+  const handleSave = () => {
+    setIsSaved(true);
+    setTimeout(() => setIsSaved(false), 2500);
+  };
 
   return (
-    <div className={styles.settingsContentOutlet}>
-      <div className={styles.profileCleanContainer}>
-        <section>
-          <div className={styles.profileSectionHeader}>
-            <h2 className={styles.profileSectionTitle}>Business Profile</h2>
-            <p className={styles.profileSectionSubtitle}>
+    <div className={styles.contentScrollArea}>
+      {/* 1. Business Profile */}
+      <div className={styles.card}>
+        <div className={styles.cardHeader}>
+          <div>
+            <h2 className={styles.cardHeaderTitle}>Business Profile</h2>
+            <p className={styles.cardHeaderSubtitle}>
               Configure your public studio identity on Kallisto.
             </p>
           </div>
+        </div>
 
+        <div className={styles.cardBody}>
           <div className={styles.cleanFormGrid}>
             <div className={`${styles.cleanFieldGroup} ${styles.fullWidthField}`}>
               <label className={styles.cleanFieldLabel}>Practice Name</label>
@@ -41,11 +51,11 @@ export function BusinessProfileSettings({ workspace }: BusinessProfileSettingsPr
 
             <div className={`${styles.cleanFieldGroup} ${styles.fullWidthField}`}>
               <label className={styles.cleanFieldLabel}>Studio Website</label>
-              <div className={styles.websiteInputContainer}>
-                <span className={styles.websitePrefix}>https://</span>
+              <div className={styles.copyInputGroup}>
+                <span style={{ fontSize: "13px", color: "#64748b", fontWeight: 600 }}>https://</span>
                 <input
                   type="text"
-                  className={`${styles.cleanInput} ${styles.websiteInput}`}
+                  className={styles.copyInputText}
                   value={studioWebsite}
                   onChange={(e) => setStudioWebsite(e.target.value)}
                   placeholder="your-studio.com"
@@ -64,47 +74,48 @@ export function BusinessProfileSettings({ workspace }: BusinessProfileSettingsPr
               />
             </div>
           </div>
-        </section>
 
-        <section style={{ marginTop: "12px" }}>
-          <div className={styles.profileSectionHeader}>
-            <h2 className={styles.profileSectionTitle}>Verification Status</h2>
-            <p className={styles.profileSectionSubtitle}>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "12px" }}>
+            <button type="button" className={styles.btnPrimary} onClick={handleSave}>
+              {isSaved ? (
+                <>
+                  <Check size={14} color="#ffffff" />
+                  <span>Saved</span>
+                </>
+              ) : (
+                <span>Save Changes</span>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Verification Status */}
+      <div className={styles.card} style={{ marginTop: "16px" }}>
+        <div className={styles.cardHeader}>
+          <div>
+            <h2 className={styles.cardHeaderTitle}>Verification Status</h2>
+            <p className={styles.cardHeaderSubtitle}>
               Your verified status within the Kallisto ecosystem.
             </p>
           </div>
+        </div>
 
-          <div
-            style={{
-              padding: "20px",
-              background: "#f0fdf4",
-              border: "1px solid #bbf7d0",
-              borderRadius: "12px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: "20px",
-            }}
-          >
-            <div>
-              <div
-                style={{
-                  fontSize: "14.5px",
-                  fontWeight: 600,
-                  color: "#166534",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                <CheckCircle2 size={18} /> Verified Practice
-              </div>
-              <div style={{ fontSize: "12.5px", color: "#15803d", marginTop: "2px" }}>
-                Verified partners get priority listing in client searches and project invitations.
-              </div>
+        <div className={styles.cardBody}>
+          <div className={styles.settingRow}>
+            <div className={styles.settingInfo}>
+              <span className={styles.settingLabel} style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#166534" }}>
+                <VerifiedBadge size={16} /> Verified Practice
+              </span>
+              <span className={styles.settingDesc}>
+                This studio has passed identity verification, statutory checks, and practice authentication.
+              </span>
+            </div>
+            <div className={styles.settingControl}>
+              <span className={styles.thisDeviceBadge}>Active</span>
             </div>
           </div>
-        </section>
+        </div>
       </div>
     </div>
   );

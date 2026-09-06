@@ -31,6 +31,9 @@ import type {
   Deployment,
   HandsOverviewData,
   HandsTab,
+  WorkerTrade,
+  WorkforceRequest,
+  WorkforceRequestDraft,
 } from "../types/hands.types";
 import {
   parseHandsTab,
@@ -44,6 +47,7 @@ import { HandsPageTabs } from "./hands-page-tabs";
 import { HandsSearchBar } from "./hands-search-bar";
 import { NeedsAttentionCard } from "./needs-attention-card";
 import { OpenRequestsCard } from "./open-requests-card";
+import { RequestDetailsDrawer } from "./request-details-drawer";
 import { WorkforceDemandCard } from "./workforce-demand-card";
 import { WorkforceRequestDrawer } from "./workforce-request-drawer";
 import styles from "./hands-overview.module.css";
@@ -54,6 +58,15 @@ type LoadState =
   | "error"
   | "forbidden"
   | "offline";
+
+interface RequestDrawerConfig {
+  initialProjectId?: string;
+  initialTrade?: WorkerTrade | string;
+  initialWorkerCount?: number | string;
+  initialStartDate?: string;
+  initialDuration?: string;
+  initialValues?: Partial<WorkforceRequestDraft>;
+}
 
 const TAB_PLACEHOLDERS: Record<
   Exclude<HandsTab, "overview">,
@@ -148,8 +161,12 @@ export function HandsOverview() {
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [data, setData] = useState<HandsOverviewData | null>(null);
   const [requestDrawerOpen, setRequestDrawerOpen] = useState(false);
+  const [requestDrawerConfig, setRequestDrawerConfig] =
+    useState<RequestDrawerConfig | null>(null);
   const [selectedDeployment, setSelectedDeployment] =
     useState<Deployment | null>(null);
+  const [selectedRequest, setSelectedRequest] =
+    useState<WorkforceRequest | null>(null);
   const [headerNotice, setHeaderNotice] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFullDashboard, setShowFullDashboard] = useState(false);
@@ -209,18 +226,84 @@ export function HandsOverview() {
     [pathname, router, searchParams],
   );
 
-  const handleOpenRequest = useCallback(() => {
-    setRequestDrawerOpen(true);
-  }, []);
+  const handleOpenRequest = useCallback(
+    (config?: RequestDrawerConfig) => {
+      setRequestDrawerConfig(config ?? null);
+      setRequestDrawerOpen(true);
+    },
+    [],
+  );
 
   const handleCloseRequest = useCallback(() => {
     setRequestDrawerOpen(false);
+    setRequestDrawerConfig(null);
   }, []);
 
   const handleCloseDeployment = useCallback(() => {
     setSelectedDeployment(null);
   }, []);
 
+  const handleRequestWorkersForDeployment = useCallback(
+    (deployment: Deployment) => {
+      setSelectedDeployment(null);
+
+      const projectIdMap: Record<string, string> = {
+        "Nila Residence": "proj-001",
+        "Arjun Villa": "proj-002",
+        "Marina Office": "proj-003",
+        "Green Courtyard": "proj-004",
+      };
+
+      const resolvedProjectId =
+        deployment.projectId ||
+        projectIdMap[deployment.projectName] ||
+        "proj-001";
+
+      let parsedTrade: WorkerTrade | "" = "";
+      const wfLower = deployment.workforce.toLowerCase();
+      if (wfLower.includes("mason")) parsedTrade = "Masons";
+      else if (wfLower.includes("helper")) parsedTrade = "Helpers";
+      else if (wfLower.includes("painter")) parsedTrade = "Painters";
+      else if (wfLower.includes("electric")) parsedTrade = "Electricians";
+      else if (wfLower.includes("carpent")) parsedTrade = "Carpenters";
+      else if (wfLower.includes("plumb")) parsedTrade = "Plumbers";
+      else if (wfLower.includes("weld")) parsedTrade = "Welders";
+      else if (wfLower.includes("tile")) parsedTrade = "Tile workers";
+
+      const shortfall =
+        deployment.attendance &&
+        deployment.attendance.total !== undefined &&
+        deployment.attendance.present !== undefined
+          ? Math.max(
+              0,
+              deployment.attendance.total - deployment.attendance.present,
+            )
+          : undefined;
+
+      const workerCount = shortfall && shortfall > 0 ? shortfall : undefined;
+      const isAttention =
+        deployment.status === "Needs attention" ||
+        (shortfall !== undefined && shortfall > 0);
+
+      handleOpenRequest({
+        initialProjectId: resolvedProjectId,
+        initialTrade: parsedTrade,
+        initialWorkerCount: workerCount,
+        initialStartDate: "2026-07-27",
+        initialDuration: "1 week",
+        initialValues: {
+          projectId: resolvedProjectId,
+          siteLocation: deployment.location,
+          siteContact: deployment.supervisor,
+          shiftTiming: deployment.shift,
+          notes: isAttention
+            ? `Urgent shortfall replacement for ${deployment.projectName}. Attendance shortfall: ${deployment.attendance.present}/${deployment.attendance.total} workers on site.`
+            : `Additional workforce requested for ${deployment.projectName} (${deployment.workforce}).`,
+        },
+      });
+    },
+    [handleOpenRequest],
+  );
   const handleHeroSearch = (q: string, projectId?: string | null) => {
     const params = new URLSearchParams();
     if (q.trim()) params.set("q", q.trim());
@@ -239,7 +322,7 @@ export function HandsOverview() {
           <button
             type="button"
             className={styles.handsRoundBtn}
-            onClick={handleOpenRequest}
+            onClick={() => handleOpenRequest()}
             title="Request Workforce"
             aria-label="Request more workers"
           >
@@ -304,7 +387,15 @@ export function HandsOverview() {
         </section>
 
         {requestDrawerOpen ? (
-          <WorkforceRequestDrawer onClose={handleCloseRequest} />
+          <WorkforceRequestDrawer
+            onClose={handleCloseRequest}
+            initialProjectId={requestDrawerConfig?.initialProjectId}
+            initialTrade={requestDrawerConfig?.initialTrade}
+            initialWorkerCount={requestDrawerConfig?.initialWorkerCount}
+            initialStartDate={requestDrawerConfig?.initialStartDate}
+            initialDuration={requestDrawerConfig?.initialDuration}
+            initialValues={requestDrawerConfig?.initialValues}
+          />
         ) : null}
       </div>
     );
@@ -312,16 +403,18 @@ export function HandsOverview() {
 
   return (
     <div className={`workspace-container ${styles.page}`}>
-      <HandsPageHeader
-        onRequestWorkforce={handleOpenRequest}
-        onOverflowAction={(action) =>
-          setHeaderNotice(`${action} will open in the Hands settings workspace.`)
-        }
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-      />
+      <div className={styles.handsStickyNavArea}>
+        <HandsPageHeader
+          onRequestWorkforce={() => handleOpenRequest()}
+          onOverflowAction={(action) =>
+            setHeaderNotice(`${action} will open in the Hands settings workspace.`)
+          }
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
 
-      <HandsPageTabs activeTab={activeTab} onSelect={handleTabChange} />
+        <HandsPageTabs activeTab={activeTab} onSelect={handleTabChange} />
+      </div>
 
       {headerNotice ? (
         <div className={styles.inlineNotice} role="status">
@@ -376,8 +469,9 @@ export function HandsOverview() {
                 data={data}
                 searchQuery={searchQuery}
                 onSelectDeployment={setSelectedDeployment}
+                onSelectRequest={setSelectedRequest}
                 onNavigateTab={handleTabChange}
-                onRequestWorkforce={handleOpenRequest}
+                onRequestWorkforce={() => handleOpenRequest()}
               />
             )}
             {activeTab === "deployments" && (
@@ -395,7 +489,7 @@ export function HandsOverview() {
                   })}
                   onSelectDeployment={setSelectedDeployment}
                   onNavigateTab={handleTabChange}
-                  onRequestWorkforce={handleOpenRequest}
+                  onRequestWorkforce={() => handleOpenRequest()}
                 />
               </div>
             )}
@@ -411,7 +505,8 @@ export function HandsOverview() {
                     );
                   })}
                   onNavigateTab={handleTabChange}
-                  onRequestWorkforce={handleOpenRequest}
+                  onRequestWorkforce={() => handleOpenRequest()}
+                  onSelectRequest={setSelectedRequest}
                 />
                 <WorkforceDemandCard
                   demand={data.demand}
@@ -432,7 +527,15 @@ export function HandsOverview() {
       </div>
 
       {requestDrawerOpen ? (
-        <WorkforceRequestDrawer onClose={handleCloseRequest} />
+        <WorkforceRequestDrawer
+          onClose={handleCloseRequest}
+          initialProjectId={requestDrawerConfig?.initialProjectId}
+          initialTrade={requestDrawerConfig?.initialTrade}
+          initialWorkerCount={requestDrawerConfig?.initialWorkerCount}
+          initialStartDate={requestDrawerConfig?.initialStartDate}
+          initialDuration={requestDrawerConfig?.initialDuration}
+          initialValues={requestDrawerConfig?.initialValues}
+        />
       ) : null}
 
       {selectedDeployment ? (
@@ -440,6 +543,44 @@ export function HandsOverview() {
           deployment={selectedDeployment}
           onClose={handleCloseDeployment}
           onNavigateTab={handleTabChange}
+          onRequestWorkers={handleRequestWorkersForDeployment}
+        />
+      ) : null}
+
+      {selectedRequest ? (
+        <RequestDetailsDrawer
+          request={selectedRequest}
+          onClose={() => setSelectedRequest(null)}
+          onNavigateTab={handleTabChange}
+          onRequestMore={(req) => {
+            setSelectedRequest(null);
+            handleOpenRequest({
+              initialProjectId: req.projectId,
+              initialTrade: req.trade,
+              initialWorkerCount:
+                req.quantity - req.fulfilled > 0
+                  ? req.quantity - req.fulfilled
+                  : req.quantity,
+              initialStartDate: "2026-07-27",
+              initialDuration: req.duration || "2 weeks",
+              initialValues: {
+                projectId: req.projectId,
+                siteLocation: req.location || "",
+                trade: req.trade,
+                isMultiTrade: req.isMultiTrade,
+                tradesBreakdown: req.tradesBreakdown?.map((t) => ({
+                  trade: t.trade,
+                  workerCount: String(
+                    (t.quantity - (t.fulfilled || 0)) > 0
+                      ? t.quantity - (t.fulfilled || 0)
+                      : t.quantity,
+                  ),
+                  skillLevel: t.skillLevel,
+                })),
+                notes: `Additional workforce requested for ${req.projectName} (${req.trade}).`,
+              },
+            });
+          }}
         />
       ) : null}
     </div>
@@ -450,6 +591,7 @@ interface HandsOverviewContentProps {
   data: HandsOverviewData;
   searchQuery?: string;
   onSelectDeployment: (deployment: Deployment) => void;
+  onSelectRequest?: (request: WorkforceRequest) => void;
   onNavigateTab: (tab: HandsTab) => void;
   onRequestWorkforce: () => void;
 }
@@ -458,6 +600,7 @@ function HandsOverviewContent({
   data,
   searchQuery = "",
   onSelectDeployment,
+  onSelectRequest,
   onNavigateTab,
   onRequestWorkforce,
 }: HandsOverviewContentProps) {
@@ -500,6 +643,8 @@ function HandsOverviewContent({
           requests={filteredRequests}
           onNavigateTab={onNavigateTab}
           onRequestWorkforce={onRequestWorkforce}
+          onSelectRequest={onSelectRequest}
+          defaultViewMode="grid"
         />
       </div>
 

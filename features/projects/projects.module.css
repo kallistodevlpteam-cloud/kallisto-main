@@ -1578,20 +1578,19 @@
   }
 }
 
-/* ── Card Shell (Concentric Radius: outer r = inner r + padding) ── */
+/* ── Card Shell ── */
 .pcCard {
   --inner-radius: 16px;
-  --card-padding: 0px;
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
   border: none;
-  border-radius: calc(var(--inner-radius) + var(--card-padding));
+  border-radius: var(--inner-radius);
   overflow: hidden;
   text-decoration: none;
   cursor: pointer;
-  padding: var(--card-padding);
-  transition: padding 0.2s ease, border-radius 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   outline: none;
   width: 100%;
   min-width: 0;
@@ -1600,7 +1599,6 @@
 
 .pcCard:hover,
 .pcCard:focus-visible {
-  --card-padding: 8px;
   transform: translateY(-2px);
   box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.08);
 }
@@ -1615,7 +1613,10 @@
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  border-radius: var(--inner-radius);
+  border-top-left-radius: var(--inner-radius);
+  border-top-right-radius: var(--inner-radius);
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
   overflow: hidden;
   background-color: #f8fafc;
   flex-shrink: 0;
@@ -1768,11 +1769,6 @@
 .pcMediaImage {
   object-fit: cover;
   object-position: center;
-  transition: transform 0.3s ease;
-}
-
-.pcCard:hover .pcMediaImage {
-  transform: scale(1.03);
 }
 
 /* ── Information Section Below Media ── */
@@ -1780,7 +1776,7 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding: 16px 4px 12px 4px;
+  padding: 14px 16px 14px 16px;
   background-color: #ffffff;
   flex: 1;
 }

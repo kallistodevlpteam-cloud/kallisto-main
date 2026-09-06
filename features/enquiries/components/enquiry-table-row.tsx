@@ -14,9 +14,10 @@ import styles from "./enquiries-workspace.module.css";
 interface TableRowProps {
   enquiry: EnquiryRecord;
   now: Date;
+  basePath?: string;
 }
 
-const NEXT_ACTION_CONFIG = {
+const PROVIDER_NEXT_ACTION_CONFIG = {
   review_enquiry: {
     label: "Review enquiry",
     tone: "blue",
@@ -54,11 +55,66 @@ const NEXT_ACTION_CONFIG = {
   { label: string; tone: string }
 >;
 
-export function EnquiryTableRow({ enquiry, now }: TableRowProps) {
+const CLIENT_NEXT_ACTION_CONFIG = {
+  review_enquiry: {
+    label: "Reviewing with Architect",
+    tone: "blue",
+  },
+  request_clarification: {
+    label: "Clarification Requested",
+    tone: "orange",
+  },
+  schedule_consultation: {
+    label: "Consultation Scheduled",
+    tone: "violet",
+  },
+  consultation: {
+    label: "Consultation in Progress",
+    tone: "blue",
+  },
+  follow_up: {
+    label: "Follow-up Pending",
+    tone: "blue",
+  },
+  prepare_proposal: {
+    label: "Proposal in Preparation",
+    tone: "blue",
+  },
+  convert_to_project: {
+    label: "Ready to Kickoff Project",
+    tone: "green",
+  },
+  mark_as_lost: {
+    label: "Enquiry Closed",
+    tone: "red",
+  },
+} satisfies Record<
+  NextActionType,
+  { label: string; tone: string }
+>;
+
+export function getEnquiryProviderDisplay(enquiry: EnquiryRecord): string {
+  if (enquiry.owner && enquiry.owner !== "—" && !enquiry.owner.includes("Client")) {
+    return enquiry.owner;
+  }
+  const title = (enquiry.title || "").toLowerCase();
+  if (title.includes("malabar")) return "Kallisto Studio Architects";
+  if (title.includes("greenfield")) return "Studio Morph Architects";
+  if (title.includes("nila")) return "Ar. Vivek Menon & Partners";
+  if (title.includes("calicut")) return "Kallisto Design Build";
+  if (title.includes("cochin")) return "Cochin Design Lab";
+  return "Kallisto Verified Specialist";
+}
+
+export function EnquiryTableRow({ enquiry, now, basePath }: TableRowProps) {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const nextActionPresentation = NEXT_ACTION_CONFIG[enquiry.nextAction.type];
+  const isClient = Boolean(basePath?.startsWith("/client"));
+
+  const nextActionPresentation = isClient
+    ? (CLIENT_NEXT_ACTION_CONFIG[enquiry.nextAction.type] ?? PROVIDER_NEXT_ACTION_CONFIG[enquiry.nextAction.type])
+    : PROVIDER_NEXT_ACTION_CONFIG[enquiry.nextAction.type];
 
   const getDueColorClass = (tone: string) => {
     switch (tone) {
@@ -106,7 +162,7 @@ export function EnquiryTableRow({ enquiry, now }: TableRowProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMenuOpen]);
 
-  const viewPath = getEnquiryDetailPath(enquiry.id);
+  const viewPath = getEnquiryDetailPath(enquiry.id, basePath);
 
   const handleRowClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
@@ -126,6 +182,10 @@ export function EnquiryTableRow({ enquiry, now }: TableRowProps) {
       router.push(viewPath);
     }
   };
+
+  const subtitleText = isClient
+    ? `${getEnquiryProviderDisplay(enquiry)} · ${enquiry.location}`
+    : `${enquiry.clientName} · ${enquiry.location}`;
 
   return (
     <div
@@ -154,7 +214,7 @@ export function EnquiryTableRow({ enquiry, now }: TableRowProps) {
             {enquiry.isNew && <span className={styles.newBadge}>New</span>}
           </div>
           <span className={styles.clientText}>
-            {enquiry.clientName} · {enquiry.location}
+            {subtitleText}
           </span>
         </div>
       </div>
@@ -171,7 +231,7 @@ export function EnquiryTableRow({ enquiry, now }: TableRowProps) {
         </div>
       </div>
 
-      {/* 3. Received Date */}
+      {/* 3. Received / Submitted Date */}
       <div className={styles.dateText} role="gridcell">
         {formatEnquiryDate(enquiry.receivedAt, now)}
       </div>
@@ -188,7 +248,7 @@ export function EnquiryTableRow({ enquiry, now }: TableRowProps) {
         </span>
       </div>
 
-      {/* 6. Actions Column: Three-dot menu only (entire row is clickable) */}
+      {/* 6. Actions Column */}
       <div className={styles.actionsCell} role="gridcell">
         <div className={styles.moreActionWrap} ref={menuRef}>
           <button
@@ -209,7 +269,7 @@ export function EnquiryTableRow({ enquiry, now }: TableRowProps) {
                 role="menuitem"
                 onClick={() => setIsMenuOpen(false)}
               >
-                View enquiry
+                {isClient ? "View enquiry & proposal" : "View enquiry"}
               </Link>
             </div>
           )}

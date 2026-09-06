@@ -4,10 +4,9 @@ import { FormEvent, useState } from "react";
 import Image from "next/image";
 import {
   Camera,
-  Check,
-  Globe2,
-  MapPin,
 } from "lucide-react";
+import { VerifiedBadge } from "@/components/ui/verified-badge";
+import { LocationDuotoneIcon } from "@/components/layout/sidebar-icons";
 import type { PortfolioProfile } from "@/features/portfolio/types/portfolio.types";
 import styles from "./portfolio.module.css";
 
@@ -102,12 +101,7 @@ export function PortfolioProfileHeader({
                 {profile.name}
               </h1>
               {profile.verified ? (
-                <span className={styles.verifiedBadge}>
-                  <span className={styles.verifiedCheckIconWrap}>
-                    <Check size={10} strokeWidth={3} aria-hidden="true" />
-                  </span>
-                  Verified
-                </span>
+                <VerifiedBadge size={19} title="Kallisto Verified Practice" />
               ) : null}
             </div>
 
@@ -115,18 +109,9 @@ export function PortfolioProfileHeader({
 
             <div className={styles.locationWebsiteLine}>
               <span className={styles.locationItem}>
-                <MapPin size={14} aria-hidden="true" />
-                {profile.location}
+                <LocationDuotoneIcon size={15} className={styles.locationIcon} />
+                <span>{profile.location}</span>
               </span>
-              <a
-                className={styles.websiteItem}
-                href={profile.websiteUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <Globe2 size={14} aria-hidden="true" />
-                {profile.websiteLabel}
-              </a>
             </div>
 
             <div className={styles.skillList} aria-label="Skills">

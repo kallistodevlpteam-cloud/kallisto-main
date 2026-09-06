@@ -1,10 +1,5 @@
-import { AppShell } from "@/components/layout/app-shell";
-import { HomeWorkspace } from "@/features/home";
+import { redirect } from "next/navigation";
 
 export default function HomePage() {
-  return (
-    <AppShell layoutProfile="project-dashboard">
-      <HomeWorkspace />
-    </AppShell>
-  );
+  redirect("/");
 }

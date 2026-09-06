@@ -3,7 +3,8 @@
 /**
  * DocumentsTitleRowActions
  *
- * Renders Top Navigation Options: Task | Docs | BOQ | Finance | Site | Timeline
+ * Renders Top Navigation Options: Task | Docs | BOQ | Finance | Site
+ * Supports both Provider Virtual Office and Client POV workspaces.
  */
 
 import React from "react";
@@ -19,28 +20,45 @@ import {
 } from "@/components/layout/sidebar-icons";
 
 const NAV_CHIPS = [
-  { id: "task", label: "Task", icon: TaskDuotoneIcon, color: "#10b981", href: "/tasks" },
-  { id: "docs", label: "Drive", icon: DriveDuotoneIcon, color: "#f59e0b", href: "/documents" },
-  { id: "boq", label: "BOQ", icon: BoqDuotoneIcon, color: "#6366f1", href: "/boq" },
-  { id: "finance", label: "Finance", icon: FinanceDuotoneIcon, color: "#f43f5e", href: "/finance" },
-  { id: "site", label: "Site", icon: SiteDuotoneIcon, color: "#0ea5e9", href: "/site" },
+  { id: "task", label: "Task", icon: TaskDuotoneIcon, color: "#10b981", defaultHref: "/tasks" },
+  { id: "docs", label: "Drive", icon: DriveDuotoneIcon, color: "#f59e0b", defaultHref: "/documents" },
+  { id: "boq", label: "BOQ", icon: BoqDuotoneIcon, color: "#6366f1", defaultHref: "/boq" },
+  { id: "finance", label: "Finance", icon: FinanceDuotoneIcon, color: "#f43f5e", defaultHref: "/finance" },
+  { id: "site", label: "Site", icon: SiteDuotoneIcon, color: "#0ea5e9", defaultHref: "/site" },
 ] as const;
 
 export function DocumentsTitleRowActions() {
   const pathname = usePathname() || "";
+  const isClient = pathname.startsWith("/client");
 
   let projectId: string | null = null;
-  if (pathname.startsWith("/projects/")) {
+  if (isClient && pathname.startsWith("/client/projects/")) {
+    const parts = pathname.split("/").filter(Boolean);
+    if (parts.length >= 3 && parts[2] !== "page") {
+      projectId = parts[2];
+    }
+  } else if (!isClient && pathname.startsWith("/projects/")) {
     const parts = pathname.split("/").filter(Boolean);
     if (parts.length >= 2 && parts[1] !== "page") {
       projectId = parts[1];
     }
   }
 
-  const homeHref = projectId ? `/projects/${projectId}` : "/projects";
+  const homeHref = isClient
+    ? projectId
+      ? `/client/projects/${projectId}`
+      : "/client/projects"
+    : projectId
+    ? `/projects/${projectId}`
+    : "/projects";
+
   const isOverviewPage =
     projectId !== null
-      ? pathname === `/projects/${projectId}` || pathname === `/projects/${projectId}/`
+      ? isClient
+        ? pathname === `/client/projects/${projectId}` || pathname === `/client/projects/${projectId}/`
+        : pathname === `/projects/${projectId}` || pathname === `/projects/${projectId}/`
+      : isClient
+      ? pathname === "/client/projects" || pathname === "/client"
       : pathname === "/projects" || pathname === "/" || pathname === "/home";
 
   return (
@@ -63,20 +81,26 @@ export function DocumentsTitleRowActions() {
         )}
         {NAV_CHIPS.map((chip) => {
           const Icon = chip.icon;
+          const moduleSlug = chip.id === "docs" ? "documents" : chip.id === "task" ? "tasks" : chip.id;
 
-          let targetHref: string = chip.href;
-          if (projectId) {
-            const moduleSlug = chip.id === "docs" ? "documents" : chip.id === "task" ? "tasks" : chip.id;
-            targetHref = `/projects/${projectId}/${moduleSlug}`;
+          let targetHref: string;
+          if (isClient) {
+            targetHref = projectId
+              ? `/client/projects/${projectId}/${moduleSlug}`
+              : `/client/projects`;
+          } else {
+            targetHref = projectId
+              ? `/projects/${projectId}/${moduleSlug}`
+              : chip.defaultHref;
           }
 
           const isActive =
             pathname === targetHref ||
-            pathname === chip.href ||
-            (chip.href !== "/documents" && pathname.startsWith(chip.href)) ||
+            (!isClient && pathname === chip.defaultHref) ||
+            (!isClient && chip.defaultHref !== "/documents" && pathname.startsWith(chip.defaultHref)) ||
             (projectId !== null && (
-              pathname === `/projects/${projectId}/${chip.id}` ||
-              pathname === `/projects/${projectId}/${chip.id === "docs" ? "documents" : chip.id === "task" ? "tasks" : chip.id}`
+              pathname === (isClient ? `/client/projects/${projectId}/${chip.id}` : `/projects/${projectId}/${chip.id}`) ||
+              pathname === (isClient ? `/client/projects/${projectId}/${moduleSlug}` : `/projects/${projectId}/${moduleSlug}`)
             ));
 
           return (

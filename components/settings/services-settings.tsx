@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Check } from "lucide-react";
 import styles from "../../app/settings/settings.module.css";
 
 interface ServicesSettingsProps {
@@ -12,78 +13,122 @@ interface ServicesSettingsProps {
 
 export function ServicesSettings({ workspace }: ServicesSettingsProps) {
   const [competencies, setCompetencies] = useState(
-    "Architecture, Schematic Drawings, BOQ drafting, Feasibility validation"
+    "Schematic Architecture, 3D BIM Modeling, Statutory Municipal Approvals (KMBR/KPBR), BOQ Drafting, Site Supervision"
   );
+  const [baseFee, setBaseFee] = useState("₹1,85,000");
   const [hourlyRate, setHourlyRate] = useState("₹2,500 / hr");
   const [portfolioVisibility, setPortfolioVisibility] = useState(true);
+  const [allowInstantEnquiries, setAllowInstantEnquiries] = useState(true);
+  const [isSaved, setIsSaved] = useState(false);
+
+  const handleSave = () => {
+    setIsSaved(true);
+    setTimeout(() => setIsSaved(false), 2500);
+  };
 
   return (
-    <div className={styles.settingsContentOutlet}>
-      <div className={styles.profileCleanContainer}>
-        {/* Core Competencies */}
-        <section>
-          <div className={styles.profileSectionHeader}>
-            <h2 className={styles.profileSectionTitle}>Core Competencies</h2>
-            <p className={styles.profileSectionSubtitle}>
-              Select the type of work your team provides.
+    <div className={styles.contentScrollArea}>
+      {/* 1. Core Competencies Card */}
+      <div className={styles.card}>
+        <div className={styles.cardHeader}>
+          <div>
+            <h2 className={styles.cardHeaderTitle}>Payment Methods & Practice Pricing</h2>
+            <p className={styles.cardHeaderSubtitle}>
+              Configure your practice rates, hourly advisory fees, and client consultation packages.
             </p>
           </div>
+          {isSaved && (
+            <div className={styles.toastSaved}>
+              <Check size={14} />
+              <span>Saved</span>
+            </div>
+          )}
+        </div>
 
+        <div className={styles.cardBody}>
           <div className={styles.cleanFormGrid}>
             <div className={`${styles.cleanFieldGroup} ${styles.fullWidthField}`}>
-              <label className={styles.cleanFieldLabel}>Services Provided</label>
-              <input
-                type="text"
-                className={styles.cleanInput}
+              <label className={styles.cleanFieldLabel}>Services & Deliverable Offerings</label>
+              <textarea
+                className={styles.cleanTextarea}
+                rows={3}
                 value={competencies}
                 onChange={(e) => setCompetencies(e.target.value)}
-                placeholder="Enter services provided"
               />
             </div>
 
-            <div className={`${styles.cleanFieldGroup} ${styles.fullWidthField}`}>
-              <label className={styles.cleanFieldLabel}>Standard Hourly Rate</label>
+            <div className={styles.cleanFieldGroup}>
+              <label className={styles.cleanFieldLabel}>Starting Project Consultation Fee</label>
+              <input
+                type="text"
+                className={styles.cleanInput}
+                value={baseFee}
+                onChange={(e) => setBaseFee(e.target.value)}
+              />
+            </div>
+
+            <div className={styles.cleanFieldGroup}>
+              <label className={styles.cleanFieldLabel}>Hourly Advisory Rate</label>
               <input
                 type="text"
                 className={styles.cleanInput}
                 value={hourlyRate}
                 onChange={(e) => setHourlyRate(e.target.value)}
-                placeholder="Enter hourly rate"
               />
             </div>
           </div>
-        </section>
 
-        {/* Portfolio Options */}
-        <section style={{ marginTop: "12px" }}>
-          <div className={styles.profileSectionHeader}>
-            <h2 className={styles.profileSectionTitle}>Portfolio Options</h2>
-            <p className={styles.profileSectionSubtitle}>
-              Control what is visible to the public.
-            </p>
-          </div>
-
-          <div className={styles.toggleRow}>
-            <label className={styles.switchLabel}>
-              <input
-                type="checkbox"
-                className={`${styles.switchInput} ${styles.greenSwitchInput}`}
-                checked={portfolioVisibility}
-                onChange={(e) => setPortfolioVisibility(e.target.checked)}
-              />
-              <span className={styles.greenSwitchSlider} />
-            </label>
-            <label
-              className={styles.toggleMeta}
-              onClick={() => setPortfolioVisibility(!portfolioVisibility)}
-            >
-              <span className={styles.toggleTitle}>Public Portfolio Visibility</span>
-              <span className={styles.toggleDesc}>
-                Allow clients to discover your workspace creations in Kallisto Explore.
+          <div className={styles.settingRow}>
+            <div className={styles.settingInfo}>
+              <span className={styles.settingLabel}>Showcase in Kallisto Practice Directory</span>
+              <span className={styles.settingDesc}>
+                Feature your practice portfolio and project highlights in client search and category feeds.
               </span>
-            </label>
+            </div>
+            <div className={styles.settingControl}>
+              <label className={styles.switch}>
+                <input
+                  type="checkbox"
+                  checked={portfolioVisibility}
+                  onChange={(e) => setPortfolioVisibility(e.target.checked)}
+                />
+                <span className={styles.slider} />
+              </label>
+            </div>
           </div>
-        </section>
+
+          <div className={styles.settingRow}>
+            <div className={styles.settingInfo}>
+              <span className={styles.settingLabel}>Accept Direct Package Enquiries</span>
+              <span className={styles.settingDesc}>
+                Allow clients to order consultation packages and submit project briefs through Ask Odin.
+              </span>
+            </div>
+            <div className={styles.settingControl}>
+              <label className={styles.switch}>
+                <input
+                  type="checkbox"
+                  checked={allowInstantEnquiries}
+                  onChange={(e) => setAllowInstantEnquiries(e.target.checked)}
+                />
+                <span className={styles.slider} />
+              </label>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "16px" }}>
+            <button type="button" className={styles.btnPrimary} onClick={handleSave}>
+              {isSaved ? (
+                <>
+                  <Check size={14} color="#ffffff" />
+                  <span>Saved</span>
+                </>
+              ) : (
+                <span>Save Payment & Service Settings</span>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

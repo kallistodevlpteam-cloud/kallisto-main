@@ -7,22 +7,37 @@ export function validateWorkforceRequest(
   values: WorkforceRequestDraft,
 ): WorkforceRequestErrors {
   const errors: WorkforceRequestErrors = {};
-  const workerCount = Number(values.workerCount);
 
   if (!values.projectId) {
     errors.projectId = "Select a project.";
   }
 
-  if (!values.trade) {
-    errors.trade = "Select a worker trade.";
-  }
+  if (values.isMultiTrade) {
+    const validRows = (values.tradesBreakdown || []).filter(
+      (item) =>
+        Boolean(item.trade) &&
+        Number(item.workerCount) > 0 &&
+        Number.isFinite(Number(item.workerCount)),
+    );
 
-  if (
-    values.workerCount.trim() === "" ||
-    !Number.isFinite(workerCount) ||
-    workerCount <= 0
-  ) {
-    errors.workerCount = "Enter a worker count greater than zero.";
+    if (validRows.length === 0) {
+      errors.trade = "Add at least one labour trade with a valid worker count.";
+      errors.workerCount = "Enter a worker count greater than zero.";
+    }
+  } else {
+    const workerCount = Number(values.workerCount);
+
+    if (!values.trade) {
+      errors.trade = "Select a worker trade.";
+    }
+
+    if (
+      values.workerCount.trim() === "" ||
+      !Number.isFinite(workerCount) ||
+      workerCount <= 0
+    ) {
+      errors.workerCount = "Enter a worker count greater than zero.";
+    }
   }
 
   if (!values.startDate) {
@@ -35,3 +50,4 @@ export function validateWorkforceRequest(
 
   return errors;
 }
+

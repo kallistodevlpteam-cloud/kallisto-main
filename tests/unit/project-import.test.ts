@@ -23,7 +23,7 @@ describe("Import Project Engine — Validate-and-Preview & Atomic Confirmation",
     expect(preview.isValid).toBe(true);
     expect(preview.validationId).toMatch(/^val-/);
     expect(preview.matchingClientCandidates.length).toBeGreaterThan(0);
-    expect(preview.matchingClientCandidates[0].name).toBe("Anoop Menon");
+    expect(preview.matchingClientCandidates[0].name).toBe("Anoop Kumar");
   });
 
   it("rejects import preview when project code already exists in workspace", async () => {

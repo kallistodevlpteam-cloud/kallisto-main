@@ -11,6 +11,7 @@ import {
   MapPin,
   AlertTriangle,
   Building2,
+  Plus,
 } from "lucide-react";
 import {
   SearchDuotoneIcon,
@@ -25,6 +26,7 @@ import type {
   TodayCategoryId,
 } from "../../hooks/use-calendar-query-state";
 import type { PresentableActivity } from "../../services/calendar-activity.service";
+import { CALENDAR_TEAM_MEMBERS } from "../../data/mock-calendar-data";
 import styles from "../calendar-workspace-page.module.css";
 
 const REFERENCE_TODAY = "2026-07-24";
@@ -234,6 +236,7 @@ export function CalendarTab({
   activities = [],
   projectsList = [],
   onSelectActivity,
+  onAddActivity,
 }: CalendarTabProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"month" | "week">("month");
@@ -489,6 +492,16 @@ export function CalendarTab({
             >
               Today
             </button>
+
+            <button
+              type="button"
+              className={styles.mockupAddTaskBtn}
+              onClick={() => onAddActivity?.(selectedDateStr)}
+              aria-label="Add Task"
+            >
+              <Plus size={14} />
+              <span>Add Task</span>
+            </button>
           </div>
         </div>
 
@@ -672,6 +685,16 @@ export function CalendarTab({
                 {selectedDateActivities.length}{" "}
                 {selectedDateActivities.length === 1 ? "Activity" : "Activities"}
               </span>
+              <button
+                type="button"
+                className={styles.hiveStudioAddBtn}
+                onClick={() => onAddActivity?.(selectedDateStr)}
+                aria-label="Add task for this date"
+                title="Add task for this date"
+              >
+                <Plus size={13} />
+                <span>Add Task</span>
+              </button>
             </div>
           </div>
 
@@ -685,13 +708,24 @@ export function CalendarTab({
                 <p className={styles.hiveStudioEmptyText}>
                   No activities scheduled for this date.
                 </p>
+                <button
+                  type="button"
+                  className={styles.hiveEmptyAddTaskBtn}
+                  onClick={() => onAddActivity?.(selectedDateStr)}
+                >
+                  <Plus size={13} />
+                  <span>Create Task for {selectedDateStr}</span>
+                </button>
               </div>
             ) : (
               selectedDateActivities.map((act) => {
                 const isExpanded = (expandedActivityId ?? selectedDateActivities[0]?.id) === act.id;
                 const isCompleted = act.status === "completed";
                 const isBlocked = act.isOverdue;
-                const actAssignee = TEAM_MEMBERS[act.ownerId] || TEAM_MEMBERS["usr-1"];
+                const actAssignee =
+                  CALENDAR_TEAM_MEMBERS[act.ownerId] ||
+                  (act.assigneeIds?.[0] ? CALENDAR_TEAM_MEMBERS[act.assigneeIds[0]] : undefined) ||
+                  CALENDAR_TEAM_MEMBERS["usr-1"];
 
                 return (
                   <div

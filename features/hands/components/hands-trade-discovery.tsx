@@ -160,7 +160,7 @@ export function HandsTradeDiscovery() {
   }, [query, categoryFilter, verifiedOnly, savedOnly, minRating, maxRate, locationFilter]);
 
   return (
-    <div className={`workspace-container ${styles.discoveryStack}`}>
+    <div className={styles.discoveryStack}>
       {/* 1. Integrated Sticky Top Header: Logo | Search Box | Round Wishlist Option & Category Filters */}
       <header className={styles.discoveryStickyHeader}>
         <div className={styles.discoveryTopNavRow}>
@@ -169,8 +169,8 @@ export function HandsTradeDiscovery() {
             <Image
               src="/kallisto-hands-logo.png"
               alt="Kallisto Hands"
-              width={195}
-              height={32}
+              width={148}
+              height={24}
               className={styles.handsLogoImg}
               priority
               unoptimized
@@ -197,7 +197,7 @@ export function HandsTradeDiscovery() {
               {internalQuery ? (
                 <button
                   type="button"
-                  className={styles.paletteClearBtn}
+                  className={styles.discoveryClearBtn}
                   onClick={() => {
                     setInternalQuery("");
                     updateParam("q", undefined);
@@ -212,7 +212,7 @@ export function HandsTradeDiscovery() {
                 className={styles.searchPillSendBtn}
                 aria-label="Search"
               >
-                <Search size={16} aria-hidden="true" />
+                <Search size={14} strokeWidth={2.4} aria-hidden="true" />
               </button>
             </form>
           </div>
@@ -245,7 +245,6 @@ export function HandsTradeDiscovery() {
             </Link>
           </div>
         </div>
-
         {/* 2. Header Quick Filters */}
         <div className={styles.discoveryHeaderWrap}>
           {/* Quick Category Filter Tabs with Right-Aligned Filter Icon */}

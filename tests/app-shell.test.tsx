@@ -17,10 +17,9 @@ afterEach(cleanup);
 describe("AppShell", () => {
   it("uses the required workflow hierarchy from one navigation configuration", () => {
     expect(SIDEBAR_NAVIGATION.map((item) => item.label)).toEqual([
-      "Home",
+      "Hive Studio",
       "Enquiries",
       "Projects",
-      "Hive Studio",
       "Calendar",
       "Team",
       "Payments",
@@ -35,7 +34,7 @@ describe("AppShell", () => {
   });
 
   it("matches direct and nested navigation routes", () => {
-    expect(isSidebarItemActive("/", "/home")).toBe(true);
+    expect(isSidebarItemActive("/", "/studio")).toBe(true);
     expect(isSidebarItemActive("/projects/residence-24", "/projects")).toBe(true);
     expect(isSidebarItemActive("/project-settings", "/projects")).toBe(false);
   });
@@ -105,6 +104,40 @@ describe("AppShell", () => {
     render(<AppShell />);
     const fullscreenButton = screen.getByRole("button", { name: /enter full screen/i });
     expect(fullscreenButton).toBeInTheDocument();
+  });
+
+  it("opens locked feature modal when clicking locked sidebar items (Team, Payments, Analytics)", () => {
+    render(<AppShell />);
+
+    // Click Team (locked)
+    const teamButton = screen.getByRole("button", { name: /team \(locked feature\)/i });
+    fireEvent.click(teamButton);
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByText("Team Management Locked")).toBeInTheDocument();
+    expect(screen.getByText(/Collaborative member provisioning/i)).toBeInTheDocument();
+
+    // Dismiss modal
+    fireEvent.click(screen.getByRole("button", { name: /dismiss/i }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    // Click Payments (locked)
+    const paymentsButton = screen.getByRole("button", { name: /payments \(locked feature\)/i });
+    fireEvent.click(paymentsButton);
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByText("Financial & Payments Portal Locked")).toBeInTheDocument();
+
+    // Dismiss modal
+    fireEvent.click(screen.getByRole("button", { name: /dismiss/i }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    // Click Analytics (locked)
+    const analyticsButton = screen.getByRole("button", { name: /analytics \(locked feature\)/i });
+    fireEvent.click(analyticsButton);
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByText("Performance Analytics Locked")).toBeInTheDocument();
   });
 });
 

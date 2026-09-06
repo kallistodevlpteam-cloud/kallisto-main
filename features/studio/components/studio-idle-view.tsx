@@ -1,12 +1,13 @@
 "use client";
 
 import React from "react";
-import { StudioAgentType, StudioProjectOption, StudioTask } from "@/types/domain/studio";
-import { StudioIntent, StudioSource } from "../types/studio-source";
-import { ContinueWorkingRow } from "./continue-working-row";
-import { StudioComposer } from "./studio-composer/studio-composer";
+import { StudioProjectOption, StudioTask } from "@/types/domain/studio";
+import { StudioIntent } from "../types/studio-source";
+import { StudioProjectContextCard } from "./studio-project-context-card";
 import { StudioIntentGrid } from "./studio-intent-grid";
 import { StudioWelcome } from "./studio-welcome";
+import { ContinueWorkingRow } from "./continue-working-row";
+import styles from "./studio-chat-canvas.module.css";
 
 export interface StudioIdleContentProps {
   selectedProjectId: string | null;
@@ -14,8 +15,9 @@ export interface StudioIdleContentProps {
   onSelectProject: (projectId: string) => void;
   selectedIntent: StudioIntent;
   onSelectIntent: (intent: StudioIntent) => void;
-  recentTasks: StudioTask[];
-  onReopenTask: (taskId: string) => void;
+  recentTasks?: StudioTask[];
+  onReopenTask?: (taskId: string) => void;
+  onSelectPrompt?: (promptText: string) => void;
 }
 
 export function StudioIdleContent({
@@ -26,21 +28,13 @@ export function StudioIdleContent({
   onSelectIntent,
   recentTasks,
   onReopenTask,
+  onSelectPrompt,
 }: StudioIdleContentProps) {
+  const selectedProject = projects.find((p) => p.id === selectedProjectId) || projects[0];
+  const projectName = selectedProject?.name || "Luxury Villa Horizon";
+
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100%",
-        gap: "24px",
-        paddingTop: "24px",
-        marginInline: "auto",
-        boxSizing: "border-box",
-      }}
-    >
+    <div className={styles.studioIdleContainer}>
       {/* 1. Welcome Context */}
       <StudioWelcome
         selectedProjectId={selectedProjectId}
@@ -48,20 +42,33 @@ export function StudioIdleContent({
         onSelectProject={onSelectProject}
       />
 
-      {/* 2. Primary Intent Cards */}
+      {/* Layer 1: Project Context & Knowledge Foundation */}
+      <StudioProjectContextCard
+        selectedProjectId={selectedProjectId}
+        projects={projects}
+        onSelectProject={onSelectProject}
+        onSelectPrompt={onSelectPrompt}
+      />
+
+      {/* Layer 2: Action-Oriented Pathways */}
       <StudioIntentGrid
         selectedIntent={selectedIntent}
         onSelectIntent={onSelectIntent}
+        onSelectPrompt={onSelectPrompt}
+        projectName={projectName}
       />
 
-      {/* 3. Continue Working (only rendered if recent draft exists) */}
-      <ContinueWorkingRow
-        tasks={recentTasks}
-        onReopenTask={onReopenTask}
-      />
+      {/* 3. Continue Working (rendered if tasks exist) */}
+      {recentTasks && onReopenTask && (
+        <ContinueWorkingRow
+          tasks={recentTasks}
+          onReopenTask={onReopenTask}
+        />
+      )}
     </div>
   );
 }
 
 // Retain alias export for backwards compatibility
 export { StudioIdleContent as StudioIdleView };
+

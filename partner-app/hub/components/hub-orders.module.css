@@ -1,0 +1,808 @@
+/* =========================================================
+   KALLISTO HUB ORDERS WORKSPACE STYLES
+   Operational, minimal, premium construction material orders
+   ========================================================= */
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 390px;
+  gap: 24px;
+  align-items: start;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.leftSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 6px;
+  padding-bottom: 16px;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.leftSection::-webkit-scrollbar {
+  width: 6px;
+}
+
+.leftSection::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.leftSection::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+.rightPanelSection {
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+@media (max-width: 1180px) {
+  .workspace {
+    grid-template-columns: 1fr;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .leftSection {
+    height: auto;
+    overflow-y: visible;
+    padding-right: 0;
+  }
+
+  .rightPanelSection {
+    position: static;
+    top: auto;
+    height: auto;
+    max-height: none;
+    margin-top: 16px;
+  }
+}
+
+/* =========================================================
+   PAGE HEADER & ACTIONS
+   ========================================================= */
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.titleWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pageTitle {
+  font-size: 22px;
+  font-weight: 750;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.pageSubtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.createOrderBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
+  transition: all 140ms ease;
+}
+
+.createOrderBtn:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.15);
+}
+
+.odinToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #2563eb;
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.odinToggleBtn:hover {
+  background: #dbeafe;
+}
+
+/* =========================================================
+   WORKFLOW SEGMENTED TABS
+   ========================================================= */
+.segmentedTabNav {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: #f1f5f9;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.tabBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.tabBtn:hover:not(.tabBtnActive) {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.tabBtnActive {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.tabCountBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.tabBtnActive .tabCountBadge {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+/* =========================================================
+   SUMMARY METRICS (4 CARDS)
+   ========================================================= */
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .metricsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.metricCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 140ms ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.metricCard:hover {
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
+}
+
+.metricCardActive {
+  border-color: #2563eb;
+  background: #f8faff;
+}
+
+.metricValueRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.metricValue {
+  font-size: 20px;
+  font-weight: 750;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.metricLabel {
+  font-size: 11.5px;
+  font-weight: 550;
+  color: #64748b;
+}
+
+.metricAttention {
+  background: #fffdfa;
+  border-color: #fde68a;
+}
+
+.metricAttention:hover {
+  border-color: #f59e0b;
+}
+
+.metricAttention .metricValue {
+  color: #b45309;
+}
+
+/* =========================================================
+   SEARCH & FILTER TOOLBAR
+   ========================================================= */
+.toolbarRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 220px;
+  height: 38px;
+  padding: 0 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  transition: all 120ms ease;
+}
+
+.searchBox:focus-within {
+  border-color: #0f172a;
+  box-shadow: 0 0 0 1px #0f172a;
+}
+
+.searchInput {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  color: #0f172a;
+  width: 100%;
+  font-family: inherit;
+}
+
+.searchInput::placeholder {
+  color: #94a3b8;
+}
+
+.filterSelect {
+  height: 38px;
+  padding: 0 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #334155;
+  outline: none;
+  cursor: pointer;
+  transition: all 120ms ease;
+  font-family: inherit;
+}
+
+.filterSelect:focus {
+  border-color: #0f172a;
+}
+
+/* =========================================================
+   STRUCTURED ORDERS TABLE
+   ========================================================= */
+.tableContainer {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+}
+
+.ordersTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.ordersTable th {
+  padding: 12px 16px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 11px;
+  font-weight: 650;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.ordersTable td {
+  padding: 13px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.ordersTableRow {
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.ordersTableRow:hover {
+  background: #f8fafc;
+}
+
+.ordersTableRowSelected {
+  background: #eff6ff !important;
+}
+
+.ordersTableRow:last-child td {
+  border-bottom: none;
+}
+
+.orderIdBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.projectNameText {
+  font-weight: 600;
+  color: #0f172a;
+  display: block;
+}
+
+.customerSubText {
+  font-size: 11.5px;
+  color: #64748b;
+  display: block;
+  margin-top: 1px;
+}
+
+.materialsPreviewText {
+  font-weight: 550;
+  color: #334155;
+}
+
+.materialsSubList {
+  font-size: 11.5px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+}
+
+.orderValueText {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* =========================================================
+   STATUS PILLS & BADGES
+   ========================================================= */
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.statusRequest {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.statusReviewing {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.statusQuoted {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+
+.statusConfirmed {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.statusPreparing {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.statusDispatched {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.statusCompleted {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.paymentPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.paymentPaid {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.paymentPartial {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.paymentPending {
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+/* =========================================================
+   DEDICATED ORDER DETAIL WORKSPACE
+   ========================================================= */
+.detailContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.detailBackBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: all 120ms ease;
+}
+
+.backBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.detailHeaderCard {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: none;
+}
+
+.detailTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.detailOrderId {
+  font-size: 18px;
+  font-weight: 750;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.detailProjectTitle {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* LIFECYCLE STEPPER */
+.stepperContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 32px;
+  padding: 0 14px;
+  background: #f1f5f9;
+  border-radius: 9999px;
+  box-sizing: border-box;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.stepItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+  transition: all 140ms ease;
+}
+
+.stepIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stepItemCompleted {
+  color: #059669;
+}
+
+.stepItemActive {
+  color: #0f172a;
+  font-weight: 750;
+}
+
+.stepDivider {
+  flex: 1;
+  height: 3px;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  min-width: 12px;
+  transition: all 200ms ease;
+}
+
+.stepDividerCompleted {
+  background: #2563eb;
+}
+
+.stepDividerActive {
+  background: linear-gradient(90deg, #2563eb 50%, #e2e8f0 50%);
+}
+
+/* DETAIL CARDS */
+.detailGrid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 640px) {
+  .detailGrid2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cardBox {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.cardBoxTitle {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+/* REQUIREMENTS ITEMS TABLE */
+.materialRequirementsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: transparent;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+}
+
+.itemsTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 4px;
+  font-size: 12.5px;
+}
+
+.itemsTable th {
+  padding: 6px 12px;
+  background: transparent;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 600;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.itemsTable tbody tr {
+  background: #ffffff;
+  transition: background-color 140ms ease;
+}
+
+.itemsTable tbody tr:hover {
+  background: #f8fafc;
+}
+
+.itemsTable td {
+  padding: 10px 12px;
+  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+.itemsTable td:first-child {
+  border-left: 1px solid #f1f5f9;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.itemsTable td:last-child {
+  border-right: 1px solid #f1f5f9;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.inStockPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #059669;
+}
+
+.sourcingPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #d97706;
+}
+
+/* ACTION BAR */
+.actionFooterBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  flex-wrap: wrap;
+}
+
+.primaryActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.primaryActionBtn:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+}
+
+.secondaryActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.secondaryActionBtn:hover {
+  background: #e2e8f0;
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useSyncExternalStore } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -24,6 +24,7 @@ import {
 } from "./breadcrumb-overflow-menu";
 import { DeveloperConsoleHook } from "../../developer-console/hooks/useDeveloperConsole";
 import { WORKSPACE_CONFIG, ROUTE_BREADCRUMBS } from "@/lib/config/workspace-config";
+import { getTradeCrewById } from "@/features/hands/services/trade-crews.mock";
 
 interface TopBarProps {
   sidebarCollapsed: boolean;
@@ -56,6 +57,14 @@ const PROJECT_NAME_MAP: Record<string, string> = {
   "proj-3": "Oak House",
   "proj-4": "Palm Springs Suite",
   "proj-5": "Skyline Corporate HQ Suite",
+  "nila-residence": "Nila Residence",
+  "courtyard-house": "Courtyard House",
+  "fern-office": "The Fern Office",
+  "sera-villa-renovation": "Sera Villa Renovation",
+  "terra-cafe": "Terra Café",
+  "grove-apartments": "Grove Apartments",
+  "lumen-showroom": "Lumen Showroom",
+  "hillview-retreat": "Hillview Retreat",
 };
 
 const MODULE_LABEL_MAP: Record<string, string> = {
@@ -71,8 +80,15 @@ const MODULE_LABEL_MAP: Record<string, string> = {
   overview: "Overview",
 };
 
+const emptySubscribe = () => () => {};
+
 function BreadcrumbNav({ currentPath }: { currentPath: string }) {
   const searchParams = useSearchParams();
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
   const [, setSessionTick] = useState(0);
 
   useEffect(() => {
@@ -80,18 +96,124 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
     if (typeof window !== "undefined") {
       window.addEventListener("kallisto_studio_session_updated", handleUpdate);
       window.addEventListener("storage", handleUpdate);
+      window.addEventListener("popstate", handleUpdate);
     }
     return () => {
       if (typeof window !== "undefined") {
         window.removeEventListener("kallisto_studio_session_updated", handleUpdate);
         window.removeEventListener("storage", handleUpdate);
+        window.removeEventListener("popstate", handleUpdate);
       }
     };
   }, []);
 
   let items: BreadcrumbItem[];
 
-  if (currentPath.startsWith("/projects/")) {
+  if (currentPath.startsWith("/partner")) {
+    const parts = currentPath.split("/").filter(Boolean);
+    const partnerKey = parts[1] || "hands";
+    const PARTNER_NAME_MAP: Record<string, string> = {
+      hands: "Kallisto Hands",
+      hub: "Kallisto Hub",
+      basics: "Kallisto Basics",
+      settings: "Settings",
+      help: "Help & Support",
+    };
+    const currentPartnerName = PARTNER_NAME_MAP[partnerKey] || "Kallisto Partner";
+    const currentSearch = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : searchParams;
+    const activeOrderId = currentSearch?.get("orderId");
+    const activeSku = currentSearch?.get("sku");
+
+    if (parts.length > 2) {
+      const subRoute = parts[2];
+      const formattedSub = subRoute
+        .split("-")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
+
+      if (subRoute === "orders" && activeOrderId) {
+        items = [
+          { label: "Partner Workspace" },
+          { label: currentPartnerName, href: `/partner/${partnerKey}` },
+          { label: "Orders", href: `/partner/${partnerKey}/orders` },
+          { label: activeOrderId },
+        ];
+      } else if (subRoute === "products" && activeSku) {
+        items = [
+          { label: "Partner Workspace" },
+          { label: currentPartnerName, href: `/partner/${partnerKey}` },
+          { label: "Products", href: `/partner/${partnerKey}/products` },
+          { label: activeSku },
+        ];
+      } else {
+        items = [
+          { label: "Partner Workspace" },
+          { label: currentPartnerName, href: `/partner/${partnerKey}` },
+          { label: formattedSub },
+        ];
+      }
+    } else {
+      items = [
+        { label: "Partner Workspace" },
+        { label: currentPartnerName },
+      ];
+    }
+  } else if (currentPath.startsWith("/client")) {
+    const parts = currentPath.split("/").filter(Boolean);
+    const subRoute = parts[1] || "overview";
+    const CLIENT_MODULE_LABEL_MAP: Record<string, string> = {
+      overview: "Ask Odin",
+      projects: "Projects",
+      enquiries: "Enquiries",
+      payments: "Payments",
+      providers: "Providers",
+      settings: "Settings",
+      help: "Help & Support",
+    };
+
+    const CLIENT_SETTINGS_LABEL_MAP: Record<string, string> = {
+      profile: "Profile",
+      security: "Security & Login",
+      "project-preferences": "Project Preferences",
+      "project-access": "Project Access",
+      notifications: "Notifications",
+      communication: "Communication Preferences",
+      "payment-methods": "Payment Methods",
+      billing: "Billing & Invoices",
+      appearance: "Appearance",
+      "language-region": "Language & Region",
+      privacy: "Privacy & Data",
+    };
+
+    const currentLabel = CLIENT_MODULE_LABEL_MAP[subRoute] || (subRoute.charAt(0).toUpperCase() + subRoute.slice(1));
+    if (subRoute === "overview") {
+      const activeProjectName = searchParams.get("projectName") || searchParams.get("projectId") || "Start New Project / Explore";
+      items = [
+        { label: "Client Portal" },
+        { label: "Ask Odin", href: "/client/overview" },
+        { label: activeProjectName },
+      ];
+    } else if (subRoute === "settings" && parts.length > 2) {
+      const settingsSection = parts[2];
+      const sectionLabel = CLIENT_SETTINGS_LABEL_MAP[settingsSection] || (settingsSection.charAt(0).toUpperCase() + settingsSection.slice(1));
+      items = [
+        { label: "Client Portal" },
+        { label: "Settings", href: "/client/settings" },
+        { label: sectionLabel },
+      ];
+    } else if (parts.length > 2) {
+      items = [
+        { label: "Client Portal" },
+        { label: currentLabel, href: `/client/${subRoute}` },
+        { label: parts.slice(2).join(" / ") },
+      ];
+    } else {
+      items = [
+        { label: "Client Portal" },
+        { label: currentLabel },
+      ];
+    }
+  } else if (currentPath.startsWith("/projects/")) {
     const parts = currentPath.split("/").filter(Boolean);
     const projectId = parts[1];
     const projectName = PROJECT_NAME_MAP[projectId] || "Project Detail";
@@ -143,7 +265,7 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
       { label: "Clients", href: "/clients" },
       { label: "Client Detail" },
     ];
-  } else if (currentPath.startsWith("/studio")) {
+  } else if (currentPath.startsWith("/studio") || currentPath === "/") {
     items = [
       { label: "Virtual Office" },
       { label: "Hive Studio", href: "/studio" },
@@ -151,7 +273,7 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
     const projectParam =
       searchParams.get("project") ||
       searchParams.get("projectName") ||
-      (typeof window !== "undefined"
+      (mounted && typeof window !== "undefined"
         ? window.localStorage.getItem("kallisto_active_studio_project")
         : null);
 
@@ -166,6 +288,23 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
       else if (parts[1] === "proposals") items.push({ label: "Proposals" });
       else if (parts[1] === "tasks" && parts[2]) items.push({ label: "Active Task" });
     }
+  } else if (currentPath.startsWith("/hands/trades/")) {
+    const parts = currentPath.split("/").filter(Boolean);
+    const crewId = parts[2];
+    const crew = crewId ? getTradeCrewById(crewId) : null;
+    items = [
+      { label: "Virtual Office" },
+      { label: "Hands", href: "/hands" },
+      { label: crew?.name || "Trade Crew Profile" },
+    ];
+  } else if (currentPath.startsWith("/basics/experts/")) {
+    const parts = currentPath.split("/").filter(Boolean);
+    const expertId = parts[2];
+    items = [
+      { label: "Virtual Office" },
+      { label: "Basics", href: "/basics" },
+      { label: expertId ? "Expert Profile" : "Find Experts" },
+    ];
   } else {
     let meta = ROUTE_BREADCRUMBS[currentPath];
     if (!meta) {
@@ -349,7 +488,17 @@ export function TopBar({
           onClick={() => onToggleAccountPopover("main")}
           aria-expanded={accountOpen}
         >
-          <span className="avatar-monogram">AA</span>
+          <span className="avatar-monogram">
+            {pathname?.startsWith("/client")
+              ? "AS"
+              : pathname?.startsWith("/partner")
+              ? pathname.includes("/hub")
+                ? "AP"
+                : pathname.includes("/basics")
+                ? "RV"
+                : "VM"
+              : "AA"}
+          </span>
         </button>
 
         {/* ElevenLabs Style Notification Popover Flyout */}

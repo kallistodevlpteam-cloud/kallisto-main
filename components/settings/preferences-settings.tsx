@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { Sliders, Sun, Moon, Monitor, Bell, Bot, Check } from "lucide-react";
 import styles from "../../app/settings/settings.module.css";
-import { useSearchParams, useRouter } from "next/navigation";
 
 interface PreferencesSettingsProps {
   user: {
@@ -12,271 +12,223 @@ interface PreferencesSettingsProps {
 }
 
 export function PreferencesSettings({ user }: PreferencesSettingsProps) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const activeSub = searchParams.get("sub") || "appearance";
-
-  // Appearance states
   const [theme, setTheme] = useState<"light" | "dark" | "system">("light");
+  const [notifyMilestones, setNotifyMilestones] = useState(true);
+  const [notifyApprovals, setNotifyApprovals] = useState(true);
+  const [notifyWhatsapp, setNotifyWhatsapp] = useState(true);
+  const [odinDraftAssist, setOdinDraftAssist] = useState(true);
+  const [odinTone, setOdinTone] = useState("technical");
+  const [isSaved, setIsSaved] = useState(false);
 
-  // Notification states
-  const [notifyEmail, setNotifyEmail] = useState(true);
-  const [notifyPush, setNotifyPush] = useState(false);
-
-  // Region states
-  const [language, setLanguage] = useState("English (US)");
-  const [timezone, setTimezone] = useState("Asia/Kolkata (IST)");
-
-  // Calendar Defaults
-  const [defaultView, setDefaultView] = useState("Board");
-
-  // Project Defaults
-  const [autoSave, setAutoSave] = useState(true);
-
-  // Accessibility
-  const [screenReaderOptimized, setScreenReaderOptimized] = useState(false);
-
-  const handleSubTabChange = (sub: string) => {
-    router.push(`/settings/preferences?sub=${sub}`);
+  const handleSave = () => {
+    setIsSaved(true);
+    setTimeout(() => setIsSaved(false), 2500);
   };
 
-  const menuItems = [
-    { key: "appearance", label: "Appearance" },
-    { key: "notifications", label: "Notifications" },
-    { key: "calendar", label: "Calendar defaults" },
-    { key: "projects", label: "Project defaults" },
-    { key: "region", label: "Language & region" },
-    { key: "accessibility", label: "Accessibility" },
-  ];
-
   return (
-    <div className={`${styles.settingsContentOutlet} ${styles.preferencesSubLayout}`}>
-      <div className={styles.preferencesSidebar}>
-        {menuItems.map((item) => (
-          <button
-            key={item.key}
-            type="button"
-            className={`${styles.sidebarItem} ${activeSub === item.key ? styles.sidebarItemActive : ""}`}
-            onClick={() => handleSubTabChange(item.key)}
-          >
-            {item.label}
-          </button>
-        ))}
+    <div className={styles.settingsSectionList}>
+      {/* 1. Visual Theme & Presentation Card */}
+      <div className={styles.settingsCard}>
+        <div className={styles.cardHeader}>
+          <div className={styles.cardHeaderLeft}>
+            <div className={styles.cardIconWrap}>
+              <Sliders size={18} />
+            </div>
+            <div>
+              <h2 className={styles.cardTitle}>Visual Appearance & Theme</h2>
+              <p className={styles.cardSubtitle}>
+                Select your preferred interface color mode for Kallisto Virtual Office.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "20px" }}>
+          {[
+            { id: "light", label: "Light Theme", icon: Sun, desc: "Crisp white studio layout" },
+            { id: "dark", label: "Dark Theme", icon: Moon, desc: "Deep slate nocturnal workspace" },
+            { id: "system", label: "System Sync", icon: Monitor, desc: "Follows OS appearance" },
+          ].map((item) => {
+            const isSelected = theme === item.id;
+            const IconComponent = item.icon;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                style={{
+                  background: isSelected ? "#f8fafc" : "#ffffff",
+                  border: isSelected ? "2px solid #0f172a" : "1px solid #e2e8f0",
+                  borderRadius: "16px",
+                  padding: "16px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  gap: "8px",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  transition: "all 0.15s ease",
+                }}
+                onClick={() => setTheme(item.id as "light" | "dark" | "system")}
+              >
+                <div
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "10px",
+                    background: isSelected ? "#0f172a" : "#f1f5f9",
+                    color: isSelected ? "#ffffff" : "#0f172a",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <IconComponent size={18} />
+                </div>
+                <div>
+                  <span style={{ fontSize: "14px", fontWeight: 700, color: "#0f172a", display: "block" }}>
+                    {item.label}
+                  </span>
+                  <span style={{ fontSize: "12px", color: "#64748b" }}>{item.desc}</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <div className={styles.preferencesContent}>
-        {activeSub === "appearance" && (
-          <div className={styles.profileCleanContainer}>
-            <section>
-              <div className={styles.profileSectionHeader}>
-                <h2 className={styles.profileSectionTitle}>Appearance</h2>
-                <p className={styles.profileSectionSubtitle}>
-                  Configure visual settings for your dashboard.
-                </p>
-              </div>
-
-              <div className={styles.cleanFieldGroup}>
-                <label className={styles.cleanFieldLabel}>Theme Selection</label>
-                <select
-                  className={styles.cleanSelect}
-                  style={{ maxWidth: "320px" }}
-                  value={theme}
-                  onChange={(e) => setTheme(e.target.value as any)}
-                >
-                  <option value="light">Light Theme</option>
-                  <option value="dark">Dark Theme</option>
-                  <option value="system">System Default</option>
-                </select>
-              </div>
-            </section>
+      {/* 2. Notification Dispatch Preferences */}
+      <div className={styles.settingsCard}>
+        <div className={styles.cardHeader}>
+          <div className={styles.cardHeaderLeft}>
+            <div className={styles.cardIconWrap}>
+              <Bell size={18} />
+            </div>
+            <div>
+              <h2 className={styles.cardTitle}>Client & Project Notifications</h2>
+              <p className={styles.cardSubtitle}>
+                Configure critical alerts for drawing approvals, client sign-offs, and escrow releases.
+              </p>
+            </div>
           </div>
-        )}
+        </div>
 
-        {activeSub === "notifications" && (
-          <div className={styles.profileCleanContainer}>
-            <section>
-              <div className={styles.profileSectionHeader}>
-                <h2 className={styles.profileSectionTitle}>Notifications</h2>
-                <p className={styles.profileSectionSubtitle}>
-                  Choose how and when Kallisto alerts you.
-                </p>
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                <div className={styles.toggleRow} style={{ marginTop: 0 }}>
-                  <label className={styles.switchLabel}>
-                    <input
-                      type="checkbox"
-                      className={`${styles.switchInput} ${styles.greenSwitchInput}`}
-                      checked={notifyEmail}
-                      onChange={(e) => setNotifyEmail(e.target.checked)}
-                    />
-                    <span className={styles.greenSwitchSlider} />
-                  </label>
-                  <label className={styles.toggleMeta} onClick={() => setNotifyEmail(!notifyEmail)}>
-                    <span className={styles.toggleTitle}>Email Notifications</span>
-                    <span className={styles.toggleDesc}>
-                      Receive structural requirement and milestone updates in your inbox.
-                    </span>
-                  </label>
-                </div>
-
-                <div className={styles.toggleRow} style={{ marginTop: 0 }}>
-                  <label className={styles.switchLabel}>
-                    <input
-                      type="checkbox"
-                      className={`${styles.switchInput} ${styles.greenSwitchInput}`}
-                      checked={notifyPush}
-                      onChange={(e) => setNotifyPush(e.target.checked)}
-                    />
-                    <span className={styles.greenSwitchSlider} />
-                  </label>
-                  <label className={styles.toggleMeta} onClick={() => setNotifyPush(!notifyPush)}>
-                    <span className={styles.toggleTitle}>Push Alerts</span>
-                    <span className={styles.toggleDesc}>
-                      Enable instant pop-up alerts inside the Kallisto workspace.
-                    </span>
-                  </label>
-                </div>
-              </div>
-            </section>
+        <div>
+          <div className={styles.settingItemRow}>
+            <div className={styles.settingItemInfo}>
+              <span className={styles.settingItemTitle}>Client Approval Alerts</span>
+              <span className={styles.settingItemDesc}>
+                Instant email notification when a client approves a drawing, BOQ revision, or scope variation.
+              </span>
+            </div>
+            <label className={styles.switchToggle}>
+              <input
+                type="checkbox"
+                checked={notifyApprovals}
+                onChange={(e) => setNotifyApprovals(e.target.checked)}
+              />
+              <span className={styles.switchSlider} />
+            </label>
           </div>
-        )}
 
-        {activeSub === "calendar" && (
-          <div className={styles.profileCleanContainer}>
-            <section>
-              <div className={styles.profileSectionHeader}>
-                <h2 className={styles.profileSectionTitle}>Calendar Defaults</h2>
-                <p className={styles.profileSectionSubtitle}>
-                  Set up default options for the interactive schedule.
-                </p>
-              </div>
-
-              <div className={styles.cleanFieldGroup}>
-                <label className={styles.cleanFieldLabel}>Default Work Schedule View</label>
-                <select
-                  className={styles.cleanSelect}
-                  style={{ maxWidth: "320px" }}
-                  value={defaultView}
-                  onChange={(e) => setDefaultView(e.target.value)}
-                >
-                  <option value="Board">Board view</option>
-                  <option value="Month">Month view</option>
-                  <option value="Timeline">Timeline view</option>
-                </select>
-              </div>
-            </section>
+          <div className={styles.settingItemRow}>
+            <div className={styles.settingItemInfo}>
+              <span className={styles.settingItemTitle}>Milestone Escrow Releases</span>
+              <span className={styles.settingItemDesc}>
+                Real-time alerts when site inspection passes and milestone escrow is disbursed to your bank.
+              </span>
+            </div>
+            <label className={styles.switchToggle}>
+              <input
+                type="checkbox"
+                checked={notifyMilestones}
+                onChange={(e) => setNotifyMilestones(e.target.checked)}
+              />
+              <span className={styles.switchSlider} />
+            </label>
           </div>
-        )}
 
-        {activeSub === "projects" && (
-          <div className={styles.profileCleanContainer}>
-            <section>
-              <div className={styles.profileSectionHeader}>
-                <h2 className={styles.profileSectionTitle}>Project Defaults</h2>
-                <p className={styles.profileSectionSubtitle}>
-                  Default configurations for new bids and drawings.
-                </p>
-              </div>
-
-              <div className={styles.toggleRow} style={{ marginTop: 0 }}>
-                <label className={styles.switchLabel}>
-                  <input
-                    type="checkbox"
-                    className={`${styles.switchInput} ${styles.greenSwitchInput}`}
-                    checked={autoSave}
-                    onChange={(e) => setAutoSave(e.target.checked)}
-                  />
-                  <span className={styles.greenSwitchSlider} />
-                </label>
-                <label className={styles.toggleMeta} onClick={() => setAutoSave(!autoSave)}>
-                  <span className={styles.toggleTitle}>Autosave drafts</span>
-                  <span className={styles.toggleDesc}>
-                    Automatically save BOQ and proposal revisions.
-                  </span>
-                </label>
-              </div>
-            </section>
+          <div className={styles.settingItemRow}>
+            <div className={styles.settingItemInfo}>
+              <span className={styles.settingItemTitle}>WhatsApp Direct Updates</span>
+              <span className={styles.settingItemDesc}>
+                Receive urgent milestone alerts and client meeting reminders on your registered WhatsApp number.
+              </span>
+            </div>
+            <label className={styles.switchToggle}>
+              <input
+                type="checkbox"
+                checked={notifyWhatsapp}
+                onChange={(e) => setNotifyWhatsapp(e.target.checked)}
+              />
+              <span className={styles.switchSlider} />
+            </label>
           </div>
-        )}
+        </div>
+      </div>
 
-        {activeSub === "region" && (
-          <div className={styles.profileCleanContainer}>
-            <section>
-              <div className={styles.profileSectionHeader}>
-                <h2 className={styles.profileSectionTitle}>Language & Region</h2>
-                <p className={styles.profileSectionSubtitle}>
-                  Define localization parameters.
-                </p>
-              </div>
-
-              <div className={styles.cleanFormGrid}>
-                <div className={styles.cleanFieldGroup}>
-                  <label className={styles.cleanFieldLabel}>Display Language</label>
-                  <select
-                    className={styles.cleanSelect}
-                    value={language}
-                    onChange={(e) => setLanguage(e.target.value)}
-                  >
-                    <option value="English (US)">English (US)</option>
-                    <option value="English (UK)">English (UK)</option>
-                    <option value="Spanish">Spanish</option>
-                  </select>
-                </div>
-
-                <div className={styles.cleanFieldGroup}>
-                  <label className={styles.cleanFieldLabel}>Local Timezone</label>
-                  <select
-                    className={styles.cleanSelect}
-                    value={timezone}
-                    onChange={(e) => setTimezone(e.target.value)}
-                  >
-                    <option value="Asia/Kolkata (IST)">Asia/Kolkata (IST)</option>
-                    <option value="UTC">UTC / GMT</option>
-                    <option value="America/New_York (EST)">America/New_York (EST)</option>
-                  </select>
-                </div>
-              </div>
-            </section>
+      {/* 3. Odin AI Consultation Assistant Card */}
+      <div className={styles.settingsCard}>
+        <div className={styles.cardHeader}>
+          <div className={styles.cardHeaderLeft}>
+            <div className={styles.cardIconWrap}>
+              <Bot size={18} />
+            </div>
+            <div>
+              <h2 className={styles.cardTitle}>Odin AI Copilot & Consultation Engine</h2>
+              <p className={styles.cardSubtitle}>
+                Tune AI assistance for drafting proposals, checking bylaws (KMBR / KPBR), and client communication.
+              </p>
+            </div>
           </div>
-        )}
+        </div>
 
-        {activeSub === "accessibility" && (
-          <div className={styles.profileCleanContainer}>
-            <section>
-              <div className={styles.profileSectionHeader}>
-                <h2 className={styles.profileSectionTitle}>Accessibility</h2>
-                <p className={styles.profileSectionSubtitle}>
-                  Optimize workspace rendering for assistive tools.
-                </p>
-              </div>
-
-              <div className={styles.toggleRow} style={{ marginTop: 0 }}>
-                <label className={styles.switchLabel}>
-                  <input
-                    type="checkbox"
-                    className={`${styles.switchInput} ${styles.greenSwitchInput}`}
-                    checked={screenReaderOptimized}
-                    onChange={(e) => setScreenReaderOptimized(e.target.checked)}
-                  />
-                  <span className={styles.greenSwitchSlider} />
-                </label>
-                <label
-                  className={styles.toggleMeta}
-                  onClick={() => setScreenReaderOptimized(!screenReaderOptimized)}
-                >
-                  <span className={styles.toggleTitle}>Screen Reader Optimization</span>
-                  <span className={styles.toggleDesc}>
-                    Use simplified layouts and enhanced ARIA annotations.
-                  </span>
-                </label>
-              </div>
-            </section>
+        <div className={styles.formGrid2Col}>
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>Consultation Response Tone</label>
+            <select
+              className={styles.selectControl}
+              value={odinTone}
+              onChange={(e) => setOdinTone(e.target.value)}
+            >
+              <option value="technical">Technical & Regulatory (Detailed bylaws, engineering precision)</option>
+              <option value="advisory">Client Advisory (Accessible, design-focused, collaborative)</option>
+              <option value="concise">Concise & Operational (Short summaries, bulleted deliverables)</option>
+            </select>
           </div>
-        )}
+
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>Auto-Draft Assistance</label>
+            <div style={{ paddingTop: "8px" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={odinDraftAssist}
+                  onChange={(e) => setOdinDraftAssist(e.target.checked)}
+                />
+                <span style={{ fontSize: "13.5px", color: "#0f172a", fontWeight: 600 }}>
+                  Enable automatic BOQ structuring and site feasibility checks
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.cardFooterActions}>
+          <button type="button" className={styles.secondaryCtaBtn}>
+            Reset Defaults
+          </button>
+          <button type="button" className={styles.primaryCtaBtn} onClick={handleSave}>
+            {isSaved ? (
+              <>
+                <Check size={14} color="#ffffff" />
+                <span>Saved Successfully</span>
+              </>
+            ) : (
+              <span>Save Preferences</span>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
 }
-
