@@ -2170,6 +2170,31 @@
   z-index: 40;
 }
 
+.primaryDashboardBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 14px;
+  background: oklch(0.22 0.018 262);
+  color: oklch(0.985 0.004 75);
+  border: 1px solid oklch(0.22 0.018 262);
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+  transition: all 160ms ease;
+  white-space: nowrap;
+}
+
+.primaryDashboardBtn:hover {
+  background: oklch(0.29 0.02 262);
+  border-color: oklch(0.29 0.02 262);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.2);
+}
+
 .grokHeroContainer {
   display: flex;
   flex-direction: column;
@@ -5117,6 +5142,112 @@
   border-top: 1px dashed #e2e8f0;
 }
 
+.splitIntroText {
+  margin: 4px 0 12px;
+  font-size: 11.8px;
+  line-height: 1.45;
+  color: var(--muted, #64748b);
+}
+
+.matchedContractorsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.matchedContractorCard {
+  padding: 12px 14px;
+  background: var(--surface-subtle, #f8fafc);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 140ms ease;
+}
+
+.matchedContractorCard:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+}
+
+.matchedContractorHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.matchedContractorHeader strong {
+  font-size: 12.5px;
+  font-weight: 650;
+  color: var(--ink, #0f172a);
+}
+
+.matchedContractorSub {
+  font-size: 11px;
+  color: var(--muted, #64748b);
+  margin-top: 2px;
+}
+
+.matchedContractorMetaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #475569;
+  padding: 6px 0;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.splitAssignBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 12px;
+  background: oklch(0.22 0.018 262);
+  color: oklch(0.985 0.004 75);
+  border: 1px solid oklch(0.22 0.018 262);
+  border-radius: 7px;
+  font-size: 11.5px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.splitAssignBtn:hover {
+  background: oklch(0.29 0.02 262);
+  border-color: oklch(0.29 0.02 262);
+}
+
+.splitSuccessBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 10px;
+  color: #065f46;
+  margin-top: 14px;
+}
+
+.splitSuccessBanner strong {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #047857;
+}
+
+.splitSuccessBanner p {
+  margin: 4px 0 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: #065f46;
+}
+
 @media (max-width: 1280px) {
   .requestCardsGrid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -5137,6 +5268,7 @@
     gap: 6px;
   }
 }
+
 
 
 

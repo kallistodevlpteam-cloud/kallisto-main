@@ -330,12 +330,17 @@ export function HandsOverview() {
           </button>
           <button
             type="button"
-            className={styles.handsRoundBtn}
-            onClick={() => handleTabChange("requests")}
-            title="Workforce Requests"
-            aria-label="View workforce requests"
+            className={styles.primaryDashboardBtn}
+            onClick={() => {
+              const params = new URLSearchParams(searchParams.toString());
+              params.set("view", "dashboard");
+              router.push(`${pathname}?${params.toString()}`);
+            }}
+            title="Operational Dashboard"
+            aria-label="Open Operational Dashboard"
           >
             <ClipboardList size={15} aria-hidden="true" />
+            <span>Operational Dashboard</span>
           </button>
         </div>
 

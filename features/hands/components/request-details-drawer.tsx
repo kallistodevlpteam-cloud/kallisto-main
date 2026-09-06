@@ -39,6 +39,12 @@ export function RequestDetailsDrawer({
   const panelRef = useRef<HTMLElement>(null);
   useDrawerBehaviour(panelRef, onClose);
   const [imageError, setImageError] = useState(false);
+  const [splitFulfilledContractor, setSplitFulfilledContractor] = useState<{
+    id: string;
+    name: string;
+    distanceKm: number;
+    assignedCount: number;
+  } | null>(null);
 
   const isMultiTrade = Boolean(
     request.isMultiTrade ||
@@ -46,7 +52,14 @@ export function RequestDetailsDrawer({
   );
   const trades = request.tradesBreakdown || [];
 
-  const progress = getFulfilmentPercentage(request.fulfilled, request.quantity);
+  const effectiveFulfilled = splitFulfilledContractor
+    ? request.quantity
+    : request.fulfilled;
+  const effectiveStatus = splitFulfilledContractor
+    ? "Fulfilled"
+    : request.status;
+
+  const progress = getFulfilmentPercentage(effectiveFulfilled, request.quantity);
   const contractorTitle =
     request.contractorName ||
     (isMultiTrade
@@ -54,13 +67,13 @@ export function RequestDetailsDrawer({
       : `${request.trade} Labour Team`);
 
   const statusClass =
-    request.status === "Fulfilled"
+    effectiveStatus === "Fulfilled"
       ? styles.statusActive
-      : request.status === "Partially assigned"
+      : effectiveStatus === "Partially assigned"
         ? styles.statusWaiting
         : styles.statusAttention;
 
-  const isPending = request.fulfilled < request.quantity;
+  const isPending = effectiveFulfilled < request.quantity;
 
   const tradesListString =
     trades.length > 0
@@ -111,7 +124,7 @@ export function RequestDetailsDrawer({
           <div className={styles.drawerStatusRow}>
             <span className={`${styles.statusBadge} ${statusClass}`}>
               <span className={styles.statusDot} aria-hidden="true" />
-              {request.status}
+              {effectiveStatus}
             </span>
             <span>Required by: {request.requiredDate}</span>
           </div>
@@ -162,7 +175,7 @@ export function RequestDetailsDrawer({
                 <div className={styles.drawerFulfilmentHeader}>
                   <span>Total crew assigned</span>
                   <strong>
-                    {request.fulfilled} of {request.quantity} workers ({progress}%)
+                    {effectiveFulfilled} of {request.quantity} workers ({progress}%)
                   </strong>
                 </div>
                 <div
@@ -344,34 +357,131 @@ export function RequestDetailsDrawer({
             </dl>
           </section>
 
-          {isPending ? (
-            <div className={styles.drawerNotice} role="status">
-              <div className={styles.drawerNoticeContent}>
-                <AlertTriangle
-                  size={16}
-                  className={styles.drawerNoticeIcon}
-                  aria-hidden="true"
-                />
-                <div className={styles.drawerNoticeText}>
-                  <p>
-                    {request.quantity - request.fulfilled} worker position
-                    {request.quantity - request.fulfilled > 1 ? "s are" : " is"}{" "}
-                    still pending assignment under this contractor. Matching
-                    with verified Kallisto tradesmen.
-                  </p>
-                  {onRequestMore ? (
-                    <button
-                      type="button"
-                      className={styles.noticeActionBtn}
-                      onClick={() => onRequestMore(request)}
-                    >
-                      <Plus size={13} aria-hidden="true" />
-                      Add / modify requirement
-                    </button>
-                  ) : null}
-                </div>
+          {splitFulfilledContractor ? (
+            <div className={styles.splitSuccessBanner} role="status">
+              <CheckCircle2
+                size={20}
+                style={{ color: "#059669", flexShrink: 0, marginTop: 2 }}
+                aria-hidden="true"
+              />
+              <div>
+                <strong>100% Workforce Fulfilled via Multi-Contractor Split!</strong>
+                <p>
+                  {request.fulfilled} workers assigned to {contractorTitle} +{" "}
+                  {splitFulfilledContractor.assignedCount} workers assigned to{" "}
+                  {splitFulfilledContractor.name} ({splitFulfilledContractor.distanceKm} km from site).
+                </p>
               </div>
             </div>
+          ) : isPending ? (
+            <>
+              <div className={styles.drawerNotice} role="status">
+                <div className={styles.drawerNoticeContent}>
+                  <AlertTriangle
+                    size={16}
+                    className={styles.drawerNoticeIcon}
+                    aria-hidden="true"
+                  />
+                  <div className={styles.drawerNoticeText}>
+                    <p>
+                      {request.quantity - request.fulfilled} worker position
+                      {request.quantity - request.fulfilled > 1 ? "s are" : " is"}{" "}
+                      still pending assignment under primary contractor. Match and split with nearby verified contractors below.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Nearby Contractor Matching & Split Allocation Section */}
+              <section
+                className={styles.detailSection}
+                aria-labelledby="split-contractors-title"
+                style={{ marginTop: 16 }}
+              >
+                <div className={styles.sectionHeaderRow}>
+                  <h3 id="split-contractors-title">
+                    Match nearby contractors for remaining {request.quantity - request.fulfilled} workers
+                  </h3>
+                  <span className={styles.activityBadge}>
+                    Nearby {request.location ? request.location.split(",")[0] : "Site"}
+                  </span>
+                </div>
+                <p className={styles.splitIntroText}>
+                  Primary contractor ({contractorTitle}) can fulfill {request.fulfilled} of {request.quantity} requested positions. Select a verified nearby contractor matching your project location & trade requirements to split and fulfill the remaining {request.quantity - request.fulfilled} workers:
+                </p>
+
+                <div className={styles.matchedContractorsList}>
+                  {[
+                    {
+                      id: "cntr-malabar-split",
+                      name: "Malabar Site & Civil Crew",
+                      rating: 4.8,
+                      distanceKm: 3.2,
+                      availableWorkersCount: 14,
+                      location: request.location ? request.location.split(",")[0] : "Thiruvananthapuram",
+                      dailyRate: request.dailyRate ?? 850,
+                      badge: "Verified Trade Partner • 3.2 km away",
+                    },
+                    {
+                      id: "cntr-southcoast-mep",
+                      name: "South Coast MEP & Masonry Guild",
+                      rating: 4.9,
+                      distanceKm: 5.8,
+                      availableWorkersCount: 18,
+                      location: request.location ? request.location.split(",")[0] : "Thiruvananthapuram",
+                      dailyRate: (request.dailyRate ?? 850) + 50,
+                      badge: "Kallisto Civil Guild • 5.8 km away",
+                    },
+                  ].map((c) => (
+                    <div key={c.id} className={styles.matchedContractorCard}>
+                      <div className={styles.matchedContractorHeader}>
+                        <div>
+                          <strong>{c.name}</strong>
+                          <div className={styles.matchedContractorSub}>
+                            <span>{c.badge}</span>
+                          </div>
+                        </div>
+                        {c.rating ? (
+                          <span className={styles.drawerRatingPill}>
+                            <Star
+                              size={11}
+                              className={styles.reqStarIcon}
+                              aria-hidden="true"
+                            />
+                            {c.rating.toFixed(1)}
+                          </span>
+                        ) : null}
+                      </div>
+
+                      <div className={styles.matchedContractorMetaRow}>
+                        <span>
+                          Bench capacity: <strong>{c.availableWorkersCount} available workers</strong>
+                        </span>
+                        <span>
+                          Daily rate: <strong>₹{c.dailyRate.toLocaleString("en-IN")}/day</strong>
+                        </span>
+                      </div>
+
+                      <button
+                        type="button"
+                        className={styles.splitAssignBtn}
+                        onClick={() => {
+                          setSplitFulfilledContractor({
+                            id: c.id,
+                            name: c.name,
+                            distanceKm: c.distanceKm,
+                            assignedCount: request.quantity - request.fulfilled,
+                          });
+                        }}
+                      >
+                        <Plus size={14} aria-hidden="true" />
+                        Split & request remaining {request.quantity - request.fulfilled} workers from {c.name.split(" ")[0]}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </>
           ) : null}
         </div>
 
