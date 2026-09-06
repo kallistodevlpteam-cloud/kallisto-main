@@ -222,7 +222,7 @@ export function RequestHistoryWorkspace() {
   const [selectedTrade, setSelectedTrade] = useState("all");
   const [selectedProject, setSelectedProject] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
-  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "table">("table");
   const [inspectingItem, setInspectingItem] = useState<RequestHistoryItem | null>(null);
 
   const projectsList = useMemo(() => {
@@ -265,15 +265,9 @@ export function RequestHistoryWorkspace() {
   );
 
   return (
-    <div className={`workspace-container ${styles.handsLandingPage}`}>
-      {/* ── Sticky Top Header Bar ── */}
-      <HandsPageHeader
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-      />
-
+    <div className={`workspace-container ${styles.historyPageContainer}`}>
       {/* ── Sub Navigation Tabs ── */}
-      <div style={{ marginTop: 12, marginBottom: 16 }}>
+      <div style={{ marginBottom: 20 }}>
         <HandsPageTabs
           activeTab="requests"
           onSelect={(tab) => router.push(`/hands?tab=${tab}`)}
@@ -559,45 +553,92 @@ export function RequestHistoryWorkspace() {
                 <tr>
                   <th>Request ID</th>
                   <th>Project & Location</th>
-                  <th>Trade Breakdown</th>
-                  <th>Deployed</th>
+                  <th>Trades Breakdown</th>
+                  <th>Deployed Workforce</th>
                   <th>Contractor</th>
+                  <th>Daily Rate</th>
                   <th>Fulfilled Date</th>
                   <th>Status</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredRecords.map((item) => (
-                  <tr key={item.id} onClick={() => setInspectingItem(item)} style={{ cursor: "pointer" }}>
-                    <td style={{ fontWeight: 650 }}>{item.id}</td>
-                    <td>
-                      <div><strong>{item.projectName}</strong></div>
-                      <span style={{ fontSize: 11, color: "#64748b" }}>{item.location}</span>
-                    </td>
-                    <td>{item.tradesSummary}</td>
-                    <td style={{ fontWeight: 600 }}>{item.fulfilled} workers</td>
-                    <td>{item.contractorName}</td>
-                    <td>{item.fulfilledDate}</td>
-                    <td>
-                      <span className={styles.historyItemBadge}>
-                        ✓ {item.status}
-                      </span>
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className={styles.secondaryButton}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setInspectingItem(item);
-                        }}
-                      >
-                        Inspect
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {filteredRecords.map((item) => {
+                  let badgeStyle = styles.statusFulfilled;
+                  if (item.status === "Multi-Contractor Split") {
+                    badgeStyle = styles.statusSplit;
+                  } else if (item.status === "Handed Over") {
+                    badgeStyle = styles.statusHandover;
+                  } else if (item.status === "Completed") {
+                    badgeStyle = styles.statusCompleted;
+                  }
+
+                  return (
+                    <tr
+                      key={item.id}
+                      onClick={() => setInspectingItem(item)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <td style={{ whiteSpace: "nowrap" }}>
+                        <span className={styles.reqIdPill}>{item.id}</span>
+                      </td>
+                      <td>
+                        <div style={{ fontWeight: 650, color: "#0f172a" }}>
+                          {item.projectName}
+                        </div>
+                        <div style={{ fontSize: 11.5, color: "#64748b", display: "flex", alignItems: "center", gap: 3, marginTop: 2 }}>
+                          <MapPin size={11} style={{ color: "#94a3b8" }} />
+                          <span>{item.location}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <span className={styles.tradeSummaryBadge}>{item.tradesSummary}</span>
+                      </td>
+                      <td>
+                        <div style={{ fontWeight: 700, color: "#0f172a" }}>
+                          {item.fulfilled} / {item.quantity} workers
+                        </div>
+                        <div style={{ fontSize: 11, color: "#0284c7", fontWeight: 600 }}>
+                          100% fulfilled
+                        </div>
+                      </td>
+                      <td>
+                        <div style={{ fontWeight: 600, color: "#1e293b" }}>
+                          {item.contractorName}
+                        </div>
+                        <div style={{ fontSize: 11, color: "#64748b", display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                          <Star size={10} style={{ color: "#f59e0b", fill: "#f59e0b" }} />
+                          <span>{item.contractorRating.toFixed(1)}</span>
+                          <span>•</span>
+                          <span>Supervisor {item.supervisor}</span>
+                        </div>
+                      </td>
+                      <td style={{ fontWeight: 650, color: "#0f172a", whiteSpace: "nowrap" }}>
+                        ₹{item.dailyRate}/day
+                      </td>
+                      <td style={{ fontSize: 12, color: "#475569", whiteSpace: "nowrap" }}>
+                        {item.fulfilledDate}
+                      </td>
+                      <td style={{ whiteSpace: "nowrap" }}>
+                        <span className={`${styles.historyItemBadge} ${badgeStyle}`}>
+                          ✓ {item.status}
+                        </span>
+                      </td>
+                      <td style={{ whiteSpace: "nowrap" }}>
+                        <button
+                          type="button"
+                          className={styles.secondaryButton}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setInspectingItem(item);
+                          }}
+                        >
+                          Inspect log
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
