@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Search, X, ChevronDown, Check } from "lucide-react";
+import { Search, X, ChevronDown, Check, History } from "lucide-react";
 import { LocationDuotoneIcon, EditDuotoneIcon } from "@/components/layout/sidebar-icons";
 import styles from "./hands-requests.module.css";
 
@@ -173,6 +173,20 @@ export function HandsRequestsToolbar({
             </div>
           )}
         </div>
+
+        {/* History Action Button */}
+        <button
+          type="button"
+          className={styles.filterPillBtn}
+          onClick={() => {
+            onTradeChange("All");
+          }}
+          title="View Request History"
+          aria-label="View request history"
+        >
+          <History size={13} />
+          <span>Request History</span>
+        </button>
 
         {/* Dropdown: Sort */}
         <div ref={sortRef} style={{ position: "relative" }}>

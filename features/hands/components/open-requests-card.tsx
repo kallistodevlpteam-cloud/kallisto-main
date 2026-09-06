@@ -1,11 +1,62 @@
 "use client";
 
-import { ChevronDown, ChevronRight, LayoutGrid, List, Plus, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, ChevronRight, History, LayoutGrid, List, Plus, SlidersHorizontal, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { HandsTab, WorkforceRequest } from "../types/hands.types";
 import { getFulfilmentPercentage } from "../utils/hands-formatters";
 import { WorkforceRequestCard } from "./workforce-request-card";
 import styles from "./hands-overview.module.css";
+
+const HISTORICAL_REQUESTS = [
+  {
+    id: "REQ-2026-089",
+    projectName: "Nila Residence",
+    location: "Thiruvananthapuram, Kerala",
+    tradesSummary: "8 Masons, 10 Helpers",
+    contractorName: "Apex Integrated Civil & Finishing Crew",
+    fulfilledDate: "20 Jul 2026",
+    status: "Fulfilled & Active",
+    workerCount: 18,
+    primaryTrade: "Masons",
+    logNote: "Muster verified by Supervisor Rajeev K. Shift active on site.",
+  },
+  {
+    id: "REQ-2026-074",
+    projectName: "Arjun Villa",
+    location: "Kochi, Kerala",
+    tradesSummary: "6 Painters",
+    contractorName: "Chroma Finishes & Paint Crew",
+    fulfilledDate: "15 Jul 2026",
+    status: "Fulfilled & Active",
+    workerCount: 6,
+    primaryTrade: "Painters",
+    logNote: "Exterior weatherproof primer coat completed by Binoy George.",
+  },
+  {
+    id: "REQ-2026-061",
+    projectName: "Marina Office",
+    location: "Kozhikode, Kerala",
+    tradesSummary: "4 Electricians",
+    contractorName: "Circuit MEP Solutions",
+    fulfilledDate: "10 Jul 2026",
+    status: "Handed Over",
+    workerCount: 4,
+    primaryTrade: "Electricians",
+    logNote: "Main feeder line & Distribution Board termination approved by Shafeeq M.",
+  },
+  {
+    id: "REQ-2026-048",
+    projectName: "Green Courtyard",
+    location: "Thrissur, Kerala",
+    tradesSummary: "5 Carpenters",
+    contractorName: "Forma Woodworks",
+    fulfilledDate: "02 Jul 2026",
+    status: "Handed Over",
+    workerCount: 5,
+    primaryTrade: "Carpenters",
+    logNote: "Hardwood door frames fixed & window joinery aligned by Manoj V.",
+  },
+];
 
 interface OpenRequestsCardProps {
   requests: WorkforceRequest[];
@@ -25,6 +76,8 @@ export function OpenRequestsCard({
   const [viewMode, setViewMode] = useState<"grid" | "list">(defaultViewMode);
   const [projectFilter, setProjectFilter] = useState("all");
   const [tradeFilter, setTradeFilter] = useState("all");
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [historyTradeFilter, setHistoryTradeFilter] = useState("all");
 
   const projects = useMemo(
     () =>
@@ -85,7 +138,7 @@ export function OpenRequestsCard({
         </div>
       </div>
 
-      {/* Toolbar with Filters and Grid/List toggle */}
+      {/* Toolbar with Filters, History button, and Grid/List toggle */}
       <div className={styles.deploymentToolbar}>
         <div className={styles.filterGroup}>
           <SlidersHorizontal size={14} aria-hidden="true" />
@@ -119,6 +172,18 @@ export function OpenRequestsCard({
             </select>
             <ChevronDown size={13} aria-hidden="true" />
           </label>
+
+          {/* Request History Button next to All trades */}
+          <button
+            type="button"
+            className={styles.requestHistoryBtn}
+            onClick={() => setShowHistoryModal(true)}
+            title="View Request History across trades"
+            aria-label="View request history"
+          >
+            <History size={13} aria-hidden="true" />
+            <span>Request History</span>
+          </button>
         </div>
 
         <div
@@ -272,6 +337,83 @@ export function OpenRequestsCard({
           Request more workers
         </button>
       </div>
+
+      {showHistoryModal ? (
+        <div
+          className={styles.historyModalOverlay}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="history-modal-title"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowHistoryModal(false);
+          }}
+        >
+          <div className={styles.historyModal}>
+            <div className={styles.historyModalHeader}>
+              <div className={styles.historyModalTitleWrap}>
+                <History size={18} style={{ color: "#0284c7" }} />
+                <div>
+                  <h3 id="history-modal-title">Workforce Request History</h3>
+                  <p className={styles.historyModalSubtitle}>
+                    Historical trade allocations, contractor performance & completed shift logs
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className={styles.historyModalCloseBtn}
+                onClick={() => setShowHistoryModal(false)}
+                aria-label="Close request history"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className={styles.historyFilterBar}>
+              {["all", "Masons", "Electricians", "Carpenters", "Painters", "Helpers"].map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  className={`${styles.historyFilterPill} ${
+                    historyTradeFilter === t ? styles.historyFilterPillActive : ""
+                  }`}
+                  onClick={() => setHistoryTradeFilter(t)}
+                >
+                  {t === "all" ? "All Trades" : t}
+                </button>
+              ))}
+            </div>
+
+            <div className={styles.historyListBody}>
+              {HISTORICAL_REQUESTS.filter(
+                (h) =>
+                  historyTradeFilter === "all" ||
+                  h.primaryTrade.toLowerCase().includes(historyTradeFilter.toLowerCase()) ||
+                  h.tradesSummary.toLowerCase().includes(historyTradeFilter.toLowerCase())
+              ).map((item) => (
+                <div key={item.id} className={styles.historyItemCard}>
+                  <div className={styles.historyItemHeader}>
+                    <div>
+                      <strong>{item.projectName} — {item.tradesSummary}</strong>
+                      <div className={styles.historyItemMeta}>
+                        <span>{item.id}</span> • <span>{item.location}</span> • <span>Fulfilled: {item.fulfilledDate}</span>
+                      </div>
+                    </div>
+                    <span className={styles.historyItemBadge}>
+                      ✓ {item.status}
+                    </span>
+                  </div>
+
+                  <div className={styles.historyItemLog}>
+                    <strong>Assigned Contractor:</strong> {item.contractorName} ({item.workerCount} workers deployed)<br />
+                    <span>{item.logNote}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
