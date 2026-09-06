@@ -433,10 +433,10 @@
 }
 
 .operationalGrid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.8fr) minmax(320px, 0.8fr);
-  gap: 20px;
-  align-items: start;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
 }
 
 .sectionCard {
@@ -4108,9 +4108,10 @@
 
 .requestCardsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
-  padding: 16px 18px 18px;
+  margin-top: 16px;
+  width: 100%;
 }
 
 .workforceRequestCard {
