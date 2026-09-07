@@ -564,6 +564,21 @@ export async function loadHandsOverview(): Promise<HandsOverviewData> {
   return overviewData;
 }
 
+export function getDeploymentById(id: string) {
+  const deployments = overviewData.deployments;
+  const q = id.toLowerCase();
+  return (
+    deployments.find((d) => d.id === id) ||
+    deployments.find((d) => d.projectId === id) ||
+    deployments.find(
+      (d) =>
+        d.id.replace("deployment-", "").toLowerCase() === q ||
+        d.projectName.toLowerCase().replace(/\s+/g, "-") === q ||
+        d.projectName.toLowerCase().includes(q),
+    )
+  );
+}
+
 export async function saveWorkforceRequestDraft(
   draft: WorkforceRequestDraft,
 ): Promise<{ draftId: string }> {
@@ -591,6 +606,9 @@ export async function submitWorkforceRequest(
     projectName: "Selected project",
     trade: submission.trade,
     requiredDate: submission.startDate,
+    startDate: submission.startDate,
+    endDate: submission.endDate,
+    duration: submission.expectedDuration,
     quantity: submission.workerCount,
     fulfilled: 0,
     status: "Open",
@@ -598,3 +616,4 @@ export async function submitWorkforceRequest(
     tradesBreakdown: submission.tradesBreakdown,
   };
 }
+

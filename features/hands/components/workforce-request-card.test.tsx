@@ -46,7 +46,7 @@ describe("WorkforceRequestCard", () => {
     expect(
       screen.getByText("Forma Master Carpenters & Joinery Crew"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Carpenters")).toBeInTheDocument();
+    expect(screen.getAllByText("Carpenters")[0]).toBeInTheDocument();
 
     // 3-column metrics: requested workers count, assigned, required date
     expect(screen.getByText("5 workers")).toBeInTheDocument();
@@ -101,6 +101,45 @@ describe("WorkforceRequestCard", () => {
     fireEvent.click(screen.getByRole("button", { name: "Cards grid view" }));
     expect(
       screen.getByLabelText("Pending workforce request cards"),
+    ).toBeInTheDocument();
+  });
+
+  it("filters requests in OpenRequestsCard when searching by project or contractor", () => {
+    const handleNavigate = vi.fn();
+    const handleOpen = vi.fn();
+    const handleSelect = vi.fn();
+
+    render(
+      <OpenRequestsCard
+        requests={[sampleRequest]}
+        onNavigateTab={handleNavigate}
+        onRequestWorkforce={handleOpen}
+        onSelectRequest={handleSelect}
+        showFilters={true}
+      />,
+    );
+
+    const searchInput = screen.getByRole("textbox", {
+      name: "Search project or contractor",
+    });
+    expect(searchInput).toBeInTheDocument();
+
+    // Search by contractor name
+    fireEvent.change(searchInput, { target: { value: "Forma" } });
+    expect(
+      screen.getByText("Forma Master Carpenters & Joinery Crew"),
+    ).toBeInTheDocument();
+
+    // Search by non-matching contractor
+    fireEvent.change(searchInput, { target: { value: "NonExistentContractor" } });
+    expect(
+      screen.getByText("No requests match these filters"),
+    ).toBeInTheDocument();
+
+    // Clear search
+    fireEvent.click(screen.getByRole("button", { name: "Clear search" }));
+    expect(
+      screen.getByText("Forma Master Carpenters & Joinery Crew"),
     ).toBeInTheDocument();
   });
 

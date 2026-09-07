@@ -239,6 +239,17 @@ export function HandsOverview() {
     setRequestDrawerConfig(null);
   }, []);
 
+  const handleSelectDeployment = useCallback(
+    (deployment: Deployment) => {
+      const currentPath = pathname || "/hands";
+      const basePath = currentPath.startsWith("/partner")
+        ? "/partner/hands"
+        : "/hands";
+      router.push(`${basePath}/deployments/${deployment.id}`);
+    },
+    [pathname, router],
+  );
+
   const handleCloseDeployment = useCallback(() => {
     setSelectedDeployment(null);
   }, []);
@@ -469,7 +480,7 @@ export function HandsOverview() {
               <HandsOverviewContent
                 data={data}
                 searchQuery={searchQuery}
-                onSelectDeployment={setSelectedDeployment}
+                onSelectDeployment={handleSelectDeployment}
                 onSelectRequest={setSelectedRequest}
                 onNavigateTab={handleTabChange}
                 onRequestWorkforce={() => handleOpenRequest()}
@@ -488,7 +499,7 @@ export function HandsOverview() {
                       d.supervisor.toLowerCase().includes(q)
                     );
                   })}
-                  onSelectDeployment={setSelectedDeployment}
+                  onSelectDeployment={handleSelectDeployment}
                   onNavigateTab={handleTabChange}
                   onRequestWorkforce={() => handleOpenRequest()}
                 />
@@ -646,6 +657,7 @@ function HandsOverviewContent({
           onRequestWorkforce={onRequestWorkforce}
           onSelectRequest={onSelectRequest}
           defaultViewMode="grid"
+          showFilters={true}
         />
       </div>
 

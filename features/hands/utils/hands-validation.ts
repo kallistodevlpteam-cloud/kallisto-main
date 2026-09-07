@@ -44,8 +44,14 @@ export function validateWorkforceRequest(
     errors.startDate = "Select a start date.";
   }
 
+  if (values.startDate && values.endDate) {
+    if (new Date(values.endDate) < new Date(values.startDate)) {
+      errors.endDate = "End date cannot be earlier than start date.";
+    }
+  }
+
   if (!values.expectedDuration.trim()) {
-    errors.expectedDuration = "Enter the expected duration.";
+    errors.expectedDuration = "Enter the total working days count.";
   }
 
   return errors;

@@ -112,7 +112,7 @@ describe("Hands overview", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("opens deployment details from a semantic table row in dashboard view and allows requesting replacement workers", async () => {
+  it("redirects to deployment profile page when clicking an active deployment card in dashboard view", async () => {
     mockSearchParams = new URLSearchParams("view=dashboard");
     render(<HandsOverview />);
     await finishOverviewLoad();
@@ -121,58 +121,7 @@ describe("Hands overview", () => {
       screen.getByLabelText("Open deployment for Nila Residence"),
     );
 
-    expect(
-      screen.getByRole("dialog", { name: "Nila Residence" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Two workers have not checked in. Review today's attendance before confirming the daily record.",
-      ),
-    ).toBeInTheDocument();
-
-    // Verify Today's Activity section
-    expect(screen.getByText("Today's activity")).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "First-floor brick masonry & lintel level preparation",
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Perimeter brick masonry & plumb line verification",
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("Site supervisor log"),
-    ).toBeInTheDocument();
-
-    const requestReplacementBtn = screen.getByRole("button", {
-      name: "Request replacement / extra workers",
-    });
-    expect(requestReplacementBtn).toBeInTheDocument();
-
-    fireEvent.click(requestReplacementBtn);
-
-    // Deployment drawer should be closed and workforce request drawer opened with prefilled fields
-    expect(
-      screen.queryByRole("dialog", { name: "Nila Residence" }),
-    ).not.toBeInTheDocument();
-
-    const workforceDrawer = screen.getByRole("dialog", {
-      name: "Request workforce",
-    });
-    expect(workforceDrawer).toBeInTheDocument();
-
-    // Verify prefilled project, trade and worker count inside the drawer
-    const drawerScope = within(workforceDrawer);
-    const projectSelect = drawerScope.getByLabelText(/Project/i);
-    expect(projectSelect).toHaveValue("proj-001");
-
-    const tradeSelect = drawerScope.getByLabelText(/Trade \/ category/i);
-    expect(tradeSelect).toHaveValue("Masons");
-
-    const countInput = drawerScope.getByLabelText(/Number of workers/i);
-    expect(countInput).toHaveValue(2);
+    expect(mockPush).toHaveBeenCalledWith("/hands/deployments/deployment-nila");
   });
 
   it("renders pending requests in card format on the requests tab and opens request details drawer", async () => {

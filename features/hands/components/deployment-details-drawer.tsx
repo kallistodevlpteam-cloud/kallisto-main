@@ -50,6 +50,7 @@ interface DeploymentDetailsDrawerProps {
   onClose: () => void;
   onNavigateTab: (tab: HandsTab) => void;
   onRequestWorkers?: (deployment: Deployment) => void;
+  basePath?: string;
 }
 
 export function DeploymentDetailsDrawer({
@@ -57,6 +58,7 @@ export function DeploymentDetailsDrawer({
   onClose,
   onNavigateTab,
   onRequestWorkers,
+  basePath = "/hands",
 }: DeploymentDetailsDrawerProps) {
   const panelRef = useRef<HTMLElement>(null);
   useDrawerBehaviour(panelRef, onClose);
@@ -510,16 +512,13 @@ export function DeploymentDetailsDrawer({
             </button>
           ) : null}
           <div className={styles.drawerFooterActions}>
-            <button
-              type="button"
+            <Link
+              href={`${basePath}/deployments/${deployment.id}`}
               className={styles.secondaryButton}
-              onClick={() => {
-                onClose();
-                onNavigateTab("deployments");
-              }}
+              onClick={onClose}
             >
               View deployment
-            </button>
+            </Link>
             <button
               type="button"
               className={styles.primaryButton}
