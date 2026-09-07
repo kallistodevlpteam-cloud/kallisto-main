@@ -140,6 +140,11 @@ describe("Hands overview", () => {
     const cardsGrid = screen.getByLabelText("Pending workforce request cards");
     expect(cardsGrid).toBeInTheDocument();
 
+    expect(
+      screen.getByPlaceholderText("Search project or contractor..."),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Request History")).toBeInTheDocument();
+
     // Verify project names and requested workers count on cards
     const gridScope = within(cardsGrid);
     expect(gridScope.getByText("Nila Residence")).toBeInTheDocument();

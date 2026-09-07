@@ -534,6 +534,7 @@ export function HandsOverview() {
                   onNavigateTab={handleTabChange}
                   onRequestWorkforce={() => handleOpenRequest()}
                   onSelectRequest={setSelectedRequest}
+                  showFilters={true}
                 />
                 <WorkforceDemandCard
                   demand={data.demand}
