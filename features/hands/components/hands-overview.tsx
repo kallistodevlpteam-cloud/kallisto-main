@@ -672,7 +672,7 @@ function HandsOverviewContent({
           onRequestWorkforce={onRequestWorkforce}
           onSelectRequest={onSelectRequest}
           defaultViewMode="grid"
-          showFilters={true}
+          showFilters={false}
         />
       </div>
 
