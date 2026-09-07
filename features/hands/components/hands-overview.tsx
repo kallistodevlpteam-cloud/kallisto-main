@@ -356,12 +356,13 @@ export function HandsOverview() {
           </button>
           <button
             type="button"
-            className={styles.handsRoundBtn}
+            className={styles.handsDashboardPillBtn}
             onClick={() => handleTabChange("overview")}
             title="Hands Dashboard"
             aria-label="View Hands dashboard"
           >
             <LayoutDashboard size={15} aria-hidden="true" />
+            <span>Hands Dashboard</span>
           </button>
         </div>
 
