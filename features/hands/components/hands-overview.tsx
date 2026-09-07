@@ -217,14 +217,29 @@ export function HandsOverview() {
 
   const handleTabChange = useCallback(
     (tab: HandsTab) => {
-      const params = serializeHandsTab(
-        tab,
-        new URLSearchParams(searchParams.toString()),
-      );
-      router.push(`${pathname}?${params.toString()}`);
+      const currentPath = pathname || "/hands";
+      const isPartner = currentPath.startsWith("/partner");
+
+      if (tab === "overview") {
+        router.push(isPartner ? "/partner/hands/overview" : "/hands/overview");
+      } else {
+        const params = serializeHandsTab(
+          tab,
+          new URLSearchParams(searchParams.toString()),
+        );
+        const basePath = isPartner ? "/partner/hands" : "/hands";
+        router.push(`${basePath}?${params.toString()}`);
+      }
     },
     [pathname, router, searchParams],
   );
+
+  const isDedicatedOverviewPage =
+    pathname === "/hands/overview" || pathname === "/partner/hands/overview";
+  const isLanding =
+    !isDedicatedOverviewPage &&
+    activeTab === "overview" &&
+    searchParams.get("view") !== "dashboard";
 
   const handleOpenRequest = useCallback(
     (config?: RequestDrawerConfig) => {
@@ -323,8 +338,6 @@ export function HandsOverview() {
     const queryString = params.toString();
     router.push(`/hands/trades${queryString ? `?${queryString}` : ""}`);
   };
-
-  const isLanding = activeTab === "overview" && searchParams.get("view") !== "dashboard";
 
   if (isLanding) {
     return (

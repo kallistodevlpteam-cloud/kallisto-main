@@ -18,9 +18,10 @@ import { HandsOverview } from "./hands-overview";
 
 const mockPush = vi.fn();
 let mockSearchParams = new URLSearchParams();
+let mockPathname = "/hands";
 
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/hands",
+  usePathname: () => mockPathname,
   useRouter: () => ({
     push: (url: string) => mockPush(url),
     replace: vi.fn(),
@@ -34,6 +35,7 @@ describe("Hands overview", () => {
   beforeEach(() => {
     mockPush.mockClear();
     mockSearchParams = new URLSearchParams();
+    mockPathname = "/hands";
     vi.useFakeTimers();
   });
 
@@ -185,5 +187,19 @@ describe("Hands overview", () => {
     expect(
       screen.getByRole("button", { name: "Return to overview" }),
     ).toBeInTheDocument();
+  });
+
+  it("renders the dedicated overview workspace dashboard when on /hands/overview", async () => {
+    mockPathname = "/hands/overview";
+    mockSearchParams = new URLSearchParams();
+
+    render(<HandsOverview />);
+    await finishOverviewLoad();
+
+    expect(
+      screen.getByText("Workers on site today"),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("Active deployments")[0]).toBeInTheDocument();
+    expect(screen.getByText("Upcoming workforce demand")).toBeInTheDocument();
   });
 });
