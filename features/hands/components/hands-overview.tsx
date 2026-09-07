@@ -14,6 +14,7 @@ import {
   AlertTriangle,
   ChevronDown,
   ClipboardList,
+  LayoutDashboard,
   Plus,
   RefreshCw,
   ShieldAlert,
@@ -356,11 +357,11 @@ export function HandsOverview() {
           <button
             type="button"
             className={styles.handsRoundBtn}
-            onClick={() => handleTabChange("requests")}
-            title="Workforce Requests"
-            aria-label="View workforce requests"
+            onClick={() => handleTabChange("overview")}
+            title="Hands Dashboard"
+            aria-label="View Hands dashboard"
           >
-            <ClipboardList size={15} aria-hidden="true" />
+            <LayoutDashboard size={15} aria-hidden="true" />
           </button>
         </div>
 

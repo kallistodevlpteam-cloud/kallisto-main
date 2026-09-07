@@ -64,8 +64,14 @@ describe("Hands overview", () => {
     expect(screen.getByRole("button", { name: "MEP" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Masonry" })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "MEP" }));
-    expect(mockPush).toHaveBeenCalledWith("/hands/trades?q=Electricians");
+    expect(
+      screen.getByRole("button", { name: "View Hands dashboard" }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "View Hands dashboard" }),
+    );
+    expect(mockPush).toHaveBeenCalledWith("/hands/overview");
   });
 
   it("renders the loading skeleton before the operational dashboard", async () => {
