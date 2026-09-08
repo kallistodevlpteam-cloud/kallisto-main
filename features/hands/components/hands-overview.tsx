@@ -331,6 +331,7 @@ export function HandsOverview() {
     },
     [handleOpenRequest],
   );
+
   const handleHeroSearch = (q: string, projectId?: string | null) => {
     const params = new URLSearchParams();
     if (q.trim()) params.set("q", q.trim());

@@ -46,9 +46,19 @@ export function HandsAssignmentDrawer({
           <div style={{ display: "flex", flexDirection: "column", gap: "3px", minWidth: 0 }}>
             {/* Top Badges: Status + Day count + View Profile */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "3px", flexWrap: "wrap" }}>
-              <span className={styles.statusActiveBadge}>{assignment.status.toUpperCase()}</span>
+              <span
+                className={
+                  assignment.status === "completed"
+                    ? styles.statusCompletedBadge
+                    : styles.statusActiveBadge
+                }
+              >
+                {assignment.status.toUpperCase()}
+              </span>
               <span className={styles.timelineDayPill}>
-                Day {assignment.currentDay} of {assignment.totalDays}
+                {assignment.status === "completed"
+                  ? `Completed (${assignment.totalDays} Days)`
+                  : `Day ${assignment.currentDay} of ${assignment.totalDays}`}
               </span>
               <button
                 type="button"
@@ -96,70 +106,125 @@ export function HandsAssignmentDrawer({
 
         {/* 2. Modal Body */}
         <div className={styles.drawerBody}>
-          {/* Card 1: Attendance Status Briefing */}
-          <div
-            style={{
-              backgroundColor: "#f8fafc",
-              borderRadius: "12px",
-              padding: "14px 16px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-              boxShadow: "0 1px 2px rgba(15, 23, 42, 0.03)",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", flexWrap: "wrap" }}>
-              <span
-                style={{
-                  fontSize: "11px",
-                  fontWeight: 750,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                  color: "#64748b",
-                }}
-              >
-                Attendance Status
+          {/* Completion Status Banner */}
+          {assignment.status === "completed" && (
+            <div
+              style={{
+                backgroundColor: "#eef2ff",
+                borderRadius: "12px",
+                padding: "13px 16px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                border: "1px solid rgba(79, 70, 229, 0.2)",
+              }}
+            >
+              <CheckCircle2 size={18} color="#4f46e5" style={{ flexShrink: 0 }} />
+              <div style={{ display: "flex", flexDirection: "column", gap: "1px" }}>
+                <span
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: 750,
+                    color: "#3730a3",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  Completed Successfully
+                </span>
+                <span style={{ fontSize: "11.5px", color: "#4f46e5", fontWeight: 500 }}>
+                  Project deployment and handover completed successfully.
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Attendance Status (Active assignments) or Deployment Timeline (Completed assignments) */}
+          {assignment.status !== "completed" ? (
+            <div
+              style={{
+                backgroundColor: "#f8fafc",
+                borderRadius: "12px",
+                padding: "14px 16px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px",
+                boxShadow: "0 1px 2px rgba(15, 23, 42, 0.03)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", flexWrap: "wrap" }}>
+                <span
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 750,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    color: "#64748b",
+                  }}
+                >
+                  Attendance Status
+                </span>
+
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
+                    fontSize: "11.5px",
+                    fontWeight: 600,
+                    color: "#475569",
+                    backgroundColor: "#ffffff",
+                    padding: "3px 8px",
+                    borderRadius: "6px",
+                  }}
+                >
+                  <CalendarDuotoneIcon size={13} style={{ color: "#2563eb" }} />
+                  <span>{assignment.startDate} – {assignment.endDate}</span>
+                </div>
+              </div>
+
+              <div style={{ fontSize: "17px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.01em" }}>
+                {assignment.attendance.present} / {assignment.attendance.total} Present Today
+              </div>
+
+              {assignment.attendance.unmarked > 0 ? (
+                <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", color: "#d97706", fontWeight: 600 }}>
+                  <AlertTriangle size={13} />
+                  <span>{assignment.attendance.unmarked} workers pending check-in</span>
+                </div>
+              ) : assignment.attendance.absent > 0 ? (
+                <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", color: "#dc2626", fontWeight: 600 }}>
+                  <AlertCircle size={13} />
+                  <span>{assignment.attendance.absent} workers absent today</span>
+                </div>
+              ) : (
+                <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", color: "#059669", fontWeight: 600 }}>
+                  <CheckCircle2 size={13} />
+                  <span>All workers deployed and attendance reported</span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div
+              style={{
+                backgroundColor: "#f8fafc",
+                borderRadius: "12px",
+                padding: "12px 16px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "8px",
+                border: "1px solid #f1f5f9",
+              }}
+            >
+              <span style={{ fontSize: "11px", fontWeight: 750, textTransform: "uppercase", color: "#64748b", letterSpacing: "0.05em" }}>
+                Deployment Timeline
               </span>
-
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  fontSize: "11.5px",
-                  fontWeight: 600,
-                  color: "#475569",
-                  backgroundColor: "#ffffff",
-                  padding: "3px 8px",
-                  borderRadius: "6px",
-                }}
-              >
-                <CalendarDuotoneIcon size={13} style={{ color: "#2563eb" }} />
-                <span>{assignment.startDate} – {assignment.endDate}</span>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "5px", fontSize: "12px", fontWeight: 600, color: "#334155" }}>
+                <CalendarDuotoneIcon size={13} style={{ color: "#4f46e5" }} />
+                <span>{assignment.startDate} – {assignment.endDate} ({assignment.totalDays} Days)</span>
               </div>
             </div>
-
-            <div style={{ fontSize: "17px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.01em" }}>
-              {assignment.attendance.present} / {assignment.attendance.total} Present Today
-            </div>
-
-            {assignment.attendance.unmarked > 0 ? (
-              <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", color: "#d97706", fontWeight: 600 }}>
-                <AlertTriangle size={13} />
-                <span>{assignment.attendance.unmarked} workers pending check-in</span>
-              </div>
-            ) : assignment.attendance.absent > 0 ? (
-              <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", color: "#dc2626", fontWeight: 600 }}>
-                <AlertCircle size={13} />
-                <span>{assignment.attendance.absent} workers absent today</span>
-              </div>
-            ) : (
-              <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", color: "#059669", fontWeight: 600 }}>
-                <CheckCircle2 size={13} />
-                <span>All workers deployed and attendance reported</span>
-              </div>
-            )}
-          </div>
+          )}
 
           {/* Card 2: Site Supervisor */}
           <div
@@ -175,22 +240,41 @@ export function HandsAssignmentDrawer({
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <div
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "10px",
-                  backgroundColor: "#eff6ff",
-                  color: "#2563eb",
-                  display: "grid",
-                  placeItems: "center",
-                  fontWeight: 750,
-                  fontSize: "14px",
-                  boxShadow: "0 1px 2px rgba(37, 99, 235, 0.1)",
-                }}
-              >
-                {assignment.supervisor.name[0]}
-              </div>
+              {assignment.supervisor.avatar ? (
+                <img
+                  src={assignment.supervisor.avatar}
+                  alt={assignment.supervisor.name}
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "10px",
+                    objectFit: "cover",
+                    boxShadow: "0 1px 2px rgba(37, 99, 235, 0.1)",
+                    flexShrink: 0,
+                  }}
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.display = "none";
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "10px",
+                    backgroundColor: "#eff6ff",
+                    color: "#2563eb",
+                    display: "grid",
+                    placeItems: "center",
+                    fontWeight: 750,
+                    fontSize: "14px",
+                    boxShadow: "0 1px 2px rgba(37, 99, 235, 0.1)",
+                    flexShrink: 0,
+                  }}
+                >
+                  {assignment.supervisor.name[0]}
+                </div>
+              )}
               <div>
                 <span style={{ fontSize: "11px", color: "#64748b", fontWeight: 500, display: "block" }}>
                   Site Supervisor
@@ -255,22 +339,28 @@ export function HandsAssignmentDrawer({
                   </div>
 
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    {member.checkInTime && (
+                    {assignment.status !== "completed" && member.checkInTime && (
                       <span style={{ fontSize: "11px", color: "#64748b", fontFamily: "monospace" }}>
                         {member.checkInTime}
                       </span>
                     )}
-                    <span
-                      className={
-                        member.status === "Present"
-                          ? styles.crewStatusPresent
-                          : member.status === "Absent"
-                          ? styles.crewStatusAbsent
-                          : styles.crewStatusUnmarked
-                      }
-                    >
-                      {member.status}
-                    </span>
+                    {assignment.status === "completed" ? (
+                      <span className={styles.crewStatusCompleted}>
+                        Completed
+                      </span>
+                    ) : (
+                      <span
+                        className={
+                          member.status === "Present"
+                            ? styles.crewStatusPresent
+                            : member.status === "Absent"
+                            ? styles.crewStatusAbsent
+                            : styles.crewStatusUnmarked
+                        }
+                      >
+                        {member.status}
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}

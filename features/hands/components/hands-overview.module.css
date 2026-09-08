@@ -5902,12 +5902,6 @@
   flex-wrap: wrap;
 }
 
-<<<<<<< HEAD
-
-
-
-
-=======
 .backLinkBtn {
   display: inline-flex;
   align-items: center;
@@ -7341,4 +7335,3 @@
 .paymentSuccessActions {
   width: 100%;
 }
->>>>>>> provider-ui

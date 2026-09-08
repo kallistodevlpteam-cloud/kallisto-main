@@ -24,7 +24,15 @@ interface HandsAssignmentCardProps {
 }
 
 // Custom Kallisto Duotone Status Icons
-function HealthCheckDuotoneIcon({ size = 15, className = "" }: { size?: number; className?: string }) {
+function HealthCheckDuotoneIcon({
+  size = 15,
+  color = "#059669",
+  className = "",
+}: {
+  size?: number;
+  color?: string;
+  className?: string;
+}) {
   return (
     <svg
       width={size}
@@ -34,11 +42,11 @@ function HealthCheckDuotoneIcon({ size = 15, className = "" }: { size?: number; 
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      <circle cx="10" cy="10" r="8.5" fill="#059669" fillOpacity="0.18" />
-      <circle cx="10" cy="10" r="8.5" stroke="#059669" strokeWidth="1.5" />
+      <circle cx="10" cy="10" r="8.5" fill={color} fillOpacity="0.18" />
+      <circle cx="10" cy="10" r="8.5" stroke={color} strokeWidth="1.5" />
       <path
         d="M6.2 10.2L8.7 12.7L13.8 7.3"
-        stroke="#059669"
+        stroke={color}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -119,6 +127,16 @@ export function HandsAssignmentCard({
   const providerDisplay = getProviderDisplayDetails(assignment.clientName);
 
   const getHealthTag = () => {
+    if (assignment.status === "completed") {
+      return {
+        label: "Completed Successfully",
+        boxClass: styles.healthBoxCompleted,
+        icon: (props: { size?: number; className?: string }) => (
+          <HealthCheckDuotoneIcon {...props} color="#4f46e5" />
+        ),
+        defaultMsg: "",
+      };
+    }
     switch (assignment.health) {
       case "on_track":
         return {
@@ -199,17 +217,27 @@ export function HandsAssignmentCard({
 
       {/* 2. Subheader Badges Row */}
       <div className={styles.cardBadgesRow}>
-        <span className={styles.statusActiveBadge}>{assignment.status.toUpperCase()}</span>
+        <span
+          className={
+            assignment.status === "completed"
+              ? styles.statusCompletedBadge
+              : styles.statusActiveBadge
+          }
+        >
+          {assignment.status.toUpperCase()}
+        </span>
 
         <div className={styles.cardCountPill}>
           <TeamDuotoneIcon size={13} style={{ color: "#2563eb", flexShrink: 0 }} />
           <span>{assignment.totalWorkersAssigned} Workers</span>
         </div>
 
-        <div className={styles.siteStatusPill}>
-          <span className={styles.siteStatusDot} />
-          <span>{assignment.siteStatus}</span>
-        </div>
+        {assignment.status !== "completed" && (
+          <div className={styles.siteStatusPill}>
+            <span className={styles.siteStatusDot} />
+            <span>{assignment.siteStatus}</span>
+          </div>
+        )}
       </div>
 
       {/* 3. Structured Key Properties List */}
@@ -238,22 +266,28 @@ export function HandsAssignmentCard({
           </span>
         </div>
 
-        <div className={styles.propertyRow}>
-          <AnalyticsDuotoneIcon size={14} className={styles.propertyDuotoneIcon} />
-          <span className={styles.propertyValue}>
-            Attendance Today: <strong>{assignment.attendance.present} / {assignment.attendance.total} Present</strong>
-          </span>
-        </div>
+        {assignment.status !== "completed" && (
+          <div className={styles.propertyRow}>
+            <AnalyticsDuotoneIcon size={14} className={styles.propertyDuotoneIcon} />
+            <span className={styles.propertyValue}>
+              Attendance Today: <strong>{assignment.attendance.present} / {assignment.attendance.total} Present</strong>
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* 4. Health Status Callout Box */}
+      {/* 4. Assignment Health Status / Completed Callout Box */}
       <div className={`${styles.healthBox} ${healthConfig.boxClass}`}>
         <HealthIcon size={15} className={styles.healthIcon} />
         <div className={styles.healthTexts}>
-          <span className={styles.healthTag}>{healthConfig.label}</span>
-          <span className={styles.healthDesc}>
-            {assignment.healthMessage || healthConfig.defaultMsg}
+          <span className={styles.healthTag}>
+            {assignment.status === "completed" ? "Completed Successfully" : healthConfig.label}
           </span>
+          {assignment.status !== "completed" && (
+            <span className={styles.healthDesc}>
+              {assignment.healthMessage || healthConfig.defaultMsg}
+            </span>
+          )}
         </div>
       </div>
 

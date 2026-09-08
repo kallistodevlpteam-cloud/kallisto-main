@@ -1,20 +1,19 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import {
   Plus,
   Search,
   ChevronDown,
   AlertTriangle,
   AlertCircle,
+  History,
 } from "lucide-react";
 import {
   TeamDuotoneIcon,
-  DocumentsDuotoneIcon,
   ProjectsDuotoneIcon,
-  AnalyticsDuotoneIcon,
   ShieldDuotoneIcon,
-  EnquiriesDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 import {
   AssignmentDeployment,
@@ -27,6 +26,8 @@ import {
 import { HandsAssignmentCard } from "./hands-assignment-card";
 import { HandsAssignmentDrawer } from "./hands-assignment-drawer";
 import styles from "./hands-assignments.module.css";
+
+export type AssignmentViewTab = "all" | AssignmentHealth | "history";
 
 // Custom Kallisto Duotone Icons for KPI Summary Cards
 function DeploymentDuotoneIcon({ size = 18 }: { size?: number }) {
@@ -59,8 +60,8 @@ function ShiftCompletionDuotoneIcon({ size = 18 }: { size?: number }) {
 }
 
 export function HandsAssignmentsWorkspace() {
-  const [assignments, setAssignments] = useState<AssignmentDeployment[]>(INITIAL_ASSIGNMENTS);
-  const [selectedHealthTab, setSelectedHealthTab] = useState<AssignmentHealth | "all">("all");
+  const [assignments] = useState<AssignmentDeployment[]>(INITIAL_ASSIGNMENTS);
+  const [selectedHealthTab, setSelectedHealthTab] = useState<AssignmentViewTab>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTrade, setSelectedTrade] = useState("All");
   const [selectedSort, setSelectedSort] = useState("default");
@@ -75,20 +76,28 @@ export function HandsAssignmentsWorkspace() {
 
   // Tab counts
   const tabCounts = useMemo(() => {
+    const active = assignments.filter((a) => a.status === "active");
+    const completed = assignments.filter((a) => a.status === "completed");
     return {
-      all: assignments.length,
-      on_track: assignments.filter((a) => a.health === "on_track").length,
-      attention_required: assignments.filter((a) => a.health === "attention_required").length,
-      at_risk: assignments.filter((a) => a.health === "at_risk").length,
+      all: active.length,
+      on_track: active.filter((a) => a.health === "on_track").length,
+      attention_required: active.filter((a) => a.health === "attention_required").length,
+      at_risk: active.filter((a) => a.health === "at_risk").length,
+      history: completed.length,
     };
   }, [assignments]);
 
   // Filtered assignments
   const filteredAssignments = useMemo(() => {
     return assignments.filter((assignment) => {
-      // 1. Health tab filter
-      if (selectedHealthTab !== "all" && assignment.health !== selectedHealthTab) {
-        return false;
+      // 1. Health tab / History filter
+      if (selectedHealthTab === "history") {
+        if (assignment.status !== "completed") return false;
+      } else {
+        if (assignment.status !== "active") return false;
+        if (selectedHealthTab !== "all" && assignment.health !== selectedHealthTab) {
+          return false;
+        }
       }
 
       // 2. Search query filter
@@ -116,9 +125,11 @@ export function HandsAssignmentsWorkspace() {
     });
   }, [assignments, selectedHealthTab, searchQuery, selectedTrade]);
 
+  const router = useRouter();
+
   const handleOpenDetail = (assignment: AssignmentDeployment) => {
     setSelectedAssignment(assignment);
-    setIsDrawerOpen(true);
+    router.push(`/partner/hands/assignments/${assignment.id}`);
   };
 
   return (
@@ -152,25 +163,46 @@ export function HandsAssignmentsWorkspace() {
       <div className={styles.telemetryBarContainer} role="search" aria-label="Assignments search and filters">
         <div className={styles.telemetryStrip}>
           <div className={styles.telemetryLeft}>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
-              <strong style={{ color: "#0f172a", fontWeight: 700 }}>{metrics.activeDeployments}</strong>
-              <span>Active Deployments</span>
-            </span>
-            <span className={styles.telemetryDot}>·</span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
-              <strong style={{ color: "#059669", fontWeight: 700 }}>{metrics.sitesCovered}</strong>
-              <span>Sites Covered</span>
-            </span>
-            <span className={styles.telemetryDot}>·</span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
-              <strong style={{ color: "#2563eb", fontWeight: 700 }}>{metrics.shiftCompletion}</strong>
-              <span>Shift Completion</span>
-            </span>
+            {selectedHealthTab === "history" ? (
+              <>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                  <strong style={{ color: "#4f46e5", fontWeight: 700 }}>{tabCounts.history}</strong>
+                  <span>Completed Deployments</span>
+                </span>
+                <span className={styles.telemetryDot}>·</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                  <strong style={{ color: "#2563eb", fontWeight: 700 }}>100%</strong>
+                  <span>Handover Rate</span>
+                </span>
+                <span className={styles.telemetryDot}>·</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                  <strong style={{ color: "#7c3aed", fontWeight: 700 }}>4.9 ★</strong>
+                  <span>Avg Quality Score</span>
+                </span>
+              </>
+            ) : (
+              <>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                  <strong style={{ color: "#0f172a", fontWeight: 700 }}>{metrics.activeDeployments}</strong>
+                  <span>Active Deployments</span>
+                </span>
+                <span className={styles.telemetryDot}>·</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                  <strong style={{ color: "#059669", fontWeight: 700 }}>{metrics.sitesCovered}</strong>
+                  <span>Sites Covered</span>
+                </span>
+                <span className={styles.telemetryDot}>·</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                  <strong style={{ color: "#2563eb", fontWeight: 700 }}>{metrics.shiftCompletion}</strong>
+                  <span>Shift Completion</span>
+                </span>
+              </>
+            )}
           </div>
 
-          <div className={styles.liveBadge}>
-            <span className={styles.liveDot} />
-            <span>Live</span>
+          <div className={selectedHealthTab === "history" ? styles.archiveBadge : styles.liveBadge}>
+            <span className={selectedHealthTab === "history" ? styles.archiveDot : styles.liveDot} />
+            <span>{selectedHealthTab === "history" ? "Archived" : "Live"}</span>
           </div>
         </div>
 
@@ -319,20 +351,47 @@ export function HandsAssignmentsWorkspace() {
             {tabCounts.at_risk}
           </span>
         </button>
+
+        <button
+          type="button"
+          className={`${styles.segmentedTabBtn} ${selectedHealthTab === "history" ? styles.segmentedTabBtnActive : ""}`}
+          onClick={() => setSelectedHealthTab("history")}
+          role="tab"
+          aria-selected={selectedHealthTab === "history"}
+        >
+          <History size={14} style={{ color: selectedHealthTab === "history" ? "#4f46e5" : "#94a3b8" }} />
+          <span>History</span>
+        </button>
       </div>
 
-      {/* 5. Assignment Cards Grid */}
-      <div className={styles.assignmentsGrid}>
-        {filteredAssignments.map((assignment) => (
-          <HandsAssignmentCard
-            key={assignment.id}
-            assignment={assignment}
-            isSelected={selectedAssignment?.id === assignment.id}
-            onSelect={(a) => setSelectedAssignment(a)}
-            onOpenDetail={handleOpenDetail}
-          />
-        ))}
-      </div>
+      {/* 5. Assignment Cards Grid & Empty State */}
+      {filteredAssignments.length === 0 ? (
+        <div className={styles.emptyStateContainer} role="status">
+          <div className={styles.emptyStateIcon}>
+            <History size={24} style={{ color: "#94a3b8" }} />
+          </div>
+          <h4 className={styles.emptyStateTitle}>
+            {selectedHealthTab === "history" ? "No Completed Deployments" : "No Deployments Found"}
+          </h4>
+          <p className={styles.emptyStateSub}>
+            {selectedHealthTab === "history"
+              ? "Completed project deployments and handed-over crew allocations will appear here."
+              : "No active assignments match your selected search or trade filters."}
+          </p>
+        </div>
+      ) : (
+        <div className={styles.assignmentsGrid}>
+          {filteredAssignments.map((assignment) => (
+            <HandsAssignmentCard
+              key={assignment.id}
+              assignment={assignment}
+              isSelected={selectedAssignment?.id === assignment.id}
+              onSelect={(a) => setSelectedAssignment(a)}
+              onOpenDetail={handleOpenDetail}
+            />
+          ))}
+        </div>
+      )}
 
       {/* 6. Assignment Detail Drawer */}
       <HandsAssignmentDrawer

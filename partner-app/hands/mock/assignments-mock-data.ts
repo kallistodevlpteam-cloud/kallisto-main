@@ -1,6 +1,7 @@
 import {
   AssignmentDeployment,
   AssignmentSummaryMetrics,
+  LaborWageRecord,
 } from "../types/assignment-domain";
 
 export const INITIAL_ASSIGNMENTS: AssignmentDeployment[] = [
@@ -20,14 +21,17 @@ export const INITIAL_ASSIGNMENTS: AssignmentDeployment[] = [
     attendance: {
       present: 10,
       total: 12,
-      unmarked: 2,
-      absent: 0,
+      unmarked: 1,
+      absent: 1,
     },
     health: "attention_required",
-    healthMessage: "2 Workers Not Marked / Reported",
+    healthMessage: "1 Worker Not Marked / 1 Reported Absent",
+    odinBrief:
+      "Greenwood Infra Projects Ltd has deployed a 12-member workforce (8 Masons, 4 Helpers) under Site Supervisor Suresh Nair for Level 2 structural masonry at Greenwood Residency, Kazhakkoottam. The assignment is currently on Day 12 of 30 shifts with 10 workers confirmed present on site, 1 unmarked helper, and 1 mason reported absent. Structural masonry progress is tracking on schedule at 85% completion, but supervisor check-in is advised to verify helper attendance and ensure continuous mortar curing on the south elevation boundary.",
     supervisor: {
       name: "Suresh Nair",
       phone: "+91 98470 12345",
+      avatar: "/assets/rahul-avatar.jpg",
     },
     crew: [
       { id: "W1", name: "Rajesh Kumar", trade: "Mason", level: "Senior", status: "Present", checkInTime: "07:54 AM", phone: "+91 98470 11111" },
@@ -41,9 +45,237 @@ export const INITIAL_ASSIGNMENTS: AssignmentDeployment[] = [
       { id: "W9", name: "Prasanth R", trade: "Mason", level: "Skilled", status: "Present", checkInTime: "08:15 AM", phone: "+91 98470 99999" },
       { id: "W10", name: "Dinesh K", trade: "Mason", level: "Skilled", status: "Present", checkInTime: "08:18 AM", phone: "+91 98470 10101" },
       { id: "W11", name: "Vishnu Das", trade: "Helper", level: "Helper", status: "Unmarked", phone: "+91 98470 20202" },
-      { id: "W12", name: "Ramesh C", trade: "Mason", level: "Senior", status: "Unmarked", phone: "+91 98470 30303" },
+      { id: "W12", name: "Ramesh C", trade: "Mason", level: "Senior", status: "Absent", phone: "+91 98470 30303" },
     ],
     coverImage: "/assets/projects/greenfield-villa.png",
+    updates: [
+      {
+        id: "upd-101",
+        authorName: "Suresh Nair",
+        authorRole: "Site Supervisor",
+        authorAvatar: "/assets/rahul-avatar.jpg",
+        timestamp: "10 mins ago",
+        category: "Site Progress",
+        text: "Level 2 structural block masonry 85% complete. 8 masons and 2 helpers currently working on south elevation boundary. Curing process verified for day 11.",
+        mediaUrls: [
+          "/assets/projectbg.webp",
+          "/assets/projectbg.webp",
+          "/assets/nila-thumb1.jpg",
+          "/assets/nila-thumb2.jpg",
+          "/assets/nila-thumb3.jpg",
+          "/assets/hero-architecture-banner.webp",
+        ],
+        acknowledged: false,
+        replies: [
+          {
+            id: "rep-101-1",
+            authorName: "You",
+            authorRole: "Contractor",
+            authorAvatar: "/assets/arjun-avatar.jpg",
+            timestamp: "5 mins ago",
+            text: "Noted Suresh. Please ensure line alignment check is completed with Lead Mason Manoj Varma before the afternoon curing shift.",
+            acknowledged: false,
+          },
+        ],
+      },
+      {
+        id: "upd-102",
+        authorName: "You",
+        authorRole: "Contractor",
+        authorAvatar: "/assets/arjun-avatar.jpg",
+        timestamp: "2 hours ago",
+        category: "Crew Deployment",
+        text: "Deployed 2 additional senior masons to reinforce the south elevation masonry team. Replacement worker for Ramesh C arriving at site office by 01:00 PM to maintain today's block laying target.",
+        acknowledged: false,
+      },
+      {
+        id: "upd-103",
+        authorName: "Suresh Nair",
+        authorRole: "Site Supervisor",
+        authorAvatar: "/assets/rahul-avatar.jpg",
+        timestamp: "07:45 AM",
+        category: "Daily Briefing",
+        text: "Morning safety tool-box talk conducted for 12 crew members. PPE check completed. All masons briefed on scaffolding protocol for Level 2 wall.",
+        acknowledged: false,
+      },
+    ],
+    complaints: [
+      {
+        id: "cmp-101",
+        title: "Cement Mortar Sand Delivery Delay",
+        description: "River sand stock exhausted since yesterday evening. Work on north-facing partition wall temporarily stalled. Urgently require 1 truckload to keep masons engaged.",
+        category: "Material Shortage",
+        severity: "high",
+        status: "open",
+        raisedBy: "Suresh Nair",
+        raisedByRole: "Site Supervisor",
+        raisedAt: "Today, 08:30 AM",
+        notes: [
+          {
+            id: "note-101-1",
+            author: "You",
+            authorRole: "Contractor",
+            timestamp: "Today, 09:10 AM",
+            text: "Contacted local supplier in Kazhakkoottam. 1 tipper truck sand dispatched and expected by 11:00 AM.",
+          },
+        ],
+      },
+      {
+        id: "cmp-102",
+        title: "Tower Crane Power Cable Fluctuation",
+        description: "Voltage drop observed on 3-phase line feeding material hoist. Tripping occurred twice during morning shift.",
+        category: "Safety Hazard",
+        severity: "high",
+        status: "in_review",
+        raisedBy: "Suresh Nair",
+        raisedByRole: "Site Supervisor",
+        raisedAt: "Yesterday, 04:15 PM",
+        resolutionNotes: "Site electrician dispatched to inspect breaker box.",
+      },
+      {
+        id: "cmp-103",
+        title: "Gate Entry Pass Delay for Helpers",
+        description: "Security checkpoint held 2 helper workers at main entry gate due to badge renewal.",
+        category: "Access Delay",
+        severity: "medium",
+        status: "resolved",
+        raisedBy: "Suresh Nair",
+        raisedByRole: "Site Supervisor",
+        raisedAt: "Sep 08, 08:00 AM",
+        resolutionNotes: "Digital contractor pass issued and verified with security.",
+        resolvedAt: "Sep 08, 09:15 AM",
+      },
+    ],
+    accounts: {
+      totalContractValue: 270000,
+      dailyBillingRate: 9000,
+      shiftsDelivered: 12,
+      totalShiftsContracted: 30,
+      paidAmount: 108000,
+      pendingAmount: 162000,
+      settlementStatus: "On Track - Weekly Cycle",
+      invoiceNumber: "INV-ASG-101-W2",
+      nextDisbursementDate: "Sep 15, 2026",
+      supervisorPettyBalance: 5000,
+      tradeRates: [
+        { trade: "Masons", workersCount: 8, ratePerDay: 850, totalPerDay: 6800 },
+        { trade: "Helpers", workersCount: 4, ratePerDay: 550, totalPerDay: 2200 },
+      ],
+      transactions: [
+        {
+          id: "TXN-ASG101-01",
+          date: "Sep 01, 2026",
+          referenceNo: "UTR7710293841",
+          paidBy: "Service Provider",
+          paidByRole: "Service Provider",
+          paidTo: "Labor Contractor",
+          title: "Milestone Deployment Advance",
+          description: "Initial mobilization advance paid to labor contractor (Shifts 1–6).",
+          amount: 54000,
+          paymentMethod: "NEFT / Bank Transfer",
+          status: "settled",
+          invoiceRef: "INV-ASG-101-W1",
+        },
+        {
+          id: "TXN-ASG101-02",
+          date: "Sep 08, 2026",
+          referenceNo: "UTR8829104821",
+          paidBy: "Service Provider",
+          paidByRole: "Service Provider",
+          paidTo: "Labor Contractor",
+          title: "Weekly Deployment Settlement - Cycle 1",
+          description: "Settlement for 6 verified shifts across 12 crew members paid to labor contractor.",
+          amount: 54000,
+          paymentMethod: "NEFT / Bank Transfer",
+          status: "settled",
+          invoiceRef: "INV-ASG-101-W2",
+        },
+        {
+          id: "TXN-ASG101-03",
+          date: "Sep 15, 2026",
+          referenceNo: "INV-ASG-101-W3",
+          paidBy: "Service Provider",
+          paidByRole: "Service Provider",
+          paidTo: "Labor Contractor",
+          title: "Weekly Deployment Settlement - Cycle 2",
+          description: "Pending settlement for Shifts 7 to 12 verified on site, awaiting release completion.",
+          amount: 54000,
+          paymentMethod: "NEFT / Bank Transfer",
+          status: "processing",
+          invoiceRef: "INV-ASG-101-W3",
+        },
+        {
+          id: "TXN-ASG101-04",
+          date: "Sep 22, 2026",
+          referenceNo: "INV-ASG-101-W4",
+          paidBy: "Service Provider",
+          paidByRole: "Service Provider",
+          paidTo: "Labor Contractor",
+          title: "Weekly Deployment Settlement - Cycle 3",
+          description: "Scheduled cycle 3 settlement for Shifts 13 to 18 verified on site.",
+          amount: 54000,
+          paymentMethod: "NEFT / Bank Transfer",
+          status: "pending",
+          invoiceRef: "INV-ASG-101-W4",
+        },
+        {
+          id: "TXN-ASG101-05",
+          date: "Sep 29, 2026",
+          referenceNo: "INV-ASG-101-W5",
+          paidBy: "Service Provider",
+          paidByRole: "Service Provider",
+          paidTo: "Labor Contractor",
+          title: "Milestone Final Retention Settlement",
+          description: "Final retention and project completion handover settlement.",
+          amount: 54000,
+          paymentMethod: "NEFT / Bank Transfer",
+          status: "pending",
+          invoiceRef: "INV-ASG-101-W5",
+        },
+        {
+          id: "TXN-ASG101-06",
+          date: "Oct 06, 2026",
+          referenceNo: "UTR9930214812",
+          paidBy: "Service Provider",
+          paidByRole: "Service Provider",
+          paidTo: "Labor Contractor",
+          title: "Specialist Stone Masonry Incentive",
+          description: "Performance completion incentive for curved boundary masonry detailing.",
+          amount: 18000,
+          paymentMethod: "NEFT / Bank Transfer",
+          status: "settled",
+          invoiceRef: "INV-ASG-101-W6",
+        },
+        {
+          id: "TXN-ASG101-07",
+          date: "Oct 13, 2026",
+          referenceNo: "INV-ASG-101-W7",
+          paidBy: "Service Provider",
+          paidByRole: "Service Provider",
+          paidTo: "Labor Contractor",
+          title: "Night Curing & Shuttering Overtime",
+          description: "Verified overtime settlement for weather-proofing and beam curing crew.",
+          amount: 22000,
+          paymentMethod: "NEFT / Bank Transfer",
+          status: "settled",
+          invoiceRef: "INV-ASG-101-W7",
+        },
+        {
+          id: "TXN-ASG101-08",
+          date: "Oct 20, 2026",
+          referenceNo: "INV-ASG-101-W8",
+          paidBy: "Service Provider",
+          paidByRole: "Service Provider",
+          paidTo: "Labor Contractor",
+          title: "Site Demobilization & Final Clearance",
+          description: "Scheduled final post-handover site clearance and demobilization disbursement.",
+          amount: 25000,
+          paymentMethod: "NEFT / Bank Transfer",
+          status: "pending",
+          invoiceRef: "INV-ASG-101-W8",
+        },
+      ],
+    },
   },
   {
     id: "ASG-102",
@@ -69,6 +301,7 @@ export const INITIAL_ASSIGNMENTS: AssignmentDeployment[] = [
     supervisor: {
       name: "Mohan Lal",
       phone: "+91 98471 22334",
+      avatar: "/assets/allen-avatar.jpg",
     },
     crew: [
       { id: "W13", name: "Arun S", trade: "Electrician", level: "Lead", status: "Present", checkInTime: "07:45 AM", phone: "+91 98470 40404" },
@@ -89,6 +322,66 @@ export const INITIAL_ASSIGNMENTS: AssignmentDeployment[] = [
       { id: "W28", name: "Praveen Raj", trade: "Plumber", level: "Assistant", status: "Present", checkInTime: "08:14 AM", phone: "+91 98470 54545" },
     ],
     coverImage: "/assets/hero-architecture-banner.webp",
+    accounts: {
+      totalContractValue: 540000,
+      dailyBillingRate: 12000,
+      shiftsDelivered: 18,
+      totalShiftsContracted: 45,
+      paidAmount: 151200,
+      pendingAmount: 64800,
+      settlementStatus: "On Track - Weekly Cycle",
+      invoiceNumber: "INV-ASG-102-W3",
+      nextDisbursementDate: "Sep 18, 2026",
+      supervisorPettyBalance: 8000,
+      tradeRates: [
+        { trade: "Electricians", workersCount: 10, ratePerDay: 850, totalPerDay: 8500 },
+        { trade: "Plumbers", workersCount: 6, ratePerDay: 600, totalPerDay: 3600 },
+      ],
+      transactions: [
+        {
+          id: "TXN-ASG102-01",
+          date: "Sep 04, 2026",
+          referenceNo: "UTR8492019482",
+          paidBy: "Service Provider",
+          paidByRole: "Service Provider",
+          paidTo: "Labor Contractor",
+          title: "Weekly Deployment Settlement - Cycle 1",
+          description: "Settlement for 7 completed shifts across 16 deployed trade workers paid to labor contractor.",
+          amount: 75600,
+          paymentMethod: "NEFT / Bank Transfer",
+          status: "settled",
+          invoiceRef: "INV-ASG-102-W1",
+        },
+        {
+          id: "TXN-ASG102-02",
+          date: "Sep 11, 2026",
+          referenceNo: "UTR9103847291",
+          paidBy: "Service Provider",
+          paidByRole: "Service Provider",
+          paidTo: "Labor Contractor",
+          title: "Weekly Deployment Settlement - Cycle 2",
+          description: "Settlement for Shifts 8 to 14 verified site progress paid to labor contractor.",
+          amount: 75600,
+          paymentMethod: "NEFT / Bank Transfer",
+          status: "settled",
+          invoiceRef: "INV-ASG-102-W2",
+        },
+        {
+          id: "TXN-ASG102-03",
+          date: "Sep 16, 2026",
+          referenceNo: "INV-ASG-102-W3",
+          paidBy: "Service Provider",
+          paidByRole: "Service Provider",
+          paidTo: "Labor Contractor",
+          title: "Weekly Deployment Settlement - Cycle 3",
+          description: "Pending verification settlement for Shifts 15 to 21 under site review.",
+          amount: 64800,
+          paymentMethod: "NEFT / Bank Transfer",
+          status: "processing",
+          invoiceRef: "INV-ASG-102-W3",
+        },
+      ],
+    },
   },
   {
     id: "ASG-103",
@@ -114,6 +407,7 @@ export const INITIAL_ASSIGNMENTS: AssignmentDeployment[] = [
     supervisor: {
       name: "Praveen V",
       phone: "+91 98472 33445",
+      avatar: "/assets/priya-avatar.jpg",
     },
     crew: [
       { id: "W29", name: "Suresh P", trade: "Carpenter", level: "Master", status: "Present", checkInTime: "08:00 AM", phone: "+91 98470 80808" },
@@ -153,6 +447,7 @@ export const INITIAL_ASSIGNMENTS: AssignmentDeployment[] = [
     supervisor: {
       name: "Deepak S",
       phone: "+91 98473 44556",
+      avatar: "/assets/profile_avatar.png",
     },
     crew: [
       { id: "W39", name: "Shaji Mathew", trade: "Tile Worker", level: "Master", status: "Present", checkInTime: "07:46 AM", phone: "+91 98470 61616" },
@@ -190,6 +485,7 @@ export const INITIAL_ASSIGNMENTS: AssignmentDeployment[] = [
     supervisor: {
       name: "Kiran Raj",
       phone: "+91 98474 55667",
+      avatar: "/assets/petra-avatar.jpg",
     },
     crew: [
       { id: "W47", name: "Vijayan Pillai", trade: "Steel Fixer", level: "Master", status: "Present", checkInTime: "07:40 AM", phone: "+91 98470 71717" },
@@ -239,6 +535,7 @@ export const INITIAL_ASSIGNMENTS: AssignmentDeployment[] = [
     supervisor: {
       name: "Faizal M",
       phone: "+91 98475 66778",
+      avatar: "/assets/allen-avatar.jpg",
     },
     crew: [
       { id: "W67", name: "Shijo Thomas", trade: "Electrician", level: "Master", status: "Present", checkInTime: "07:44 AM", phone: "+91 98470 91912" },
@@ -258,24 +555,223 @@ export const INITIAL_ASSIGNMENTS: AssignmentDeployment[] = [
     ],
     coverImage: "/assets/projects/anitha-menon-residence.png",
   },
+  {
+    id: "ASG-107",
+    projectName: "Sobha Silver Birch Enclave",
+    clientName: "Sobha Developers",
+    location: "Kaloor, Ernakulam",
+    status: "completed",
+    currentDay: 45,
+    totalDays: 45,
+    totalWorkersAssigned: 14,
+    tradesBreakdown: "10 Masons · 4 Plumbers",
+    startDate: "Jul 10",
+    endDate: "Aug 24",
+    siteStatus: "COMPLETED",
+    attendance: {
+      present: 14,
+      total: 14,
+      unmarked: 0,
+      absent: 0,
+    },
+    health: "on_track",
+    healthMessage: "Project successfully completed and handed over to client.",
+    supervisor: {
+      name: "Pradeep Menon",
+      phone: "+91 98476 77889",
+      avatar: "/assets/rahul-avatar.jpg",
+    },
+    crew: [
+      { id: "W81", name: "Harikrishnan R", trade: "Mason", level: "Master", status: "Present", checkInTime: "07:45 AM", phone: "+91 98470 60101" },
+      { id: "W82", name: "Madhavan K", trade: "Mason", level: "Lead", status: "Present", checkInTime: "07:50 AM", phone: "+91 98470 60202" },
+      { id: "W83", name: "Sunil Kumar", trade: "Mason", level: "Senior", status: "Present", checkInTime: "07:55 AM", phone: "+91 98470 60303" },
+      { id: "W84", name: "Aneesh P", trade: "Mason", level: "Senior", status: "Present", checkInTime: "08:00 AM", phone: "+91 98470 60404" },
+      { id: "W85", name: "Rajeev N", trade: "Mason", level: "Skilled", status: "Present", checkInTime: "08:05 AM", phone: "+91 98470 60505" },
+      { id: "W86", name: "Vinod Chandran", trade: "Mason", level: "Skilled", status: "Present", checkInTime: "08:10 AM", phone: "+91 98470 60606" },
+      { id: "W87", name: "Girish K", trade: "Mason", level: "Skilled", status: "Present", checkInTime: "08:12 AM", phone: "+91 98470 60707" },
+      { id: "W88", name: "Satheesh B", trade: "Mason", level: "Skilled", status: "Present", checkInTime: "08:15 AM", phone: "+91 98470 60808" },
+      { id: "W89", name: "Vipin Varghese", trade: "Mason", level: "Assistant", status: "Present", checkInTime: "08:18 AM", phone: "+91 98470 60909" },
+      { id: "W90", name: "Akhil Mohan", trade: "Mason", level: "Assistant", status: "Present", checkInTime: "08:20 AM", phone: "+91 98470 61010" },
+      { id: "W91", name: "Ranjith S", trade: "Plumber", level: "Lead", status: "Present", checkInTime: "07:48 AM", phone: "+91 98470 61111" },
+      { id: "W92", name: "Manojkumar T", trade: "Plumber", level: "Senior", status: "Present", checkInTime: "07:52 AM", phone: "+91 98470 61212" },
+      { id: "W93", name: "Baiju K", trade: "Plumber", level: "Skilled", status: "Present", checkInTime: "08:02 AM", phone: "+91 98470 61313" },
+      { id: "W94", name: "Syam Prasad", trade: "Plumber", level: "Assistant", status: "Present", checkInTime: "08:08 AM", phone: "+91 98470 61414" },
+    ],
+    coverImage: "/assets/projects/greenfield-villa.png",
+    completionResult: {
+      completedDate: "Aug 24, 2026",
+      outcome: "Handover Approved",
+      qualityScore: "4.9 ★",
+      settlementStatus: "100% Settled",
+      totalShiftsDelivered: 45,
+      handoverCertificateId: "KALLISTO-HC-8902",
+      clientSignOffBy: "Arun Varma (Sobha VP Projects)",
+      snagsResolved: "0 Open · 14 Cleared",
+      summaryText: "Full milestone scope completed on schedule with zero open snags. Client signed off final defect inspection.",
+    },
+  },
+  {
+    id: "ASG-108",
+    projectName: "Prestige Ocean Crest",
+    clientName: "Prestige Group",
+    location: "Marine Drive, Kochi",
+    status: "completed",
+    currentDay: 30,
+    totalDays: 30,
+    totalWorkersAssigned: 12,
+    tradesBreakdown: "8 Electricians · 4 Carpenters",
+    startDate: "Jul 25",
+    endDate: "Aug 25",
+    siteStatus: "COMPLETED",
+    attendance: {
+      present: 12,
+      total: 12,
+      unmarked: 0,
+      absent: 0,
+    },
+    health: "on_track",
+    healthMessage: "Handover inspection signed off and final de-allocation done.",
+    supervisor: {
+      name: "Jayaprakash K",
+      phone: "+91 98477 88990",
+      avatar: "/assets/allen-avatar.jpg",
+    },
+    crew: [
+      { id: "W95", name: "Santosh Varma", trade: "Electrician", level: "Master", status: "Present", checkInTime: "07:42 AM", phone: "+91 98470 70101" },
+      { id: "W96", name: "Jomon George", trade: "Electrician", level: "Lead", status: "Present", checkInTime: "07:46 AM", phone: "+91 98470 70202" },
+      { id: "W97", name: "Sreejith S", trade: "Electrician", level: "Senior", status: "Present", checkInTime: "07:51 AM", phone: "+91 98470 70303" },
+      { id: "W98", name: "Nithin Babu", trade: "Electrician", level: "Senior", status: "Present", checkInTime: "07:55 AM", phone: "+91 98470 70404" },
+      { id: "W99", name: "Praveen Nair", trade: "Electrician", level: "Skilled", status: "Present", checkInTime: "08:01 AM", phone: "+91 98470 70505" },
+      { id: "W100", name: "Anil Kumar", trade: "Electrician", level: "Skilled", status: "Present", checkInTime: "08:06 AM", phone: "+91 98470 70606" },
+      { id: "W101", name: "Bipin Das", trade: "Electrician", level: "Assistant", status: "Present", checkInTime: "08:11 AM", phone: "+91 98470 70707" },
+      { id: "W102", name: "Raju Pillai", trade: "Electrician", level: "Assistant", status: "Present", checkInTime: "08:16 AM", phone: "+91 98470 70808" },
+      { id: "W103", name: "Mathew Varghese", trade: "Carpenter", level: "Master", status: "Present", checkInTime: "07:44 AM", phone: "+91 98470 70909" },
+      { id: "W104", name: "Dixon Paul", trade: "Carpenter", level: "Lead", status: "Present", checkInTime: "07:49 AM", phone: "+91 98470 71010" },
+      { id: "W105", name: "Shaji K", trade: "Carpenter", level: "Senior", status: "Present", checkInTime: "07:58 AM", phone: "+91 98470 71111" },
+      { id: "W106", name: "Unnikrishnan P", trade: "Carpenter", level: "Skilled", status: "Present", checkInTime: "08:04 AM", phone: "+91 98470 71212" },
+    ],
+    coverImage: "/assets/hero-architecture-banner.webp",
+    completionResult: {
+      completedDate: "Aug 25, 2026",
+      outcome: "Certified Handover",
+      qualityScore: "5.0 ★",
+      settlementStatus: "100% Settled",
+      totalShiftsDelivered: 30,
+      handoverCertificateId: "KALLISTO-HC-9041",
+      clientSignOffBy: "Rajesh Pillai (Prestige GM)",
+      snagsResolved: "0 Open · 8 Cleared",
+      summaryText: "Electrical and interior carpentry handed over with all safety audits and test certificates approved.",
+    },
+  },
+  {
+    id: "ASG-109",
+    projectName: "Asset Orchid Luxury Villas",
+    clientName: "Asset Homes",
+    location: "Kaloor, Kochi",
+    status: "completed",
+    currentDay: 40,
+    totalDays: 40,
+    totalWorkersAssigned: 16,
+    tradesBreakdown: "10 Tile Workers · 6 Painters",
+    startDate: "Jun 08",
+    endDate: "Jul 18",
+    siteStatus: "COMPLETED",
+    attendance: {
+      present: 16,
+      total: 16,
+      unmarked: 0,
+      absent: 0,
+    },
+    health: "on_track",
+    healthMessage: "Finishing works and handover sign-off successfully completed.",
+    supervisor: {
+      name: "Sujith Narayanan",
+      phone: "+91 98478 99112",
+      avatar: "/assets/priya-avatar.jpg",
+    },
+    crew: [
+      { id: "W107", name: "Babu George", trade: "Tile Worker", level: "Master", status: "Present", phone: "+91 98470 81101" },
+      { id: "W108", name: "Prakash M", trade: "Tile Worker", level: "Senior", status: "Present", phone: "+91 98470 81102" },
+      { id: "W109", name: "Shibu Thomas", trade: "Painter", level: "Lead", status: "Present", phone: "+91 98470 81103" },
+      { id: "W110", name: "Girish K", trade: "Painter", level: "Senior", status: "Present", phone: "+91 98470 81104" },
+    ],
+    coverImage: "/assets/nila-hero-modern.jpg",
+    completionResult: {
+      completedDate: "Jul 18, 2026",
+      outcome: "Handover Approved",
+      qualityScore: "4.85 ★",
+      settlementStatus: "100% Settled",
+      totalShiftsDelivered: 40,
+      handoverCertificateId: "KALLISTO-HC-8711",
+      clientSignOffBy: "Sunil Jacob (Asset Homes PM)",
+      snagsResolved: "0 Open · 12 Cleared",
+      summaryText: "Vitrified tiling and exterior texture painting completed with zero defect audit remarks.",
+    },
+  },
+  {
+    id: "ASG-110",
+    projectName: "Lulu Cyber Park Phase 1",
+    clientName: "Lulu IT Infrastructure",
+    location: "Infopark, Kochi",
+    status: "completed",
+    currentDay: 35,
+    totalDays: 35,
+    totalWorkersAssigned: 18,
+    tradesBreakdown: "12 Electricians · 6 HVAC Technicians",
+    startDate: "May 25",
+    endDate: "Jun 30",
+    siteStatus: "COMPLETED",
+    attendance: {
+      present: 18,
+      total: 18,
+      unmarked: 0,
+      absent: 0,
+    },
+    health: "on_track",
+    healthMessage: "HVAC and primary power distribution certified and commissioned.",
+    supervisor: {
+      name: "Firoz Khan",
+      phone: "+91 98479 11223",
+      avatar: "/assets/profile_avatar.png",
+    },
+    crew: [
+      { id: "W111", name: "Haridas P", trade: "Electrician", level: "Master", status: "Present", phone: "+91 98470 91101" },
+      { id: "W112", name: "Kishore R", trade: "HVAC Technician", level: "Lead", status: "Present", phone: "+91 98470 91102" },
+      { id: "W113", name: "Manoj S", trade: "Electrician", level: "Senior", status: "Present", phone: "+91 98470 91103" },
+      { id: "W114", name: "Reji Kumar", trade: "HVAC Technician", level: "Senior", status: "Present", phone: "+91 98470 91104" },
+    ],
+    coverImage: "/assets/projects/anitha-menon-residence.png",
+    completionResult: {
+      completedDate: "Jun 30, 2026",
+      outcome: "Certified Handover",
+      qualityScore: "4.95 ★",
+      settlementStatus: "100% Settled",
+      totalShiftsDelivered: 35,
+      handoverCertificateId: "KALLISTO-HC-8520",
+      clientSignOffBy: "Fahad Rahman (Lulu Infra Lead)",
+      snagsResolved: "0 Open · 6 Cleared",
+      summaryText: "HVAC commissioning and electrical load distribution certified and site handed over to facility managers.",
+    },
+  },
 ];
 
 export function calculateAssignmentMetrics(
   deployments: AssignmentDeployment[]
 ): AssignmentSummaryMetrics {
-  const activeDeployments = deployments.filter((d) => d.status === "active").length;
-  const sitesCovered = new Set(deployments.map((d) => d.location)).size;
-  const deployedCrew = deployments.reduce((acc, d) => acc + d.totalWorkersAssigned, 0);
+  const activeList = deployments.filter((d) => d.status === "active");
+  const activeDeployments = activeList.length;
+  const sitesCovered = new Set(activeList.map((d) => d.location)).size;
+  const deployedCrew = activeList.reduce((acc, d) => acc + d.totalWorkersAssigned, 0);
 
-  const totalPossibleAttendance = deployments.reduce((acc, d) => acc + d.attendance.total, 0);
-  const totalPresent = deployments.reduce((acc, d) => acc + d.attendance.present, 0);
+  const totalPossibleAttendance = activeList.reduce((acc, d) => acc + d.attendance.total, 0);
+  const totalPresent = activeList.reduce((acc, d) => acc + d.attendance.present, 0);
   const shiftCompletion =
     totalPossibleAttendance > 0
       ? `${((totalPresent / totalPossibleAttendance) * 100).toFixed(1)}%`
       : "98.2%";
 
-  const attentionCount = deployments.filter((d) => d.health === "attention_required").length;
-  const atRiskCount = deployments.filter((d) => d.health === "at_risk").length;
+  const attentionCount = activeList.filter((d) => d.health === "attention_required").length;
+  const atRiskCount = activeList.filter((d) => d.health === "at_risk").length;
 
   return {
     activeDeployments: Math.max(14, activeDeployments),
@@ -284,5 +780,486 @@ export function calculateAssignmentMetrics(
     shiftCompletion,
     attentionCount,
     atRiskCount,
+  };
+}
+
+export function getAssignmentById(id: string): AssignmentDeployment | undefined {
+  const found = INITIAL_ASSIGNMENTS.find((a) => a.id === id);
+  if (!found) return undefined;
+
+  // Provide realistic fallback updates, complaints, and accounts if not explicitly present
+  const updates = found.updates || [
+    {
+      id: `upd-${found.id}-1`,
+      authorName: found.supervisor.name,
+      authorRole: "Site Supervisor",
+      authorAvatar: found.supervisor.avatar || "/assets/rahul-avatar.jpg",
+      timestamp: "25 mins ago",
+      category: "Site Progress",
+      text: `Daily milestone deployment running on schedule. ${found.attendance.present} of ${found.attendance.total} workers active across ${found.tradesBreakdown}.`,
+      mediaUrls: found.coverImage ? [found.coverImage] : undefined,
+      acknowledged: false,
+      replies: [
+        {
+          id: `rep-${found.id}-1`,
+          authorName: "Arjun Menon",
+          authorRole: "Contractor / PM",
+          authorAvatar: "/assets/arjun-avatar.jpg",
+          timestamp: "12 mins ago",
+          text: `Acknowledged ${found.supervisor.name}. Maintain daily check-in logs and crew safety briefings.`,
+          acknowledged: false,
+        },
+      ],
+    },
+    {
+      id: `upd-${found.id}-2`,
+      authorName: "Arjun Menon",
+      authorRole: "Contractor / PM",
+      authorAvatar: "/assets/arjun-avatar.jpg",
+      timestamp: "3 hours ago",
+      category: "Crew Deployment",
+      text: `Shift schedule for project ${found.projectName} confirmed. Additional trade hands briefed and assigned to primary work zones.`,
+      acknowledged: false,
+    },
+  ];
+
+  const complaints = found.complaints || [
+    {
+      id: `cmp-${found.id}-1`,
+      title: "Material Staging Area Access Restriction",
+      description: `Delivery truck unloading held up due to access barrier on project site at ${found.location}.`,
+      category: "Access Delay",
+      severity: "medium",
+      status: "open",
+      raisedBy: found.supervisor.name,
+      raisedByRole: "Site Supervisor",
+      raisedAt: "Today, 09:15 AM",
+    },
+    {
+      id: `cmp-${found.id}-2`,
+      title: "Temporary Power Distribution Disruption",
+      description: "Circuit breaker tripping during peak morning tool operation. Require site electrician review.",
+      category: "Safety Hazard",
+      severity: "high",
+      status: "in_review",
+      raisedBy: found.supervisor.name,
+      raisedByRole: "Site Supervisor",
+      raisedAt: "Yesterday, 03:30 PM",
+      resolutionNotes: "Electrician assigned and testing line resistance.",
+    },
+  ];
+
+  const accounts = found.accounts || {
+    totalContractValue: found.totalWorkersAssigned * found.totalDays * 750,
+    dailyBillingRate: found.totalWorkersAssigned * 750,
+    shiftsDelivered: found.currentDay,
+    totalShiftsContracted: found.totalDays,
+    paidAmount: Math.round((found.currentDay / found.totalDays) * (found.totalWorkersAssigned * found.totalDays * 750) * 0.7),
+    pendingAmount: Math.round((found.currentDay / found.totalDays) * (found.totalWorkersAssigned * found.totalDays * 750) * 0.3),
+    settlementStatus: found.status === "completed" ? "100% Settled" : "On Track - Weekly Cycle",
+    invoiceNumber: `INV-${found.id}-W${Math.ceil(found.currentDay / 7)}`,
+    nextDisbursementDate: "Sep 15, 2026",
+    tradeRates: [
+      { trade: found.tradesBreakdown.split("·")[0]?.trim() || "Main Crew", workersCount: Math.ceil(found.totalWorkersAssigned * 0.6), ratePerDay: 850, totalPerDay: Math.ceil(found.totalWorkersAssigned * 0.6) * 850 },
+      { trade: found.tradesBreakdown.split("·")[1]?.trim() || "Support Crew", workersCount: Math.floor(found.totalWorkersAssigned * 0.4), ratePerDay: 600, totalPerDay: Math.floor(found.totalWorkersAssigned * 0.4) * 600 },
+    ],
+    transactions: [
+      {
+        id: `TXN-${found.id}-01`,
+        date: "Sep 02, 2026",
+        referenceNo: `UTR${Math.floor(1000000000 + Math.random() * 9000000000)}`,
+        paidBy: found.supervisor.name,
+        paidByRole: "Site Supervisor",
+        paidTo: found.clientName,
+        title: "Deployment Billing Cycle 1",
+        description: `Verified shift settlement for ${found.totalWorkersAssigned} assigned trade hands approved by Site Supervisor.`,
+        amount: Math.round(found.totalWorkersAssigned * 750 * 7),
+        paymentMethod: "NEFT / Bank Transfer",
+        status: "settled",
+        invoiceRef: `INV-${found.id}-W1`,
+      },
+      {
+        id: `TXN-${found.id}-02`,
+        date: "Sep 09, 2026",
+        referenceNo: `INV-${found.id}-W2`,
+        paidBy: found.supervisor.name,
+        paidByRole: "Site Supervisor",
+        paidTo: found.clientName,
+        title: "Deployment Billing Cycle 2",
+        description: `Pending verification settlement for active deployment shifts authorized by Site Supervisor.`,
+        amount: Math.round(found.totalWorkersAssigned * 750 * 5),
+        paymentMethod: "NEFT / Bank Transfer",
+        status: "processing",
+        invoiceRef: `INV-${found.id}-W2`,
+      },
+    ],
+  };
+
+  return {
+    ...found,
+    updates,
+    complaints,
+    accounts,
+  };
+}
+
+export const MOCK_LABOR_WAGES: LaborWageRecord[] = [
+  {
+    id: "LW-102-01",
+    workerId: "W13",
+    workerName: "Arun S",
+    trade: "Electrician",
+    level: "Lead",
+    assignmentId: "ASG-102",
+    projectName: "Skyline Waterfront Towers",
+    contractorName: "Apex ElectroTech Solutions",
+    shiftsWorked: 18,
+    dailyRate: 850,
+    totalWage: 15300,
+    status: "paid",
+    paymentMethod: "Direct Bank Transfer",
+    referenceNo: "UTR7729104812",
+    payoutDate: "Sep 12, 2026",
+    avatar: "/assets/arjun-avatar.jpg",
+  },
+  {
+    id: "LW-102-02",
+    workerId: "W15",
+    workerName: "Renjith K",
+    trade: "Electrician",
+    level: "Senior",
+    assignmentId: "ASG-102",
+    projectName: "Skyline Waterfront Towers",
+    contractorName: "Apex ElectroTech Solutions",
+    shiftsWorked: 18,
+    dailyRate: 850,
+    totalWage: 15300,
+    status: "paid",
+    paymentMethod: "Direct Bank Transfer",
+    referenceNo: "UTR7729104813",
+    payoutDate: "Sep 12, 2026",
+    avatar: "/assets/allen-avatar.jpg",
+  },
+  {
+    id: "LW-102-03",
+    workerId: "W17",
+    workerName: "Akhil Nair",
+    trade: "Electrician",
+    level: "Senior",
+    assignmentId: "ASG-102",
+    projectName: "Skyline Waterfront Towers",
+    contractorName: "Apex ElectroTech Solutions",
+    shiftsWorked: 18,
+    dailyRate: 850,
+    totalWage: 15300,
+    status: "paid",
+    paymentMethod: "Direct Bank Transfer",
+    referenceNo: "UTR7729104814",
+    payoutDate: "Sep 12, 2026",
+    avatar: "/assets/rahul-avatar.jpg",
+  },
+  {
+    id: "LW-102-04",
+    workerId: "W18",
+    workerName: "Jithin Raj",
+    trade: "Electrician",
+    level: "Master",
+    assignmentId: "ASG-102",
+    projectName: "Skyline Waterfront Towers",
+    contractorName: "Apex ElectroTech Solutions",
+    shiftsWorked: 18,
+    dailyRate: 850,
+    totalWage: 15300,
+    status: "paid",
+    paymentMethod: "Direct Bank Transfer",
+    referenceNo: "UTR7729104815",
+    payoutDate: "Sep 12, 2026",
+  },
+  {
+    id: "LW-102-05",
+    workerId: "W19",
+    workerName: "Karthik P",
+    trade: "Electrician",
+    level: "Skilled",
+    assignmentId: "ASG-102",
+    projectName: "Skyline Waterfront Towers",
+    contractorName: "Apex ElectroTech Solutions",
+    shiftsWorked: 18,
+    dailyRate: 850,
+    totalWage: 15300,
+    status: "processing",
+    paymentMethod: "UPI Payout",
+    referenceNo: "REF-LW-ASG102-05",
+    payoutDate: "Sep 15, 2026",
+  },
+  {
+    id: "LW-102-06",
+    workerId: "W24",
+    workerName: "Deepak Chandran",
+    trade: "Electrician",
+    level: "Assistant",
+    assignmentId: "ASG-102",
+    projectName: "Skyline Waterfront Towers",
+    contractorName: "Apex ElectroTech Solutions",
+    shiftsWorked: 16,
+    dailyRate: 700,
+    totalWage: 11200,
+    status: "due",
+    paymentMethod: "Direct Bank Transfer",
+    referenceNo: "REF-LW-ASG102-06",
+    payoutDate: "Sep 18, 2026",
+  },
+  {
+    id: "LW-102-07",
+    workerId: "W14",
+    workerName: "Vipin Das",
+    trade: "Plumber",
+    level: "Senior",
+    assignmentId: "ASG-102",
+    projectName: "Skyline Waterfront Towers",
+    contractorName: "Apex ElectroTech Solutions",
+    shiftsWorked: 18,
+    dailyRate: 600,
+    totalWage: 10800,
+    status: "paid",
+    paymentMethod: "Direct Bank Transfer",
+    referenceNo: "UTR8810294811",
+    payoutDate: "Sep 12, 2026",
+  },
+  {
+    id: "LW-102-08",
+    workerId: "W16",
+    workerName: "Sanal Kumar",
+    trade: "Plumber",
+    level: "Lead",
+    assignmentId: "ASG-102",
+    projectName: "Skyline Waterfront Towers",
+    contractorName: "Apex ElectroTech Solutions",
+    shiftsWorked: 18,
+    dailyRate: 600,
+    totalWage: 10800,
+    status: "paid",
+    paymentMethod: "Direct Bank Transfer",
+    referenceNo: "UTR8810294812",
+    payoutDate: "Sep 12, 2026",
+  },
+  {
+    id: "LW-102-09",
+    workerId: "W25",
+    workerName: "Manoj K",
+    trade: "Plumber",
+    level: "Master",
+    assignmentId: "ASG-102",
+    projectName: "Skyline Waterfront Towers",
+    contractorName: "Apex ElectroTech Solutions",
+    shiftsWorked: 17,
+    dailyRate: 600,
+    totalWage: 10200,
+    status: "processing",
+    paymentMethod: "UPI Payout",
+    referenceNo: "REF-LW-ASG102-09",
+    payoutDate: "Sep 15, 2026",
+  },
+  {
+    id: "LW-101-01",
+    workerId: "W1",
+    workerName: "Rajesh Kumar",
+    trade: "Mason",
+    level: "Senior",
+    assignmentId: "ASG-101",
+    projectName: "Greenwood Residency",
+    contractorName: "Southcoast Infra Contractors",
+    shiftsWorked: 12,
+    dailyRate: 850,
+    totalWage: 10200,
+    status: "paid",
+    paymentMethod: "Direct Bank Transfer",
+    referenceNo: "UTR9918274611",
+    payoutDate: "Sep 08, 2026",
+  },
+  {
+    id: "LW-101-02",
+    workerId: "W2",
+    workerName: "Biju K",
+    trade: "Mason",
+    level: "Senior",
+    assignmentId: "ASG-101",
+    projectName: "Greenwood Residency",
+    contractorName: "Southcoast Infra Contractors",
+    shiftsWorked: 12,
+    dailyRate: 850,
+    totalWage: 10200,
+    status: "paid",
+    paymentMethod: "Direct Bank Transfer",
+    referenceNo: "UTR9918274612",
+    payoutDate: "Sep 08, 2026",
+  },
+  {
+    id: "LW-101-03",
+    workerId: "W3",
+    workerName: "Anand M",
+    trade: "Mason",
+    level: "Master",
+    assignmentId: "ASG-101",
+    projectName: "Greenwood Residency",
+    contractorName: "Southcoast Infra Contractors",
+    shiftsWorked: 12,
+    dailyRate: 850,
+    totalWage: 10200,
+    status: "paid",
+    paymentMethod: "Direct Bank Transfer",
+    referenceNo: "UTR9918274613",
+    payoutDate: "Sep 08, 2026",
+  },
+  {
+    id: "LW-101-04",
+    workerId: "W7",
+    workerName: "Manoj Varma",
+    trade: "Mason",
+    level: "Lead",
+    assignmentId: "ASG-101",
+    projectName: "Greenwood Residency",
+    contractorName: "Southcoast Infra Contractors",
+    shiftsWorked: 12,
+    dailyRate: 850,
+    totalWage: 10200,
+    status: "processing",
+    paymentMethod: "UPI Payout",
+    referenceNo: "REF-LW-ASG101-04",
+    payoutDate: "Sep 15, 2026",
+  },
+  {
+    id: "LW-101-05",
+    workerId: "W4",
+    workerName: "Shyam Sundar",
+    trade: "Helper",
+    level: "Helper",
+    assignmentId: "ASG-101",
+    projectName: "Greenwood Residency",
+    contractorName: "Southcoast Infra Contractors",
+    shiftsWorked: 12,
+    dailyRate: 550,
+    totalWage: 6600,
+    status: "paid",
+    paymentMethod: "Cash Slip & Register",
+    referenceNo: "UTR9918274615",
+    payoutDate: "Sep 08, 2026",
+  },
+  {
+    id: "LW-101-06",
+    workerId: "W5",
+    workerName: "Mohan Lal",
+    trade: "Helper",
+    level: "Helper",
+    assignmentId: "ASG-101",
+    projectName: "Greenwood Residency",
+    contractorName: "Southcoast Infra Contractors",
+    shiftsWorked: 12,
+    dailyRate: 550,
+    totalWage: 6600,
+    status: "paid",
+    paymentMethod: "Cash Slip & Register",
+    referenceNo: "UTR9918274616",
+    payoutDate: "Sep 08, 2026",
+  },
+  {
+    id: "LW-101-07",
+    workerId: "W6",
+    workerName: "Gireesh P",
+    trade: "Helper",
+    level: "Helper",
+    assignmentId: "ASG-101",
+    projectName: "Greenwood Residency",
+    contractorName: "Southcoast Infra Contractors",
+    shiftsWorked: 11,
+    dailyRate: 550,
+    totalWage: 6050,
+    status: "due",
+    paymentMethod: "Direct Bank Transfer",
+    referenceNo: "REF-LW-ASG101-07",
+    payoutDate: "Sep 18, 2026",
+  },
+];
+
+export function getHandsPaymentsOverview(assignmentFilter?: string) {
+  // 1. Gather relevant assignments
+  const assignments = assignmentFilter && assignmentFilter !== "all"
+    ? INITIAL_ASSIGNMENTS.filter((a) => a.id === assignmentFilter)
+    : INITIAL_ASSIGNMENTS;
+
+  // 2. Gather Provider -> Contractor transactions
+  const providerTransactions = assignments.flatMap((a) => {
+    const detailed = getAssignmentById(a.id);
+    const txns = detailed?.accounts?.transactions || [];
+    return txns.map((t) => ({
+      ...t,
+      assignmentId: a.id,
+      projectName: a.projectName,
+      clientName: a.clientName,
+    }));
+  });
+
+  // 3. Gather Contractor -> Labors wage records
+  const laborWages = assignmentFilter && assignmentFilter !== "all"
+    ? MOCK_LABOR_WAGES.filter((lw) => lw.assignmentId === assignmentFilter)
+    : MOCK_LABOR_WAGES;
+
+  // 4. Compute Provider -> Contractor Metrics
+  const providerSettled = providerTransactions
+    .filter((t) => t.status === "settled" || t.status === "paid")
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const providerProcessing = providerTransactions
+    .filter((t) => t.status === "processing")
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const providerPending = providerTransactions
+    .filter((t) => t.status === "pending" || t.status === "pending_verification")
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  // 5. Compute Contractor -> Labors Metrics
+  const laborPaid = laborWages
+    .filter((lw) => lw.status === "paid")
+    .reduce((sum, lw) => sum + lw.totalWage, 0);
+
+  const laborProcessing = laborWages
+    .filter((lw) => lw.status === "processing")
+    .reduce((sum, lw) => sum + lw.totalWage, 0);
+
+  const laborDue = laborWages
+    .filter((lw) => lw.status === "due")
+    .reduce((sum, lw) => sum + lw.totalWage, 0);
+
+  // 6. Gather Trade Wage Schedules
+  const tradeSchedules = assignments.map((a) => {
+    const detailed = getAssignmentById(a.id);
+    return {
+      assignmentId: a.id,
+      projectName: a.projectName,
+      personnelCount: a.totalWorkersAssigned,
+      tradeRates: detailed?.accounts?.tradeRates || [],
+    };
+  });
+
+  // Daily blended commitment
+  const totalDailyWageCommitment = tradeSchedules.reduce((acc, s) => {
+    return acc + s.tradeRates.reduce((tSum, r) => tSum + r.totalPerDay, 0);
+  }, 0);
+
+  return {
+    assignments: INITIAL_ASSIGNMENTS.map((a) => ({ id: a.id, projectName: a.projectName, clientName: a.clientName })),
+    providerTransactions,
+    laborWages,
+    tradeSchedules,
+    metrics: {
+      providerSettled,
+      providerProcessing,
+      providerPending,
+      laborPaid,
+      laborProcessing,
+      laborDue,
+      totalDailyWageCommitment,
+      totalAssignedPersonnel: assignments.reduce((sum, a) => sum + a.totalWorkersAssigned, 0),
+    },
   };
 }

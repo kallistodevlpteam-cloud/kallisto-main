@@ -239,6 +239,7 @@ export function OpenRequestsCard({
               </select>
               <ChevronDown size={13} aria-hidden="true" />
             </label>
+
             {/* Request History Button next to All trades */}
             <Link
               href="/hands/requests/history"

@@ -6,10 +6,11 @@ import { PartnerAuthProvider } from "@/partner-app/auth/context/partner-auth-con
 import { PartnerAuthService } from "@/partner-app/auth/services/partner-auth-service";
 
 // Mock next/navigation
+const mockPush = vi.fn();
 vi.mock("next/navigation", () => ({
   usePathname: () => "/partner/hands/assignments",
   useRouter: () => ({
-    push: vi.fn(),
+    push: mockPush,
     replace: vi.fn(),
     back: vi.fn(),
     forward: vi.fn(),
@@ -116,7 +117,7 @@ describe("Kallisto Hands - Assignments Workspace & Structured Cards", () => {
     expect(screen.queryByText("Greenwood Residency")).toBeNull();
   });
 
-  it("opens assignment detail drawer when clicking Open Assignment button", () => {
+  it("navigates to assignment detail page when clicking Open Assignment button", () => {
     render(
       <PartnerAuthProvider>
         <HandsAssignmentsWorkspace />
@@ -126,12 +127,10 @@ describe("Kallisto Hands - Assignments Workspace & Structured Cards", () => {
     const openBtns = screen.getAllByRole("button", { name: /Open Assignment/i });
     fireEvent.click(openBtns[0]);
 
-    expect(screen.getByText(/Deployed Crew Roster/i)).toBeDefined();
-    expect(screen.getByText("Suresh Nair")).toBeDefined();
-    expect(screen.getByText("Rajesh Kumar")).toBeDefined();
+    expect(mockPush).toHaveBeenCalledWith("/partner/hands/assignments/ASG-101");
   });
 
-  it("opens assignment detail drawer when clicking directly on the card body", () => {
+  it("navigates to assignment detail page when clicking directly on the card body", () => {
     render(
       <PartnerAuthProvider>
         <HandsAssignmentsWorkspace />
@@ -141,22 +140,62 @@ describe("Kallisto Hands - Assignments Workspace & Structured Cards", () => {
     const card = screen.getByRole("button", { name: "Assignment for Greenwood Residency" });
     fireEvent.click(card);
 
-    expect(screen.getByText(/Deployed Crew Roster/i)).toBeDefined();
-    expect(screen.getAllByText("Greenwood Residency").length).toBeGreaterThan(1);
-    expect(screen.getByText("Suresh Nair")).toBeDefined();
+    expect(mockPush).toHaveBeenCalledWith("/partner/hands/assignments/ASG-101");
   });
 
-  it("renders View Profile button for service provider in assignment detail drawer", () => {
+  it("renders History tab in segmented tabs list without count badge near history", () => {
     render(
       <PartnerAuthProvider>
         <HandsAssignmentsWorkspace />
       </PartnerAuthProvider>
     );
 
-    const openBtns = screen.getAllByRole("button", { name: /Open Assignment/i });
-    fireEvent.click(openBtns[0]);
+    const historyTab = screen.getByRole("tab", { name: /^History$/i });
+    expect(historyTab).toBeDefined();
+    expect(historyTab.textContent?.trim()).toBe("History");
+  });
 
-    const viewProfileBtn = screen.getByRole("button", { name: /View Profile/i });
-    expect(viewProfileBtn).toBeDefined();
+  it("filters to completed list when clicking History tab and displays result data", () => {
+    render(
+      <PartnerAuthProvider>
+        <HandsAssignmentsWorkspace />
+      </PartnerAuthProvider>
+    );
+
+    // Greenwood Residency is active and initially visible
+    expect(screen.getByText("Greenwood Residency")).toBeDefined();
+
+    // Click History tab
+    const historyTab = screen.getByRole("tab", { name: /^History$/i });
+    fireEvent.click(historyTab);
+
+    // Active project should no longer be visible
+    expect(screen.queryByText("Greenwood Residency")).toBeNull();
+
+    // Completed projects should now be visible
+    expect(screen.getByText("Sobha Silver Birch Enclave")).toBeDefined();
+    expect(screen.getByText("Prestige Ocean Crest")).toBeDefined();
+    expect(screen.getByText("Asset Orchid Luxury Villas")).toBeDefined();
+    expect(screen.getByText("Lulu Cyber Park Phase 1")).toBeDefined();
+    expect(screen.getAllByText("COMPLETED").length).toBeGreaterThan(0);
+
+    // Verify completed cards display clean "Completed Successfully" callout
+    expect(screen.getAllByText("Completed Successfully").length).toBeGreaterThan(0);
+  });
+
+  it("navigates to assignment detail page when clicking completed assignment card in history", () => {
+    render(
+      <PartnerAuthProvider>
+        <HandsAssignmentsWorkspace />
+      </PartnerAuthProvider>
+    );
+
+    const historyTab = screen.getByRole("tab", { name: /^History$/i });
+    fireEvent.click(historyTab);
+
+    const sobhaCard = screen.getByRole("button", { name: "Assignment for Sobha Silver Birch Enclave" });
+    fireEvent.click(sobhaCard);
+
+    expect(mockPush).toHaveBeenCalledWith("/partner/hands/assignments/ASG-107");
   });
 });
