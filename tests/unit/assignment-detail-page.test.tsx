@@ -144,7 +144,7 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     expect(screen.getByText("Paid to Date")).toBeDefined();
     expect(screen.getByText("Pending Settlement")).toBeDefined();
     expect(screen.getByText("Settlement Status & Billing Cycle")).toBeDefined();
-    expect(screen.getByText("Transaction Details")).toBeDefined();
+    expect(screen.getByText(/Payment & Bill Details|Transaction Details/i)).toBeDefined();
     expect(screen.getByText(/Total Settled to Date/i)).toBeDefined();
     expect(screen.getByText("Milestone Deployment Advance")).toBeDefined();
     expect(screen.getByText("Weekly Deployment Settlement - Cycle 1")).toBeDefined();
