@@ -123,6 +123,9 @@ export interface WorkforceRequest {
   skillLevel?: string;
   shiftTiming?: string;
   duration?: string;
+  durationDays?: number;
+  startDate?: string;
+  endDate?: string;
   isMultiTrade?: boolean;
   tradesBreakdown?: RequestTradeItem[];
 }
@@ -177,6 +180,7 @@ export interface WorkforceRequestDraft {
   workerCount: string;
   skillLevel: string;
   startDate: string;
+  endDate?: string;
   expectedDuration: string;
   shiftTiming: string;
   requiredToolsOrCertifications: string;
@@ -194,6 +198,7 @@ export interface WorkforceRequestSubmission {
   workerCount: number;
   skillLevel: string;
   startDate: string;
+  endDate?: string;
   expectedDuration: string;
   shiftTiming: string;
   requiredToolsOrCertifications: string;
@@ -209,3 +214,29 @@ export type WorkforceRequestField = keyof WorkforceRequestDraft;
 export type WorkforceRequestErrors = Partial<
   Record<WorkforceRequestField, string>
 >;
+
+export type PaymentMethod = "bank_transfer" | "upi_transfer";
+
+export interface ContractorPaymentRecord {
+  id: string;
+  requestId?: string;
+  projectId?: string;
+  contractorName: string;
+  workerCount: number;
+  totalAmount: number;
+  paymentMethod: PaymentMethod;
+  bankDetails?: {
+    accountNumber: string;
+    ifscCode: string;
+    bankName: string;
+    beneficiaryName: string;
+    utrReference: string;
+  };
+  upiDetails?: {
+    upiId: string;
+    qrCodeUrl?: string;
+    transactionId: string;
+  };
+  paidAt: string;
+  status: "Completed" | "Pending Verification" | "Processing";
+}

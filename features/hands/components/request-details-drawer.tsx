@@ -21,6 +21,7 @@ import type { HandsTab, WorkforceRequest } from "../types/hands.types";
 import { getFulfilmentPercentage } from "../utils/hands-formatters";
 import { useDrawerBehaviour } from "./use-drawer-behaviour";
 import { getTradeIcon } from "./workforce-request-card";
+import { ContractorPaymentModal } from "./contractor-payment-modal";
 import styles from "./hands-overview.module.css";
 
 interface RequestDetailsDrawerProps {
@@ -39,6 +40,7 @@ export function RequestDetailsDrawer({
   const panelRef = useRef<HTMLElement>(null);
   useDrawerBehaviour(panelRef, onClose);
   const [imageError, setImageError] = useState(false);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [splitFulfilledContractor, setSplitFulfilledContractor] = useState<{
     id: string;
     name: string;
@@ -190,6 +192,18 @@ export function RequestDetailsDrawer({
                     style={{ width: `${progress}%` }}
                   />
                 </div>
+
+                <div style={{ marginTop: "12px", display: "flex", justifyContent: "flex-end" }}>
+                  <button
+                    type="button"
+                    className={styles.primaryButton}
+                    style={{ background: "#16a34a", borderColor: "#16a34a" }}
+                    onClick={() => setPaymentModalOpen(true)}
+                  >
+                    <RupeeIcon size={14} aria-hidden="true" />
+                    <span>Pay Contractor for Assigned Crew</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -334,6 +348,17 @@ export function RequestDetailsDrawer({
                 <dd>
                   {request.fulfilled} workers (
                   {request.quantity - request.fulfilled} pending)
+                </dd>
+              </div>
+              <div>
+                <dt>
+                  <CalendarClock size={15} aria-hidden="true" />
+                  Deployment schedule
+                </dt>
+                <dd>
+                  {request.startDate || request.requiredDate || "2026-07-27"}
+                  {request.endDate ? ` to ${request.endDate}` : ""} (
+                  {request.duration || "1 week"})
                 </dd>
               </div>
               <div>
@@ -507,6 +532,15 @@ export function RequestDetailsDrawer({
             <button
               type="button"
               className={styles.primaryButton}
+              style={{ background: "#16a34a", borderColor: "#16a34a" }}
+              onClick={() => setPaymentModalOpen(true)}
+            >
+              <RupeeIcon size={14} aria-hidden="true" />
+              <span>Pay Contractor</span>
+            </button>
+            <button
+              type="button"
+              className={styles.primaryButton}
               onClick={() => {
                 onClose();
                 onNavigateTab("deployments");
@@ -517,6 +551,23 @@ export function RequestDetailsDrawer({
           </div>
         </footer>
       </aside>
+
+      {paymentModalOpen && (
+        <ContractorPaymentModal
+          contractorName={contractorTitle}
+          assignedWorkersCount={effectiveFulfilled}
+          totalWorkersRequested={request.quantity}
+          projectName={request.projectName}
+          location={request.location}
+          dailyRate={request.dailyRate}
+          durationDays={
+            request.durationDays ??
+            (request.duration ? parseInt(request.duration, 10) || 1 : 1)
+          }
+          tradesBreakdown={request.tradesBreakdown}
+          onClose={() => setPaymentModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

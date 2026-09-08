@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown, ChevronRight, History, LayoutGrid, List, Plus, SlidersHorizontal, X } from "lucide-react";
+import { ChevronDown, ChevronRight, History, LayoutGrid, List, Plus, Search, SlidersHorizontal, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { HandsTab, WorkforceRequest } from "../types/hands.types";
 import { getFulfilmentPercentage } from "../utils/hands-formatters";
@@ -79,6 +79,7 @@ export function OpenRequestsCard({
   const [viewMode, setViewMode] = useState<"grid" | "list">(defaultViewMode);
   const [projectFilter, setProjectFilter] = useState("all");
   const [tradeFilter, setTradeFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [historyTradeFilter, setHistoryTradeFilter] = useState("all");
 
@@ -113,12 +114,25 @@ export function OpenRequestsCard({
           request.trade === tradeFilter ||
           (request.tradesBreakdown &&
             request.tradesBreakdown.some((tb) => tb.trade === tradeFilter));
-        return matchesProject && matchesTrade;
+
+        const q = searchQuery.toLowerCase().trim();
+        const matchesSearch =
+          !q ||
+          request.projectName.toLowerCase().includes(q) ||
+          (request.contractorName &&
+            request.contractorName.toLowerCase().includes(q)) ||
+          (request.contractorBrand &&
+            request.contractorBrand.toLowerCase().includes(q)) ||
+          (request.location && request.location.toLowerCase().includes(q)) ||
+          request.trade.toLowerCase().includes(q);
+
+        return matchesProject && matchesTrade && matchesSearch;
       }),
-    [requests, projectFilter, tradeFilter],
+    [requests, projectFilter, tradeFilter, searchQuery],
   );
 
-  const hasFilters = projectFilter !== "all" || tradeFilter !== "all";
+  const hasFilters =
+    projectFilter !== "all" || tradeFilter !== "all" || searchQuery.trim() !== "";
 
   return (
     <section
@@ -171,8 +185,29 @@ export function OpenRequestsCard({
       </div>
 
       {showFilters && (
-        <div className={styles.deploymentToolbar} style={{ padding: "12px 22px", borderBottom: "1px solid #f1f5f9" }}>
+        <div className={styles.deploymentToolbar} style={{ padding: "12px 0", borderBottom: "1px solid #f1f5f9" }}>
           <div className={styles.filterGroup}>
+            <div className={styles.searchInputControl}>
+              <Search size={14} className={styles.searchControlIcon} aria-hidden="true" />
+              <input
+                type="text"
+                placeholder="Search project or contractor..."
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                aria-label="Search project or contractor"
+              />
+              {searchQuery ? (
+                <button
+                  type="button"
+                  className={styles.searchClearBtn}
+                  onClick={() => setSearchQuery("")}
+                  aria-label="Clear search"
+                >
+                  <X size={12} aria-hidden="true" />
+                </button>
+              ) : null}
+            </div>
+
             <SlidersHorizontal size={14} aria-hidden="true" />
             <label className={styles.selectControl}>
               <span className={styles.visuallyHidden}>Filter by project</span>
@@ -204,7 +239,6 @@ export function OpenRequestsCard({
               </select>
               <ChevronDown size={13} aria-hidden="true" />
             </label>
-
             {/* Request History Button next to All trades */}
             <Link
               href="/hands/requests/history"
@@ -304,7 +338,7 @@ export function OpenRequestsCard({
           </h3>
           <p>
             {hasFilters
-              ? "Change or clear the project and trade filters."
+              ? "Change or clear the project, contractor search and trade filters."
               : "There are currently no unresolved labour requirements."}
           </p>
           {hasFilters ? (
@@ -314,6 +348,7 @@ export function OpenRequestsCard({
               onClick={() => {
                 setProjectFilter("all");
                 setTradeFilter("all");
+                setSearchQuery("");
               }}
             >
               Clear filters
@@ -330,16 +365,7 @@ export function OpenRequestsCard({
         </div>
       )}
 
-      <div className={styles.cardFooter}>
-        <button
-          type="button"
-          className={`${styles.secondaryButton} ${styles.fullWidthButton}`}
-          onClick={onRequestWorkforce}
-        >
-          <Plus size={14} aria-hidden="true" />
-          Request more workers
-        </button>
-      </div>
+
 
       {showHistoryModal ? (
         <div

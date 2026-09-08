@@ -18,9 +18,10 @@ import { HandsOverview } from "./hands-overview";
 
 const mockPush = vi.fn();
 let mockSearchParams = new URLSearchParams();
+let mockPathname = "/hands";
 
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/hands",
+  usePathname: () => mockPathname,
   useRouter: () => ({
     push: (url: string) => mockPush(url),
     replace: vi.fn(),
@@ -34,6 +35,7 @@ describe("Hands overview", () => {
   beforeEach(() => {
     mockPush.mockClear();
     mockSearchParams = new URLSearchParams();
+    mockPathname = "/hands";
     vi.useFakeTimers();
   });
 
@@ -62,8 +64,14 @@ describe("Hands overview", () => {
     expect(screen.getByRole("button", { name: "MEP" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Masonry" })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "MEP" }));
-    expect(mockPush).toHaveBeenCalledWith("/hands/trades?q=Electricians");
+    expect(
+      screen.getByRole("button", { name: "View Hands dashboard" }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "View Hands dashboard" }),
+    );
+    expect(mockPush).toHaveBeenCalledWith("/hands/overview");
   });
 
   it("renders the loading skeleton before the operational dashboard", async () => {
@@ -112,7 +120,7 @@ describe("Hands overview", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("opens deployment details from a semantic table row in dashboard view and allows requesting replacement workers", async () => {
+  it("redirects to deployment profile page when clicking an active deployment card in dashboard view", async () => {
     mockSearchParams = new URLSearchParams("view=dashboard");
     render(<HandsOverview />);
     await finishOverviewLoad();
@@ -121,58 +129,7 @@ describe("Hands overview", () => {
       screen.getByLabelText("Open deployment for Nila Residence"),
     );
 
-    expect(
-      screen.getByRole("dialog", { name: "Nila Residence" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Two workers have not checked in. Review today's attendance before confirming the daily record.",
-      ),
-    ).toBeInTheDocument();
-
-    // Verify Today's Activity section
-    expect(screen.getByText("Today's activity")).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "First-floor brick masonry & lintel level preparation",
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Perimeter brick masonry & plumb line verification",
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("Site supervisor log"),
-    ).toBeInTheDocument();
-
-    const requestReplacementBtn = screen.getByRole("button", {
-      name: "Request replacement / extra workers",
-    });
-    expect(requestReplacementBtn).toBeInTheDocument();
-
-    fireEvent.click(requestReplacementBtn);
-
-    // Deployment drawer should be closed and workforce request drawer opened with prefilled fields
-    expect(
-      screen.queryByRole("dialog", { name: "Nila Residence" }),
-    ).not.toBeInTheDocument();
-
-    const workforceDrawer = screen.getByRole("dialog", {
-      name: "Request workforce",
-    });
-    expect(workforceDrawer).toBeInTheDocument();
-
-    // Verify prefilled project, trade and worker count inside the drawer
-    const drawerScope = within(workforceDrawer);
-    const projectSelect = drawerScope.getByLabelText(/Project/i);
-    expect(projectSelect).toHaveValue("proj-001");
-
-    const tradeSelect = drawerScope.getByLabelText(/Trade \/ category/i);
-    expect(tradeSelect).toHaveValue("Masons");
-
-    const countInput = drawerScope.getByLabelText(/Number of workers/i);
-    expect(countInput).toHaveValue(2);
+    expect(mockPush).toHaveBeenCalledWith("/hands/deployments/deployment-nila");
   });
 
   it("renders pending requests in card format on the requests tab and opens request details drawer", async () => {
@@ -182,6 +139,11 @@ describe("Hands overview", () => {
 
     const cardsGrid = screen.getByLabelText("Pending workforce request cards");
     expect(cardsGrid).toBeInTheDocument();
+
+    expect(
+      screen.getByPlaceholderText("Search project or contractor..."),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Request History")).toBeInTheDocument();
 
     // Verify project names and requested workers count on cards
     const gridScope = within(cardsGrid);
@@ -236,5 +198,19 @@ describe("Hands overview", () => {
     expect(
       screen.getByRole("button", { name: "Return to overview" }),
     ).toBeInTheDocument();
+  });
+
+  it("renders the dedicated overview workspace dashboard when on /hands/overview", async () => {
+    mockPathname = "/hands/overview";
+    mockSearchParams = new URLSearchParams();
+
+    render(<HandsOverview />);
+    await finishOverviewLoad();
+
+    expect(
+      screen.getByText("Workers on site today"),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("Active deployments")[0]).toBeInTheDocument();
+    expect(screen.getByText("Upcoming workforce demand")).toBeInTheDocument();
   });
 });

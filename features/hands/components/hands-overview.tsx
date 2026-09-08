@@ -14,6 +14,7 @@ import {
   AlertTriangle,
   ChevronDown,
   ClipboardList,
+  LayoutDashboard,
   Plus,
   RefreshCw,
   ShieldAlert,
@@ -217,14 +218,29 @@ export function HandsOverview() {
 
   const handleTabChange = useCallback(
     (tab: HandsTab) => {
-      const params = serializeHandsTab(
-        tab,
-        new URLSearchParams(searchParams.toString()),
-      );
-      router.push(`${pathname}?${params.toString()}`);
+      const currentPath = pathname || "/hands";
+      const isPartner = currentPath.startsWith("/partner");
+
+      if (tab === "overview") {
+        router.push(isPartner ? "/partner/hands/overview" : "/hands/overview");
+      } else {
+        const params = serializeHandsTab(
+          tab,
+          new URLSearchParams(searchParams.toString()),
+        );
+        const basePath = isPartner ? "/partner/hands" : "/hands";
+        router.push(`${basePath}?${params.toString()}`);
+      }
     },
     [pathname, router, searchParams],
   );
+
+  const isDedicatedOverviewPage =
+    pathname === "/hands/overview" || pathname === "/partner/hands/overview";
+  const isLanding =
+    !isDedicatedOverviewPage &&
+    activeTab === "overview" &&
+    searchParams.get("view") !== "dashboard";
 
   const handleOpenRequest = useCallback(
     (config?: RequestDrawerConfig) => {
@@ -238,6 +254,17 @@ export function HandsOverview() {
     setRequestDrawerOpen(false);
     setRequestDrawerConfig(null);
   }, []);
+
+  const handleSelectDeployment = useCallback(
+    (deployment: Deployment) => {
+      const currentPath = pathname || "/hands";
+      const basePath = currentPath.startsWith("/partner")
+        ? "/partner/hands"
+        : "/hands";
+      router.push(`${basePath}/deployments/${deployment.id}`);
+    },
+    [pathname, router],
+  );
 
   const handleCloseDeployment = useCallback(() => {
     setSelectedDeployment(null);
@@ -312,8 +339,6 @@ export function HandsOverview() {
     router.push(`/hands/trades${queryString ? `?${queryString}` : ""}`);
   };
 
-  const isLanding = activeTab === "overview" && searchParams.get("view") !== "dashboard";
-
   if (isLanding) {
     return (
       <div className={`workspace-container ${styles.handsLandingPage}`}>
@@ -330,17 +355,13 @@ export function HandsOverview() {
           </button>
           <button
             type="button"
-            className={styles.primaryDashboardBtn}
-            onClick={() => {
-              const params = new URLSearchParams(searchParams.toString());
-              params.set("view", "dashboard");
-              router.push(`${pathname}?${params.toString()}`);
-            }}
-            title="Operational Dashboard"
-            aria-label="Open Operational Dashboard"
+            className={styles.handsDashboardPillBtn}
+            onClick={() => handleTabChange("overview")}
+            title="Hands Dashboard"
+            aria-label="View Hands dashboard"
           >
-            <ClipboardList size={15} aria-hidden="true" />
-            <span>Operational Dashboard</span>
+            <LayoutDashboard size={15} aria-hidden="true" />
+            <span>Hands Dashboard</span>
           </button>
         </div>
 
@@ -473,7 +494,7 @@ export function HandsOverview() {
               <HandsOverviewContent
                 data={data}
                 searchQuery={searchQuery}
-                onSelectDeployment={setSelectedDeployment}
+                onSelectDeployment={handleSelectDeployment}
                 onSelectRequest={setSelectedRequest}
                 onNavigateTab={handleTabChange}
                 onRequestWorkforce={() => handleOpenRequest()}
@@ -492,7 +513,7 @@ export function HandsOverview() {
                       d.supervisor.toLowerCase().includes(q)
                     );
                   })}
-                  onSelectDeployment={setSelectedDeployment}
+                  onSelectDeployment={handleSelectDeployment}
                   onNavigateTab={handleTabChange}
                   onRequestWorkforce={() => handleOpenRequest()}
                 />
@@ -651,6 +672,7 @@ function HandsOverviewContent({
           onRequestWorkforce={onRequestWorkforce}
           onSelectRequest={onSelectRequest}
           defaultViewMode="grid"
+          showFilters={false}
         />
       </div>
 

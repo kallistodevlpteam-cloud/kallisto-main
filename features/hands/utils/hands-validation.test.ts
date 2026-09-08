@@ -32,7 +32,7 @@ describe("Workforce request validation", () => {
       trade: "Select a worker trade.",
       workerCount: "Enter a worker count greater than zero.",
       startDate: "Select a start date.",
-      expectedDuration: "Enter the expected duration.",
+      expectedDuration: "Enter the total working days count.",
     });
   });
 
@@ -84,6 +84,16 @@ describe("Workforce request validation", () => {
     expect(errors.workerCount).toBe(
       "Enter a worker count greater than zero.",
     );
+  });
+
+  it("rejects an end date earlier than the start date", () => {
+    const errors = validateWorkforceRequest({
+      ...validRequest,
+      startDate: "2026-08-10",
+      endDate: "2026-08-05",
+    });
+
+    expect(errors.endDate).toBe("End date cannot be earlier than start date.");
   });
 });
 

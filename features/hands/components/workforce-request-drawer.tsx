@@ -49,6 +49,17 @@ const CONTRACTORS = [
   { name: "Heritage Joinery Gang", trade: "Carpentry & Joinery" },
 ] as const;
 
+function calculateDurationText(startStr: string, endStr: string): string {
+  if (!startStr || !endStr) return "";
+  const start = new Date(startStr);
+  const end = new Date(endStr);
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) return "";
+  const diffDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  if (diffDays <= 0) return "";
+  if (diffDays === 1) return "1 working day";
+  return `${diffDays} working days`;
+}
+
 const INITIAL_VALUES: WorkforceRequestDraft = {
   projectId: "",
   siteLocation: "",
@@ -56,6 +67,7 @@ const INITIAL_VALUES: WorkforceRequestDraft = {
   workerCount: "",
   skillLevel: "",
   startDate: "",
+  endDate: "",
   expectedDuration: "",
   shiftTiming: "",
   requiredToolsOrCertifications: "",
@@ -81,6 +93,7 @@ interface WorkforceRequestDrawerProps {
   initialTrade?: WorkerTrade | string;
   initialWorkerCount?: number | string;
   initialStartDate?: string;
+  initialEndDate?: string;
   initialDuration?: string;
   initialProjectId?: string;
   initialValues?: Partial<WorkforceRequestDraft>;
@@ -91,6 +104,7 @@ export function WorkforceRequestDrawer({
   initialTrade,
   initialWorkerCount,
   initialStartDate,
+  initialEndDate,
   initialDuration,
   initialProjectId,
   initialValues,
@@ -108,6 +122,9 @@ export function WorkforceRequestDrawer({
     }
     if (initialStartDate) {
       base.startDate = initialStartDate;
+    }
+    if (initialEndDate) {
+      base.endDate = initialEndDate;
     }
     if (initialDuration) {
       base.expectedDuration = initialDuration;
@@ -142,8 +159,19 @@ export function WorkforceRequestDrawer({
     field: Key,
     value: WorkforceRequestDraft[Key],
   ) {
-    setValues((current) => ({ ...current, [field]: value }));
-    setErrors((current) => ({ ...current, [field]: undefined }));
+    setValues((current) => {
+      const next = { ...current, [field]: value };
+      const sDate = field === "startDate" ? (value as string) : next.startDate;
+      const eDate = field === "endDate" ? (value as string) : next.endDate;
+      if (sDate && eDate) {
+        const autoDuration = calculateDurationText(sDate, eDate);
+        if (autoDuration) {
+          next.expectedDuration = autoDuration;
+        }
+      }
+      return next;
+    });
+    setErrors((current) => ({ ...current, [field]: undefined, endDate: undefined }));
 
     if (submissionState === "error" || submissionState === "success") {
       setSubmissionState("idle");
@@ -666,7 +694,31 @@ export function WorkforceRequestDrawer({
 
               <label className={styles.formField}>
                 <span>
-                  Expected duration <em aria-hidden="true">*</em>
+                  End date <em aria-hidden="true">*</em>
+                </span>
+                <input
+                  type="date"
+                  min={values.startDate || "2026-07-27"}
+                  value={values.endDate || ""}
+                  onChange={(event) =>
+                    updateField("endDate", event.target.value)
+                  }
+                  aria-invalid={Boolean(errors.endDate)}
+                  aria-describedby={
+                    errors.endDate ? "end-date-error" : undefined
+                  }
+                  disabled={isBusy}
+                />
+                {errors.endDate ? (
+                  <small id="end-date-error" className={styles.fieldError}>
+                    {errors.endDate}
+                  </small>
+                ) : null}
+              </label>
+
+              <label className={styles.formField}>
+                <span>
+                  Total working days count <em aria-hidden="true">*</em>
                 </span>
                 <input
                   type="text"
@@ -674,7 +726,7 @@ export function WorkforceRequestDrawer({
                   onChange={(event) =>
                     updateField("expectedDuration", event.target.value)
                   }
-                  placeholder="Example: 2 weeks"
+                  placeholder="Example: 7 working days"
                   aria-invalid={Boolean(errors.expectedDuration)}
                   aria-describedby={
                     errors.expectedDuration ? "duration-error" : undefined

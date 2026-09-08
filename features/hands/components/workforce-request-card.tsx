@@ -85,7 +85,10 @@ export function WorkforceRequestCard({
     request.isMultiTrade ||
       (request.tradesBreakdown && request.tradesBreakdown.length > 1),
   );
-  const trades = request.tradesBreakdown || [];
+  const trades =
+    request.tradesBreakdown && request.tradesBreakdown.length > 0
+      ? request.tradesBreakdown
+      : [{ trade: request.trade, quantity: request.quantity, fulfilled: request.fulfilled }];
 
   const progress = getFulfilmentPercentage(request.fulfilled, request.quantity);
   const rating = request.contractorRating ?? 4.9;
@@ -205,8 +208,8 @@ export function WorkforceRequestCard({
           </div>
         </div>
 
-        {/* Multi-Type Labours Breakdown (When contractor has multiple labour types) */}
-        {isMultiTrade && trades.length > 0 ? (
+        {/* Labour Trades Breakdown */}
+        {trades.length > 0 ? (
           <div
             className={styles.reqMultiTradesBreakdown}
             aria-label="Labour trades breakdown"
