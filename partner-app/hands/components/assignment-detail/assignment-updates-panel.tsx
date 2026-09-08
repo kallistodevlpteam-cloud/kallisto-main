@@ -366,9 +366,6 @@ export function AssignmentUpdatesPanel({
                   <div className={styles.updateAuthorInfo}>
                     <div className={styles.updateAuthorNameRow}>
                       <span style={{ fontWeight: 650 }}>{displayName}</span>
-                      {!isMe && update.authorRole && (
-                        <span className={styles.updateAuthorRole}>• {update.authorRole}</span>
-                      )}
                       <span style={{ fontSize: "11px", color: "#94a3b8", marginLeft: "auto" }}>
                         {update.timestamp}
                       </span>
@@ -432,7 +429,7 @@ export function AssignmentUpdatesPanel({
                                 name={replyDisplayName}
                               />
                               <strong style={{ fontSize: "11px", color: "#0f172a" }}>
-                                {isReplyMe ? "You" : `${reply.authorName} (${reply.authorRole})`}
+                                {isReplyMe ? "You" : reply.authorName}
                               </strong>
                             </div>
                             <span style={{ fontSize: "10px", color: "#94a3b8" }}>

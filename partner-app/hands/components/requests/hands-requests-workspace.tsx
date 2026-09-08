@@ -26,7 +26,7 @@ export function HandsRequestsWorkspace() {
   const tabCounts = useMemo(() => {
     return {
       requests: requests.filter((r) => r.status === "new" || r.status === "reviewing").length,
-      history: requests.filter((r) => r.status === "rejected" || r.status === "closed").length,
+      history: requests.filter((r) => r.status === "rejected").length,
     };
   }, [requests]);
 
@@ -44,7 +44,7 @@ export function HandsRequestsWorkspace() {
           return false;
         }
       } else if (activeTab === "history") {
-        if (req.status !== "rejected" && req.status !== "closed") {
+        if (req.status !== "rejected") {
           return false;
         }
       }

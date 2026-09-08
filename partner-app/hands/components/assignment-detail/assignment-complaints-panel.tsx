@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { 
   CheckCircle2, 
   Clock, 
-  ShieldAlert, 
   Check,
   MessageSquare,
   ChevronDown,
@@ -354,12 +353,7 @@ export function AssignmentComplaintsPanel({
               )}
 
               <footer className={styles.complaintMetaFooter}>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                  <ShieldAlert size={13} color="#64748b" />
-                  <span>
-                    Raised by <strong>{c.raisedBy}</strong> ({c.raisedByRole}) • {c.raisedAt}
-                  </span>
-                </div>
+                <span>{c.raisedAt}</span>
 
                 <div className={styles.complaintActionBtns}>
                   {c.status !== "resolved" && (

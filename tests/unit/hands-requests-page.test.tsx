@@ -105,7 +105,7 @@ describe("Kallisto Hands - Requests Page & Workforce Match Intelligence", () => 
     expect(screen.queryByText("Greenwood Residency")).toBeNull();
   });
 
-  it("switches to History tab and displays rejected and closed requests", () => {
+  it("switches to History tab and displays rejected requests only (no closed requests)", () => {
     render(
       <PartnerAuthProvider>
         <HandsRequestsWorkspace />
@@ -115,10 +115,13 @@ describe("Kallisto Hands - Requests Page & Workforce Match Intelligence", () => 
     const historyTab = screen.getByRole("tab", { name: /History/i });
     fireEvent.click(historyTab);
 
-    // Displays closed request
-    expect(screen.getByText("CyberGateway IT Center")).toBeDefined();
-    // Displays rejected request
+    // Displays rejected requests
     expect(screen.getByText("National Highway Flyover Pier 42")).toBeDefined();
+    expect(screen.getByText("Kochi Metro Phase 2 Extension")).toBeDefined();
+
+    // Closed requests should not be displayed in History
+    expect(screen.queryByText("CyberGateway IT Center")).toBeNull();
+    expect(screen.queryByText("Lulu Twin Tower Fitout")).toBeNull();
 
     // Active requests from Requests tab should not be in History
     expect(screen.queryByText("Greenwood Residency")).toBeNull();

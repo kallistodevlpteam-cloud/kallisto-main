@@ -413,28 +413,7 @@ export const INITIAL_LABOUR_REQUESTS: LabourRequest[] = [
     status: "accepted",
     createdAt: "1w ago",
   },
-  // History: Rejected & Closed Requests
-  {
-    id: "KH-R-1001",
-    projectName: "CyberGateway IT Center",
-    clientName: "CyberGateway Ventures",
-    location: "Kakkanad, Kochi",
-    requirements: [
-      {
-        trade: "Electrician",
-        requiredCount: 6,
-        availableCount: 6,
-        matchingWorkerIds: [],
-      },
-    ],
-    startDate: "Aug 01, 2026",
-    estimatedDuration: "30 Days",
-    workingHours: "8:00 AM – 5:00 PM",
-    urgency: "scheduled",
-    status: "closed",
-    createdAt: "1mo ago",
-    notes: "Successfully completed and transitioned to active assignment KH-A-4011.",
-  },
+  // History: Rejected Requests
   {
     id: "KH-R-1002",
     projectName: "National Highway Flyover Pier 42",
@@ -476,27 +455,6 @@ export const INITIAL_LABOUR_REQUESTS: LabourRequest[] = [
     status: "rejected",
     createdAt: "2mo ago",
     notes: "Declined due to shift schedule conflict.",
-  },
-  {
-    id: "KH-R-1004",
-    projectName: "Lulu Twin Tower Fitout",
-    clientName: "Lulu Real Estate",
-    location: "Edappally, Kochi",
-    requirements: [
-      {
-        trade: "Painter",
-        requiredCount: 5,
-        availableCount: 5,
-        matchingWorkerIds: ["KH-W-1180", "KH-W-1182", "KH-W-1184", "KH-W-1186", "KH-W-1188"],
-      },
-    ],
-    startDate: "May 10, 2026",
-    estimatedDuration: "25 Days",
-    workingHours: "8:30 AM – 5:30 PM",
-    urgency: "normal",
-    status: "closed",
-    createdAt: "3mo ago",
-    notes: "Project completed and final handover signed off.",
   },
 ];
 

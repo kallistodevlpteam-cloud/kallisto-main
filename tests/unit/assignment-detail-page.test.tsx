@@ -70,8 +70,8 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     expect(screen.getByText("Site Complaints & Impediments")).toBeDefined();
     expect(screen.getByText("Cement Mortar Sand Delivery Delay")).toBeDefined();
     expect(screen.getByText("Tower Crane Power Cable Fluctuation")).toBeDefined();
-    expect(screen.getAllByText("High Severity").length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Raised by/i).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/Raised by/i)).toBeNull();
+    expect(screen.getByText(/Today, 08:30 AM/i)).toBeDefined();
 
     // Resolve a complaint
     const resolveBtns = screen.getAllByRole("button", { name: /✓ Mark Resolved/i });
