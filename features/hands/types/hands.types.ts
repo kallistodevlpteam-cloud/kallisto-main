@@ -40,9 +40,42 @@ export interface AttendanceSummary {
 export interface DeploymentActivityTask {
   id: string;
   title: string;
-  status: "completed" | "in-progress" | "pending" | "delayed";
+  status: "completed" | "in-progress" | "pending" | "delayed" | "cancelled" | "scheduled";
   time?: string;
+  date?: string; // e.g. "2026-09-08" (YYYY-MM-DD)
   trade?: string;
+  contractorName?: string;
+  description?: string;
+  boqItemCode?: string; // e.g. "BOQ-04.1"
+  boqItemName?: string; // e.g. "230mm Wire-Cut Brick Masonry in CM 1:6"
+  boqQuantity?: string; // e.g. "450 / 1,200 sq ft"
+  ganttPhaseId?: string; // e.g. "phase-2"
+  ganttPhaseName?: string; // e.g. "Phase 2: Superstructure Masonry & Lintel Level"
+  serviceCategory?: string; // e.g. "Civil & Structural Execution"
+  cancellationReason?: string;
+  cancelledAt?: string;
+  cancelledBy?: string;
+  workersCount?: number;
+}
+
+export interface DeploymentHistoryLogEntry {
+  id: string;
+  date: string;
+  shiftNumber?: string;
+  time: string;
+  author: string;
+  authorRole: string;
+  category:
+    | "Muster & Shift Progress"
+    | "Shift Completion Sign-off"
+    | "Milestone Verification"
+    | "Safety & Logistics"
+    | "Task Event"
+    | "General";
+  content: string;
+  tasksCompleted?: string[];
+  attendanceSummary?: string;
+  dailyRateOrCost?: string;
 }
 
 export interface DeploymentTodayActivity {
@@ -53,11 +86,27 @@ export interface DeploymentTodayActivity {
   loggedAt?: string;
 }
 
+export interface AssignedWorker {
+  id: string;
+  name: string;
+  role: string;
+  trade: string;
+  status: "active" | "on-leave" | "delayed";
+  shiftTiming?: string;
+  checkInTime?: string;
+  taskAssignment?: string;
+  phone?: string;
+  experience?: string;
+}
+
 export interface DeploymentContractor {
   id?: string;
   name: string;
   trade?: string;
   workerCount?: number;
+  activeWorkers?: number;
+  onLeaveWorkers?: number;
+  assignedWorkers?: AssignedWorker[];
   crewId?: string;
   rating?: number;
   reviewCount?: number;

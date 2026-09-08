@@ -16,36 +16,53 @@ import {
 } from "../../types/assignment-domain";
 import styles from "./assignment-detail.module.css";
 
+function getContractorVisual(name: string) {
+  const n = name.toLowerCase();
+  if (n.includes("apex")) return { color: "#ea580c", bgLight: "#fff7ed", border: "#ffedd5" };
+  if (n.includes("malabar")) return { color: "#0d9488", bgLight: "#f0fdfa", border: "#ccfbf1" };
+  if (n.includes("supervis") || n.includes("site super")) return { color: "#4f46e5", bgLight: "#eef2ff", border: "#e0e7ff" };
+  if (n.includes("chroma")) return { color: "#e11d48", bgLight: "#fff1f2", border: "#ffe4e6" };
+  if (n.includes("circuit")) return { color: "#0284c7", bgLight: "#f0f9ff", border: "#e0f2fe" };
+  if (n.includes("forma")) return { color: "#d97706", bgLight: "#fffbeb", border: "#fef3c7" };
+  if (n.includes("heritage")) return { color: "#7c3aed", bgLight: "#f5f3ff", border: "#ede9fe" };
+  return { color: "#334155", bgLight: "#f8fafc", border: "#e2e8f0" };
+}
+
 interface AssignmentAccountsPanelProps {
   assignmentId: string;
   projectName: string;
+  contractorName?: string;
+  contractors?: Array<{ name: string; trade?: string }>;
   clientName?: string;
   supervisorName?: string;
   accounts?: AssignmentAccounts;
+  title?: string;
+  onPayContractor?: () => void;
 }
 
 export function AssignmentAccountsPanel({
   assignmentId,
   projectName,
-  clientName: _clientName = "Client Partner",
-  supervisorName: _supervisorName = "Site Supervisor",
+  contractorName: _contractorName = "Apex Integrated Civil",
+  contractors,
   accounts,
+  title = "Payment & Bill Details",
 }: AssignmentAccountsPanelProps) {
   const acc: AssignmentAccounts = useMemo(
     () =>
       accounts || {
-        totalContractValue: 180000,
+        totalContractValue: 270000,
         dailyBillingRate: 9000,
-        shiftsDelivered: 14,
-        totalShiftsContracted: 20,
-        paidAmount: 126000,
-        pendingAmount: 54000,
+        shiftsDelivered: 12,
+        totalShiftsContracted: 30,
+        paidAmount: 108000,
+        pendingAmount: 162000,
         settlementStatus: "On Track - Weekly Cycle",
-        invoiceNumber: `INV-${assignmentId}-W2`,
+        invoiceNumber: `INV-${assignmentId || "ASG-101"}-W2`,
         nextDisbursementDate: "Sep 15, 2026",
         tradeRates: [
-          { trade: "Electricians", workersCount: 7, ratePerDay: 800, totalPerDay: 5600 },
-          { trade: "Plumbers", workersCount: 5, ratePerDay: 680, totalPerDay: 3400 },
+          { trade: "Masons", workersCount: 8, ratePerDay: 850, totalPerDay: 6800 },
+          { trade: "Helpers", workersCount: 4, ratePerDay: 550, totalPerDay: 2200 },
         ],
       },
     [accounts, assignmentId],
@@ -55,7 +72,6 @@ export function AssignmentAccountsPanel({
     if (acc.transactions && acc.transactions.length > 0) {
       return acc.transactions;
     }
-    const halfPaid = Math.round(acc.paidAmount * 0.5);
     return [
       {
         id: `TXN-${assignmentId}-01`,
@@ -66,7 +82,7 @@ export function AssignmentAccountsPanel({
         paidTo: "Labor Contractor",
         title: "Milestone Deployment Advance",
         description: "Initial mobilization advance paid to labor contractor (Shifts 1–6).",
-        amount: halfPaid,
+        amount: 54000,
         paymentMethod: "NEFT / Bank Transfer",
         status: "settled",
         invoiceRef: `INV-${assignmentId}-W1`,
@@ -80,7 +96,7 @@ export function AssignmentAccountsPanel({
         paidTo: "Labor Contractor",
         title: "Weekly Deployment Settlement - Cycle 1",
         description: "Cycle 1 wage settlement paid to labor contractor for verified deployment shifts.",
-        amount: acc.paidAmount - halfPaid,
+        amount: 54000,
         paymentMethod: "NEFT / Bank Transfer",
         status: "settled",
         invoiceRef: `INV-${assignmentId}-W2`,
@@ -94,7 +110,7 @@ export function AssignmentAccountsPanel({
         paidTo: "Labor Contractor",
         title: "Weekly Deployment Settlement - Cycle 2",
         description: "Pending cycle 2 settlement for active deployment shifts under review.",
-        amount: Math.round(acc.pendingAmount * 0.33),
+        amount: 54000,
         paymentMethod: "NEFT / Bank Transfer",
         status: "processing",
         invoiceRef: `INV-${assignmentId}-W3`,
@@ -108,7 +124,7 @@ export function AssignmentAccountsPanel({
         paidTo: "Labor Contractor",
         title: "Weekly Deployment Settlement - Cycle 3",
         description: "Scheduled cycle 3 settlement for shifts 13 to 18 verified on site.",
-        amount: Math.round(acc.pendingAmount * 0.33),
+        amount: 54000,
         paymentMethod: "NEFT / Bank Transfer",
         status: "pending",
         invoiceRef: `INV-${assignmentId}-W4`,
@@ -122,7 +138,7 @@ export function AssignmentAccountsPanel({
         paidTo: "Labor Contractor",
         title: "Milestone Final Retention Settlement",
         description: "Final retention and project completion handover settlement.",
-        amount: acc.pendingAmount - Math.round(acc.pendingAmount * 0.33) * 2,
+        amount: 54000,
         paymentMethod: "NEFT / Bank Transfer",
         status: "pending",
         invoiceRef: `INV-${assignmentId}-W5`,
@@ -175,11 +191,62 @@ export function AssignmentAccountsPanel({
   const [selectedVoucher, setSelectedVoucher] = useState<AssignmentTransaction | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "settled" | "processing" | "pending">("all");
+  const [selectedContractor, setSelectedContractor] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
+
+  const availableContractors = useMemo(() => {
+    const list: Array<{ name: string; trade?: string }> = [];
+    const seen = new Set<string>();
+
+    if (contractors && contractors.length > 0) {
+      contractors.forEach((c) => {
+        if (c.name && !seen.has(c.name)) {
+          seen.add(c.name);
+          list.push({ name: c.name, trade: c.trade });
+        }
+      });
+    }
+
+    transactions.forEach((t) => {
+      const cName = t.paidTo && t.paidTo !== "Labor Contractor" ? t.paidTo : _contractorName;
+      if (cName && !seen.has(cName)) {
+        seen.add(cName);
+        list.push({ name: cName });
+      }
+    });
+
+    if (list.length === 0 && _contractorName) {
+      list.push({ name: _contractorName });
+    }
+
+    return list;
+  }, [contractors, transactions, _contractorName]);
+
+  const contractorScopedTransactions = useMemo(() => {
+    if (selectedContractor === "all") return transactions;
+    return transactions.filter((t) => {
+      const txnContractor =
+        t.paidTo && t.paidTo !== "Labor Contractor"
+          ? t.paidTo
+          : _contractorName || "Apex Integrated Civil";
+      return txnContractor.toLowerCase() === selectedContractor.toLowerCase();
+    });
+  }, [transactions, selectedContractor, _contractorName]);
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter((t) => {
-      // 1. Status Filter
+      // 1. Contractor Filter
+      if (selectedContractor !== "all") {
+        const txnContractor =
+          t.paidTo && t.paidTo !== "Labor Contractor"
+            ? t.paidTo
+            : _contractorName || "Apex Integrated Civil";
+        if (txnContractor.toLowerCase() !== selectedContractor.toLowerCase()) {
+          return false;
+        }
+      }
+
+      // 2. Status Filter
       if (filterStatus !== "all") {
         if (filterStatus === "settled") {
           if (t.status !== "settled" && t.status !== "paid") return false;
@@ -188,7 +255,7 @@ export function AssignmentAccountsPanel({
         }
       }
 
-      // 2. Search Query Filter
+      // 3. Search Query Filter
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
         const matchTitle = t.title.toLowerCase().includes(q);
@@ -197,14 +264,15 @@ export function AssignmentAccountsPanel({
         const matchId = t.id.toLowerCase().includes(q);
         const matchDate = t.date.toLowerCase().includes(q);
         const matchAmount = t.amount.toString().includes(q);
-        if (!matchTitle && !matchDesc && !matchRef && !matchId && !matchDate && !matchAmount) {
+        const matchContractor = (t.paidTo || _contractorName || "").toLowerCase().includes(q);
+        if (!matchTitle && !matchDesc && !matchRef && !matchId && !matchDate && !matchAmount && !matchContractor) {
           return false;
         }
       }
 
       return true;
     });
-  }, [transactions, filterStatus, searchQuery]);
+  }, [transactions, selectedContractor, filterStatus, searchQuery, _contractorName]);
 
   const itemsPerPage = 5;
   const totalPages = Math.max(1, Math.ceil(filteredTransactions.length / itemsPerPage));
@@ -261,10 +329,10 @@ export function AssignmentAccountsPanel({
   };
 
   const settledTotal = useMemo(() => {
-    return transactions
+    return (selectedContractor === "all" ? transactions : contractorScopedTransactions)
       .filter((t) => t.status === "settled" || t.status === "paid")
       .reduce((sum, t) => sum + t.amount, 0);
-  }, [transactions]);
+  }, [transactions, selectedContractor, contractorScopedTransactions]);
 
   const getStatusBadge = (status: TransactionStatus) => {
     switch (status) {
@@ -446,8 +514,8 @@ export function AssignmentAccountsPanel({
       >
         <div className={styles.transactionsHeader} style={{ alignItems: "center" }}>
           <div>
-            <h3 className={styles.transactionsTitle}>
-              Transaction Details
+            <h3 className={styles.transactionsTitle} data-testid="payment-bill-title">
+              {title}
             </h3>
             <p className={styles.transactionsSubtitle}>
               Disbursement records and cycle settlements for labor contractor on {projectName}
@@ -457,7 +525,7 @@ export function AssignmentAccountsPanel({
           <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
             <div style={{ textAlign: "right", whiteSpace: "nowrap" }}>
               <span style={{ fontSize: "11px", color: "#64748b", display: "block", fontWeight: 600 }}>
-                Total Settled to Date
+                {selectedContractor !== "all" ? `Settled (${selectedContractor})` : "Total Settled to Date"}
               </span>
               <span style={{ fontSize: "17px", fontWeight: 800, color: "#0f172a" }}>
                 {formatCurrency(settledTotal)}
@@ -466,6 +534,62 @@ export function AssignmentAccountsPanel({
           </div>
         </div>
 
+        {/* Contractor Filter Row (when multiple contractors exist) */}
+        {availableContractors.length > 1 && (
+          <div className={styles.contractorFilterRow}>
+            <span className={styles.contractorFilterLabel}>Filter by Labour Contractor:</span>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedContractor("all");
+                setCurrentPage(1);
+              }}
+              className={`${styles.contractorFilterChip} ${
+                selectedContractor === "all" ? styles.contractorFilterChipActive : ""
+              }`}
+              aria-pressed={selectedContractor === "all"}
+            >
+              <span>All Contractors</span>
+              <span className={styles.contractorFilterChipCount}>{transactions.length}</span>
+            </button>
+            {availableContractors.map((c) => {
+              const cName = c.name;
+              const count = transactions.filter((t) => {
+                const txnContractor =
+                  t.paidTo && t.paidTo !== "Labor Contractor"
+                    ? t.paidTo
+                    : _contractorName || "Apex Integrated Civil";
+                return txnContractor.toLowerCase() === cName.toLowerCase();
+              }).length;
+              const isActive = selectedContractor.toLowerCase() === cName.toLowerCase();
+              const visual = getContractorVisual(cName);
+
+              return (
+                <button
+                  key={cName}
+                  type="button"
+                  onClick={() => {
+                    setSelectedContractor(cName);
+                    setCurrentPage(1);
+                  }}
+                  className={`${styles.contractorFilterChip} ${
+                    isActive ? styles.contractorFilterChipActive : ""
+                  }`}
+                  aria-pressed={isActive}
+                >
+                  <span
+                    className={styles.contractorDot}
+                    style={{ backgroundColor: isActive ? "#ffffff" : visual.color }}
+                    aria-hidden="true"
+                  />
+                  <span>{cName}</span>
+                  <span className={styles.contractorFilterChipCount}>{count}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {/* Search & Filter Toolbar */}
         <div className={styles.txnToolbarRow}>
           {/* Left Side: Filter Pills */}
@@ -473,8 +597,8 @@ export function AssignmentAccountsPanel({
             {(["all", "settled", "processing", "pending"] as const).map((st) => {
               const count =
                 st === "all"
-                  ? transactions.length
-                  : transactions.filter((t) =>
+                  ? contractorScopedTransactions.length
+                  : contractorScopedTransactions.filter((t) =>
                       st === "settled"
                         ? t.status === "settled" || t.status === "paid"
                         : t.status === st
@@ -558,13 +682,14 @@ export function AssignmentAccountsPanel({
               No matching transactions found
             </p>
             <p style={{ margin: "4px 0 12px 0", fontSize: "12px" }}>
-              No transactions match &ldquo;{searchQuery || filterStatus}&rdquo;. Try clearing filters.
+              No transactions match &ldquo;{searchQuery || (selectedContractor !== "all" ? selectedContractor : filterStatus)}&rdquo;. Try clearing filters.
             </p>
             <button
               type="button"
               onClick={() => {
                 setSearchQuery("");
                 setFilterStatus("all");
+                setSelectedContractor("all");
                 setCurrentPage(1);
               }}
               style={{
@@ -586,8 +711,8 @@ export function AssignmentAccountsPanel({
             <table className={styles.ratesTable}>
               <thead>
                 <tr>
-                  <th>Date & Transaction ID</th>
-                  <th>Settlement Scope</th>
+                  <th>Date &amp; Payment / Bill ID</th>
+                  <th>Labour Contractor &amp; Activity</th>
                   <th style={{ textAlign: "right" }}>Amount</th>
                   <th style={{ textAlign: "center" }}>Status</th>
                   <th style={{ textAlign: "center" }}>Receipt</th>
@@ -597,6 +722,11 @@ export function AssignmentAccountsPanel({
                 {paginatedTransactions.map((t, idx) => {
                   const isLast = idx === paginatedTransactions.length - 1;
                   const cellBorder = isLast ? { borderBottom: "none" } : undefined;
+                  const displayContractor =
+                    t.paidTo && t.paidTo !== "Labor Contractor"
+                      ? t.paidTo
+                      : _contractorName || "Apex Integrated Civil";
+
                   return (
                     <tr key={t.id}>
                       <td style={cellBorder}>
@@ -617,10 +747,27 @@ export function AssignmentAccountsPanel({
                         </div>
                       </td>
                       <td style={cellBorder}>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "2px", maxWidth: "460px" }}>
-                          <span style={{ fontWeight: 700, fontSize: "13px", color: "#0f172a" }}>
-                            {t.title}
-                          </span>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "3px", maxWidth: "460px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                            <span style={{ fontWeight: 700, fontSize: "13px", color: "#0f172a" }}>
+                              {displayContractor}
+                            </span>
+                            {t.title && t.title !== displayContractor && (
+                              <span
+                                style={{
+                                  fontSize: "11px",
+                                  fontWeight: 600,
+                                  padding: "1px 6px",
+                                  borderRadius: "4px",
+                                  backgroundColor: "#f1f5f9",
+                                  color: "#475569",
+                                  border: "1px solid #e2e8f0",
+                                }}
+                              >
+                                {t.title}
+                              </span>
+                            )}
+                          </div>
                           <span style={{ fontSize: "11.5px", color: "#64748b", lineHeight: 1.35 }}>
                             {t.description}
                           </span>

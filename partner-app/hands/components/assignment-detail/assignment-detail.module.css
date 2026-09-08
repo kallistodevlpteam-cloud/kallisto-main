@@ -2322,3 +2322,84 @@
 .submitBtn:hover {
   background-color: #1e293b;
 }
+
+/* ── Contractor Filter for Payment & Bill Details ── */
+.contractorFilterRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+}
+
+.contractorFilterLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-right: 4px;
+}
+
+.contractorFilterChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.contractorFilterChip:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.contractorFilterChipActive {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+  border-color: #0284c7 !important;
+}
+
+.contractorFilterChipActive:hover {
+  background: #0369a1 !important;
+  color: #ffffff !important;
+}
+
+.contractorFilterChipCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 15px;
+  padding: 0 4px;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.07);
+}
+
+.contractorFilterChipActive .contractorFilterChipCount {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.contractorDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+

@@ -47,7 +47,7 @@ export function PartnerOdinPanel({ isOpen, onClose }: PartnerOdinPanelProps) {
     if (!text || isThinking) return;
 
     const userMsg: Message = {
-      id: `usr-${Date.now()}`,
+      id: `usr-${messages.length + 1}-${text.length}`,
       sender: "user",
       text,
       timestamp: "Just now",
