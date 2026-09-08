@@ -10,6 +10,7 @@ import { OdinDeploymentBrief } from "./odin-deployment-brief";
 import { AssignmentUpdatesPanel } from "./assignment-updates-panel";
 import { AssignmentComplaintsPanel } from "./assignment-complaints-panel";
 import { AssignmentAccountsPanel } from "./assignment-accounts-panel";
+import { AssignmentActivitiesPanel } from "./assignment-activities-panel";
 import styles from "./assignment-detail.module.css";
 
 interface AssignmentDetailPageProps {
@@ -17,7 +18,7 @@ interface AssignmentDetailPageProps {
 }
 
 export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) {
-  const [activeTab, setActiveTab] = useState<"overview" | "complaints" | "accounts">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "complaints" | "accounts" | "activities">("overview");
   const [workerSearch, setWorkerSearch] = useState("");
 
   const isCompleted = assignment.status === "completed";
@@ -117,6 +118,19 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
               className={`${styles.tabBtn} ${activeTab === "overview" ? styles.tabBtnActive : ""}`}
             >
               <span>Overview</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab("activities")}
+              className={`${styles.tabBtn} ${activeTab === "activities" ? styles.tabBtnActive : ""}`}
+            >
+              <span>Activities</span>
+              {(assignment.activities?.length || 0) > 0 && (
+                <span className={styles.tabPillCount}>
+                  {assignment.activities?.length}
+                </span>
+              )}
             </button>
 
             <button
@@ -382,7 +396,17 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
             </div>
           )}
 
-          {/* Tab 2: Complaints */}
+          {/* Tab 2: Activities */}
+          {activeTab === "activities" && (
+            <AssignmentActivitiesPanel
+              assignmentId={assignment.id}
+              projectName={assignment.projectName}
+              supervisorName={assignment.supervisor.name}
+              assignment={assignment}
+            />
+          )}
+
+          {/* Tab 3: Complaints */}
           {activeTab === "complaints" && (
             <AssignmentComplaintsPanel
               assignmentId={assignment.id}
@@ -392,7 +416,7 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
             />
           )}
 
-          {/* Tab 3: Accounts */}
+          {/* Tab 4: Accounts */}
           {activeTab === "accounts" && (
             <AssignmentAccountsPanel
               assignmentId={assignment.id}
@@ -408,6 +432,7 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
         <AssignmentUpdatesPanel
           assignmentId={assignment.id}
           supervisorName={assignment.supervisor.name}
+          contractorName="Apex Integrated Civil"
           initialUpdates={assignment.updates}
         />
       </div>

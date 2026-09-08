@@ -1,6 +1,6 @@
 import React from "react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { render, screen, fireEvent, cleanup, within } from "@testing-library/react";
 import { AssignmentDetailPage } from "@/partner-app/hands/components/assignment-detail/assignment-detail-page";
 import { getAssignmentById } from "@/partner-app/hands/mock/assignments-mock-data";
 
@@ -61,7 +61,7 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     expect(screen.queryByText("Biju K")).toBeNull();
   });
 
-  it("switches to Site Complaints tab, displays supervisor complaints, and handles status resolution", () => {
+  it("switches to Site Complaints tab, displays supervisor and provider complaints, and handles status resolution and filtering", () => {
     render(<AssignmentDetailPage assignment={assignment} />);
 
     const complaintsTab = screen.getByRole("button", { name: /Site Complaints/i });
@@ -70,8 +70,29 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     expect(screen.getByText("Site Complaints & Impediments")).toBeDefined();
     expect(screen.getByText("Cement Mortar Sand Delivery Delay")).toBeDefined();
     expect(screen.getByText("Tower Crane Power Cable Fluctuation")).toBeDefined();
-    expect(screen.queryByText(/Raised by/i)).toBeNull();
+    expect(screen.getAllByText(/Raised by/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Site Supervisor/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Provider/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Today, 08:30 AM/i)).toBeDefined();
+
+    // Filter by Provider
+    const providerFilterBtn = screen.getByRole("button", { name: /^Provider$/i });
+    fireEvent.click(providerFilterBtn);
+    expect(screen.getByText("Tower Crane Power Cable Fluctuation")).toBeDefined();
+    expect(screen.queryByText("Cement Mortar Sand Delivery Delay")).toBeNull();
+
+    // Filter by Site Supervisor
+    const supervisorFilterBtn = screen.getByRole("button", { name: /^Site Supervisor$/i });
+    fireEvent.click(supervisorFilterBtn);
+    expect(screen.getByText("Cement Mortar Sand Delivery Delay")).toBeDefined();
+    expect(screen.queryByText("Tower Crane Power Cable Fluctuation")).toBeNull();
+
+    // Reset filter to All
+    const raisedByContainer = screen.getByText("Raised By:").parentElement!;
+    const allRaiserBtn = within(raisedByContainer).getByRole("button", { name: /^All$/i });
+    fireEvent.click(allRaiserBtn);
+    expect(screen.getByText("Cement Mortar Sand Delivery Delay")).toBeDefined();
+    expect(screen.getByText("Tower Crane Power Cable Fluctuation")).toBeDefined();
 
     // Resolve a complaint
     const resolveBtns = screen.getAllByRole("button", { name: /✓ Mark Resolved/i });
@@ -227,14 +248,23 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     const sendBtn = screen.getByRole("button", { name: /Send update/i });
     fireEvent.click(sendBtn);
 
-    // Verify new message appears in the updates feed
-    expect(screen.getByText("Inspection team arriving at 2:00 PM today.")).toBeDefined();
+    // Verify roles displayed near author names
+    expect(screen.getAllByText(/· Site Supervisor/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/· Provider/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/· Contractor/i).length).toBeGreaterThan(0);
+
+    // Verify Provider update is present in feed
+    expect(screen.getAllByText("Greenwood Infra Projects Ltd").length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText(/Site inspection and lintel beam alignment check/i)).toBeDefined();
+
+    // Verify Contractor name is rendered instead of generic 'You'
+    expect(screen.getAllByText("Apex Integrated Civil").length).toBeGreaterThan(0);
 
     // Verify inline reply composer opens with light border, transparent background, and black reply button
     const replyBtns = screen.getAllByRole("button", { name: /Reply/i });
     fireEvent.click(replyBtns[0]);
 
-    const inlineReplyInput = screen.getByPlaceholderText(/Reply to (You|Suresh Nair)\.\.\./i);
+    const inlineReplyInput = screen.getByPlaceholderText(/Reply to (You|Suresh Nair|Apex Integrated Civil)\.\.\./i);
     expect(inlineReplyInput).toBeDefined();
     expect(inlineReplyInput.style.backgroundColor).toBe("transparent");
     expect(inlineReplyInput.style.borderColor).toBe("rgb(226, 232, 240)");
@@ -308,6 +338,190 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
 
     // Resolution log remains removed even when resolved
     expect(screen.queryByText(/Resolution Log:/i)).toBeNull();
+  });
+
+  it("renders Activities tab before Accounts & Billing with activity count badge", () => {
+    render(<AssignmentDetailPage assignment={assignment} />);
+
+    const activitiesTab = screen.getByRole("button", { name: /Activities/i });
+    const accountsTab = screen.getByRole("button", { name: /Accounts & Billing/i });
+    expect(activitiesTab).toBeDefined();
+    expect(accountsTab).toBeDefined();
+
+    // Verify Activities button precedes Accounts & Billing button in the DOM order
+    expect(activitiesTab.compareDocumentPosition(accountsTab)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+
+    // Verify count badge shows the count of activities (13 for ASG-101)
+    expect(screen.getByText("13")).toBeDefined();
+  });
+
+  it("switches to Activities tab and renders site activities calendar with exact deployment design", () => {
+    render(<AssignmentDetailPage assignment={assignment} />);
+
+    const activitiesTab = screen.getByRole("button", { name: /Activities/i });
+    fireEvent.click(activitiesTab);
+
+    expect(screen.getByText("Site Activities & Task Calendar")).toBeDefined();
+    expect(screen.getByText(/● Live Execution Schedule/i)).toBeDefined();
+    expect(screen.getByText(/Labour tasks mapped to BOQ line items and Gantt milestones for Greenwood Residency/i)).toBeDefined();
+    expect(screen.getByText("September 2026")).toBeDefined();
+    expect(screen.getByText("Mon")).toBeDefined();
+    expect(screen.getByText("Sun")).toBeDefined();
+
+    // Contractor filter pills and contractor badges on task cards are removed from partner view
+    expect(screen.queryByText(/Filter by Contractor:/i)).toBeNull();
+    expect(screen.queryByRole("button", { name: /^All Contractors$/i })).toBeNull();
+    expect(screen.queryByTitle(/Assigned to Apex Integrated Civil/i)).toBeNull();
+
+    // Event chips in calendar columns have text color mapped to task status
+    const inProgressChip = screen.getByTitle("Perimeter brick masonry & plumb line verification (in-progress)");
+    expect(inProgressChip).toBeDefined();
+    expect(inProgressChip.style.color).toBe("rgb(194, 65, 12)"); // #c2410c for in-progress
+
+    const scheduledChip = screen.getByTitle("Lintel shuttering fabrication & heavy prop erection (scheduled)");
+    expect(scheduledChip).toBeDefined();
+    expect(scheduledChip.style.color).toBe("rgb(2, 132, 199)"); // #0284c7 for scheduled
+
+    const completedChip = screen.getByTitle("Ground floor column curing & surface finish verification (completed)");
+    expect(completedChip).toBeDefined();
+    expect(completedChip.style.color).toBe("rgb(21, 128, 61)"); // #15803d for completed
+
+    // Default selected date is today (Sep 8), displaying today's tasks
+    expect(screen.getByText(/Tuesday, Sep 8, 2026/i)).toBeDefined();
+    expect(screen.getAllByText("Perimeter brick masonry & plumb line verification").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Scaffolding staging adjustment & masonry working platform").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Lintel rebar placement check with site engineer").length).toBeGreaterThan(0);
+  });
+
+  it("updates activities list when clicking on date column in calendar (e.g. Sep 9)", () => {
+    render(<AssignmentDetailPage assignment={assignment} />);
+
+    const activitiesTab = screen.getByRole("button", { name: /Activities/i });
+    fireEvent.click(activitiesTab);
+
+    // Click on date cell for 2026-09-09
+    const sep9Cell = screen.getByText(/^9$/).closest('[role="button"]');
+    expect(sep9Cell).toBeDefined();
+    if (sep9Cell) fireEvent.click(sep9Cell);
+
+    // Header updates to Wednesday, Sep 9, 2026
+    expect(screen.getByText(/Wednesday, Sep 9, 2026/i)).toBeDefined();
+    expect(screen.getByText(/2 tasks scheduled for this date/i)).toBeDefined();
+
+    // Shows Sep 9 pure labour execution tasks
+    expect(screen.getAllByText("Lintel shuttering fabrication & heavy prop erection").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Lintel beam concrete casting, vibrator compaction & leveling").length).toBeGreaterThan(0);
+    expect(screen.getByText("BOQ-06.2:")).toBeDefined();
+    expect(screen.getAllByText(/38 lin m/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Phase 2: Superstructure Masonry & Lintel Level/i).length).toBeGreaterThan(0);
+
+    // Verify Update Task and Cancel Task buttons are present
+    expect(screen.getAllByRole("button", { name: /Update Task/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("button", { name: /Cancel Task/i }).length).toBeGreaterThan(0);
+  });
+
+  it("filters activities by status dropdown selector", () => {
+    render(<AssignmentDetailPage assignment={assignment} />);
+
+    const activitiesTab = screen.getByRole("button", { name: /Activities/i });
+    fireEvent.click(activitiesTab);
+
+    // Contractor filter is not rendered in partner assignment
+    expect(screen.queryByText(/Filter by Contractor:/i)).toBeNull();
+
+    // Filter by Status: in-progress
+    const statusSelect = screen.getByRole("combobox", { name: /Filter by Status/i });
+    fireEvent.change(statusSelect, { target: { value: "in-progress" } });
+
+    // In-progress task is displayed
+    expect(screen.getAllByText("Perimeter brick masonry & plumb line verification").length).toBeGreaterThan(0);
+    // Pending task is filtered out
+    expect(screen.queryByText("Lintel rebar placement check with site engineer")).toBeNull();
+
+    // Reset back to all
+    fireEvent.change(statusSelect, { target: { value: "all" } });
+    expect(screen.getAllByText("Perimeter brick masonry & plumb line verification").length).toBeGreaterThan(0);
+  });
+
+  it("opens Add Task modal without contractor dropdown, pre-fills selected date, and schedules new task in that column", () => {
+    render(<AssignmentDetailPage assignment={assignment} />);
+
+    const activitiesTab = screen.getByRole("button", { name: /Activities/i });
+    fireEvent.click(activitiesTab);
+
+    // Select date column 9 (Wednesday, Sep 9, 2026)
+    const sep9Cell = screen.getByText(/^9$/).closest('[role="button"]');
+    expect(sep9Cell).toBeDefined();
+    if (sep9Cell) fireEvent.click(sep9Cell);
+
+    // Click "Schedule Task for this Date" button
+    const addBtn = screen.getByRole("button", { name: /Schedule Task for this Date/i });
+    fireEvent.click(addBtn);
+
+    // Add Task modal opens
+    const modal = screen.getByRole("dialog");
+    expect(within(modal).getByText("Add Site Execution Task")).toBeDefined();
+
+    // Verify "Assigned Labour Contractor" dropdown is completely removed for partner view
+    expect(within(modal).queryByLabelText(/Assigned Labour Contractor/i)).toBeNull();
+
+    // Verify Scheduled Date field is present and pre-filled with 2026-09-09
+    const dateInput = within(modal).getByLabelText(/Scheduled Date/i) as HTMLInputElement;
+    expect(dateInput).toBeDefined();
+    expect(dateInput.value).toBe("2026-09-09");
+
+    // Fill out task title
+    const titleInput = within(modal).getByLabelText(/Task Title/i);
+    fireEvent.change(titleInput, { target: { value: "Lintel Band Rebar Inspection & Compaction" } });
+
+    // Submit form
+    const submitBtn = within(modal).getByRole("button", { name: /^Add Task$/ });
+    fireEvent.click(submitBtn);
+
+    // Modal closes
+    expect(screen.queryByText("Add Site Execution Task")).toBeNull();
+
+    // Verify task is immediately displayed in that column schedule
+    expect(screen.getAllByText("Lintel Band Rebar Inspection & Compaction").length).toBeGreaterThan(0);
+    expect(screen.getByText(/3 tasks scheduled for this date/i)).toBeDefined();
+  });
+
+  it("directly opens add task overlay when clicking empty calendar column and does not display as selected", () => {
+    render(<AssignmentDetailPage assignment={assignment} />);
+
+    const activitiesTab = screen.getByRole("button", { name: /Activities/i });
+    fireEvent.click(activitiesTab);
+
+    // Find the cell for Sep 12 (an empty column with 0 tasks)
+    const sep12Cell = screen.getByText(/^12$/).closest('[role="button"]') as HTMLElement;
+    expect(sep12Cell).toBeDefined();
+    expect(sep12Cell.getAttribute("data-selected")).toBe("false");
+
+    // Clicking directly on the empty column opens the overlay directly
+    fireEvent.click(sep12Cell);
+
+    // Overlay is open
+    const modal = screen.getByRole("dialog");
+    expect(within(modal).getByText("Add Site Execution Task")).toBeDefined();
+
+    // Verify empty cell does NOT display as selected
+    expect(sep12Cell.getAttribute("data-selected")).toBe("false");
+
+    // The modal pre-fills with Sep 12
+    const dateInput = within(modal).getByLabelText(/Scheduled Date/i) as HTMLInputElement;
+    expect(dateInput.value).toBe("2026-09-12");
+
+    // Close modal
+    const closeBtn = within(modal).getByRole("button", { name: /Close add task modal/i });
+    fireEvent.click(closeBtn);
+    expect(screen.queryByText("Add Site Execution Task")).toBeNull();
+
+    // Verify empty cell renders centered + icon button with outline styling and without black fill
+    const plusBtn = within(sep12Cell).getByRole("button", { name: /Add task for 2026-09-12/i });
+    expect(plusBtn).toBeDefined();
+    expect(plusBtn.className).toContain("partner-cell-add-btn");
+    expect(plusBtn.style.backgroundColor).toBe("rgb(255, 255, 255)");
+    expect(plusBtn.style.color).toBe("rgb(71, 85, 105)");
   });
 });
 

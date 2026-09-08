@@ -10,26 +10,34 @@ import {
   Clock,
   CalendarClock,
   FileText,
+  Calendar,
+  Layers,
+  BarChart3,
 } from "lucide-react";
 import type { DeploymentActivityTask } from "../types/hands.types";
+import { NILA_BOQ_ITEMS, NILA_GANTT_PHASES } from "../utils/deployment-boq-gantt-data";
 
-interface AddTaskModalProps {
+export interface AddTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   projectName: string;
   supervisorName?: string;
   contractors?: Array<{ name: string; trade?: string }>;
   onAddTask: (task: DeploymentActivityTask) => void;
+  initialDate?: string;
+  variant?: "default" | "partner";
+  hideContractorSelect?: boolean;
 }
 
 const COMMON_TRADES = [
   "Masons",
   "Helpers",
+  "Carpenters & Shuttering",
+  "Steel Fixers & Rebar",
+  "Plasterers",
   "Electricians",
-  "Carpenters",
-  "Painters",
   "Plumbers",
-  "Steel Fixers",
+  "Painters",
   "Site Supervisor",
   "General Civil Crew",
 ];
@@ -47,19 +55,38 @@ export function AddTaskModal({
   supervisorName = "Site Supervisor",
   contractors,
   onAddTask,
+  initialDate,
+  variant = "default",
+  hideContractorSelect = false,
 }: AddTaskModalProps) {
+  const isPartner = variant === "partner";
+  const shouldHideContractor = hideContractorSelect || isPartner;
+
+  const [date, setDate] = useState<string>(initialDate || "2026-09-08");
   const [title, setTitle] = useState("");
-  const [contractorName, setContractorName] = useState<string>(contractors?.[0]?.name || "");
+  const [contractorName, setContractorName] = useState<string>(
+    contractors?.[0]?.name || "Apex Integrated Civil"
+  );
   const [trade, setTrade] = useState("Masons");
   const [customTrade, setCustomTrade] = useState("");
   const [time, setTime] = useState("8:00 AM – 1:30 PM");
+  const [boqItemCode, setBoqItemCode] = useState("BOQ-04.1");
+  const [ganttPhaseId, setGanttPhaseId] = useState("phase-2");
   const [status, setStatus] = useState<"scheduled" | "in-progress" | "completed">("scheduled");
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
 
+  const [prevInitialDate, setPrevInitialDate] = useState(initialDate);
+  if (initialDate !== prevInitialDate) {
+    setPrevInitialDate(initialDate);
+    if (initialDate) {
+      setDate(initialDate);
+    }
+  }
+
   if (!isOpen) return null;
 
-  const hasMultipleContractors = contractors && contractors.length > 1;
+  const hasMultipleContractors = Boolean(contractors && contractors.length > 1);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,15 +96,30 @@ export function AddTaskModal({
     }
 
     const assignedTrade = trade === "Other" ? customTrade.trim() || "Site Workforce" : trade;
+    const effectiveContractor = shouldHideContractor
+      ? contractors?.[0]?.name || "Apex Integrated Civil"
+      : hasMultipleContractors
+        ? contractorName || undefined
+        : undefined;
+
+    const selectedBoq = NILA_BOQ_ITEMS.find((b) => b.code === boqItemCode) || NILA_BOQ_ITEMS[0];
+    const selectedGantt = NILA_GANTT_PHASES.find((g) => g.id === ganttPhaseId) || NILA_GANTT_PHASES[1];
 
     const newTask: DeploymentActivityTask = {
       id: `task-${Date.now()}`,
       title: title.trim(),
-      status: status === "scheduled" ? "pending" : status,
-      time: time.trim() || "Full Shift",
+      date: date || initialDate || "2026-09-08",
+      status: status === "scheduled" ? "scheduled" : status,
+      time: time.trim() || "8:00 AM – 1:30 PM",
       trade: assignedTrade,
-      contractorName: hasMultipleContractors ? contractorName || undefined : undefined,
+      contractorName: effectiveContractor,
       description: description.trim() || undefined,
+      boqItemCode: selectedBoq.code,
+      boqItemName: selectedBoq.name,
+      boqQuantity: selectedBoq.unitScope,
+      ganttPhaseId: selectedGantt.id,
+      ganttPhaseName: selectedGantt.name,
+      serviceCategory: selectedBoq.serviceCategory,
     };
 
     onAddTask(newTask);
@@ -223,7 +265,7 @@ export function AddTaskModal({
               id="task-title"
               type="text"
               required
-              placeholder="e.g. Scaffolding perimeter safety check & plumb line"
+              placeholder="e.g. 230mm block masonry laying & plumb line verification"
               value={title}
               onChange={(e) => {
                 setTitle(e.target.value);
@@ -243,8 +285,100 @@ export function AddTaskModal({
             />
           </div>
 
-          {/* Row 2: Contractor & Trade Side-by-Side (when multiple contractors exist) */}
-          {hasMultipleContractors ? (
+          {/* Row 2: Scheduled Date / Contractor & Trade */}
+          {shouldHideContractor ? (
+            /* Partner View: Contractor is removed; Scheduled Date and Trade are side-by-side */
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "12px",
+                marginBottom: "16px",
+              }}
+            >
+              <div>
+                <label
+                  htmlFor="task-date"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "5px",
+                    fontSize: "12px",
+                    fontWeight: 650,
+                    color: "#334155",
+                    marginBottom: "6px",
+                  }}
+                >
+                  <Calendar size={12} style={{ color: "#64748b" }} />
+                  <span>Scheduled Date</span>
+                </label>
+                <input
+                  id="task-date"
+                  type="date"
+                  required
+                  value={date}
+                  min="2026-09-01"
+                  max="2026-10-31"
+                  onChange={(e) => setDate(e.target.value)}
+                  style={{
+                    width: "100%",
+                    height: "38px",
+                    padding: "0 10px",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                    fontSize: "12.5px",
+                    color: "#0f172a",
+                    backgroundColor: "#ffffff",
+                    outline: "none",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="task-trade"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "5px",
+                    fontSize: "12px",
+                    fontWeight: 650,
+                    color: "#334155",
+                    marginBottom: "6px",
+                  }}
+                >
+                  <Users size={12} style={{ color: "#64748b" }} />
+                  <span>Assigned Trade / Crew</span>
+                </label>
+                <select
+                  id="task-trade"
+                  value={trade}
+                  onChange={(e) => setTrade(e.target.value)}
+                  style={{
+                    width: "100%",
+                    height: "38px",
+                    padding: "0 10px",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                    fontSize: "12.5px",
+                    color: "#0f172a",
+                    backgroundColor: "#ffffff",
+                    outline: "none",
+                    boxSizing: "border-box",
+                  }}
+                >
+                  {COMMON_TRADES.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                  <option value="Other">Other / Custom...</option>
+                </select>
+              </div>
+            </div>
+          ) : hasMultipleContractors ? (
+            /* Provider Multi-Contractor View: Assigned Contractor and Trade side-by-side */
             <div
               style={{
                 display: "grid",
@@ -286,7 +420,7 @@ export function AddTaskModal({
                     boxSizing: "border-box",
                   }}
                 >
-                  {contractors.map((c) => (
+                  {contractors?.map((c) => (
                     <option key={c.name} value={c.name}>
                       {c.name} {c.trade ? `(${c.trade})` : ""}
                     </option>
@@ -338,6 +472,7 @@ export function AddTaskModal({
               </div>
             </div>
           ) : (
+            /* Single Contractor View: Trade & Scheduled Date */
             <div
               style={{
                 display: "grid",
@@ -390,7 +525,7 @@ export function AddTaskModal({
 
               <div>
                 <label
-                  htmlFor="task-time"
+                  htmlFor="task-date"
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -401,23 +536,26 @@ export function AddTaskModal({
                     marginBottom: "6px",
                   }}
                 >
-                  <Clock size={12} style={{ color: "#64748b" }} />
-                  <span>Shift Time Window</span>
+                  <Calendar size={12} style={{ color: "#64748b" }} />
+                  <span>Scheduled Date</span>
                 </label>
                 <input
-                  id="task-time"
-                  type="text"
-                  placeholder="e.g. 8:00 AM – 1:30 PM"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
+                  id="task-date"
+                  type="date"
+                  required
+                  value={date}
+                  min="2026-09-01"
+                  max="2026-10-31"
+                  onChange={(e) => setDate(e.target.value)}
                   style={{
                     width: "100%",
                     height: "38px",
-                    padding: "0 12px",
+                    padding: "0 10px",
                     borderRadius: "8px",
                     border: "1px solid #cbd5e1",
                     fontSize: "12.5px",
                     color: "#0f172a",
+                    backgroundColor: "#ffffff",
                     outline: "none",
                     boxSizing: "border-box",
                   }}
@@ -461,86 +599,168 @@ export function AddTaskModal({
             </div>
           )}
 
-          {/* Row 3: Shift Time Window (with quick preset chips when multiple contractors exist) */}
-          {hasMultipleContractors && (
-            <div style={{ marginBottom: "16px" }}>
-              <div
+          {/* Row 3: Shift Time Window */}
+          <div style={{ marginBottom: "16px" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: "6px",
+              }}
+            >
+              <label
+                htmlFor="task-time"
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "space-between",
-                  marginBottom: "6px",
+                  gap: "5px",
+                  fontSize: "12px",
+                  fontWeight: 650,
+                  color: "#334155",
                 }}
               >
-                <label
-                  htmlFor="task-time"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "5px",
-                    fontSize: "12px",
-                    fontWeight: 650,
-                    color: "#334155",
-                  }}
-                >
-                  <Clock size={12} style={{ color: "#64748b" }} />
-                  <span>Shift Time Window</span>
-                </label>
-              </div>
-              <input
-                id="task-time"
-                type="text"
-                placeholder="e.g. 8:00 AM – 1:30 PM"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                style={{
-                  width: "100%",
-                  height: "38px",
-                  padding: "0 12px",
-                  borderRadius: "8px",
-                  border: "1px solid #cbd5e1",
-                  fontSize: "12.5px",
-                  color: "#0f172a",
-                  outline: "none",
-                  boxSizing: "border-box",
-                }}
-              />
-              <div
-                style={{
-                  display: "flex",
-                  gap: "6px",
-                  marginTop: "6px",
-                  flexWrap: "wrap",
-                }}
-              >
-                {SHIFT_PRESETS.map((preset) => {
-                  const isCurrent = time === preset.value;
-                  return (
-                    <button
-                      key={preset.value}
-                      type="button"
-                      onClick={() => setTime(preset.value)}
-                      style={{
-                        padding: "3px 8px",
-                        fontSize: "11px",
-                        fontWeight: isCurrent ? 600 : 500,
-                        borderRadius: "6px",
-                        border: isCurrent ? "1px solid #bfdbfe" : "1px solid #e2e8f0",
-                        backgroundColor: isCurrent ? "#eff6ff" : "#f8fafc",
-                        color: isCurrent ? "#1d4ed8" : "#64748b",
-                        cursor: "pointer",
-                        transition: "all 120ms ease",
-                      }}
-                    >
-                      {preset.label}
-                    </button>
-                  );
-                })}
-              </div>
+                <Clock size={12} style={{ color: "#64748b" }} />
+                <span>Shift Timing</span>
+              </label>
             </div>
-          )}
+            <input
+              id="task-time"
+              type="text"
+              placeholder="e.g. 8:00 AM – 1:30 PM"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              style={{
+                width: "100%",
+                height: "38px",
+                padding: "0 12px",
+                borderRadius: "8px",
+                border: "1px solid #cbd5e1",
+                fontSize: "12.5px",
+                color: "#0f172a",
+                outline: "none",
+                boxSizing: "border-box",
+              }}
+            />
+            <div
+              style={{
+                display: "flex",
+                gap: "6px",
+                marginTop: "6px",
+                flexWrap: "wrap",
+              }}
+            >
+              {SHIFT_PRESETS.map((preset) => {
+                const isCurrent = time === preset.value;
+                return (
+                  <button
+                    key={preset.value}
+                    type="button"
+                    onClick={() => setTime(preset.value)}
+                    style={{
+                      padding: "3px 8px",
+                      fontSize: "11px",
+                      fontWeight: isCurrent ? 600 : 500,
+                      borderRadius: "6px",
+                      border: isCurrent ? "1px solid #bfdbfe" : "1px solid #e2e8f0",
+                      backgroundColor: isCurrent ? "#eff6ff" : "#f8fafc",
+                      color: isCurrent ? "#1d4ed8" : "#64748b",
+                      cursor: "pointer",
+                      transition: "all 120ms ease",
+                    }}
+                  >
+                    {preset.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-          {/* Row 4: Initial Execution Status as modern segmented bar */}
+          {/* Row 4: BOQ Line Item Selector */}
+          <div style={{ marginBottom: "16px" }}>
+            <label
+              htmlFor="task-boq"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                fontSize: "12px",
+                fontWeight: 650,
+                color: "#334155",
+                marginBottom: "6px",
+              }}
+            >
+              <Layers size={12} style={{ color: "#64748b" }} />
+              <span>Linked BOQ Line Item</span>
+            </label>
+            <select
+              id="task-boq"
+              value={boqItemCode}
+              onChange={(e) => setBoqItemCode(e.target.value)}
+              style={{
+                width: "100%",
+                height: "38px",
+                padding: "0 10px",
+                borderRadius: "8px",
+                border: "1px solid #cbd5e1",
+                fontSize: "12.5px",
+                color: "#0f172a",
+                backgroundColor: "#ffffff",
+                outline: "none",
+                boxSizing: "border-box",
+              }}
+            >
+              {NILA_BOQ_ITEMS.map((boq) => (
+                <option key={boq.code} value={boq.code}>
+                  {boq.code} — {boq.name} ({boq.unitScope})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Row 5: Gantt Milestone Phase Selector */}
+          <div style={{ marginBottom: "16px" }}>
+            <label
+              htmlFor="task-gantt"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                fontSize: "12px",
+                fontWeight: 650,
+                color: "#334155",
+                marginBottom: "6px",
+              }}
+            >
+              <BarChart3 size={12} style={{ color: "#64748b" }} />
+              <span>Linked Gantt Milestone / Phase</span>
+            </label>
+            <select
+              id="task-gantt"
+              value={ganttPhaseId}
+              onChange={(e) => setGanttPhaseId(e.target.value)}
+              style={{
+                width: "100%",
+                height: "38px",
+                padding: "0 10px",
+                borderRadius: "8px",
+                border: "1px solid #cbd5e1",
+                fontSize: "12.5px",
+                color: "#0f172a",
+                backgroundColor: "#ffffff",
+                outline: "none",
+                boxSizing: "border-box",
+              }}
+            >
+              {NILA_GANTT_PHASES.map((g) => (
+                <option key={g.id} value={g.id}>
+                  {g.name} ({g.dateRange})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Row 6: Task Execution Status as modern segmented bar */}
           <div style={{ marginBottom: "16px" }}>
             <label
               style={{
@@ -554,7 +774,7 @@ export function AddTaskModal({
               }}
             >
               <CalendarClock size={12} style={{ color: "#64748b" }} />
-              <span>Initial Execution Status</span>
+              <span>Task Execution Status</span>
             </label>
             <div
               style={{
@@ -612,7 +832,7 @@ export function AddTaskModal({
             </div>
           </div>
 
-          {/* Row 5: Notes / Description */}
+          {/* Row 7: Notes / Description */}
           <div style={{ marginBottom: "18px" }}>
             <label
               htmlFor="task-desc"
@@ -627,12 +847,12 @@ export function AddTaskModal({
               }}
             >
               <FileText size={12} style={{ color: "#64748b" }} />
-              <span>Task Notes / Scope Detail</span>
+              <span>Workfront Notes & Specifications</span>
             </label>
             <textarea
               id="task-desc"
               rows={3}
-              placeholder="e.g. Inspect first-floor perimeter lintel bearing length and rebar spacing according to structural drawing S-04."
+              placeholder="Specific alignment, batch ratio, safety precautions..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               style={{

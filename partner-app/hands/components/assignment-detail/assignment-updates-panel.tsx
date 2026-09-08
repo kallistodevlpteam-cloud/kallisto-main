@@ -24,28 +24,32 @@ interface AssignmentUpdatesPanelProps {
 function UpdateAuthorAvatar({
   src,
   name,
-  isSupervisor,
+  role,
 }: {
   src?: string;
   name: string;
-  isSupervisor: boolean;
+  role?: string;
 }) {
   const [hasError, setHasError] = useState(false);
   const initials =
     name === "You"
-      ? "YOU"
+      ? "AI"
       : name
           .split(" ")
           .map((n) => n[0])
           .join("")
           .substring(0, 2)
-          .toUpperCase();
+          .toUpperCase() || "KP";
+
+  const isSupervisor = role?.toLowerCase().includes("supervisor");
+  const isProvider = role?.toLowerCase().includes("provider");
+  const bgColor = isSupervisor ? "#059669" : isProvider ? "#7c3aed" : "#2563eb";
 
   return (
     <div
       className={styles.updateAvatar}
       style={{
-        backgroundColor: isSupervisor ? "#059669" : "#2563eb",
+        backgroundColor: bgColor,
       }}
     >
       {src && !hasError ? (
@@ -65,12 +69,17 @@ function UpdateAuthorAvatar({
 function ReplyAuthorAvatar({
   src,
   name,
+  role,
 }: {
   src?: string;
   name: string;
+  role?: string;
 }) {
   const [hasError, setHasError] = useState(false);
-  const initial = name === "You" ? "Y" : (name[0] || "U").toUpperCase();
+  const initial = name === "You" ? "A" : (name[0] || "U").toUpperCase();
+  const isSupervisor = role?.toLowerCase().includes("supervisor");
+  const isProvider = role?.toLowerCase().includes("provider");
+  const bgColor = isSupervisor ? "#059669" : isProvider ? "#7c3aed" : "#2563eb";
 
   if (src && !hasError) {
     return (
@@ -95,7 +104,7 @@ function ReplyAuthorAvatar({
         width: "18px",
         height: "18px",
         borderRadius: "50%",
-        backgroundColor: "#2563eb",
+        backgroundColor: bgColor,
         color: "#ffffff",
         fontSize: "9px",
         fontWeight: 700,
@@ -113,7 +122,7 @@ export function AssignmentUpdatesPanel({
   assignmentId,
   initialUpdates = [],
   supervisorName,
-  contractorName = "You",
+  contractorName = "Apex Integrated Civil",
 }: AssignmentUpdatesPanelProps) {
   const [updates, setUpdates] = useState<AssignmentSiteUpdate[]>(initialUpdates);
   const [newMessage, setNewMessage] = useState("");
@@ -280,9 +289,11 @@ export function AssignmentUpdatesPanel({
     e.preventDefault();
     if (!newMessage.trim()) return;
 
+    const resolvedAuthorName = contractorName && contractorName !== "You" ? contractorName : "Apex Integrated Civil";
+
     const newUpdate: AssignmentSiteUpdate = {
       id: `upd-${Date.now()}`,
-      authorName: contractorName || "You",
+      authorName: resolvedAuthorName,
       authorRole: "Contractor",
       authorAvatar: "/assets/arjun-avatar.jpg",
       timestamp: "Just now",
@@ -307,9 +318,11 @@ export function AssignmentUpdatesPanel({
   const handleSendReply = (updateId: string) => {
     if (!replyText.trim()) return;
 
+    const resolvedAuthorName = contractorName && contractorName !== "You" ? contractorName : "Apex Integrated Civil";
+
     const reply: AssignmentSiteUpdateReply = {
       id: `rep-${Date.now()}`,
-      authorName: contractorName || "You",
+      authorName: resolvedAuthorName,
       authorRole: "Contractor",
       authorAvatar: "/assets/arjun-avatar.jpg",
       timestamp: "Just now",
@@ -351,8 +364,12 @@ export function AssignmentUpdatesPanel({
         ) : (
           updates.map((update) => {
             const isSupervisor = update.authorRole?.toLowerCase().includes("supervisor");
-            const isMe = !isSupervisor || update.authorName.toLowerCase() === "you" || update.authorName.toLowerCase() === "me" || update.authorName.toLowerCase().includes("arjun");
-            const displayName = isMe ? "You" : update.authorName;
+            const isProvider = update.authorRole?.toLowerCase().includes("provider");
+            const resolvedRole = update.authorRole || (isSupervisor ? "Site Supervisor" : isProvider ? "Provider" : "Contractor");
+            const resolvedContractorName = contractorName && contractorName !== "You" ? contractorName : "Apex Integrated Civil";
+            const displayName = (update.authorName === "You" || update.authorName.toLowerCase() === "me")
+              ? resolvedContractorName
+              : update.authorName;
 
             return (
               <article key={update.id} className={styles.updateItemCard}>
@@ -361,11 +378,14 @@ export function AssignmentUpdatesPanel({
                   <UpdateAuthorAvatar
                     src={update.authorAvatar}
                     name={displayName}
-                    isSupervisor={isSupervisor}
+                    role={resolvedRole}
                   />
                   <div className={styles.updateAuthorInfo}>
                     <div className={styles.updateAuthorNameRow}>
                       <span style={{ fontWeight: 650 }}>{displayName}</span>
+                      {resolvedRole && (
+                        <span className={styles.updateAuthorRole}>· {resolvedRole}</span>
+                      )}
                       <span style={{ fontSize: "11px", color: "#94a3b8", marginLeft: "auto" }}>
                         {update.timestamp}
                       </span>
@@ -406,9 +426,19 @@ export function AssignmentUpdatesPanel({
                       setActiveReplyId(activeReplyId === update.id ? null : update.id)
                     }
                     className={styles.updateActionBtn}
+                    aria-label={
+                      update.replies && update.replies.length > 1
+                        ? `Reply (${update.replies.length} replies)`
+                        : "Reply"
+                    }
                   >
                     <MessageSquare size={13} />
                     <span>Reply</span>
+                    {update.replies && update.replies.length > 1 && (
+                      <span className={styles.replyCountBadge}>
+                        {update.replies.length}
+                      </span>
+                    )}
                   </button>
                 </div>
 
@@ -417,8 +447,11 @@ export function AssignmentUpdatesPanel({
                   <div className={styles.repliesContainer}>
                     {update.replies.map((reply) => {
                       const isReplySupervisor = reply.authorRole?.toLowerCase().includes("supervisor");
-                      const isReplyMe = !isReplySupervisor || reply.authorName.toLowerCase() === "you" || reply.authorName.toLowerCase() === "me" || reply.authorName.toLowerCase().includes("arjun");
-                      const replyDisplayName = isReplyMe ? "You" : reply.authorName;
+                      const isReplyProvider = reply.authorRole?.toLowerCase().includes("provider");
+                      const replyRoleName = reply.authorRole || (isReplySupervisor ? "Site Supervisor" : isReplyProvider ? "Provider" : "Contractor");
+                      const replyDisplayName = (reply.authorName === "You" || reply.authorName.toLowerCase() === "me")
+                        ? resolvedContractorName
+                        : reply.authorName;
 
                       return (
                         <div key={reply.id} className={styles.replyItem}>
@@ -427,10 +460,16 @@ export function AssignmentUpdatesPanel({
                               <ReplyAuthorAvatar
                                 src={reply.authorAvatar}
                                 name={replyDisplayName}
+                                role={replyRoleName}
                               />
                               <strong style={{ fontSize: "11px", color: "#0f172a" }}>
-                                {isReplyMe ? "You" : reply.authorName}
+                                {replyDisplayName}
                               </strong>
+                              {replyRoleName && (
+                                <span className={styles.updateAuthorRole} style={{ fontSize: "11px" }}>
+                                  · {replyRoleName}
+                                </span>
+                              )}
                             </div>
                             <span style={{ fontSize: "10px", color: "#94a3b8" }}>
                               {reply.timestamp}
@@ -452,7 +491,7 @@ export function AssignmentUpdatesPanel({
                       type="text"
                       value={replyText}
                       onChange={(e) => setReplyText(e.target.value)}
-                      placeholder={`Reply to ${update.authorName}...`}
+                      placeholder={`Reply to ${displayName}...`}
                       className={styles.composerInput}
                       style={{
                         padding: "5px 10px",

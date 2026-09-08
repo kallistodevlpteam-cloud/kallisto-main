@@ -167,6 +167,36 @@ export interface AssignmentDeployment {
   complaints?: AssignmentComplaint[];
   accounts?: AssignmentAccounts;
   odinBrief?: string;
+  activities?: AssignmentActivity[];
+}
+
+export type ActivityStatus = "scheduled" | "in_progress" | "completed" | "delayed";
+
+export type ActivityCategory =
+  | "Block Masonry"
+  | "Scaffolding & Staging"
+  | "Safety & Inspection"
+  | "Concrete & Formwork"
+  | "Material & Logistics"
+  | "Curing & Finishing";
+
+export interface AssignmentActivity {
+  id: string;
+  assignmentId: string;
+  title: string;
+  description: string;
+  date: string; // "YYYY-MM-DD" e.g. "2026-09-08"
+  startTime?: string;
+  endTime?: string;
+  shiftWindow: string; // e.g. "08:00 AM – 05:00 PM"
+  category: ActivityCategory;
+  location: string; // e.g. "Level 2 - South Elevation"
+  assignedCrewText: string; // e.g. "8 Masons · 2 Helpers"
+  assignedSupervisor?: string;
+  status: ActivityStatus;
+  priority?: "normal" | "high" | "urgent";
+  notes?: string;
+  createdAt: string;
 }
 
 export interface AssignmentSummaryMetrics {

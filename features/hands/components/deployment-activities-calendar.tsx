@@ -25,20 +25,63 @@ interface DeploymentActivitiesCalendarProps {
   tasks: DeploymentActivityTask[];
   contractors: DeploymentContractor[];
   deployment: Deployment;
-  onAddTaskClick: () => void;
+  onAddTaskClick: (date?: string) => void;
   onUpdateTask: (task: DeploymentActivityTask) => void;
   onCancelTask: (taskId: string, reason: string) => void;
   onToggleStatus: (taskId: string) => void;
+  variant?: "default" | "partner";
+  selectedDate?: string;
+  onSelectDate?: (date: string) => void;
 }
 
 function getContractorVisual(name: string) {
   const n = name.toLowerCase();
-  if (n.includes("apex")) return { color: "#ea580c", bgLight: "#fff7ed", border: "#ffedd5" };
-  if (n.includes("malabar")) return { color: "#0d9488", bgLight: "#f0fdfa", border: "#ccfbf1" };
-  if (n.includes("supervis") || n.includes("site super")) return { color: "#4f46e5", bgLight: "#eef2ff", border: "#e0e7ff" };
-  if (n.includes("chroma")) return { color: "#be123c", bgLight: "#fff1f2", border: "#ffe4e6" };
-  if (n.includes("circuit")) return { color: "#0284c7", bgLight: "#f0f9ff", border: "#e0f2fe" };
-  return { color: "#334155", bgLight: "#f8fafc", border: "#e2e8f0" };
+  if (n.includes("apex")) return { color: "#ea580c", bgLight: "#fff7ed", border: "#ffedd5", dot: "#ea580c" };
+  if (n.includes("malabar")) return { color: "#0d9488", bgLight: "#f0fdfa", border: "#ccfbf1", dot: "#0d9488" };
+  if (n.includes("supervis") || n.includes("site super")) return { color: "#4f46e5", bgLight: "#eef2ff", border: "#e0e7ff", dot: "#4f46e5" };
+  if (n.includes("chroma")) return { color: "#be123c", bgLight: "#fff1f2", border: "#ffe4e6", dot: "#be123c" };
+  if (n.includes("circuit")) return { color: "#0284c7", bgLight: "#f0f9ff", border: "#e0f2fe", dot: "#0284c7" };
+  return { color: "#334155", bgLight: "#f8fafc", border: "#e2e8f0", dot: "#64748b" };
+}
+
+function getStatusVisual(status: string) {
+  switch (status) {
+    case "in-progress":
+      return {
+        color: "#c2410c",
+        bgLight: "#fff7ed",
+        border: "#fed7aa",
+        dot: "#ea580c",
+      };
+    case "scheduled":
+      return {
+        color: "#0284c7",
+        bgLight: "#f0f9ff",
+        border: "#bae6fd",
+        dot: "#0284c7",
+      };
+    case "completed":
+      return {
+        color: "#15803d",
+        bgLight: "#f0fdf4",
+        border: "#bbf7d0",
+        dot: "#16a34a",
+      };
+    case "cancelled":
+      return {
+        color: "#b91c1c",
+        bgLight: "#fef2f2",
+        border: "#fecaca",
+        dot: "#dc2626",
+      };
+    default:
+      return {
+        color: "#475569",
+        bgLight: "#f8fafc",
+        border: "#e2e8f0",
+        dot: "#64748b",
+      };
+  }
 }
 
 const DAYS_OF_WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -51,8 +94,18 @@ export function DeploymentActivitiesCalendar({
   onUpdateTask,
   onCancelTask,
   onToggleStatus,
+  variant = "default",
+  selectedDate: controlledSelectedDate,
+  onSelectDate,
 }: DeploymentActivitiesCalendarProps) {
-  const [selectedDate, setSelectedDate] = useState<string>("2026-09-08");
+  const isPartner = variant === "partner";
+  const [internalSelectedDate, setInternalSelectedDate] = useState<string>("2026-09-08");
+  const selectedDate = controlledSelectedDate !== undefined ? controlledSelectedDate : internalSelectedDate;
+
+  const handleSelectDate = (dateStr: string) => {
+    setInternalSelectedDate(dateStr);
+    onSelectDate?.(dateStr);
+  };
   const [contractorFilter, setContractorFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [phaseFilter, setPhaseFilter] = useState<string>("all");
@@ -260,7 +313,7 @@ export function DeploymentActivitiesCalendar({
             <button
               type="button"
               aria-label="Previous month"
-              onClick={() => setSelectedDate("2026-08-31")}
+              onClick={() => handleSelectDate("2026-08-31")}
               style={{
                 background: "none",
                 border: "none",
@@ -279,7 +332,7 @@ export function DeploymentActivitiesCalendar({
             <button
               type="button"
               aria-label="Next month"
-              onClick={() => setSelectedDate("2026-10-01")}
+              onClick={() => handleSelectDate("2026-10-01")}
               style={{
                 background: "none",
                 border: "none",
@@ -296,7 +349,7 @@ export function DeploymentActivitiesCalendar({
 
           <button
             type="button"
-            onClick={() => setSelectedDate("2026-09-08")}
+            onClick={() => handleSelectDate("2026-09-08")}
             style={{
               height: "32px",
               padding: "0 12px",
@@ -314,7 +367,7 @@ export function DeploymentActivitiesCalendar({
 
           <button
             type="button"
-            onClick={onAddTaskClick}
+            onClick={() => onAddTaskClick(selectedDate)}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -342,7 +395,7 @@ export function DeploymentActivitiesCalendar({
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: isPartner ? "flex-end" : "space-between",
           flexWrap: "wrap",
           gap: "10px",
           padding: "10px 20px",
@@ -351,39 +404,41 @@ export function DeploymentActivitiesCalendar({
           fontSize: "11.5px",
         }}
       >
-        {/* Contractor Filter */}
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-          <span style={{ fontWeight: 650, color: "#64748b", display: "flex", alignItems: "center", gap: "4px" }}>
-            <Filter size={12} />
-            Filter by Contractor:
-          </span>
-          {[
-            { id: "all", label: "All Contractors" },
-            ...contractors.map((c) => ({ id: c.name, label: c.name })),
-            { id: "Site Supervision", label: "Site Supervision" },
-          ].map((item) => {
-            const isSelected = contractorFilter === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setContractorFilter(item.id)}
-                style={{
-                  padding: "3px 9px",
-                  fontSize: "11.5px",
-                  fontWeight: isSelected ? 700 : 500,
-                  borderRadius: "9999px",
-                  border: isSelected ? "1px solid #0f172a" : "1px solid #cbd5e1",
-                  backgroundColor: isSelected ? "#0f172a" : "#ffffff",
-                  color: isSelected ? "#ffffff" : "#475569",
-                  cursor: "pointer",
-                }}
-              >
-                {item.label}
-              </button>
-            );
-          })}
-        </div>
+        {/* Contractor Filter (hidden in partner view) */}
+        {!isPartner && (
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+            <span style={{ fontWeight: 650, color: "#64748b", display: "flex", alignItems: "center", gap: "4px" }}>
+              <Filter size={12} />
+              Filter by Contractor:
+            </span>
+            {[
+              { id: "all", label: "All Contractors" },
+              ...contractors.map((c) => ({ id: c.name, label: c.name })),
+              { id: "Site Supervision", label: "Site Supervision" },
+            ].map((item) => {
+              const isSelected = contractorFilter === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setContractorFilter(item.id)}
+                  style={{
+                    padding: "3px 9px",
+                    fontSize: "11.5px",
+                    fontWeight: isSelected ? 700 : 500,
+                    borderRadius: "9999px",
+                    border: isSelected ? "1px solid #0f172a" : "1px solid #cbd5e1",
+                    backgroundColor: isSelected ? "#0f172a" : "#ffffff",
+                    color: isSelected ? "#ffffff" : "#475569",
+                    cursor: "pointer",
+                  }}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Status & Gantt Filter Selectors */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -470,6 +525,33 @@ export function DeploymentActivitiesCalendar({
         </div>
 
         {/* 5-week month cells */}
+        {isPartner && (
+          <style>{`
+            .partner-calendar-cell {
+              position: relative !important;
+              transition: box-shadow 140ms ease !important;
+            }
+            .partner-calendar-cell:hover {
+              box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important;
+              z-index: 2 !important;
+            }
+            .partner-calendar-cell .partner-cell-add-btn {
+              opacity: 0;
+              transition: opacity 140ms ease;
+              pointer-events: none;
+            }
+            .partner-calendar-cell:hover .partner-cell-add-btn {
+              opacity: 1;
+              pointer-events: auto;
+            }
+            /* Do not fill with black color on hover; maintain clean outline style */
+            .partner-cell-add-btn:hover {
+              background-color: #ffffff !important;
+              border-color: #64748b !important;
+              color: #475569 !important;
+            }
+          `}</style>
+        )}
         <div
           style={{
             display: "grid",
@@ -479,19 +561,33 @@ export function DeploymentActivitiesCalendar({
         >
           {calendarDays.map((cell) => {
             const isToday = cell.dateStr === "2026-09-08";
-            const isSelected = cell.dateStr === selectedDate;
             const dayTasks = tasksByDate[cell.dateStr] || [];
+            const isSelected = isPartner
+              ? cell.dateStr === selectedDate && dayTasks.length > 0
+              : cell.dateStr === selectedDate;
+
+            const handleCellClick = () => {
+              if (isPartner && dayTasks.length === 0) {
+                // Click on empty column directly opens overlay without displaying selected
+                onAddTaskClick?.(cell.dateStr);
+              } else {
+                handleSelectDate(cell.dateStr);
+              }
+            };
 
             return (
               <div
                 key={cell.dateStr}
                 role="button"
                 tabIndex={0}
-                onClick={() => setSelectedDate(cell.dateStr)}
+                className={isPartner ? "partner-calendar-cell" : undefined}
+                data-selected={isSelected ? "true" : "false"}
+                data-today={isToday ? "true" : "false"}
+                onClick={handleCellClick}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
-                    setSelectedDate(cell.dateStr);
+                    handleCellClick();
                   }
                 }}
                 aria-label={`${cell.dateStr}: ${dayTasks.length} tasks scheduled`}
@@ -500,25 +596,28 @@ export function DeploymentActivitiesCalendar({
                   borderRadius: "10px",
                   padding: "7px 8px",
                   backgroundColor: isSelected
-                    ? "#eff6ff"
+                    ? (isPartner ? "#f8fafc" : "#eff6ff")
                     : cell.isCurrentMonth
                       ? "#ffffff"
                       : "#f8fafc",
                   border: isSelected
-                    ? "2px solid #2563eb"
+                    ? (isPartner ? "1.5px solid #334155" : "2px solid #2563eb")
                     : isToday
-                      ? "2px solid #0f172a"
+                      ? (isPartner ? "1.5px solid #0f172a" : "2px solid #0f172a")
                       : "1px solid #e2e8f0",
                   cursor: "pointer",
                   display: "flex",
                   flexDirection: "column",
+                  position: "relative",
                   transition: "all 140ms ease",
                   opacity: cell.isCurrentMonth ? 1 : 0.5,
                   minWidth: 0,
                   overflow: "hidden",
                   boxSizing: "border-box",
                   boxShadow: isSelected
-                    ? "0 0 0 1px #2563eb, 0 4px 12px rgba(37, 99, 235, 0.12)"
+                    ? (isPartner
+                        ? "0 2px 6px rgba(15, 23, 42, 0.06)"
+                        : "0 0 0 1px #2563eb, 0 4px 12px rgba(37, 99, 235, 0.12)")
                     : "0 1px 2px rgba(15, 23, 42, 0.02)",
                 }}
               >
@@ -542,7 +641,7 @@ export function DeploymentActivitiesCalendar({
                       color: isToday
                         ? "#ffffff"
                         : isSelected
-                          ? "#1d4ed8"
+                          ? (isPartner ? "#0f172a" : "#1d4ed8")
                           : cell.isCurrentMonth
                             ? "#1e293b"
                             : "#94a3b8",
@@ -560,8 +659,12 @@ export function DeploymentActivitiesCalendar({
                       style={{
                         fontSize: "9.5px",
                         fontWeight: 700,
-                        backgroundColor: isSelected ? "#dbeafe" : "#f1f5f9",
-                        color: isSelected ? "#1e40af" : "#475569",
+                        backgroundColor: isSelected
+                          ? (isPartner ? "#e2e8f0" : "#dbeafe")
+                          : "#f1f5f9",
+                        color: isSelected
+                          ? (isPartner ? "#0f172a" : "#1e40af")
+                          : "#475569",
                         padding: "1px 6px",
                         borderRadius: "9999px",
                         flexShrink: 0,
@@ -585,28 +688,38 @@ export function DeploymentActivitiesCalendar({
                 >
                   {dayTasks.slice(0, 2).map((task) => {
                     const contractorName = resolveContractorName(task);
-                    const visual = getContractorVisual(contractorName);
+                    const visual = isPartner
+                      ? getStatusVisual(task.status)
+                      : getContractorVisual(contractorName);
                     const isCancelled = task.status === "cancelled";
                     const isCompleted = task.status === "completed";
 
                     return (
                       <div
                         key={task.id}
-                        title={`${task.title} (${contractorName})`}
+                        title={isPartner ? `${task.title} (${task.status})` : `${task.title} (${contractorName})`}
                         style={{
                           fontSize: "10px",
                           lineHeight: 1.25,
                           padding: "2px 5px",
                           borderRadius: "4px",
-                          backgroundColor: isCancelled
-                            ? "#fef2f2"
-                            : isCompleted
-                              ? "#f8fafc"
-                              : visual.bgLight,
-                          color: isCancelled ? "#b91c1c" : visual.color,
-                          border: isCancelled
-                            ? "1px solid #fecaca"
-                            : `1px solid ${visual.border}`,
+                          backgroundColor: isPartner
+                            ? visual.bgLight
+                            : isCancelled
+                              ? "#fef2f2"
+                              : isCompleted
+                                ? "#f8fafc"
+                                : visual.bgLight,
+                          color: isPartner
+                            ? visual.color
+                            : isCancelled
+                              ? "#b91c1c"
+                              : visual.color,
+                          border: isPartner
+                            ? `1px solid ${visual.border}`
+                            : isCancelled
+                              ? "1px solid #fecaca"
+                              : `1px solid ${visual.border}`,
                           textDecoration: isCancelled ? "line-through" : "none",
                           display: "flex",
                           alignItems: "center",
@@ -622,7 +735,11 @@ export function DeploymentActivitiesCalendar({
                             width: "5px",
                             height: "5px",
                             borderRadius: "50%",
-                            backgroundColor: isCancelled ? "#b91c1c" : visual.color,
+                            backgroundColor: isPartner
+                              ? visual.dot
+                              : isCancelled
+                                ? "#b91c1c"
+                                : visual.color,
                             flexShrink: 0,
                           }}
                         />
@@ -633,8 +750,9 @@ export function DeploymentActivitiesCalendar({
                             textOverflow: "ellipsis",
                             whiteSpace: "nowrap",
                             display: "block",
-                            fontWeight: 600,
+                            fontWeight: 650,
                             flex: 1,
+                            color: isPartner ? visual.color : undefined,
                           }}
                         >
                           {task.title}
@@ -660,6 +778,49 @@ export function DeploymentActivitiesCalendar({
                     </span>
                   )}
                 </div>
+
+                {/* Empty cell hover plus action button placed at exact center of column */}
+                {isPartner && dayTasks.length === 0 && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      zIndex: 2,
+                    }}
+                  >
+                    <button
+                      type="button"
+                      className="partner-cell-add-btn"
+                      aria-label={`Add task for ${cell.dateStr}`}
+                      title="Add task for this date"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onAddTaskClick?.(cell.dateStr);
+                      }}
+                      style={{
+                        width: "22px",
+                        height: "22px",
+                        borderRadius: "50%",
+                        border: "1.2px solid #64748b",
+                        backgroundColor: "#ffffff",
+                        color: "#475569",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        padding: 0,
+                        boxShadow: "0 1px 2px rgba(15, 23, 42, 0.06)",
+                      }}
+                    >
+                      <Plus size={12} strokeWidth={2} />
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })}
@@ -720,7 +881,7 @@ export function DeploymentActivitiesCalendar({
 
           <button
             type="button"
-            onClick={onAddTaskClick}
+            onClick={() => onAddTaskClick(selectedDate)}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -789,7 +950,7 @@ export function DeploymentActivitiesCalendar({
             </p>
             <button
               type="button"
-              onClick={onAddTaskClick}
+              onClick={() => onAddTaskClick(selectedDate)}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -841,31 +1002,33 @@ export function DeploymentActivitiesCalendar({
                     }}
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-                      <span
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "5px",
-                          padding: "2px 8px",
-                          borderRadius: "6px",
-                          backgroundColor: visual.bgLight,
-                          color: visual.color,
-                          border: `1px solid ${visual.border}`,
-                          fontSize: "11px",
-                          fontWeight: 700,
-                        }}
-                        title={`Assigned to ${contractorName}`}
-                      >
+                      {!isPartner && (
                         <span
                           style={{
-                            width: "6px",
-                            height: "6px",
-                            borderRadius: "50%",
-                            backgroundColor: visual.color,
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "5px",
+                            padding: "2px 8px",
+                            borderRadius: "6px",
+                            backgroundColor: visual.bgLight,
+                            color: visual.color,
+                            border: `1px solid ${visual.border}`,
+                            fontSize: "11px",
+                            fontWeight: 700,
                           }}
-                        />
-                        {contractorName}
-                      </span>
+                          title={`Assigned to ${contractorName}`}
+                        >
+                          <span
+                            style={{
+                              width: "6px",
+                              height: "6px",
+                              borderRadius: "50%",
+                              backgroundColor: visual.color,
+                            }}
+                          />
+                          {contractorName}
+                        </span>
+                      )}
 
                       {task.trade && (
                         <span
@@ -1068,39 +1231,39 @@ export function DeploymentActivitiesCalendar({
                     </div>
                   )}
 
-                  {/* Action Buttons for Service Provider */}
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "flex-end",
-                      gap: "8px",
-                      paddingTop: "6px",
-                      borderTop: "1px solid #f1f5f9",
-                    }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => setEditingTask(task)}
+                  {/* Action Buttons for Service Provider (hidden on cancelled tasks) */}
+                  {!isCancelled && (
+                    <div
                       style={{
-                        display: "inline-flex",
+                        display: "flex",
                         alignItems: "center",
-                        gap: "4px",
-                        padding: "4px 10px",
-                        fontSize: "11px",
-                        fontWeight: 600,
-                        backgroundColor: "#ffffff",
-                        color: "#334155",
-                        border: "1px solid #cbd5e1",
-                        borderRadius: "6px",
-                        cursor: "pointer",
+                        justifyContent: "flex-end",
+                        gap: "8px",
+                        paddingTop: "6px",
+                        borderTop: "1px solid #f1f5f9",
                       }}
                     >
-                      <Edit2 size={11} />
-                      <span>Update Task</span>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingTask(task)}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          padding: "4px 10px",
+                          fontSize: "11px",
+                          fontWeight: 600,
+                          backgroundColor: "#ffffff",
+                          color: "#334155",
+                          border: "1px solid #cbd5e1",
+                          borderRadius: "6px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <Edit2 size={11} />
+                        <span>Update Task</span>
+                      </button>
 
-                    {!isCancelled && (
                       <button
                         type="button"
                         onClick={() => setCancellingTask(task)}
@@ -1121,8 +1284,8 @@ export function DeploymentActivitiesCalendar({
                         <XCircle size={11} />
                         <span>Cancel Task</span>
                       </button>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -1170,6 +1333,8 @@ export function DeploymentActivitiesCalendar({
           onUpdateTask(updated);
           setEditingTask(null);
         }}
+        variant={variant}
+        hideContractorSelect={isPartner}
       />
 
       {/* ── Cancel Task Modal ── */}

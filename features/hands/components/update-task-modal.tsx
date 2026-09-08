@@ -22,6 +22,8 @@ interface UpdateTaskModalProps {
   task: DeploymentActivityTask | null;
   contractors: DeploymentContractor[];
   onUpdateTask: (updatedTask: DeploymentActivityTask) => void;
+  variant?: "default" | "partner";
+  hideContractorSelect?: boolean;
 }
 
 export function UpdateTaskModal({
@@ -30,7 +32,12 @@ export function UpdateTaskModal({
   task,
   contractors,
   onUpdateTask,
+  variant = "default",
+  hideContractorSelect = false,
 }: UpdateTaskModalProps) {
+  const isPartner = variant === "partner";
+  const shouldHideContractor = hideContractorSelect || isPartner;
+
   const [title, setTitle] = useState(task?.title || "");
   const [date, setDate] = useState(task?.date || "2026-09-08");
   const [time, setTime] = useState(task?.time || "8:00 AM – 1:30 PM");
@@ -235,120 +242,207 @@ export function UpdateTaskModal({
             />
           </div>
 
-          {/* Date & Time Row */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "14px" }}>
-            <div>
-              <label
-                htmlFor="update-task-date"
-                style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", fontWeight: 650, color: "#334155", marginBottom: "5px" }}
-              >
-                <Calendar size={13} color="#64748b" />
-                <span>Scheduled Date</span>
-              </label>
-              <input
-                id="update-task-date"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "8px 12px",
-                  fontSize: "12.5px",
-                  borderRadius: "8px",
-                  border: "1px solid #cbd5e1",
-                  outline: "none",
-                  boxSizing: "border-box",
-                  color: "#0f172a",
-                }}
-              />
+          {/* Row 2: Scheduled Date & Trade / Contractor */}
+          {shouldHideContractor ? (
+            /* Partner View: Contractor is removed; Scheduled Date & Assigned Trade are side-by-side */
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "14px" }}>
+              <div>
+                <label
+                  htmlFor="update-task-date"
+                  style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", fontWeight: 650, color: "#334155", marginBottom: "5px" }}
+                >
+                  <Calendar size={13} color="#64748b" />
+                  <span>Scheduled Date</span>
+                </label>
+                <input
+                  id="update-task-date"
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "8px 12px",
+                    fontSize: "12.5px",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                    outline: "none",
+                    boxSizing: "border-box",
+                    color: "#0f172a",
+                  }}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="update-task-trade"
+                  style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", fontWeight: 650, color: "#334155", marginBottom: "5px" }}
+                >
+                  <Users size={13} color="#64748b" />
+                  <span>Assigned Trade / Crew</span>
+                </label>
+                <input
+                  id="update-task-trade"
+                  type="text"
+                  value={trade}
+                  onChange={(e) => setTrade(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "8px 12px",
+                    fontSize: "12.5px",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                    outline: "none",
+                    boxSizing: "border-box",
+                    color: "#0f172a",
+                  }}
+                  placeholder="e.g. 6 Masons"
+                />
+              </div>
             </div>
-            <div>
-              <label
-                htmlFor="update-task-time"
-                style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", fontWeight: 650, color: "#334155", marginBottom: "5px" }}
-              >
-                <Clock size={13} color="#64748b" />
-                <span>Shift Timing</span>
-              </label>
-              <input
-                id="update-task-time"
-                type="text"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "8px 12px",
-                  fontSize: "12.5px",
-                  borderRadius: "8px",
-                  border: "1px solid #cbd5e1",
-                  outline: "none",
-                  boxSizing: "border-box",
-                  color: "#0f172a",
-                }}
-                placeholder="e.g. 8:00 AM – 1:30 PM"
-              />
-            </div>
-          </div>
+          ) : (
+            /* Provider View with Contractor selection */
+            <>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "14px" }}>
+                <div>
+                  <label
+                    htmlFor="update-task-date"
+                    style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", fontWeight: 650, color: "#334155", marginBottom: "5px" }}
+                  >
+                    <Calendar size={13} color="#64748b" />
+                    <span>Scheduled Date</span>
+                  </label>
+                  <input
+                    id="update-task-date"
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "8px 12px",
+                      fontSize: "12.5px",
+                      borderRadius: "8px",
+                      border: "1px solid #cbd5e1",
+                      outline: "none",
+                      boxSizing: "border-box",
+                      color: "#0f172a",
+                    }}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="update-task-trade"
+                    style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", fontWeight: 650, color: "#334155", marginBottom: "5px" }}
+                  >
+                    <Users size={13} color="#64748b" />
+                    <span>Assigned Trade / Crew</span>
+                  </label>
+                  <input
+                    id="update-task-trade"
+                    type="text"
+                    value={trade}
+                    onChange={(e) => setTrade(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "8px 12px",
+                      fontSize: "12.5px",
+                      borderRadius: "8px",
+                      border: "1px solid #cbd5e1",
+                      outline: "none",
+                      boxSizing: "border-box",
+                      color: "#0f172a",
+                    }}
+                    placeholder="e.g. 6 Masons"
+                  />
+                </div>
+              </div>
+              <div style={{ marginBottom: "14px" }}>
+                <label
+                  htmlFor="update-task-contractor"
+                  style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", fontWeight: 650, color: "#334155", marginBottom: "5px" }}
+                >
+                  <Building2 size={13} color="#64748b" />
+                  <span>Assigned Labour Contractor</span>
+                </label>
+                <select
+                  id="update-task-contractor"
+                  value={contractorName}
+                  onChange={(e) => setContractorName(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "8px 10px",
+                    fontSize: "12.5px",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                    outline: "none",
+                    boxSizing: "border-box",
+                    backgroundColor: "#ffffff",
+                    color: "#0f172a",
+                  }}
+                >
+                  {contractors.map((c) => (
+                    <option key={c.id || c.name} value={c.name}>
+                      {c.name} ({c.trade || "Labour Contractor"})
+                    </option>
+                  ))}
+                  <option value="Site Supervision">Site Supervision (Kallisto QA Lead)</option>
+                </select>
+              </div>
+            </>
+          )}
 
-          {/* Contractor & Trade Row */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "14px" }}>
-            <div>
-              <label
-                htmlFor="update-task-contractor"
-                style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", fontWeight: 650, color: "#334155", marginBottom: "5px" }}
-              >
-                <Building2 size={13} color="#64748b" />
-                <span>Assigned Contractor</span>
-              </label>
-              <select
-                id="update-task-contractor"
-                value={contractorName}
-                onChange={(e) => setContractorName(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "8px 10px",
-                  fontSize: "12.5px",
-                  borderRadius: "8px",
-                  border: "1px solid #cbd5e1",
-                  outline: "none",
-                  boxSizing: "border-box",
-                  backgroundColor: "#ffffff",
-                  color: "#0f172a",
-                }}
-              >
-                {contractors.map((c) => (
-                  <option key={c.id || c.name} value={c.name}>
-                    {c.name} ({c.trade || "Labour Contractor"})
-                  </option>
-                ))}
-                <option value="Site Supervision">Site Supervision (Kallisto QA Lead)</option>
-              </select>
-            </div>
-            <div>
-              <label
-                htmlFor="update-task-trade"
-                style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", fontWeight: 650, color: "#334155", marginBottom: "5px" }}
-              >
-                <Users size={13} color="#64748b" />
-                <span>Workforce / Crew</span>
-              </label>
-              <input
-                id="update-task-trade"
-                type="text"
-                value={trade}
-                onChange={(e) => setTrade(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "8px 12px",
-                  fontSize: "12.5px",
-                  borderRadius: "8px",
-                  border: "1px solid #cbd5e1",
-                  outline: "none",
-                  boxSizing: "border-box",
-                  color: "#0f172a",
-                }}
-                placeholder="e.g. 6 Masons"
-              />
+          {/* Row 3: Shift Timing */}
+          <div style={{ marginBottom: "14px" }}>
+            <label
+              htmlFor="update-task-time"
+              style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", fontWeight: 650, color: "#334155", marginBottom: "5px" }}
+            >
+              <Clock size={13} color="#64748b" />
+              <span>Shift Timing</span>
+            </label>
+            <input
+              id="update-task-time"
+              type="text"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "8px 12px",
+                fontSize: "12.5px",
+                borderRadius: "8px",
+                border: "1px solid #cbd5e1",
+                outline: "none",
+                boxSizing: "border-box",
+                color: "#0f172a",
+              }}
+              placeholder="e.g. 8:00 AM – 1:30 PM"
+            />
+            <div style={{ display: "flex", gap: "6px", marginTop: "6px", flexWrap: "wrap" }}>
+              {[
+                { label: "Morning (8:00 AM – 1:30 PM)", value: "8:00 AM – 1:30 PM" },
+                { label: "Afternoon (1:30 PM – 5:00 PM)", value: "1:30 PM – 5:00 PM" },
+                { label: "Full Shift (8:00 AM – 5:00 PM)", value: "8:00 AM – 5:00 PM" },
+              ].map((preset) => {
+                const isCurrent = time === preset.value;
+                return (
+                  <button
+                    key={preset.value}
+                    type="button"
+                    onClick={() => setTime(preset.value)}
+                    style={{
+                      padding: "3px 8px",
+                      fontSize: "11px",
+                      fontWeight: isCurrent ? 600 : 500,
+                      borderRadius: "6px",
+                      border: isCurrent ? "1px solid #bfdbfe" : "1px solid #e2e8f0",
+                      backgroundColor: isCurrent ? "#eff6ff" : "#f8fafc",
+                      color: isCurrent ? "#1d4ed8" : "#64748b",
+                      cursor: "pointer",
+                      transition: "all 120ms ease",
+                    }}
+                  >
+                    {preset.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

@@ -32,6 +32,7 @@ export function AssignmentComplaintsPanel({
 }: AssignmentComplaintsPanelProps) {
   const [complaints, setComplaints] = useState<AssignmentComplaint[]>(initialComplaints);
   const [filterStatus, setFilterStatus] = useState<"all" | ComplaintStatus>("all");
+  const [filterRaiser, setFilterRaiser] = useState<"all" | "supervisor" | "provider">("all");
   const [activeNoteComplaintId, setActiveNoteComplaintId] = useState<string | null>(null);
   const [noteText, setNoteText] = useState("");
   const [expandedComments, setExpandedComments] = useState<Record<string, boolean>>({});
@@ -43,11 +44,17 @@ export function AssignmentComplaintsPanel({
     }));
   };
 
-  const openComplaintsCount = complaints.filter((c) => c.status === "open").length;
-  const inReviewCount = complaints.filter((c) => c.status === "in_review").length;
-  const resolvedCount = complaints.filter((c) => c.status === "resolved").length;
+  const raiserFiltered = complaints.filter((c) => {
+    if (filterRaiser === "supervisor" && !c.raisedByRole?.toLowerCase().includes("supervisor")) return false;
+    if (filterRaiser === "provider" && !c.raisedByRole?.toLowerCase().includes("provider")) return false;
+    return true;
+  });
 
-  const filteredComplaints = complaints.filter((c) => {
+  const openComplaintsCount = raiserFiltered.filter((c) => c.status === "open").length;
+  const inReviewCount = raiserFiltered.filter((c) => c.status === "in_review").length;
+  const resolvedCount = raiserFiltered.filter((c) => c.status === "resolved").length;
+
+  const filteredComplaints = raiserFiltered.filter((c) => {
     if (filterStatus === "all") return true;
     return c.status === filterStatus;
   });
@@ -155,53 +162,54 @@ export function AssignmentComplaintsPanel({
   return (
     <div className={styles.complaintsContent}>
       {/* Top Action Bar */}
-      <div className={styles.complaintsActionBar}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "13.5px", fontWeight: 700, color: "#0f172a" }}>
-            Site Complaints & Impediments
-          </span>
-          <div style={{ display: "flex", gap: "6px" }}>
-            <span
-              style={{
-                fontSize: "11px",
-                fontWeight: 650,
-                color: "#dc2626",
-                backgroundColor: "#fef2f2",
-                padding: "2px 8px",
-                borderRadius: "9999px",
-              }}
-            >
-              {openComplaintsCount} Open
+      <div className={styles.complaintsActionBar} style={{ flexDirection: "column", alignItems: "stretch", gap: "10px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexWrap: "wrap" }}>
+          {/* Heading + Count Badges */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+            <span style={{ fontSize: "13.5px", fontWeight: 700, color: "#0f172a" }}>
+              Site Complaints & Impediments
             </span>
-            <span
-              style={{
-                fontSize: "11px",
-                fontWeight: 650,
-                color: "#d97706",
-                backgroundColor: "#fffbeb",
-                padding: "2px 8px",
-                borderRadius: "9999px",
-              }}
-            >
-              {inReviewCount} In Review
-            </span>
-            <span
-              style={{
-                fontSize: "11px",
-                fontWeight: 650,
-                color: "#059669",
-                backgroundColor: "#ecfdf5",
-                padding: "2px 8px",
-                borderRadius: "9999px",
-              }}
-            >
-              {resolvedCount} Resolved
-            </span>
+            <div style={{ display: "flex", gap: "6px" }}>
+              <span
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 650,
+                  color: "#dc2626",
+                  backgroundColor: "#fef2f2",
+                  padding: "2px 8px",
+                  borderRadius: "9999px",
+                }}
+              >
+                {openComplaintsCount} Open
+              </span>
+              <span
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 650,
+                  color: "#d97706",
+                  backgroundColor: "#fffbeb",
+                  padding: "2px 8px",
+                  borderRadius: "9999px",
+                }}
+              >
+                {inReviewCount} In Review
+              </span>
+              <span
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 650,
+                  color: "#059669",
+                  backgroundColor: "#ecfdf5",
+                  padding: "2px 8px",
+                  borderRadius: "9999px",
+                }}
+              >
+                {resolvedCount} Resolved
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          {/* Filter pills */}
+          {/* Filter by Status */}
           <div style={{ display: "flex", gap: "4px" }}>
             {(["all", "open", "in_review", "resolved"] as const).map((st) => (
               <button
@@ -219,9 +227,42 @@ export function AssignmentComplaintsPanel({
                   fontWeight: filterStatus === st ? 700 : 500,
                   cursor: "pointer",
                   textTransform: "capitalize",
+                  transition: "all 0.15s ease",
                 }}
               >
                 {st === "all" ? "All" : st.replace("_", " ")}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom of the heading: Filter by Raiser */}
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+          <span style={{ fontSize: "11px", fontWeight: 650, color: "#64748b" }}>Raised By:</span>
+          <div style={{ display: "flex", gap: "4px" }}>
+            {[
+              { id: "all", label: "All" },
+              { id: "supervisor", label: "Site Supervisor" },
+              { id: "provider", label: "Provider" },
+            ].map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setFilterRaiser(item.id as "all" | "supervisor" | "provider")}
+                style={{
+                  fontSize: "11px",
+                  padding: "3px 8px",
+                  borderRadius: "6px",
+                  border: "1px solid",
+                  borderColor: filterRaiser === item.id ? "#0f172a" : "#e2e8f0",
+                  backgroundColor: filterRaiser === item.id ? "#0f172a" : "#ffffff",
+                  color: filterRaiser === item.id ? "#ffffff" : "#64748b",
+                  fontWeight: filterRaiser === item.id ? 700 : 500,
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                {item.label}
               </button>
             ))}
           </div>
@@ -353,7 +394,32 @@ export function AssignmentComplaintsPanel({
               )}
 
               <footer className={styles.complaintMetaFooter}>
-                <span>{c.raisedAt}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", fontSize: "11.5px", color: "#64748b" }}>
+                  <span>{c.raisedAt}</span>
+                  {c.raisedBy && (
+                    <>
+                      <span>·</span>
+                      <span>
+                        Raised by <strong style={{ color: "#0f172a", fontWeight: 650 }}>{c.raisedBy}</strong>
+                      </span>
+                      {c.raisedByRole && (
+                        <span
+                          style={{
+                            fontSize: "10.5px",
+                            fontWeight: 650,
+                            padding: "1px 6px",
+                            borderRadius: "4px",
+                            backgroundColor: c.raisedByRole.toLowerCase().includes("supervisor") ? "#ecfdf5" : "#f5f3ff",
+                            color: c.raisedByRole.toLowerCase().includes("supervisor") ? "#047857" : "#6d28d9",
+                            border: c.raisedByRole.toLowerCase().includes("supervisor") ? "1px solid #d1fae5" : "1px solid #ede9fe",
+                          }}
+                        >
+                          {c.raisedByRole}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </div>
 
                 <div className={styles.complaintActionBtns}>
                   {c.status !== "resolved" && (
