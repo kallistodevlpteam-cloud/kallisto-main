@@ -45,6 +45,10 @@ describe("HandsPaymentsDashboard Component", () => {
     expect(table1Heading).toBeDefined();
     expect(screen.getByText(/Contract milestone advances, weekly deployment cycle disbursements/i)).toBeDefined();
 
+    // Verify detailed scope description is shown instead of generic "Disbursed to: Labor Contractor"
+    expect(screen.getByText(/Initial mobilization advance paid to labor contractor/i)).toBeDefined();
+    expect(screen.queryByText(/Disbursed to:\s*Labor Contractor/i)).toBeNull();
+
     // Table 2: Labor Payments
     const table2Heading = screen.getByRole("heading", { level: 2, name: /^Labor Payments$/i });
     expect(table2Heading).toBeDefined();

@@ -76,12 +76,13 @@ export function HandsPaymentsDashboard() {
         const q = providerSearch.toLowerCase().trim();
         const matchTitle = t.title.toLowerCase().includes(q);
         const matchPayee = (t.paidTo || "").toLowerCase().includes(q);
+        const matchDesc = (t.description || "").toLowerCase().includes(q);
         const matchRef = t.referenceNo.toLowerCase().includes(q);
         const matchId = t.id.toLowerCase().includes(q);
         const matchProject = (t.projectName || "").toLowerCase().includes(q);
         const matchAmount = t.amount.toString().includes(q);
 
-        if (!matchTitle && !matchPayee && !matchRef && !matchId && !matchProject && !matchAmount) {
+        if (!matchTitle && !matchPayee && !matchDesc && !matchRef && !matchId && !matchProject && !matchAmount) {
           return false;
         }
       }
@@ -507,7 +508,7 @@ export function HandsPaymentsDashboard() {
                             {row.title}
                           </span>
                           <span style={{ fontSize: "11.5px", color: "#64748b", lineHeight: 1.35 }}>
-                            Disbursed to: <strong style={{ color: "#334155" }}>{row.paidTo || "Labor Contractor"}</strong>
+                            {row.description || (row.paidTo ? `Disbursed to: ${row.paidTo}` : "Payment settlement")}
                           </span>
                         </div>
                       </td>

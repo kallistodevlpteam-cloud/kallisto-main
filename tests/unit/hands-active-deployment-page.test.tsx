@@ -83,7 +83,7 @@ describe("ActiveDeploymentWorkspace Component", () => {
     // Details header and table
     expect(screen.getByText("Payment & Bill Details")).toBeInTheDocument();
     expect(screen.getByText(/Total Settled to Date/i)).toBeInTheDocument();
-    expect(screen.getByText("Labour Contractor & Activity")).toBeInTheDocument();
+    expect(screen.getByText("Scope & Activity")).toBeInTheDocument();
     expect(screen.getAllByText("Apex Integrated Civil").length).toBeGreaterThan(0);
     expect(screen.getByText("Milestone Deployment Advance")).toBeInTheDocument();
     expect(screen.getByText("Weekly Deployment Settlement - Cycle 1")).toBeInTheDocument();

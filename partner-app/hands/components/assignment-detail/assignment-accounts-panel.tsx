@@ -712,7 +712,7 @@ export function AssignmentAccountsPanel({
               <thead>
                 <tr>
                   <th>Date &amp; Payment / Bill ID</th>
-                  <th>Labour Contractor &amp; Activity</th>
+                  <th>Scope &amp; Activity</th>
                   <th style={{ textAlign: "right" }}>Amount</th>
                   <th style={{ textAlign: "center" }}>Status</th>
                   <th style={{ textAlign: "center" }}>Receipt</th>
