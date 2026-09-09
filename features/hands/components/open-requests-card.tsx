@@ -1,14 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown, ChevronRight, History, LayoutGrid, List, Plus, Search, SlidersHorizontal, X } from "lucide-react";
+import { ChevronDown, ChevronRight, History, LayoutGrid, List, Search, SlidersHorizontal, UserPlus, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { HandsTab, WorkforceRequest } from "../types/hands.types";
 import { getFulfilmentPercentage } from "../utils/hands-formatters";
 import { WorkforceRequestCard } from "./workforce-request-card";
 import styles from "./hands-overview.module.css";
 
-const HISTORICAL_REQUESTS = [
+interface HistoricalRequestItem {
+  id: string;
+  projectName: string;
+  location: string;
+  tradesSummary: string;
+  contractorName: string;
+  fulfilledDate: string;
+  status: string;
+  workerCount: number;
+  primaryTrade: string;
+  logNote: string;
+  rejectionReason?: string;
+}
+
+const HISTORICAL_REQUESTS: HistoricalRequestItem[] = [
   {
     id: "REQ-2026-089",
     projectName: "Nila Residence",
@@ -56,6 +70,36 @@ const HISTORICAL_REQUESTS = [
     workerCount: 5,
     primaryTrade: "Carpenters",
     logNote: "Hardwood door frames fixed & window joinery aligned by Manoj V.",
+  },
+  {
+    id: "REQ-2026-052",
+    projectName: "Nila Residence",
+    location: "Thiruvananthapuram, Kerala",
+    tradesSummary: "6 Welders, 2 Helpers",
+    contractorName: "Precision Steel & Welders Gang",
+    fulfilledDate: "24 Jun 2026",
+    status: "Rejected",
+    workerCount: 0,
+    primaryTrade: "Welders",
+    rejectionReason:
+      "Contractor crew capacity exhausted — unable to mobilize certified 6G structural welders on the requested shift window without an unauthorized 35% premium rate escalation.",
+    logNote:
+      "Formal capacity declination logged. Rate escalation rejected per Kallisto rate-card rules.",
+  },
+  {
+    id: "REQ-2026-031",
+    projectName: "Marina Office",
+    location: "Kozhikode, Kerala",
+    tradesSummary: "8 Helpers",
+    contractorName: "Apex Material Staging Crew",
+    fulfilledDate: "12 Jun 2026",
+    status: "Rejected",
+    workerCount: 0,
+    primaryTrade: "Helpers",
+    rejectionReason:
+      "Site safety clearance delayed — municipal permit pending for exterior façade staging. Request rejected prior to mobilization to prevent idle worker charges.",
+    logNote:
+      "Municipal clearance inspection postponed to 16 Jun. Gate passes cancelled with zero penalty.",
   },
 ];
 
@@ -145,6 +189,17 @@ export function OpenRequestsCard({
           <p>Unfulfilled site workforce requirements & contractor matching</p>
         </div>
         <div className={styles.cardHeaderActions} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button
+            type="button"
+            className={styles.requestLabourActionBtn}
+            onClick={onRequestWorkforce}
+            title="Create manual labour request"
+            aria-label="Request labour"
+          >
+            <UserPlus size={14} aria-hidden="true" />
+            <span>Request Labour</span>
+          </button>
+
           <div
             className={styles.viewModeToggle}
             role="group"
@@ -426,18 +481,28 @@ export function OpenRequestsCard({
                     <div>
                       <strong>{item.projectName} — {item.tradesSummary}</strong>
                       <div className={styles.historyItemMeta}>
-                        <span>{item.id}</span> • <span>{item.location}</span> • <span>Fulfilled: {item.fulfilledDate}</span>
+                        <span>{item.id}</span> • <span>{item.location}</span> • <span>{item.status === "Rejected" ? `Rejected: ${item.fulfilledDate}` : `Fulfilled: ${item.fulfilledDate}`}</span>
                       </div>
                     </div>
-                    <span className={styles.historyItemBadge}>
-                      ✓ {item.status}
+                    <span
+                      className={`${styles.historyItemBadge} ${
+                        item.status === "Rejected" ? styles.statusRejected : ""
+                      }`}
+                    >
+                      {item.status === "Rejected" ? "✕ Rejected" : `✓ ${item.status}`}
                     </span>
                   </div>
 
-                  <div className={styles.historyItemLog}>
-                    <strong>Assigned Contractor:</strong> {item.contractorName} ({item.workerCount} workers deployed)<br />
-                    <span>{item.logNote}</span>
-                  </div>
+                  {item.status === "Rejected" && item.rejectionReason ? (
+                    <div className={styles.gridRejectionBox}>
+                      <strong style={{ color: "#991b1b" }}>Reason for Rejection:</strong> {item.rejectionReason}
+                    </div>
+                  ) : (
+                    <div className={styles.historyItemLog}>
+                      <strong>Assigned Contractor:</strong> {item.contractorName} ({item.workerCount} workers deployed)<br />
+                      <span>{item.logNote}</span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
