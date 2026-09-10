@@ -7,7 +7,9 @@ import {
   Check,
   MessageSquare,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Plus,
+  X
 } from "lucide-react";
 import { 
   AssignmentComplaint, 
@@ -21,6 +23,7 @@ interface AssignmentComplaintsPanelProps {
   assignmentId?: string;
   projectName?: string;
   supervisorName?: string;
+  contractorName?: string;
   initialComplaints?: AssignmentComplaint[];
 }
 
@@ -28,14 +31,24 @@ export function AssignmentComplaintsPanel({
   assignmentId: _assignmentId,
   projectName: _projectName,
   supervisorName: _supervisorName,
+  contractorName = "Apex Integrated Civil",
   initialComplaints = [],
 }: AssignmentComplaintsPanelProps) {
   const [complaints, setComplaints] = useState<AssignmentComplaint[]>(initialComplaints);
   const [filterStatus, setFilterStatus] = useState<"all" | ComplaintStatus>("all");
-  const [filterRaiser, setFilterRaiser] = useState<"all" | "supervisor" | "provider">("all");
+  // Provider complaints are permanently excluded; filter only shows All / Site Supervisor / You (own)
+  const [filterRaiser, setFilterRaiser] = useState<"all" | "supervisor" | "contractor">("all");
   const [activeNoteComplaintId, setActiveNoteComplaintId] = useState<string | null>(null);
   const [noteText, setNoteText] = useState("");
   const [expandedComments, setExpandedComments] = useState<Record<string, boolean>>({});
+
+  // Raise Complaint form state
+  const [showRaiseForm, setShowRaiseForm] = useState(false);
+  const [raiseTitle, setRaiseTitle] = useState("");
+  const [raiseDesc, setRaiseDesc] = useState("");
+  const [raiseSeverity, setRaiseSeverity] = useState<ComplaintSeverity>("medium");
+  const [raiseCategory, setRaiseCategory] = useState<AssignmentComplaint["category"]>("Material Shortage");
+
 
   const toggleCommentsExpanded = (complaintId: string) => {
     setExpandedComments((prev) => ({
@@ -44,11 +57,16 @@ export function AssignmentComplaintsPanel({
     }));
   };
 
+
   const raiserFiltered = complaints.filter((c) => {
+    // Always hide provider-raised complaints — this is the labor contractor's platform
+    if (c.raisedByRole?.toLowerCase().includes("provider")) return false;
+    // Apply Raised By sub-filter (All / Site Supervisor / You)
     if (filterRaiser === "supervisor" && !c.raisedByRole?.toLowerCase().includes("supervisor")) return false;
-    if (filterRaiser === "provider" && !c.raisedByRole?.toLowerCase().includes("provider")) return false;
+    if (filterRaiser === "contractor" && c.raisedByRole?.toLowerCase().includes("supervisor")) return false;
     return true;
   });
+
 
   const openComplaintsCount = raiserFiltered.filter((c) => c.status === "open").length;
   const inReviewCount = raiserFiltered.filter((c) => c.status === "in_review").length;
@@ -89,6 +107,32 @@ export function AssignmentComplaintsPanel({
 
     setNoteText("");
     setActiveNoteComplaintId(null);
+  };
+
+  const handleRaiseComplaint = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!raiseTitle.trim() || !raiseDesc.trim()) return;
+
+    const newComplaint: AssignmentComplaint = {
+      id: `cmp-${Date.now()}`,
+      title: raiseTitle.trim(),
+      description: raiseDesc.trim(),
+      severity: raiseSeverity,
+      status: "open",
+      category: raiseCategory,
+      raisedBy: contractorName,
+      raisedByRole: "Contractor",
+      raisedAt: "Just now",
+      notes: [],
+    };
+
+    setComplaints((prev) => [newComplaint, ...prev]);
+    // Reset form
+    setRaiseTitle("");
+    setRaiseDesc("");
+    setRaiseSeverity("medium");
+    setRaiseCategory("Material Shortage");
+    setShowRaiseForm(false);
   };
 
 
@@ -210,16 +254,16 @@ export function AssignmentComplaintsPanel({
           </div>
 
           {/* Filter by Status */}
-          <div style={{ display: "flex", gap: "4px" }}>
+          <div style={{ display: "flex", gap: "5px", flexWrap: "wrap" }}>
             {(["all", "open", "in_review", "resolved"] as const).map((st) => (
               <button
                 key={st}
                 type="button"
                 onClick={() => setFilterStatus(st)}
                 style={{
-                  fontSize: "11px",
-                  padding: "4px 8px",
-                  borderRadius: "6px",
+                  fontSize: "12px",
+                  padding: "6px 12px",
+                  borderRadius: "7px",
                   border: "1px solid",
                   borderColor: filterStatus === st ? "#2563eb" : "#e2e8f0",
                   backgroundColor: filterStatus === st ? "#eff6ff" : "#ffffff",
@@ -234,25 +278,51 @@ export function AssignmentComplaintsPanel({
               </button>
             ))}
           </div>
+
+          {/* Raise Complaint Button */}
+          <button
+            type="button"
+            onClick={() => setShowRaiseForm((v) => !v)}
+            aria-label="Raise Complaint"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: "13px",
+              fontWeight: 700,
+              padding: "7px 16px",
+              borderRadius: "8px",
+              border: "none",
+              backgroundColor: "#dc2626",
+              color: "#ffffff",
+              cursor: "pointer",
+              transition: "background-color 120ms ease",
+              flexShrink: 0,
+            }}
+          >
+            <Plus size={14} />
+            Raise Complaint
+          </button>
+
         </div>
 
         {/* Bottom of the heading: Filter by Raiser */}
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "11px", fontWeight: 650, color: "#64748b" }}>Raised By:</span>
-          <div style={{ display: "flex", gap: "4px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+          <span style={{ fontSize: "12px", fontWeight: 650, color: "#64748b" }}>Raised By:</span>
+          <div style={{ display: "flex", gap: "5px" }}>
             {[
               { id: "all", label: "All" },
               { id: "supervisor", label: "Site Supervisor" },
-              { id: "provider", label: "Provider" },
+              { id: "contractor", label: "You" },
             ].map((item) => (
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setFilterRaiser(item.id as "all" | "supervisor" | "provider")}
+                onClick={() => setFilterRaiser(item.id as "all" | "supervisor" | "contractor")}
                 style={{
-                  fontSize: "11px",
-                  padding: "3px 8px",
-                  borderRadius: "6px",
+                  fontSize: "12px",
+                  padding: "5px 12px",
+                  borderRadius: "7px",
                   border: "1px solid",
                   borderColor: filterRaiser === item.id ? "#0f172a" : "#e2e8f0",
                   backgroundColor: filterRaiser === item.id ? "#0f172a" : "#ffffff",
@@ -269,7 +339,154 @@ export function AssignmentComplaintsPanel({
         </div>
       </div>
 
+
+      {/* Raise Complaint Inline Form */}
+      {showRaiseForm && (
+        <div
+          style={{
+            margin: "0 0 14px",
+            padding: "16px",
+            backgroundColor: "#fff8f8",
+            border: "1px solid #fecaca",
+            borderRadius: "12px",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+            <span style={{ fontSize: "13px", fontWeight: 700, color: "#0f172a" }}>
+              Raise a Complaint to Site Supervisor
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowRaiseForm(false)}
+              aria-label="Close raise complaint form"
+              style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b", padding: "2px" }}
+            >
+              <X size={15} />
+            </button>
+          </div>
+          <form onSubmit={handleRaiseComplaint} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <input
+              type="text"
+              placeholder="Complaint title *"
+              value={raiseTitle}
+              onChange={(e) => setRaiseTitle(e.target.value)}
+              required
+              style={{
+                width: "100%",
+                padding: "7px 10px",
+                border: "1px solid #e2e8f0",
+                borderRadius: "7px",
+                fontSize: "12.5px",
+                outline: "none",
+                boxSizing: "border-box",
+                backgroundColor: "#ffffff",
+              }}
+            />
+            <textarea
+              placeholder="Describe the issue in detail *"
+              value={raiseDesc}
+              onChange={(e) => setRaiseDesc(e.target.value)}
+              required
+              rows={3}
+              style={{
+                width: "100%",
+                padding: "7px 10px",
+                border: "1px solid #e2e8f0",
+                borderRadius: "7px",
+                fontSize: "12.5px",
+                outline: "none",
+                resize: "vertical",
+                boxSizing: "border-box",
+                backgroundColor: "#ffffff",
+              }}
+            />
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              <div style={{ flex: 1, minWidth: "120px" }}>
+                <label style={{ fontSize: "11px", fontWeight: 650, color: "#64748b", display: "block", marginBottom: "4px" }}>
+                  Severity
+                </label>
+                <select
+                  value={raiseSeverity}
+                  onChange={(e) => setRaiseSeverity(e.target.value as ComplaintSeverity)}
+                  style={{
+                    width: "100%",
+                    padding: "6px 8px",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "7px",
+                    fontSize: "12px",
+                    outline: "none",
+                    backgroundColor: "#ffffff",
+                  }}
+                >
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+              <div style={{ flex: 1, minWidth: "140px" }}>
+                <label style={{ fontSize: "11px", fontWeight: 650, color: "#64748b", display: "block", marginBottom: "4px" }}>
+                  Category
+                </label>
+                <select
+                  value={raiseCategory}
+                  onChange={(e) => setRaiseCategory(e.target.value as AssignmentComplaint["category"])}
+                  style={{
+                    width: "100%",
+                    padding: "6px 8px",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "7px",
+                    fontSize: "12px",
+                    outline: "none",
+                    backgroundColor: "#ffffff",
+                  }}
+                >
+                   {(["Material Shortage", "Safety Hazard", "Access Delay", "Site Condition", "Workforce Dispute"] as const).map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
+              <button
+                type="button"
+                onClick={() => setShowRaiseForm(false)}
+                style={{
+                  padding: "6px 14px",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  borderRadius: "6px",
+                  border: "1px solid #e2e8f0",
+                  background: "#ffffff",
+                  color: "#64748b",
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={!raiseTitle.trim() || !raiseDesc.trim()}
+                style={{
+                  padding: "6px 14px",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  borderRadius: "6px",
+                  border: "none",
+                  backgroundColor: !raiseTitle.trim() || !raiseDesc.trim() ? "#e2e8f0" : "#dc2626",
+                  color: !raiseTitle.trim() || !raiseDesc.trim() ? "#94a3b8" : "#ffffff",
+                  cursor: !raiseTitle.trim() || !raiseDesc.trim() ? "not-allowed" : "pointer",
+                  transition: "background-color 120ms ease",
+                }}
+              >
+                Submit Complaint
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {/* Complaints List */}
+
       <div className={styles.complaintsList}>
         {filteredComplaints.length === 0 ? (
           <div
@@ -359,8 +576,8 @@ export function AssignmentComplaintsPanel({
                 </div>
               )}
 
-              {/* Inline Comment Composer (unresolved complaints only) */}
-              {c.status !== "resolved" && activeNoteComplaintId === c.id && (
+              {/* Inline Comment Composer — only for supervisor-raised complaints; contractor's own complaints are view-only */}
+              {c.status !== "resolved" && activeNoteComplaintId === c.id && !c.raisedByRole?.toLowerCase().includes("contractor") && (
                 <div className={styles.noteComposerBox}>
                   <textarea
                     placeholder="Write a comment..."
@@ -396,81 +613,114 @@ export function AssignmentComplaintsPanel({
               <footer className={styles.complaintMetaFooter}>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", fontSize: "11.5px", color: "#64748b" }}>
                   <span>{c.raisedAt}</span>
-                  {c.raisedBy && (
-                    <>
-                      <span>·</span>
-                      <span>
-                        Raised by <strong style={{ color: "#0f172a", fontWeight: 650 }}>{c.raisedBy}</strong>
-                      </span>
-                      {c.raisedByRole && (
+                  {c.raisedBy && (() => {
+                    const isOwnComplaint = c.raisedByRole?.toLowerCase().includes("contractor");
+                    return (
+                      <>
+                        <span>·</span>
+                        <span>
+                          Raised by{" "}
+                          <strong style={{ color: "#0f172a", fontWeight: 650 }}>
+                            {isOwnComplaint ? "You" : c.raisedBy}
+                          </strong>
+                        </span>
+                        {/* Only show role badge for supervisor complaints; hide for own (contractor) complaints */}
+                        {!isOwnComplaint && c.raisedByRole && (
+                          <span
+                            style={{
+                              fontSize: "10.5px",
+                              fontWeight: 650,
+                              padding: "1px 6px",
+                              borderRadius: "4px",
+                              backgroundColor: "#ecfdf5",
+                              color: "#047857",
+                              border: "1px solid #d1fae5",
+                            }}
+                          >
+                            {c.raisedByRole}
+                          </span>
+                        )}
+                      </>
+                    );
+                  })()}
+                </div>
+
+
+                {/* Action buttons — hidden for contractor's own complaints (supervisor handles those) */}
+                <div className={styles.complaintActionBtns}>
+                  {(() => {
+                    const isOwnComplaint = c.raisedByRole?.toLowerCase().includes("contractor");
+                    if (isOwnComplaint) {
+                      // Contractor can only VIEW their own complaints; supervisor reviews/resolves on their portal
+                      return (
                         <span
                           style={{
-                            fontSize: "10.5px",
-                            fontWeight: 650,
-                            padding: "1px 6px",
-                            borderRadius: "4px",
-                            backgroundColor: c.raisedByRole.toLowerCase().includes("supervisor") ? "#ecfdf5" : "#f5f3ff",
-                            color: c.raisedByRole.toLowerCase().includes("supervisor") ? "#047857" : "#6d28d9",
-                            border: c.raisedByRole.toLowerCase().includes("supervisor") ? "1px solid #d1fae5" : "1px solid #ede9fe",
+                            fontSize: "11px",
+                            color: "#94a3b8",
+                            fontStyle: "italic",
                           }}
                         >
-                          {c.raisedByRole}
+                          {c.status === "resolved"
+                            ? "✓ Resolved by site supervisor"
+                            : c.status === "in_review"
+                            ? "⏳ Under review by site supervisor"
+                            : "Awaiting site supervisor review"}
                         </span>
-                      )}
-                    </>
-                  )}
-                </div>
-
-                <div className={styles.complaintActionBtns}>
-                  {c.status !== "resolved" && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (activeNoteComplaintId === c.id) {
-                            setActiveNoteComplaintId(null);
-                            setNoteText("");
-                          } else {
-                            setActiveNoteComplaintId(c.id);
-                            setNoteText("");
-                            setExpandedComments((prev) => ({
-                              ...prev,
-                              [c.id]: true,
-                            }));
-                          }
-                        }}
-                        className={styles.complaintActionBtn}
-                        title="Add a comment"
-                      >
-                        <MessageSquare size={13} />
-                        <span>Comment</span>
-                      </button>
-
-                      {c.status === "open" && (
+                      );
+                    }
+                    // Supervisor-raised complaints: contractor can comment and take action
+                    if (c.status === "resolved") return null;
+                    return (
+                      <>
                         <button
                           type="button"
-                          onClick={() => handleToggleReview(c.id)}
+                          onClick={() => {
+                            if (activeNoteComplaintId === c.id) {
+                              setActiveNoteComplaintId(null);
+                              setNoteText("");
+                            } else {
+                              setActiveNoteComplaintId(c.id);
+                              setNoteText("");
+                              setExpandedComments((prev) => ({
+                                ...prev,
+                                [c.id]: true,
+                              }));
+                            }
+                          }}
                           className={styles.complaintActionBtn}
-                          title="Start review on this complaint"
+                          title="Add a comment"
                         >
-                          <Clock size={13} strokeWidth={2} />
-                          <span>Start Review</span>
+                          <MessageSquare size={13} />
+                          <span>Comment</span>
                         </button>
-                      )}
 
-                      <button
-                        type="button"
-                        onClick={() => handleToggleResolve(c.id)}
-                        className={styles.complaintActionBtn}
-                        aria-label="✓ Mark Resolved"
-                        title="Mark complaint as resolved"
-                      >
-                        <Check size={13} strokeWidth={2} />
-                        <span>Mark Resolved</span>
-                      </button>
-                    </>
-                  )}
+                        {c.status === "open" && (
+                          <button
+                            type="button"
+                            onClick={() => handleToggleReview(c.id)}
+                            className={styles.complaintActionBtn}
+                            title="Start review on this complaint"
+                          >
+                            <Clock size={13} strokeWidth={2} />
+                            <span>Start Review</span>
+                          </button>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={() => handleToggleResolve(c.id)}
+                          className={styles.complaintActionBtn}
+                          aria-label="✓ Mark Resolved"
+                          title="Mark complaint as resolved"
+                        >
+                          <Check size={13} strokeWidth={2} />
+                          <span>Mark Resolved</span>
+                        </button>
+                      </>
+                    );
+                  })()}
                 </div>
+
               </footer>
             </article>
           ))
