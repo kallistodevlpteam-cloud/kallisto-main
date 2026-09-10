@@ -54,6 +54,7 @@ function getStatusVisual(status: string) {
         dot: "#ea580c",
       };
     case "scheduled":
+    case "pending":
       return {
         color: "#0284c7",
         bgLight: "#f0f9ff",
@@ -66,6 +67,20 @@ function getStatusVisual(status: string) {
         bgLight: "#f0fdf4",
         border: "#bbf7d0",
         dot: "#16a34a",
+      };
+    case "delayed":
+      return {
+        color: "#b45309",
+        bgLight: "#fffbeb",
+        border: "#fde68a",
+        dot: "#d97706",
+      };
+    case "on-hold":
+      return {
+        color: "#6d28d9",
+        bgLight: "#f5f3ff",
+        border: "#ddd6fe",
+        dot: "#7c3aed",
       };
     case "cancelled":
       return {
@@ -365,6 +380,7 @@ export function DeploymentActivitiesCalendar({
             Today (Sep 8)
           </button>
 
+          {!isPartner && (
           <button
             type="button"
             onClick={() => onAddTaskClick(selectedDate)}
@@ -387,6 +403,7 @@ export function DeploymentActivitiesCalendar({
             <Plus size={14} />
             <span>Add Task</span>
           </button>
+          )}
         </div>
       </div>
 
@@ -459,9 +476,10 @@ export function DeploymentActivitiesCalendar({
           >
             <option value="all">All Statuses ({tasks.length})</option>
             <option value="in-progress">In Progress</option>
-            <option value="scheduled">Scheduled</option>
             <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="delayed">Delayed</option>
+            {!isPartner && <option value="cancelled">Cancelled</option>}
           </select>
 
           {/* Gantt Phase filter */}
@@ -525,33 +543,7 @@ export function DeploymentActivitiesCalendar({
         </div>
 
         {/* 5-week month cells */}
-        {isPartner && (
-          <style>{`
-            .partner-calendar-cell {
-              position: relative !important;
-              transition: box-shadow 140ms ease !important;
-            }
-            .partner-calendar-cell:hover {
-              box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important;
-              z-index: 2 !important;
-            }
-            .partner-calendar-cell .partner-cell-add-btn {
-              opacity: 0;
-              transition: opacity 140ms ease;
-              pointer-events: none;
-            }
-            .partner-calendar-cell:hover .partner-cell-add-btn {
-              opacity: 1;
-              pointer-events: auto;
-            }
-            /* Do not fill with black color on hover; maintain clean outline style */
-            .partner-cell-add-btn:hover {
-              background-color: #ffffff !important;
-              border-color: #64748b !important;
-              color: #475569 !important;
-            }
-          `}</style>
-        )}
+
         <div
           style={{
             display: "grid",
@@ -562,14 +554,12 @@ export function DeploymentActivitiesCalendar({
           {calendarDays.map((cell) => {
             const isToday = cell.dateStr === "2026-09-08";
             const dayTasks = tasksByDate[cell.dateStr] || [];
-            const isSelected = isPartner
-              ? cell.dateStr === selectedDate && dayTasks.length > 0
-              : cell.dateStr === selectedDate;
+            const isSelected = cell.dateStr === selectedDate;
 
             const handleCellClick = () => {
               if (isPartner && dayTasks.length === 0) {
-                // Click on empty column directly opens overlay without displaying selected
-                onAddTaskClick?.(cell.dateStr);
+                // Partner clicks empty column: just select the date (no add task access)
+                handleSelectDate(cell.dateStr);
               } else {
                 handleSelectDate(cell.dateStr);
               }
@@ -580,7 +570,6 @@ export function DeploymentActivitiesCalendar({
                 key={cell.dateStr}
                 role="button"
                 tabIndex={0}
-                className={isPartner ? "partner-calendar-cell" : undefined}
                 data-selected={isSelected ? "true" : "false"}
                 data-today={isToday ? "true" : "false"}
                 onClick={handleCellClick}
@@ -779,48 +768,6 @@ export function DeploymentActivitiesCalendar({
                   )}
                 </div>
 
-                {/* Empty cell hover plus action button placed at exact center of column */}
-                {isPartner && dayTasks.length === 0 && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      zIndex: 2,
-                    }}
-                  >
-                    <button
-                      type="button"
-                      className="partner-cell-add-btn"
-                      aria-label={`Add task for ${cell.dateStr}`}
-                      title="Add task for this date"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onAddTaskClick?.(cell.dateStr);
-                      }}
-                      style={{
-                        width: "22px",
-                        height: "22px",
-                        borderRadius: "50%",
-                        border: "1.2px solid #64748b",
-                        backgroundColor: "#ffffff",
-                        color: "#475569",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        cursor: "pointer",
-                        padding: 0,
-                        boxShadow: "0 1px 2px rgba(15, 23, 42, 0.06)",
-                      }}
-                    >
-                      <Plus size={12} strokeWidth={2} />
-                    </button>
-                  </div>
-                )}
               </div>
             );
           })}
@@ -879,6 +826,7 @@ export function DeploymentActivitiesCalendar({
             </p>
           </div>
 
+          {!isPartner && (
           <button
             type="button"
             onClick={() => onAddTaskClick(selectedDate)}
@@ -899,6 +847,7 @@ export function DeploymentActivitiesCalendar({
             <Plus size={13} />
             <span>Schedule Task for this Date</span>
           </button>
+          )}
         </div>
 
         {/* Tasks List for Selected Date */}
@@ -946,8 +895,11 @@ export function DeploymentActivitiesCalendar({
               No tasks scheduled for {selectedDateFormatted}
             </p>
             <p style={{ fontSize: "11.5px", margin: "4px 0 12px" }}>
-              Service provider can schedule a new task tied to BOQ and Gantt milestones.
+              {isPartner
+                ? "Tasks for this date will appear here once scheduled by the site supervisor or service provider."
+                : "Service provider can schedule a new task tied to BOQ and Gantt milestones."}
             </p>
+            {!isPartner && (
             <button
               type="button"
               onClick={() => onAddTaskClick(selectedDate)}
@@ -968,6 +920,7 @@ export function DeploymentActivitiesCalendar({
               <Plus size={13} />
               <span>Schedule New Task</span>
             </button>
+            )}
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -1061,73 +1014,77 @@ export function DeploymentActivitiesCalendar({
                       )}
                     </div>
 
-                    {/* Status badge / interactive pill */}
+                    {/* Status badge — read-only for partner, interactive for service provider */}
                     <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <button
-                        type="button"
-                        onClick={() => onToggleStatus(task.id)}
-                        title="Click to cycle status (Scheduled → In progress → Completed)"
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
+                      {(() => {
+                        const sv = getStatusVisual(task.status);
+                        const isDelayed = task.status === "delayed";
+                        const isOnHold = task.status === "on-hold";
+                        const isPending = task.status === "pending" || task.status === "scheduled";
+                        const statusLabel = isCompleted
+                          ? "Completed"
+                          : isInProgress
+                          ? "In progress"
+                          : isCancelled
+                          ? "Cancelled"
+                          : isDelayed
+                          ? "Delayed"
+                          : isOnHold
+                          ? "On Hold"
+                          : isPending
+                          ? "Scheduled"
+                          : task.status;
+                        const statusIcon = isCompleted ? (
+                          <CheckCircle2 size={11} />
+                        ) : isInProgress ? (
+                          <Clock size={11} />
+                        ) : isCancelled ? (
+                          <XCircle size={11} />
+                        ) : (
+                          <span
+                            style={{
+                              width: "6px",
+                              height: "6px",
+                              borderRadius: "50%",
+                              backgroundColor: sv.dot,
+                            }}
+                          />
+                        );
+                        const pillStyle = {
+                          display: "inline-flex" as const,
+                          alignItems: "center" as const,
                           gap: "4px",
                           padding: "2px 8px",
                           borderRadius: "9999px",
                           fontSize: "11px",
                           fontWeight: 700,
-                          cursor: "pointer",
-                          border: isCancelled
-                            ? "1px solid #fca5a5"
-                            : isCompleted
-                              ? "1px solid #bbf7d0"
-                              : isInProgress
-                                ? "1px solid #fed7aa"
-                                : "1px solid #bae6fd",
-                          backgroundColor: isCancelled
-                            ? "#fef2f2"
-                            : isCompleted
-                              ? "#f0fdf4"
-                              : isInProgress
-                                ? "#fff7ed"
-                                : "#f0f9ff",
-                          color: isCancelled
-                            ? "#b91c1c"
-                            : isCompleted
-                              ? "#15803d"
-                              : isInProgress
-                                ? "#c2410c"
-                                : "#0284c7",
-                        }}
-                      >
-                        {isCompleted ? (
-                          <>
-                            <CheckCircle2 size={11} />
-                            Completed
-                          </>
-                        ) : isInProgress ? (
-                          <>
-                            <Clock size={11} />
-                            In progress
-                          </>
-                        ) : isCancelled ? (
-                          <>
-                            <XCircle size={11} />
-                            Cancelled
-                          </>
-                        ) : (
-                          <>
-                            <span
-                              style={{
-                                width: "6px",
-                                height: "6px",
-                                borderRadius: "50%",
-                                backgroundColor: "#0284c7",
-                              }}
-                            />
-                            Scheduled
-                          </>
-                        )}
-                      </button>
+                          border: `1px solid ${sv.border}`,
+                          backgroundColor: sv.bgLight,
+                          color: sv.color,
+                        };
+
+                        if (isPartner) {
+                          // Read-only status display for contractor
+                          return (
+                            <span style={pillStyle}>
+                              {statusIcon}
+                              {statusLabel}
+                            </span>
+                          );
+                        }
+
+                        return (
+                          <button
+                            type="button"
+                            onClick={() => onToggleStatus(task.id)}
+                            title="Click to cycle status (Scheduled → In progress → Completed)"
+                            style={{ ...pillStyle, cursor: "pointer" }}
+                          >
+                            {statusIcon}
+                            {statusLabel}
+                          </button>
+                        );
+                      })()}
                     </div>
                   </div>
 
@@ -1231,8 +1188,8 @@ export function DeploymentActivitiesCalendar({
                     </div>
                   )}
 
-                  {/* Action Buttons for Service Provider (hidden on cancelled tasks) */}
-                  {!isCancelled && (
+                  {/* Action Buttons for Service Provider (hidden on cancelled tasks and partner variant) */}
+                  {!isCancelled && !isPartner && (
                     <div
                       style={{
                         display: "flex",

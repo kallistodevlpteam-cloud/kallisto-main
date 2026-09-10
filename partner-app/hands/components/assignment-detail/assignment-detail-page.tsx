@@ -412,6 +412,7 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
               assignmentId={assignment.id}
               projectName={assignment.projectName}
               supervisorName={assignment.supervisor.name}
+              contractorName="Apex Integrated Civil"
               initialComplaints={assignment.complaints}
             />
           )}

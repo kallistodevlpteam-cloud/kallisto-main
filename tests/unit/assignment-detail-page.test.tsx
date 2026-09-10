@@ -61,38 +61,33 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     expect(screen.queryByText("Biju K")).toBeNull();
   });
 
-  it("switches to Site Complaints tab, displays supervisor and provider complaints, and handles status resolution and filtering", () => {
+  it("switches to Site Complaints tab, displays supervisor complaints only (provider hidden), and handles status resolution and filtering", () => {
     render(<AssignmentDetailPage assignment={assignment} />);
 
     const complaintsTab = screen.getByRole("button", { name: /Site Complaints/i });
     fireEvent.click(complaintsTab);
 
     expect(screen.getByText("Site Complaints & Impediments")).toBeDefined();
+    // Supervisor complaint is visible
     expect(screen.getByText("Cement Mortar Sand Delivery Delay")).toBeDefined();
-    expect(screen.getByText("Tower Crane Power Cable Fluctuation")).toBeDefined();
+    // Provider complaint (cmp-102: Tower Crane Power Cable Fluctuation) must NOT appear
+    expect(screen.queryByText("Tower Crane Power Cable Fluctuation")).toBeNull();
     expect(screen.getAllByText(/Raised by/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Site Supervisor/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Provider/i).length).toBeGreaterThan(0);
+    // No Provider filter pill should exist
+    expect(screen.queryByRole("button", { name: /^Provider$/i })).toBeNull();
     expect(screen.getByText(/Today, 08:30 AM/i)).toBeDefined();
 
-    // Filter by Provider
-    const providerFilterBtn = screen.getByRole("button", { name: /^Provider$/i });
-    fireEvent.click(providerFilterBtn);
-    expect(screen.getByText("Tower Crane Power Cable Fluctuation")).toBeDefined();
-    expect(screen.queryByText("Cement Mortar Sand Delivery Delay")).toBeNull();
-
-    // Filter by Site Supervisor
+    // Filter by Site Supervisor (already visible)
     const supervisorFilterBtn = screen.getByRole("button", { name: /^Site Supervisor$/i });
     fireEvent.click(supervisorFilterBtn);
     expect(screen.getByText("Cement Mortar Sand Delivery Delay")).toBeDefined();
-    expect(screen.queryByText("Tower Crane Power Cable Fluctuation")).toBeNull();
 
     // Reset filter to All
     const raisedByContainer = screen.getByText("Raised By:").parentElement!;
     const allRaiserBtn = within(raisedByContainer).getByRole("button", { name: /^All$/i });
     fireEvent.click(allRaiserBtn);
     expect(screen.getByText("Cement Mortar Sand Delivery Delay")).toBeDefined();
-    expect(screen.getByText("Tower Crane Power Cable Fluctuation")).toBeDefined();
 
     // Resolve a complaint
     const resolveBtns = screen.getAllByRole("button", { name: /✓ Mark Resolved/i });
@@ -101,21 +96,35 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     expect(screen.getAllByText("✓ Resolved").length).toBeGreaterThan(0);
   });
 
-  it("does not render Raise Complaint button and allows contractor to comment on unresolved complaints only", () => {
+
+  it("renders Raise Complaint button and allows contractor to submit a complaint and comment on unresolved complaints", () => {
     render(<AssignmentDetailPage assignment={assignment} />);
 
     const complaintsTab = screen.getByRole("button", { name: /Site Complaints/i });
     fireEvent.click(complaintsTab);
 
-    // Verify Raise Complaint and Add Note buttons are NOT rendered
-    expect(screen.queryByRole("button", { name: /Raise Complaint/i })).toBeNull();
+    // Raise Complaint button must be present
+    const raiseBtn = screen.getByRole("button", { name: /Raise Complaint/i });
+    expect(raiseBtn).toBeDefined();
+
+    // Add Note button should NOT exist
     expect(screen.queryByRole("button", { name: /Add Note/i })).toBeNull();
 
-    // Verify Comment buttons are present for unresolved complaints
+    // Only 1 visible unresolved complaint (cmp-101 supervisor open; cmp-102 provider is hidden)
     const commentBtns = screen.getAllByRole("button", { name: /^Comment$/i });
-    expect(commentBtns.length).toBe(2); // 2 unresolved complaints (cmp-101 and cmp-102)
+    expect(commentBtns.length).toBe(1);
 
-    // Click Comment on first complaint
+    // Click Raise Complaint to open form
+    fireEvent.click(raiseBtn);
+    expect(screen.getByPlaceholderText(/Complaint title/i)).toBeDefined();
+    expect(screen.getByPlaceholderText(/Describe the issue/i)).toBeDefined();
+
+    // Close the form
+    const closeForms = screen.getAllByRole("button", { name: /Close raise complaint form/i });
+    fireEvent.click(closeForms[0]);
+    expect(screen.queryByPlaceholderText(/Complaint title/i)).toBeNull();
+
+    // Click Comment on first (only) complaint
     fireEvent.click(commentBtns[0]);
 
     // Normal textarea composer opens
@@ -153,6 +162,7 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     expect(screen.getAllByText("✓ Resolved").length).toBeGreaterThan(0);
     expect(screen.getByText("Sand batch delivered on site at 2 PM. Work resumed.")).toBeDefined();
   });
+
 
   it("switches to Accounts & Billing tab and displays financial metrics and trade wage rates", () => {
     render(<AssignmentDetailPage assignment={assignment} />);
@@ -248,23 +258,29 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     const sendBtn = screen.getByRole("button", { name: /Send update/i });
     fireEvent.click(sendBtn);
 
-    // Verify roles displayed near author names
+    // Verify roles displayed near author names (only non-own messages show role label)
     expect(screen.getAllByText(/· Site Supervisor/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/· Provider/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/· Contractor/i).length).toBeGreaterThan(0);
+    // Provider updates are filtered out — this is the contractor's platform
+    expect(screen.queryByText(/· Provider/i)).toBeNull();
+    // "· Contractor" role label is suppressed for own ("You") messages
+    expect(screen.queryByText(/· Contractor/i)).toBeNull();
 
-    // Verify Provider update is present in feed
-    expect(screen.getAllByText("Greenwood Infra Projects Ltd").length).toBeGreaterThanOrEqual(2);
-    expect(screen.getByText(/Site inspection and lintel beam alignment check/i)).toBeDefined();
+    // Provider updates must NOT appear in the feed
+    expect(screen.queryByText(/Site inspection and lintel beam alignment check/i)).toBeNull();
+    // Provider role badge must not appear in updates (provider messages are filtered)
+    expect(screen.queryByText(/· Provider/i)).toBeNull();
 
-    // Verify Contractor name is rendered instead of generic 'You'
-    expect(screen.getAllByText("Apex Integrated Civil").length).toBeGreaterThan(0);
+    // Contractor messages must show "You" (not the company name)
+    expect(screen.getAllByText("You").length).toBeGreaterThan(0);
+    // Company name must NOT appear as author (replaced by "You")
+    expect(screen.queryByText("Apex Integrated Civil")).toBeNull();
+
 
     // Verify inline reply composer opens with light border, transparent background, and black reply button
     const replyBtns = screen.getAllByRole("button", { name: /Reply/i });
     fireEvent.click(replyBtns[0]);
 
-    const inlineReplyInput = screen.getByPlaceholderText(/Reply to (You|Suresh Nair|Apex Integrated Civil)\.\.\./i);
+    const inlineReplyInput = screen.getByPlaceholderText(/Reply to (You|Suresh Nair)\.\.\./i);
     expect(inlineReplyInput).toBeDefined();
     expect(inlineReplyInput.style.backgroundColor).toBe("transparent");
     expect(inlineReplyInput.style.borderColor).toBe("rgb(226, 232, 240)");
@@ -274,6 +290,7 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     expect(replySubmitBtn?.style.backgroundColor).toBe("rgb(15, 23, 42)");
     expect(replySubmitBtn?.style.color).toBe("rgb(255, 255, 255)");
   });
+
 
   it("renders completed assignment page with indigo Completed badge and settlement details", () => {
     const completedAssignment = getAssignmentById("ASG-107")!;
@@ -311,24 +328,27 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     const complaintsTab = screen.getByRole("button", { name: /Site Complaints/i });
     fireEvent.click(complaintsTab);
 
-    // Complaint in review: "Temporary Power Distribution Disruption"
-    expect(screen.getByText("Temporary Power Distribution Disruption")).toBeDefined();
-    // Badge shows "⏳ In Review"
-    expect(screen.getByText("⏳ In Review")).toBeDefined();
+    // Provider complaint ("Temporary Power Distribution Disruption") must NOT appear — provider complaints are hidden
+    expect(screen.queryByText("Temporary Power Distribution Disruption")).toBeNull();
+    // In-review badge from provider complaint should also not appear
+    expect(screen.queryByText("⏳ In Review")).toBeNull();
 
-    // Only the open complaint has "Start Review"; the in-review complaint has no review action button
+    // Only the supervisor/open complaint is visible: "Material Staging Area Access Restriction"
+    expect(screen.getByText("Material Staging Area Access Restriction")).toBeDefined();
+
+    // 1 Start Review button (the open supervisor complaint)
     const startReviewBtns = screen.getAllByRole("button", { name: /Start Review/i });
-    expect(startReviewBtns.length).toBe(1); // Only 1 for open complaint
+    expect(startReviewBtns.length).toBe(1);
 
-    // Clicking "Start Review" on the open complaint transitions it to in_review and hides the button
+    // Clicking "Start Review" transitions it to in_review and hides the button
     fireEvent.click(startReviewBtns[0]);
     expect(screen.queryByRole("button", { name: /Start Review/i })).toBeNull();
 
-    // Both complaints are now in review, so only Comment and Mark Resolved action buttons exist
+    // After transition to in_review, only Comment and Mark Resolved remain (1 complaint visible)
     const commentBtns = screen.getAllByRole("button", { name: /^Comment$/i });
-    expect(commentBtns.length).toBe(2);
+    expect(commentBtns.length).toBe(1);
     const resolveBtns = screen.getAllByRole("button", { name: /✓ Mark Resolved/i });
-    expect(resolveBtns.length).toBe(2);
+    expect(resolveBtns.length).toBe(1);
 
     // Resolution log should NOT be rendered
     expect(screen.queryByText(/Resolution Log:/i)).toBeNull();
@@ -339,6 +359,7 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     // Resolution log remains removed even when resolved
     expect(screen.queryByText(/Resolution Log:/i)).toBeNull();
   });
+
 
   it("renders Activities tab before Accounts & Billing with activity count badge", () => {
     render(<AssignmentDetailPage assignment={assignment} />);
@@ -415,9 +436,9 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     expect(screen.getAllByText(/38 lin m/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Phase 2: Superstructure Masonry & Lintel Level/i).length).toBeGreaterThan(0);
 
-    // Verify Update Task and Cancel Task buttons are present
-    expect(screen.getAllByRole("button", { name: /Update Task/i }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole("button", { name: /Cancel Task/i }).length).toBeGreaterThan(0);
+    // Verify Update Task and Cancel Task buttons are NOT present (partner view is read-only)
+    expect(screen.queryByRole("button", { name: /Update Task/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: /Cancel Task/i })).toBeNull();
   });
 
   it("filters activities by status dropdown selector", () => {
@@ -443,50 +464,37 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     expect(screen.getAllByText("Perimeter brick masonry & plumb line verification").length).toBeGreaterThan(0);
   });
 
-  it("opens Add Task modal without contractor dropdown, pre-fills selected date, and schedules new task in that column", () => {
+  it("hides Add Task and Schedule Task buttons for partner view (contractor cannot create tasks)", () => {
     render(<AssignmentDetailPage assignment={assignment} />);
 
     const activitiesTab = screen.getByRole("button", { name: /Activities/i });
     fireEvent.click(activitiesTab);
+
+    // "Add Task" header button is NOT present for partner
+    expect(screen.queryByRole("button", { name: /^Add Task$/i })).toBeNull();
 
     // Select date column 9 (Wednesday, Sep 9, 2026)
     const sep9Cell = screen.getByText(/^9$/).closest('[role="button"]');
     expect(sep9Cell).toBeDefined();
     if (sep9Cell) fireEvent.click(sep9Cell);
 
-    // Click "Schedule Task for this Date" button
-    const addBtn = screen.getByRole("button", { name: /Schedule Task for this Date/i });
-    fireEvent.click(addBtn);
+    // "Schedule Task for this Date" button is NOT present for partner
+    expect(screen.queryByRole("button", { name: /Schedule Task for this Date/i })).toBeNull();
 
-    // Add Task modal opens
-    const modal = screen.getByRole("dialog");
-    expect(within(modal).getByText("Add Site Execution Task")).toBeDefined();
+    // "Schedule New Task" button is NOT present for empty dates
+    expect(screen.queryByRole("button", { name: /Schedule New Task/i })).toBeNull();
 
-    // Verify "Assigned Labour Contractor" dropdown is completely removed for partner view
-    expect(within(modal).queryByLabelText(/Assigned Labour Contractor/i)).toBeNull();
+    // No Add Task modal opens
+    expect(screen.queryByRole("dialog")).toBeNull();
 
-    // Verify Scheduled Date field is present and pre-filled with 2026-09-09
-    const dateInput = within(modal).getByLabelText(/Scheduled Date/i) as HTMLInputElement;
-    expect(dateInput).toBeDefined();
-    expect(dateInput.value).toBe("2026-09-09");
-
-    // Fill out task title
-    const titleInput = within(modal).getByLabelText(/Task Title/i);
-    fireEvent.change(titleInput, { target: { value: "Lintel Band Rebar Inspection & Compaction" } });
-
-    // Submit form
-    const submitBtn = within(modal).getByRole("button", { name: /^Add Task$/ });
-    fireEvent.click(submitBtn);
-
-    // Modal closes
-    expect(screen.queryByText("Add Site Execution Task")).toBeNull();
-
-    // Verify task is immediately displayed in that column schedule
-    expect(screen.getAllByText("Lintel Band Rebar Inspection & Compaction").length).toBeGreaterThan(0);
-    expect(screen.getByText(/3 tasks scheduled for this date/i)).toBeDefined();
+    // Status badges are read-only (rendered as spans, not buttons)
+    // Switch back to Sep 8 to see tasks with status badges
+    const sep8Cell = screen.getByText(/^8$/).closest('[role="button"]');
+    if (sep8Cell) fireEvent.click(sep8Cell);
+    expect(screen.queryByRole("button", { name: /Click to cycle status/i })).toBeNull();
   });
 
-  it("directly opens add task overlay when clicking empty calendar column and does not display as selected", () => {
+  it("clicking empty calendar column selects date without opening add task overlay for partner view", () => {
     render(<AssignmentDetailPage assignment={assignment} />);
 
     const activitiesTab = screen.getByRole("button", { name: /Activities/i });
@@ -497,31 +505,19 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     expect(sep12Cell).toBeDefined();
     expect(sep12Cell.getAttribute("data-selected")).toBe("false");
 
-    // Clicking directly on the empty column opens the overlay directly
+    // Clicking the empty column just selects the date — no add task overlay
     fireEvent.click(sep12Cell);
 
-    // Overlay is open
-    const modal = screen.getByRole("dialog");
-    expect(within(modal).getByText("Add Site Execution Task")).toBeDefined();
+    // No modal opens for partner
+    expect(screen.queryByRole("dialog")).toBeNull();
 
-    // Verify empty cell does NOT display as selected
-    expect(sep12Cell.getAttribute("data-selected")).toBe("false");
+    // Empty cell does NOT have a hover + button (removed for partner)
+    expect(within(sep12Cell).queryByRole("button", { name: /Add task for/i })).toBeNull();
 
-    // The modal pre-fills with Sep 12
-    const dateInput = within(modal).getByLabelText(/Scheduled Date/i) as HTMLInputElement;
-    expect(dateInput.value).toBe("2026-09-12");
-
-    // Close modal
-    const closeBtn = within(modal).getByRole("button", { name: /Close add task modal/i });
-    fireEvent.click(closeBtn);
-    expect(screen.queryByText("Add Site Execution Task")).toBeNull();
-
-    // Verify empty cell renders centered + icon button with outline styling and without black fill
-    const plusBtn = within(sep12Cell).getByRole("button", { name: /Add task for 2026-09-12/i });
-    expect(plusBtn).toBeDefined();
-    expect(plusBtn.className).toContain("partner-cell-add-btn");
-    expect(plusBtn.style.backgroundColor).toBe("rgb(255, 255, 255)");
-    expect(plusBtn.style.color).toBe("rgb(71, 85, 105)");
+    // The date IS now selected and shows empty state message for partner
+    expect(sep12Cell.getAttribute("data-selected")).toBe("true");
+    expect(screen.getByText(/No tasks scheduled for/i)).toBeDefined();
+    expect(screen.getByText(/Tasks for this date will appear here once scheduled by the site supervisor or service provider/i)).toBeDefined();
   });
 });
 

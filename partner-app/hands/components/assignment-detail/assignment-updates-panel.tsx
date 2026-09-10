@@ -362,14 +362,21 @@ export function AssignmentUpdatesPanel({
             No updates posted yet. Use the composer below to begin communication with {supervisorName}.
           </div>
         ) : (
-          updates.map((update) => {
+          updates
+            // Permanently exclude provider updates — this is the contractor's platform
+            .filter((u) => !u.authorRole?.toLowerCase().includes("provider"))
+            .map((update) => {
             const isSupervisor = update.authorRole?.toLowerCase().includes("supervisor");
-            const isProvider = update.authorRole?.toLowerCase().includes("provider");
-            const resolvedRole = update.authorRole || (isSupervisor ? "Site Supervisor" : isProvider ? "Provider" : "Contractor");
+            const resolvedRole = update.authorRole || (isSupervisor ? "Site Supervisor" : "Contractor");
             const resolvedContractorName = contractorName && contractorName !== "You" ? contractorName : "Apex Integrated Civil";
-            const displayName = (update.authorName === "You" || update.authorName.toLowerCase() === "me")
-              ? resolvedContractorName
-              : update.authorName;
+            // Show "You" when this message was authored by the contractor (self)
+            const isOwnMessage =
+              update.authorRole?.toLowerCase().includes("contractor") ||
+              update.authorName === resolvedContractorName ||
+              update.authorName === "You" ||
+              update.authorName.toLowerCase() === "me";
+            const displayName = isOwnMessage ? "You" : update.authorName;
+
 
             return (
               <article key={update.id} className={styles.updateItemCard}>
@@ -383,7 +390,8 @@ export function AssignmentUpdatesPanel({
                   <div className={styles.updateAuthorInfo}>
                     <div className={styles.updateAuthorNameRow}>
                       <span style={{ fontWeight: 650 }}>{displayName}</span>
-                      {resolvedRole && (
+                      {/* Don't show the role label for own messages ("You") — this is the contractor's platform */}
+                      {resolvedRole && displayName !== "You" && (
                         <span className={styles.updateAuthorRole}>· {resolvedRole}</span>
                       )}
                       <span style={{ fontSize: "11px", color: "#94a3b8", marginLeft: "auto" }}>
@@ -449,9 +457,12 @@ export function AssignmentUpdatesPanel({
                       const isReplySupervisor = reply.authorRole?.toLowerCase().includes("supervisor");
                       const isReplyProvider = reply.authorRole?.toLowerCase().includes("provider");
                       const replyRoleName = reply.authorRole || (isReplySupervisor ? "Site Supervisor" : isReplyProvider ? "Provider" : "Contractor");
-                      const replyDisplayName = (reply.authorName === "You" || reply.authorName.toLowerCase() === "me")
-                        ? resolvedContractorName
-                        : reply.authorName;
+                      const isOwnReply =
+                        reply.authorRole?.toLowerCase().includes("contractor") ||
+                        reply.authorName === resolvedContractorName ||
+                        reply.authorName === "You" ||
+                        reply.authorName.toLowerCase() === "me";
+                      const replyDisplayName = isOwnReply ? "You" : reply.authorName;
 
                       return (
                         <div key={reply.id} className={styles.replyItem}>
@@ -465,7 +476,7 @@ export function AssignmentUpdatesPanel({
                               <strong style={{ fontSize: "11px", color: "#0f172a" }}>
                                 {replyDisplayName}
                               </strong>
-                              {replyRoleName && (
+                              {replyRoleName && replyDisplayName !== "You" && (
                                 <span className={styles.updateAuthorRole} style={{ fontSize: "11px" }}>
                                   · {replyRoleName}
                                 </span>
