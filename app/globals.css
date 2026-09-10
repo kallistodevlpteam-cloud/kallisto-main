@@ -5754,6 +5754,8 @@ textarea:focus-visible {
   cursor: pointer;
   flex-shrink: 0;
   transition: all 0.15s ease;
+}
+
 .upload-popover-wrapper,
 .audience-popover-wrapper {
   display: flex;
