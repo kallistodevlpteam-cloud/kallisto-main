@@ -216,6 +216,8 @@ export interface BackendProject {
   projectSpaces?: BackendProjectSpace[];
   projectTimeline?: BackendProjectTimeline | null;
   projectStatus?: string | null;
+  /** Overall project progress percentage (0–100). */
+  progressPercent?: number | null;
   proposal?: BackendProjectProposal | null;
   teamMembers?: BackendProjectTeamMember[];
   messages?: BackendProjectMessage[];

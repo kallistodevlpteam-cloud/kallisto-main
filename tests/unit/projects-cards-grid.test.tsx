@@ -111,4 +111,28 @@ describe("ProjectsCardsGrid — backend-driven cards", () => {
     expect(screen.getByText("Kochi Villa")).toBeInTheDocument();
     expect(screen.queryByText("Calicut Villa")).not.toBeInTheDocument();
   });
+
+  it("renders progress percent in card header and does not render metadata grid or progress bar", () => {
+    render(
+      <ProjectsCardsGrid
+        projects={[
+          makeCard({
+            type: "Luxury Residential Villa",
+            phaseProgress: 70,
+            sqArea: 4200,
+            timeline: "14 months",
+            budget: 12000000,
+          }),
+        ]}
+        activeStatus="UPCOMING"
+      />
+    );
+
+    expect(screen.getByText("70%")).toBeInTheDocument();
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+    expect(screen.queryByText("Luxury Residential Villa")).not.toBeInTheDocument();
+    expect(screen.queryByText("4,200 sq.ft")).not.toBeInTheDocument();
+    expect(screen.queryByText("14 months")).not.toBeInTheDocument();
+    expect(screen.queryByText("₹1.20 Cr")).not.toBeInTheDocument();
+  });
 });

@@ -12,7 +12,6 @@ import {
 } from "@/components/layout/sidebar-icons";
 import {
   AlertTriangle,
-  ChevronDown,
   ClipboardList,
   LayoutDashboard,
   Plus,
@@ -25,9 +24,11 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { loadHandsOverview } from "../services/hands.mock";
+import { computeHandsOverviewMetrics } from "../utils/hands-formatters";
 import type {
   Deployment,
   HandsOverviewData,
@@ -170,7 +171,6 @@ export function HandsOverview() {
     useState<WorkforceRequest | null>(null);
   const [headerNotice, setHeaderNotice] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [showFullDashboard, setShowFullDashboard] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -652,10 +652,20 @@ function HandsOverviewContent({
     );
   });
 
+  const dynamicMetrics = useMemo(
+    () =>
+      computeHandsOverviewMetrics(
+        data.deployments || [],
+        data.requests || [],
+        data.metrics || [],
+      ),
+    [data.deployments, data.requests, data.metrics],
+  );
+
   return (
     <div className={styles.overviewStack}>
       <section className={styles.metricsGrid} aria-label="Hands metrics">
-        {data.metrics.map((metric) => (
+        {dynamicMetrics.map((metric) => (
           <HandsMetricCard key={metric.id} metric={metric} />
         ))}
       </section>

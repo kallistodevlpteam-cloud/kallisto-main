@@ -7,6 +7,19 @@ import { MapPin, Building2 } from "lucide-react";
 import styles from "../projects.module.css";
 import type { ProjectStatus, ProjectHealth, ProjectPhase } from "../types/project.types";
 
+export function formatBudget(amount: number | null | undefined): string | null {
+  if (amount == null || amount <= 0) return null;
+  if (amount >= 10000000) {
+    const cr = amount / 10000000;
+    return `₹${cr % 1 === 0 ? cr.toFixed(0) : cr.toFixed(2)} Cr`;
+  }
+  if (amount >= 100000) {
+    const l = amount / 100000;
+    return `₹${l % 1 === 0 ? l.toFixed(0) : l.toFixed(1)} L`;
+  }
+  return `₹${amount.toLocaleString("en-IN")}`;
+}
+
 // ---------------------------------------------------------------------------
 // Typed sample projects with accurate domain status, phase & next action.
 // ---------------------------------------------------------------------------
@@ -26,6 +39,10 @@ export interface SampleProjectCard {
   dueState?: "overdue" | "due_soon" | "on_track" | "no_due_date";
   image: string;
   images?: string[];
+  sqArea?: number | null;
+  timeline?: string | null;
+  budget?: number | null;
+  buildingType?: string | null;
 }
 
 export const SAMPLE_PROJECTS: SampleProjectCard[] = [
@@ -41,6 +58,9 @@ export const SAMPLE_PROJECTS: SampleProjectCard[] = [
     status: "ACTIVE",
     health: "NEEDS_ATTENTION",
     phaseProgress: 62,
+    sqArea: 4200,
+    timeline: "14 months",
+    budget: 12000000,
     nextActionTitle: "Client approval for joinery revision",
     dueLabel: "Due in 2d",
     dueState: "due_soon",
@@ -62,6 +82,9 @@ export const SAMPLE_PROJECTS: SampleProjectCard[] = [
     status: "ACTIVE",
     health: "BLOCKED",
     phaseProgress: 65,
+    sqArea: 5800,
+    timeline: "16 months",
+    budget: 25000000,
     nextActionTitle: "Structural engineer site inspection report",
     dueLabel: "Overdue 3d",
     dueState: "overdue",
@@ -83,6 +106,9 @@ export const SAMPLE_PROJECTS: SampleProjectCard[] = [
     status: "ACTIVE",
     health: "ON_TRACK",
     phaseProgress: 80,
+    sqArea: 12500,
+    timeline: "24 months",
+    budget: 48000000,
     nextActionTitle: "Finalize electrical & lighting drawing set",
     dueLabel: "Due in 5d",
     dueState: "on_track",
@@ -103,6 +129,9 @@ export const SAMPLE_PROJECTS: SampleProjectCard[] = [
     status: "ACTIVE",
     health: "ON_TRACK",
     phaseProgress: 45,
+    sqArea: 3200,
+    timeline: "4 months",
+    budget: 8500000,
     nextActionTitle: "Vendor quotation approval for HVAC",
     dueLabel: "Due tomorrow",
     dueState: "due_soon",
@@ -124,6 +153,9 @@ export const SAMPLE_PROJECTS: SampleProjectCard[] = [
     status: "ACTIVE",
     health: "NEEDS_ATTENTION",
     phaseProgress: 30,
+    sqArea: 9400,
+    timeline: "18 months",
+    budget: 35000000,
     nextActionTitle: "Municipal sanction document filing",
     dueLabel: "Due in 1d",
     dueState: "due_soon",
@@ -146,6 +178,9 @@ export const SAMPLE_PROJECTS: SampleProjectCard[] = [
     status: "UPCOMING",
     health: "ON_TRACK",
     phaseProgress: 0,
+    sqArea: 8600,
+    timeline: "22 months",
+    budget: 31000000,
     nextActionTitle: "Initial client requirement brief",
     dueLabel: "Next week",
     dueState: "on_track",
@@ -167,6 +202,9 @@ export const SAMPLE_PROJECTS: SampleProjectCard[] = [
     status: "UPCOMING",
     health: "ON_TRACK",
     phaseProgress: 0,
+    sqArea: 3800,
+    timeline: "10 months",
+    budget: 14000000,
     nextActionTitle: "Topographical survey team dispatch",
     dueLabel: "Due in 4d",
     dueState: "on_track",
@@ -186,6 +224,9 @@ export const SAMPLE_PROJECTS: SampleProjectCard[] = [
     status: "ON_HOLD",
     health: "BLOCKED",
     phaseProgress: 20,
+    sqArea: 7200,
+    timeline: "15 months",
+    budget: 28000000,
     nextActionTitle: "Client requested project hold",
     dueLabel: "On hold",
     dueState: "no_due_date",
@@ -208,6 +249,9 @@ export const SAMPLE_PROJECTS: SampleProjectCard[] = [
     status: "COMPLETED",
     health: "ON_TRACK",
     phaseProgress: 100,
+    sqArea: 4500,
+    timeline: "12 months",
+    budget: 16000000,
     nextActionTitle: "Handover sign-off certificate",
     dueLabel: "Completed",
     dueState: "on_track",
@@ -229,6 +273,9 @@ export const SAMPLE_PROJECTS: SampleProjectCard[] = [
     status: "COMPLETED",
     health: "ON_TRACK",
     phaseProgress: 100,
+    sqArea: 16000,
+    timeline: "18 months",
+    budget: 45000000,
     nextActionTitle: "Defect liability inspection",
     dueLabel: "Completed",
     dueState: "on_track",
@@ -330,7 +377,7 @@ export function ProjectCard({ project }: { project: SampleProjectCard }) {
     <Link
       href={`/projects/${project.id}`}
       className={styles.pcCard}
-      aria-label={`Project ${project.name}, phase ${project.phase}, ${project.phaseProgress}% completed`}
+      aria-label={`Project ${project.name}, phase ${project.phase}, ${project.phaseProgress !== undefined && project.phaseProgress !== null ? `${project.phaseProgress}%` : "0%"} completed`}
     >
       {/* Media section with collage/image & overlays */}
       <ProjectCardMedia project={project} />
@@ -349,10 +396,13 @@ export function ProjectCard({ project }: { project: SampleProjectCard }) {
           </span>
         </div>
 
-        {/* Row 2: Location (left) & Due Date Chip (right, above divider) */}
+        {/* Row 2: Location (left) & Due Date Chip or Client (right) */}
         <div className={styles.pcLocationRow}>
-          <span>{project.location}</span>
-          {showDueChip && (
+          <div className={styles.pcLocationCol}>
+            <MapPin size={13} className={styles.pcLocationIcon} />
+            <span>{project.location}</span>
+          </div>
+          {showDueChip ? (
             <span
               className={`${styles.pcDueChip} ${
                 project.dueState === "overdue"
@@ -364,19 +414,23 @@ export function ProjectCard({ project }: { project: SampleProjectCard }) {
             >
               {project.dueLabel}
             </span>
-          )}
+          ) : project.clientDisplayName ? (
+            <span className={styles.pcClientSub} title={`Client: ${project.clientDisplayName}`}>
+              {project.clientDisplayName}
+            </span>
+          ) : null}
         </div>
-
-        {/* Spacing / Divider */}
-        <div className={styles.pcDivider} />
 
         {/* Row 3: Next action label + text */}
         {project.nextActionTitle && (
-          <div className={styles.pcNextActionRow}>
-            <span className={styles.pcNextActionText}>
-              <span className={styles.pcNextActionLabel}>Next :</span>
-              <span title={project.nextActionTitle}>{project.nextActionTitle}</span>
-            </span>
+          <div className={styles.pcNextActionWrap}>
+            <div className={styles.pcDivider} />
+            <div className={styles.pcNextActionRow}>
+              <span className={styles.pcNextActionText}>
+                <span className={styles.pcNextActionLabel}>Next :</span>
+                <span title={project.nextActionTitle}>{project.nextActionTitle}</span>
+              </span>
+            </div>
           </div>
         )}
       </div>

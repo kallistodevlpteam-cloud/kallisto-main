@@ -116,4 +116,26 @@ describe("buildProjectCardsFromBackend", () => {
     ]);
     expect(onHoldCards[0].status).toBe("ON_HOLD");
   });
+
+  it("maps progressPercent from backend when present", () => {
+    const cards = buildProjectCardsFromBackend([
+      makeProject({ progressPercent: 70 }),
+    ]);
+    expect(cards[0].phaseProgress).toBe(70);
+  });
+
+  it("maps basic information (sqArea, timeline, budget, buildingType) from backend", () => {
+    const cards = buildProjectCardsFromBackend([
+      makeProject({
+        sqArea: 4200,
+        clientExpectedTimeline: "14 months",
+        estimatedOverallBudget: 12000000,
+        buildingType: "Residential Villa (G+2)",
+      }),
+    ]);
+    expect(cards[0].sqArea).toBe(4200);
+    expect(cards[0].timeline).toBe("14 months");
+    expect(cards[0].budget).toBe(12000000);
+    expect(cards[0].buildingType).toBe("Residential Villa (G+2)");
+  });
 });

@@ -16,9 +16,6 @@ import type {
   BackendProjectOutdoor,
   BackendProjectSpace,
   BackendProjectTimeline,
-  BackendProjectProposal,
-  BackendProjectTeamMember,
-  BackendProjectMessage,
 } from "@/types/domain/backend-project";
 
 import { DUMMY_BACKEND_PROJECTS } from "./dummy-projects";
@@ -234,6 +231,8 @@ export interface BackendProjectRow {
   project_spaces: BackendProjectSpaceRow[] | null;
   project_timeline: BackendProjectTimeline | null;
   project_status: string | null;
+  progress_percent?: number | null;
+  progressPercent?: number | null;
   proposal: BackendProjectProposalRow | null;
   team_members: BackendProjectTeamMemberRow[] | null;
   messages: BackendProjectMessageRow[] | null;
@@ -494,6 +493,7 @@ function mapBackendProjectRow(row: BackendProjectRow): BackendProject {
     projectSpaces: mapBackendProjectSpaces(row.project_spaces),
     projectTimeline: row.project_timeline ?? null,
     projectStatus: row.project_status ?? null,
+    progressPercent: normalizeOptionalNumber(row.progress_percent ?? row.progressPercent),
     proposal: row.proposal ?? null,
     teamMembers: (row.team_members ?? []).map((t) => ({
       provider_id: t.provider_id ?? "",

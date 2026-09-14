@@ -444,11 +444,16 @@ export function ClientProjectsWorkspace() {
                   <h3 className={styles.pcName} title={project.name}>
                     {project.name}
                   </h3>
-                  <span className={styles.pcDash}>—</span>
+                  <span className={styles.pcDash}>
+                    {project.progress !== undefined ? `${project.progress}%` : "—"}
+                  </span>
                 </div>
 
                 <div className={styles.pcSubtitleRow}>
                   <span className={styles.pcLocation}>{project.location}</span>
+                  {project.category && (
+                    <span style={{ fontSize: "11px", color: "#94a3b8" }}>{project.category}</span>
+                  )}
                 </div>
               </div>
             </div>
