@@ -10,6 +10,7 @@ import {
   Phone,
   Calendar,
   Sparkles,
+  IndianRupee,
 } from "lucide-react";
 import { WorkerProfile, WorkerAvailability } from "../../types/worker-domain";
 import styles from "./hands-workers.module.css";
@@ -74,7 +75,8 @@ export function HandsWorkerProfileDrawer({
             <div className={styles.profileHeroMeta}>
               <h2 className={styles.profileHeroName}>{worker.name}</h2>
               <span className={styles.profileHeroSub}>
-                {worker.trade} · {worker.experienceYears} Years Experience
+                <Briefcase size={12} style={{ color: "#94a3b8", verticalAlign: "middle", marginRight: "4px", position: "relative", top: "-1px" }} />
+                {worker.trade}  ·  {worker.experienceYears} Years Experience
               </span>
               <div style={{ marginTop: "4px" }}>
                 <span
@@ -103,37 +105,44 @@ export function HandsWorkerProfileDrawer({
 
         {/* Body */}
         <div className={styles.drawerBody}>
-          {/* Quick Contact & Base Details */}
+          {/* ── Quick Contact Row (horizontal 3-column) ── */}
           <div
             style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "6px",
-              fontSize: "12px",
-              color: "#475569",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr 1fr",
+              gap: "0",
+              borderBottom: "1px solid #f1f5f9",
+              paddingBottom: "14px",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <Phone size={14} style={{ color: "#64748b" }} />
-              <span>{worker.phone}</span>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+              <Phone size={14} style={{ color: "#64748b", flexShrink: 0, marginTop: "2px" }} />
+              <span style={{ fontSize: "12px", color: "#334155", fontWeight: 500 }}>
+                {worker.phone}
+              </span>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <MapPin size={14} style={{ color: "#64748b" }} />
-              <span>{worker.location}</span>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+              <MapPin size={14} style={{ color: "#64748b", flexShrink: 0, marginTop: "2px" }} />
+              <span style={{ fontSize: "12px", color: "#334155", fontWeight: 500, lineHeight: 1.3 }}>
+                {worker.location}
+              </span>
             </div>
             {worker.dailyRate && (
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span style={{ fontWeight: 600, color: "#0f172a" }}>
-                  Daily Base Rate:
-                </span>
-                <span>₹{worker.dailyRate} / day</span>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                <IndianRupee size={14} style={{ color: "#64748b", flexShrink: 0, marginTop: "2px" }} />
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <span style={{ fontSize: "10px", color: "#94a3b8", fontWeight: 500 }}>
+                    Daily Base Rate
+                  </span>
+                  <span style={{ fontSize: "13px", fontWeight: 700, color: "#0f172a" }}>
+                    ₹{worker.dailyRate} / day
+                  </span>
+                </div>
               </div>
             )}
           </div>
 
-          <div className={styles.divider} />
-
-          {/* SKILLS */}
+          {/* ── Skills ── */}
           <div>
             <div className={styles.sectionHeader}>SKILLS</div>
             <div className={styles.skillsPillList}>
@@ -204,20 +213,26 @@ export function HandsWorkerProfileDrawer({
             <div className={styles.sectionHeader}>CURRENT STATUS</div>
             {worker.currentAssignment ? (
               <div className={styles.statusCard}>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px" }}>
                   <Briefcase size={14} style={{ color: "#0f172a" }} />
                   <span className={styles.statusCardTitle}>
                     {worker.currentAssignment.projectName}
                   </span>
                 </div>
-                <span className={styles.statusCardDetail}>
-                  Role: {worker.currentAssignment.role} · Site:{" "}
-                  {worker.currentAssignment.location}
-                </span>
-                <span className={styles.statusCardDetail}>
-                  Active period: {worker.currentAssignment.startDate} –{" "}
-                  {worker.currentAssignment.endDate || "Ongoing"}
-                </span>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
+                    <MapPin size={12} style={{ color: "#64748b", marginTop: "2px", flexShrink: 0 }} />
+                    <span style={{ fontSize: "12px", color: "#475569", lineHeight: 1.4 }}>
+                      Role: {worker.currentAssignment.role} – Site: {worker.currentAssignment.location}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
+                    <Calendar size={12} style={{ color: "#64748b", marginTop: "2px", flexShrink: 0 }} />
+                    <span style={{ fontSize: "12px", color: "#475569", lineHeight: 1.4 }}>
+                      Active period: {worker.currentAssignment.startDate} – {worker.currentAssignment.endDate || "Ongoing"}
+                    </span>
+                  </div>
+                </div>
               </div>
             ) : (
               <div className={styles.statusCard}>
@@ -237,7 +252,7 @@ export function HandsWorkerProfileDrawer({
           <div>
             <div className={styles.sectionHeader}>RECENT WORK</div>
             {worker.recentWork && worker.recentWork.length > 0 ? (
-              <div className={styles.historyList}>
+              <div className={styles.historyList} style={{ maxHeight: "140px", overflowY: "auto" }}>
                 {worker.recentWork.map((hist) => (
                   <div key={hist.id} className={styles.historyItem}>
                     <div

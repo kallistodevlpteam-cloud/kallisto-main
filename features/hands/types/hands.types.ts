@@ -40,7 +40,7 @@ export interface AttendanceSummary {
 export interface DeploymentActivityTask {
   id: string;
   title: string;
-  status: "completed" | "in-progress" | "pending" | "delayed" | "cancelled" | "scheduled";
+  status: "completed" | "in-progress" | "pending" | "delayed" | "cancelled" | "scheduled" | "on-hold";
   time?: string;
   date?: string; // e.g. "2026-09-08" (YYYY-MM-DD)
   trade?: string;

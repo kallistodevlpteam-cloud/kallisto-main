@@ -416,7 +416,11 @@
 
 .tableContainer {
   width: 100%;
-  margin-top: 4px;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  margin-top: 8px;
 }
 
 .tableWrapper {
@@ -432,55 +436,139 @@
 
 .workersTable {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 4px;
+  border-collapse: collapse;
   text-align: left;
   font-size: 13px;
 }
 
 .tableHeaderRow {
-  background-color: transparent;
+  background-color: #f8fafc;
 }
 
 .tableHeaderCell {
-  padding: 10px 14px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  color: #94a3b8;
-  text-transform: uppercase;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 650;
+  color: #475569;
+  text-transform: none;
   white-space: nowrap;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #f8fafc;
 }
 
 .tableBodyRow {
   background-color: transparent;
   cursor: pointer;
-  transition: all 0.12s ease;
+  transition: background-color 150ms ease;
 }
 
-.tableBodyRow:hover {
+.tableBodyRow:hover td {
   background-color: #f8fafc;
 }
 
 .tableBodyRowSelected {
-  background-color: #f1f5f9 !important;
+  /* No selected background color */
+}
+
+.tableBodyRowSelected td {
+  /* No selected background color */
 }
 
 .tableCell {
-  padding: 10px 14px;
-  color: #334155;
+  padding: 8px 14px;
+  color: #1e293b;
   vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 150ms ease;
 }
 
-.tableBodyRow td:first-child {
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
+.tableBodyRow:last-child td {
+  border-bottom: none;
 }
 
-.tableBodyRow td:last-child {
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
+/* Pagination Bar */
+.paginationBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 4px 6px 4px;
+  border-top: 1px solid #f1f5f9;
+  flex-wrap: wrap;
+  gap: 12px;
+  background-color: transparent;
+}
+
+.paginationCount {
+  font-size: 12.5px;
+  color: #8b9cb0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.paginationControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.paginationArrowBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 120ms ease;
+}
+
+.paginationArrowBtn:hover:not(:disabled) {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.paginationArrowBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.paginationPageNumbers {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.paginationPageNumberBtn {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #64748b;
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 120ms ease;
+}
+
+.paginationPageNumberBtn:hover:not(.paginationPageNumberActive) {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.paginationPageNumberActive {
+  background-color: #edeef5;
+  color: #0f172a;
+  font-weight: 700;
 }
 
 .workerProfileCell {
@@ -821,7 +909,7 @@
 
 .profileHero {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
 }
 

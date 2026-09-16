@@ -5,12 +5,13 @@ import {
   Check,
   Clock,
   UserCheck,
-  UserPlus,
   AlertTriangle,
   MoreHorizontal,
   Eye,
   Sparkles,
   Copy,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { StudioDuotoneIcon } from "@/components/layout/sidebar-icons";
 import { WorkerProfile, WorkerAvailability } from "../../types/worker-domain";
@@ -32,6 +33,13 @@ export function HandsWorkersTable({
   onAskOdinForWorker,
 }: HandsWorkersTableProps) {
   const [openMenuWorkerId, setOpenMenuWorkerId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
+
+  const totalPages = Math.max(1, Math.ceil(workers.length / itemsPerPage));
+  const safePage = Math.min(Math.max(1, currentPage), totalPages);
+  const startIndex = (safePage - 1) * itemsPerPage;
+  const paginatedWorkers = workers.slice(startIndex, startIndex + itemsPerPage);
 
   // Close actions menu on outside click
   useEffect(() => {
@@ -113,7 +121,7 @@ export function HandsWorkersTable({
                 </td>
               </tr>
             ) : (
-              workers.map((worker) => {
+              paginatedWorkers.map((worker) => {
                 const isSelected = selectedWorkerId === worker.id;
                 const isMenuOpen = openMenuWorkerId === worker.id;
                 return (
@@ -278,6 +286,58 @@ export function HandsWorkersTable({
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Footer matching reference */}
+      {workers.length > 0 && (
+        <div className={styles.paginationBar}>
+          <div className={styles.paginationCount}>
+            <span>
+              Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, workers.length)} of {workers.length} workers
+            </span>
+          </div>
+
+          {totalPages > 1 && (
+            <div className={styles.paginationControls}>
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={safePage <= 1}
+                className={styles.paginationArrowBtn}
+                aria-label="Previous page"
+              >
+                <ChevronLeft size={16} strokeWidth={1.75} />
+              </button>
+
+              <div className={styles.paginationPageNumbers}>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <button
+                    key={pageNum}
+                    type="button"
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`${styles.paginationPageNumberBtn} ${
+                      safePage === pageNum ? styles.paginationPageNumberActive : ""
+                    }`}
+                    aria-label={`Go to page ${pageNum}`}
+                    aria-current={safePage === pageNum ? "page" : undefined}
+                  >
+                    {pageNum}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={safePage >= totalPages}
+                className={styles.paginationArrowBtn}
+                aria-label="Next page"
+              >
+                <ChevronRight size={16} strokeWidth={1.75} />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
