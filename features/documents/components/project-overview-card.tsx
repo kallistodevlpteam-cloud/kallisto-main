@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, type CSSProperties, type ReactNode, type RefObject } from "react";
+import React, { useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import Link from "next/link";
 import {
   Sparkles,
   ChevronDown,
   ChevronRight,
   CheckCircle2,
-  FileCheck2,
   LayoutGrid,
   Building2,
   Trees,
@@ -20,15 +19,11 @@ import {
   Briefcase,
   Share2,
   ArrowRight,
-  Users,
-  HardHat,
-  Package,
   Banknote,
   Clock,
   TrendingUp,
 } from "lucide-react";
 import {
-  ClockDuotoneIcon,
   MapPinDuotoneIcon,
   CalendarDuotoneIcon,
   BuildingDuotoneIcon,
@@ -44,7 +39,6 @@ import {
   type EnquiryTabKey,
   UPCOMING_PROJECT_TABS,
   PROJECT_TABS,
-  ENQUIRY_TABS,
 } from "@/features/enquiries/detail/components/enquiry-detail-tabs";
 import { OdinProjectBrief } from "@/features/enquiries/detail/components/odin-project-brief";
 import { ClientPrioritiesBar } from "@/features/enquiries/detail/components/client-priorities-bar";
@@ -53,6 +47,7 @@ import { EnquiryProjectDocumentsSection } from "@/features/enquiries/detail/comp
 import { ProjectTeamWorkspace } from "@/features/projects/components/team/project-team-workspace";
 import { ProjectBasicsWorkspace } from "@/features/projects/components/basics/project-basics-workspace";
 import { ProjectMaterialsWorkspace } from "@/features/projects/components/materials/project-materials-workspace";
+import { ProjectActivityWorkspace } from "@/features/projects/components/activity/project-activity-workspace";
 import { DocumentsTitleRowActions } from "./documents-title-row-actions";
 import {
   buildEnquiryDetailViewModel,
@@ -201,11 +196,9 @@ export function ProjectOverviewCard({
   const resolvedStatus = (projectStatus || status || lookedUpProject?.status || "").toLowerCase();
   const isUpcoming = isUpcomingProp !== undefined ? isUpcomingProp : (resolvedStatus === "upcoming" || resolvedStatus === "new");
 
-  useEffect(() => {
-    if (isUpcoming && ["team", "materials", "hands", "basics", "activity"].includes(activeTab)) {
-      setActiveTab("overview");
-    }
-  }, [isUpcoming, activeTab]);
+  if (isUpcoming && ["team", "materials", "hands", "basics", "activity"].includes(activeTab)) {
+    setActiveTab("overview");
+  }
 
   const baseEnquiry: EnquiryRecord = {
     id: projectId || "enq-2026-0486",
@@ -1005,80 +998,11 @@ export function ProjectOverviewCard({
 
         {/* —— TAB 9: ACTIVITY ——————————————————————————————————————————————————— */}
         {!isUpcoming && activeTab === "activity" && (
-          <div className={styles.activitySection}>
-            <div className={styles.activityHeaderRow}>
-              <div className={styles.activityTitleGroup}>
-                <span className={styles.activityHeaderIcon}>
-                  <ClockDuotoneIcon size={16} />
-                </span>
-                <h3 className={styles.activityTitle}>Activity Timeline</h3>
-              </div>
-              <span className={styles.countBadge}>4 events</span>
-            </div>
-
-            <div className={styles.activityCard}>
-              <div className={styles.timelineTrack}>
-                <div className={styles.timelineNode}>
-                  <div className={`${styles.timelineNodeIconBox} ${styles.timelineNodeSuccess}`}>
-                    <CheckCircle2 size={16} />
-                  </div>
-                  <div className={styles.timelineNodeContent}>
-                    <div className={styles.timelineNodeHeader}>
-                      <strong className={styles.timelineNodeTitle}>Project Created & Active</strong>
-                      <span className={styles.timelineNodeTimestamp}>Active</span>
-                    </div>
-                    <p className={styles.timelineNodeDesc}>
-                      Enquiry requirement brief accepted and converted to live active project workspace.
-                    </p>
-                  </div>
-                </div>
-
-                <div className={styles.timelineNode}>
-                  <div className={`${styles.timelineNodeIconBox} ${styles.timelineNodeSuccess}`}>
-                    <CheckCircle2 size={16} />
-                  </div>
-                  <div className={styles.timelineNodeContent}>
-                    <div className={styles.timelineNodeHeader}>
-                      <strong className={styles.timelineNodeTitle}>Proposal Accepted</strong>
-                      <span className={styles.timelineNodeTimestamp}>24 Jul 2026</span>
-                    </div>
-                    <p className={styles.timelineNodeDesc}>
-                      Commercial proposal and initial scope acknowledged by client.
-                    </p>
-                  </div>
-                </div>
-
-                <div className={styles.timelineNode}>
-                  <div className={`${styles.timelineNodeIconBox} ${styles.timelineNodePrimary}`}>
-                    <FileCheck2 size={16} />
-                  </div>
-                  <div className={styles.timelineNodeContent}>
-                    <div className={styles.timelineNodeHeader}>
-                      <strong className={styles.timelineNodeTitle}>Site Feasibility Verified</strong>
-                      <span className={styles.timelineNodeTimestamp}>23 Jul 2026</span>
-                    </div>
-                    <p className={styles.timelineNodeDesc}>
-                      Field survey contours and site evidence documents reviewed by ODIN.
-                    </p>
-                  </div>
-                </div>
-
-                <div className={styles.timelineNode}>
-                  <div className={`${styles.timelineNodeIconBox} ${styles.timelineNodeSuccess}`}>
-                    <CheckCircle2 size={16} />
-                  </div>
-                  <div className={styles.timelineNodeContent}>
-                    <div className={styles.timelineNodeHeader}>
-                      <strong className={styles.timelineNodeTitle}>Enquiry Received</strong>
-                      <span className={styles.timelineNodeTimestamp}>23 Jul 2026</span>
-                    </div>
-                    <p className={styles.timelineNodeDesc}>
-                      New requirement brief submitted and logged into Kallisto pipeline.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className={styles.tabSectionGroup}>
+            <ProjectActivityWorkspace
+              projectId={projectId}
+              projectName={projectName || "Nila Residence"}
+            />
           </div>
         )}
       </main>
