@@ -1,4 +1,4 @@
-﻿import type { BackendProject } from "@/types/domain/backend-project";
+import type { BackendProject } from "@/types/domain/backend-project";
 
 export const DUMMY_BACKEND_PROJECTS: BackendProject[] = [
   {
@@ -90,6 +90,7 @@ export const DUMMY_BACKEND_PROJECTS: BackendProject[] = [
       sustainability_goals: "Targeting GRIHA 4-star green building rating",
     },
     projectStatus: "ACTIVE",
+    progressPercent: 70,
     teamMembers: [
       { provider_id: "SP-0001", role: "Principal Architect", status: "active", notes: "Lead design sign-off" },
       { provider_id: "SP-0002", role: "Structural Engineer", status: "active", notes: "Site inspection coordinator" },
@@ -148,6 +149,7 @@ export const DUMMY_BACKEND_PROJECTS: BackendProject[] = [
       location: "Calicut, Kerala",
     },
     projectStatus: "ACTIVE",
+    progressPercent: 45,
     teamMembers: [
       { provider_id: "SP-0001", role: "Design Lead", status: "active", notes: "Coastal architecture expert" },
     ],
@@ -201,6 +203,7 @@ export const DUMMY_BACKEND_PROJECTS: BackendProject[] = [
       location: "Thrissur, Kerala",
     },
     projectStatus: "ACTIVE",
+    progressPercent: 50,
     teamMembers: [
       { provider_id: "SP-0001", role: "Lead Architect", status: "active", notes: "Urban development specialist" },
     ],
@@ -254,6 +257,7 @@ export const DUMMY_BACKEND_PROJECTS: BackendProject[] = [
       location: "Kochi, Kerala",
     },
     projectStatus: "ACTIVE",
+    progressPercent: 28,
     teamMembers: [
       { provider_id: "SP-0001", role: "Commercial Lead", status: "active", notes: "Lead commercial coordinator" },
     ],
@@ -307,6 +311,7 @@ export const DUMMY_BACKEND_PROJECTS: BackendProject[] = [
       location: "Bangalore, Karnataka",
     },
     projectStatus: "ACTIVE",
+    progressPercent: 92,
     teamMembers: [
       { provider_id: "SP-0001", role: "Interior Lead", status: "active", notes: "Corporate workspace specialist" },
     ],
@@ -360,6 +365,7 @@ export const DUMMY_BACKEND_PROJECTS: BackendProject[] = [
       location: "Kottayam, Kerala",
     },
     projectStatus: "COMPLETED",
+    progressPercent: 100,
     teamMembers: [
       { provider_id: "SP-0001", role: "Conservation Architect", status: "completed", notes: "Lead conservationist" },
     ],
@@ -413,6 +419,7 @@ export const DUMMY_BACKEND_PROJECTS: BackendProject[] = [
       location: "Munnar, Kerala",
     },
     projectStatus: "UPCOMING",
+    progressPercent: 15,
     teamMembers: [
       { provider_id: "SP-0001", role: "Lead Eco Architect", status: "active", notes: "Mountain architecture expert" },
     ],
@@ -466,6 +473,7 @@ export const DUMMY_BACKEND_PROJECTS: BackendProject[] = [
       location: "Alappuzha, Kerala",
     },
     projectStatus: "UPCOMING",
+    progressPercent: 0,
     teamMembers: [
       { provider_id: "SP-0001", role: "Principal Architect", status: "pending", notes: "Awaiting formal proposal sign-off" },
     ],
@@ -518,6 +526,7 @@ export const DUMMY_BACKEND_PROJECTS: BackendProject[] = [
       location: "Wayanad, Kerala",
     },
     projectStatus: "UPCOMING",
+    progressPercent: 0,
     teamMembers: [
       { provider_id: "SP-0001", role: "Design Lead", status: "pending", notes: "Initial concept review" },
     ],
@@ -571,6 +580,7 @@ export const DUMMY_BACKEND_PROJECTS: BackendProject[] = [
       location: "Kochi, Kerala",
     },
     projectStatus: "ACTIVE",
+    progressPercent: 75,
     teamMembers: [
       { provider_id: "SP-0001", role: "Commercial Lead", status: "active", notes: "Tech campus fitout specialist" },
     ],

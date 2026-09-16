@@ -84,10 +84,11 @@ describe("Hands overview", () => {
 
     await finishOverviewLoad();
 
-    expect(
-      screen.getByText("Workers on site today"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Workers on site today")).toBeInTheDocument();
     expect(screen.getByText("34")).toBeInTheDocument();
+    expect(screen.getByText("Open positions")).toBeInTheDocument();
+    expect(screen.getByText("13")).toBeInTheDocument();
+    expect(screen.getByText("Across 4 requests")).toBeInTheDocument();
     expect(screen.getAllByText("Active deployments")[0]).toBeInTheDocument();
     expect(screen.getByText("Upcoming workforce demand")).toBeInTheDocument();
   });

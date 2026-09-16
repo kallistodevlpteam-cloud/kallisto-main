@@ -4,6 +4,7 @@ import type {
   WorkforceRequestDraft,
   WorkforceRequestSubmission,
 } from "../types/hands.types";
+import { computeHandsOverviewMetrics } from "../utils/hands-formatters";
 
 const overviewData: HandsOverviewData = {
   metrics: [
@@ -555,13 +556,26 @@ const overviewData: HandsOverviewData = {
   ],
 };
 
+overviewData.metrics = computeHandsOverviewMetrics(
+  overviewData.deployments,
+  overviewData.requests,
+  overviewData.metrics,
+);
+
 function wait(duration: number): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, duration));
 }
 
 export async function loadHandsOverview(): Promise<HandsOverviewData> {
   await wait(320);
-  return overviewData;
+  return {
+    ...overviewData,
+    metrics: computeHandsOverviewMetrics(
+      overviewData.deployments,
+      overviewData.requests,
+      overviewData.metrics,
+    ),
+  };
 }
 
 export function getDeploymentById(id: string) {

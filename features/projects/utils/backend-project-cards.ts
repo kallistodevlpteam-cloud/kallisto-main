@@ -52,7 +52,10 @@ export function buildProjectCardsFromBackend(
         })()
       : ACCEPTED_PROJECT_STATUS,
     health: undefined,
-    phaseProgress: undefined,
+    phaseProgress:
+      project.progressPercent !== undefined && project.progressPercent !== null
+        ? project.progressPercent
+        : undefined,
     nextActionTitle: null,
     dueLabel: null,
     dueState: "no_due_date",
@@ -66,5 +69,9 @@ export function buildProjectCardsFromBackend(
       ...(project.siteImages ?? []),
       ...(project.inspirationImages ?? []).slice(0, 2).map((img) => img.url),
     ],
+    sqArea: project.sqArea ?? null,
+    timeline: project.clientExpectedTimeline ?? null,
+    budget: project.estimatedOverallBudget ?? null,
+    buildingType: project.buildingType ?? null,
   }));
 }

@@ -4,34 +4,20 @@ import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
+  AlertTriangle,
   ArrowLeft,
-  Building2,
-  Calendar,
-  CheckCircle2,
   ChevronDown,
-  Clock,
   Download,
-  Filter,
-  HardHat,
   History,
   Layers3,
   LayoutGrid,
   List,
   MapPin,
-  Plus,
-  RotateCcw,
   Search,
-  SlidersHorizontal,
   Star,
-  UserCheck,
-  Users,
   X,
-  Zap,
+  XCircle,
 } from "lucide-react";
-import type { HandsTab, WorkforceRequest } from "../types/hands.types";
-import { getFulfilmentPercentage } from "../utils/hands-formatters";
-import { getTradeIcon } from "./workforce-request-card";
-import { HandsPageHeader } from "./hands-page-header";
 import { HandsPageTabs } from "./hands-page-tabs";
 import styles from "./hands-overview.module.css";
 
@@ -50,7 +36,7 @@ interface RequestHistoryItem {
   contractorCoverImage?: string;
   requestedDate: string;
   fulfilledDate: string;
-  status: "Fulfilled & Active" | "Handed Over" | "Multi-Contractor Split" | "Completed";
+  status: "Fulfilled & Active" | "Handed Over" | "Multi-Contractor Split" | "Completed" | "Rejected";
   dailyRate: number;
   shiftTiming: string;
   supervisor: string;
@@ -64,6 +50,10 @@ interface RequestHistoryItem {
     fulfilled: number;
     dailyRate: number;
   }>;
+  rejectionReason?: string;
+  rejectedBy?: string;
+  rejectedDate?: string;
+  rejectionCategory?: "Capacity Exhausted" | "Rate Mismatch" | "Safety Non-Compliance" | "Site Access Delay" | "Client Schedule Shift";
 }
 
 const MOCK_HISTORICAL_RECORDS: RequestHistoryItem[] = [
@@ -214,6 +204,103 @@ const MOCK_HISTORICAL_RECORDS: RequestHistoryItem[] = [
     logNote:
       "Hydrostatic pressure test passed at 8 bar. Underground CPVC lines pressure verified.",
   },
+  {
+    id: "REQ-2026-052",
+    projectId: "proj-001",
+    projectName: "Nila Residence",
+    location: "Thiruvananthapuram, Kerala",
+    tradesSummary: "6 Welders, 2 Helpers",
+    quantity: 8,
+    fulfilled: 0,
+    primaryTrade: "Welders",
+    contractorName: "Precision Steel & Welders Gang",
+    contractorRating: 4.7,
+    contractorExperienceYears: 9,
+    contractorCoverImage:
+      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900&auto=format&fit=crop&q=80",
+    requestedDate: "22 Jun 2026",
+    fulfilledDate: "24 Jun 2026",
+    status: "Rejected",
+    dailyRate: 1250,
+    shiftTiming: "8:00 AM – 5:00 PM",
+    supervisor: "Rajeev K.",
+    rejectionReason:
+      "Contractor crew capacity exhausted — unable to mobilize certified 6G structural welders on the requested shift window without an unauthorized 35% premium rate escalation.",
+    rejectedBy: "Supervisor Rajeev K. (Site Operations)",
+    rejectedDate: "24 Jun 2026",
+    rejectionCategory: "Capacity Exhausted",
+    logNote:
+      "Contractor formal capacity declination received. Rate escalation rejected per Kallisto rate-card rules. Re-tendered as split requirement.",
+    isMultiTrade: true,
+    tradesBreakdown: [
+      { trade: "Welders", quantity: 6, fulfilled: 0, dailyRate: 1350 },
+      { trade: "Helpers", quantity: 2, fulfilled: 0, dailyRate: 650 },
+    ],
+  },
+  {
+    id: "REQ-2026-031",
+    projectId: "proj-003",
+    projectName: "Marina Office",
+    location: "Kozhikode, Kerala",
+    tradesSummary: "8 Scaffolding Helpers",
+    quantity: 8,
+    fulfilled: 0,
+    primaryTrade: "Helpers",
+    contractorName: "Apex Material Staging Crew",
+    contractorRating: 4.85,
+    contractorExperienceYears: 8,
+    contractorCoverImage:
+      "https://images.unsplash.com/photo-1541888946425-d0fbb180c5f5?w=900&auto=format&fit=crop&q=80",
+    requestedDate: "11 Jun 2026",
+    fulfilledDate: "12 Jun 2026",
+    status: "Rejected",
+    dailyRate: 680,
+    shiftTiming: "8:30 AM – 5:30 PM",
+    supervisor: "Shafeeq M.",
+    rejectionReason:
+      "Site safety clearance delayed — municipal permit pending for exterior façade staging. Request rejected prior to mobilization to prevent idle worker charges.",
+    rejectedBy: "Shafeeq M. (Site In-Charge)",
+    rejectedDate: "12 Jun 2026",
+    rejectionCategory: "Site Access Delay",
+    logNote:
+      "Municipal clearance inspection postponed to 16 Jun. Contractor informed 24 hours in advance. Gate passes cancelled with zero penalty.",
+    isMultiTrade: false,
+    tradesBreakdown: [
+      { trade: "Helpers", quantity: 8, fulfilled: 0, dailyRate: 680 },
+    ],
+  },
+  {
+    id: "REQ-2026-015",
+    projectId: "proj-004",
+    projectName: "Green Courtyard",
+    location: "Thrissur, Kerala",
+    tradesSummary: "4 Tile Workers",
+    quantity: 4,
+    fulfilled: 0,
+    primaryTrade: "Tile workers",
+    contractorName: "Quality Stone Cutters & Tiling Gang",
+    contractorRating: 4.6,
+    contractorExperienceYears: 6,
+    contractorCoverImage:
+      "https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?w=900&auto=format&fit=crop&q=80",
+    requestedDate: "03 Jun 2026",
+    fulfilledDate: "04 Jun 2026",
+    status: "Rejected",
+    dailyRate: 920,
+    shiftTiming: "8:00 AM – 5:00 PM",
+    supervisor: "Arun S.",
+    rejectionReason:
+      "Safety verification check failed — contractor crew lacked mandatory valid third-party liability insurance coverage and PPE compliance records.",
+    rejectedBy: "Kallisto Compliance Desk & Arun S.",
+    rejectedDate: "04 Jun 2026",
+    rejectionCategory: "Safety Non-Compliance",
+    logNote:
+      "Compliance audit flagged expired workman compensation policy. Mobilization blocked per Kallisto site safety protocol.",
+    isMultiTrade: false,
+    tradesBreakdown: [
+      { trade: "Tile workers", quantity: 4, fulfilled: 0, dailyRate: 920 },
+    ],
+  },
 ];
 
 export function RequestHistoryWorkspace() {
@@ -241,7 +328,10 @@ export function RequestHistoryWorkspace() {
         r.tradesSummary.toLowerCase().includes(q) ||
         r.contractorName.toLowerCase().includes(q) ||
         r.supervisor.toLowerCase().includes(q) ||
-        r.location.toLowerCase().includes(q);
+        r.location.toLowerCase().includes(q) ||
+        (r.rejectionReason && r.rejectionReason.toLowerCase().includes(q)) ||
+        (r.rejectionCategory && r.rejectionCategory.toLowerCase().includes(q)) ||
+        r.status.toLowerCase().includes(q);
 
       const matchesTrade =
         selectedTrade === "all" ||
@@ -253,7 +343,17 @@ export function RequestHistoryWorkspace() {
 
       const matchesStatus =
         selectedStatus === "all" ||
-        r.status.toLowerCase().includes(selectedStatus.toLowerCase());
+        (selectedStatus === "Rejected"
+          ? r.status === "Rejected"
+          : selectedStatus === "Active"
+          ? r.status === "Fulfilled & Active"
+          : selectedStatus === "Split"
+          ? r.status === "Multi-Contractor Split"
+          : selectedStatus === "Handed Over"
+          ? r.status === "Handed Over"
+          : selectedStatus === "Completed"
+          ? r.status === "Completed"
+          : r.status.toLowerCase().includes(selectedStatus.toLowerCase()));
 
       return matchesSearch && matchesTrade && matchesProject && matchesStatus;
     });
@@ -295,9 +395,9 @@ export function RequestHistoryWorkspace() {
             className={styles.secondaryButton}
             onClick={() => {
               const csvData = filteredRecords
-                .map((r) => `${r.id},"${r.projectName}","${r.tradesSummary}",${r.fulfilled},"${r.contractorName}","${r.fulfilledDate}"`)
+                .map((r) => `${r.id},"${r.projectName}","${r.tradesSummary}",${r.fulfilled},"${r.contractorName}","${r.status}","${r.fulfilledDate}","${(r.rejectionReason || "").replace(/"/g, '""')}"`)
                 .join("\n");
-              const blob = new Blob([`ID,Project,Trades,Quantity,Contractor,FulfilledDate\n${csvData}`], { type: "text/csv" });
+              const blob = new Blob([`ID,Project,Trades,Quantity,Contractor,Status,Date,RejectionReason\n${csvData}`], { type: "text/csv" });
               const url = URL.createObjectURL(blob);
               const a = document.createElement("a");
               a.href = url;
@@ -335,8 +435,14 @@ export function RequestHistoryWorkspace() {
       <div className={styles.metricsGrid} style={{ marginBottom: 20 }}>
         <div className={styles.metricCard}>
           <span className={styles.metricLabel}>Total Fulfilled Requests</span>
-          <strong className={styles.metricValue}>{filteredRecords.length}</strong>
-          <span className={styles.metricSub}>All project milestones</span>
+          <strong className={styles.metricValue}>
+            {filteredRecords.filter((r) => r.status !== "Rejected").length}
+          </strong>
+          <span className={styles.metricSub}>
+            {filteredRecords.filter((r) => r.status === "Rejected").length > 0
+              ? `${filteredRecords.filter((r) => r.status === "Rejected").length} rejected requests`
+              : "All project milestones"}
+          </span>
         </div>
         <div className={styles.metricCard}>
           <span className={styles.metricLabel}>Workers Deployed</span>
@@ -408,6 +514,7 @@ export function RequestHistoryWorkspace() {
               <option value="Painters">Painters</option>
               <option value="Plumbers">Plumbers</option>
               <option value="Tile workers">Tile workers</option>
+              <option value="Welders">Welders</option>
               <option value="Helpers">Helpers</option>
             </select>
             <ChevronDown size={13} />
@@ -424,6 +531,7 @@ export function RequestHistoryWorkspace() {
               <option value="Handed Over">Handed Over</option>
               <option value="Split">Multi-Contractor Split</option>
               <option value="Completed">Completed</option>
+              <option value="Rejected">Rejected</option>
             </select>
             <ChevronDown size={13} />
           </label>
@@ -505,13 +613,24 @@ export function RequestHistoryWorkspace() {
 
                   <div className={styles.reqMetricsRow}>
                     <div className={styles.reqMetricCol}>
-                      <strong className={styles.reqMetricValue}>{item.fulfilled} workers</strong>
-                      <span className={styles.reqMetricLabel}>deployed</span>
+                      <strong
+                        className={styles.reqMetricValue}
+                        style={item.status === "Rejected" ? { color: "#dc2626" } : undefined}
+                      >
+                        {item.fulfilled} workers
+                      </strong>
+                      <span className={styles.reqMetricLabel}>
+                        {item.status === "Rejected" ? "not deployed" : "deployed"}
+                      </span>
                     </div>
                     <div className={styles.reqMetricDivider} />
                     <div className={styles.reqMetricCol}>
-                      <strong className={styles.reqMetricValue}>{item.fulfilledDate}</strong>
-                      <span className={styles.reqMetricLabel}>fulfilled</span>
+                      <strong className={styles.reqMetricValue}>
+                        {item.status === "Rejected" ? item.rejectedDate || item.fulfilledDate : item.fulfilledDate}
+                      </strong>
+                      <span className={styles.reqMetricLabel}>
+                        {item.status === "Rejected" ? "rejected" : "fulfilled"}
+                      </span>
                     </div>
                     <div className={styles.reqMetricDivider} />
                     <div className={styles.reqMetricCol}>
@@ -520,26 +639,42 @@ export function RequestHistoryWorkspace() {
                     </div>
                   </div>
 
-                  {item.logNote && (
+                  {item.status === "Rejected" && item.rejectionReason ? (
+                    <div className={styles.gridRejectionBox}>
+                      <strong style={{ color: "#991b1b" }}>Reason for Rejection:</strong> {item.rejectionReason}
+                    </div>
+                  ) : item.logNote ? (
                     <div className={styles.historyItemLog}>
                       <strong>Supervisor {item.supervisor}:</strong> {item.logNote}
                     </div>
-                  )}
+                  ) : null}
 
                   <div className={styles.reqCardBottomRow}>
-                    <span className={`${styles.reqStatusBadge} ${styles.requestStatusFulfilled}`}>
-                      <span className={styles.reqStatusDot} />
-                      {item.status}
+                    <span
+                      className={`${styles.reqStatusBadge} ${
+                        item.status === "Rejected"
+                          ? styles.requestStatusRejected
+                          : styles.requestStatusFulfilled
+                      }`}
+                    >
+                      <span
+                        className={
+                          item.status === "Rejected"
+                            ? styles.reqStatusDotRejected
+                            : styles.reqStatusDot
+                        }
+                      />
+                      {item.status === "Rejected" ? "Rejected" : item.status}
                     </span>
                     <button
                       type="button"
-                      className={styles.reqActionBtn}
+                      className={item.status === "Rejected" ? styles.viewRejectionBtn : styles.reqActionBtn}
                       onClick={(e) => {
                         e.stopPropagation();
                         setInspectingItem(item);
                       }}
                     >
-                      <span>Inspect log</span>
+                      <span>{item.status === "Rejected" ? "View reason" : "Inspect log"}</span>
                     </button>
                   </div>
                 </div>
@@ -571,6 +706,8 @@ export function RequestHistoryWorkspace() {
                     badgeStyle = styles.statusHandover;
                   } else if (item.status === "Completed") {
                     badgeStyle = styles.statusCompleted;
+                  } else if (item.status === "Rejected") {
+                    badgeStyle = styles.statusRejected;
                   }
 
                   return (
@@ -593,14 +730,33 @@ export function RequestHistoryWorkspace() {
                       </td>
                       <td>
                         <span className={styles.tradeSummaryBadge}>{item.tradesSummary}</span>
+                        {item.status === "Rejected" && item.rejectionReason && (
+                          <div className={styles.tableRejectionSnippet} title={item.rejectionReason}>
+                            <AlertTriangle size={11} aria-hidden="true" style={{ flexShrink: 0 }} />
+                            <span>Reason: {item.rejectionReason}</span>
+                          </div>
+                        )}
                       </td>
                       <td>
-                        <div style={{ fontWeight: 700, color: "#0f172a" }}>
-                          {item.fulfilled} / {item.quantity} workers
-                        </div>
-                        <div style={{ fontSize: 11, color: "#0284c7", fontWeight: 600 }}>
-                          100% fulfilled
-                        </div>
+                        {item.status === "Rejected" ? (
+                          <>
+                            <div style={{ fontWeight: 700, color: "#991b1b" }}>
+                              0 / {item.quantity} workers
+                            </div>
+                            <div style={{ fontSize: 11, color: "#dc2626", fontWeight: 600 }}>
+                              Request rejected
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div style={{ fontWeight: 700, color: "#0f172a" }}>
+                              {item.fulfilled} / {item.quantity} workers
+                            </div>
+                            <div style={{ fontSize: 11, color: "#0284c7", fontWeight: 600 }}>
+                              100% fulfilled
+                            </div>
+                          </>
+                        )}
                       </td>
                       <td>
                         <div style={{ fontWeight: 600, color: "#1e293b" }}>
@@ -616,24 +772,24 @@ export function RequestHistoryWorkspace() {
                       <td style={{ fontWeight: 650, color: "#0f172a", whiteSpace: "nowrap" }}>
                         ₹{item.dailyRate}/day
                       </td>
-                      <td style={{ fontSize: 12, color: "#475569", whiteSpace: "nowrap" }}>
-                        {item.fulfilledDate}
+                      <td style={{ fontSize: 12, color: item.status === "Rejected" ? "#b91c1c" : "#475569", whiteSpace: "nowrap" }}>
+                        {item.status === "Rejected" ? (item.rejectedDate || item.fulfilledDate) : item.fulfilledDate}
                       </td>
                       <td style={{ whiteSpace: "nowrap" }}>
                         <span className={`${styles.historyItemBadge} ${badgeStyle}`}>
-                          ✓ {item.status}
+                          {item.status === "Rejected" ? "✕ Rejected" : `✓ ${item.status}`}
                         </span>
                       </td>
                       <td style={{ whiteSpace: "nowrap" }}>
                         <button
                           type="button"
-                          className={styles.secondaryButton}
+                          className={item.status === "Rejected" ? styles.viewRejectionBtn : styles.secondaryButton}
                           onClick={(e) => {
                             e.stopPropagation();
                             setInspectingItem(item);
                           }}
                         >
-                          Inspect log
+                          {item.status === "Rejected" ? "View reason" : "Inspect log"}
                         </button>
                       </td>
                     </tr>
@@ -675,9 +831,20 @@ export function RequestHistoryWorkspace() {
           <div className={styles.historyModal}>
             <div className={styles.historyModalHeader}>
               <div className={styles.historyModalTitleWrap}>
-                <History size={18} style={{ color: "#0284c7" }} />
+                {inspectingItem.status === "Rejected" ? (
+                  <XCircle size={18} style={{ color: "#dc2626" }} />
+                ) : (
+                  <History size={18} style={{ color: "#0284c7" }} />
+                )}
                 <div>
-                  <h3 id="history-drawer-title">Request Audit Log — {inspectingItem.id}</h3>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <h3 id="history-drawer-title">Request Audit Log — {inspectingItem.id}</h3>
+                    {inspectingItem.status === "Rejected" && (
+                      <span className={`${styles.historyItemBadge} ${styles.statusRejected}`}>
+                        ✕ Rejected
+                      </span>
+                    )}
+                  </div>
                   <p className={styles.historyModalSubtitle}>
                     {inspectingItem.projectName} • {inspectingItem.location}
                   </p>
@@ -687,26 +854,72 @@ export function RequestHistoryWorkspace() {
                 type="button"
                 className={styles.historyModalCloseBtn}
                 onClick={() => setInspectingItem(null)}
+                aria-label="Close audit log"
               >
                 <X size={16} />
               </button>
             </div>
 
             <div className={styles.historyListBody}>
+              {inspectingItem.status === "Rejected" && (
+                <div className={styles.rejectionNoticeCard}>
+                  <div className={styles.rejectionNoticeHeader}>
+                    <XCircle size={20} className={styles.rejectionIcon} />
+                    <div>
+                      <h4 className={styles.rejectionTitle}>Workforce Request Rejected</h4>
+                      <p className={styles.rejectionSubtitle}>
+                        Rejected on {inspectingItem.rejectedDate || inspectingItem.fulfilledDate} by {inspectingItem.rejectedBy || inspectingItem.supervisor}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className={styles.rejectionReasonContent}>
+                    <span className={styles.rejectionReasonLabel}>Official Reason for Rejection:</span>
+                    <p className={styles.rejectionReasonQuote}>
+                      &ldquo;{inspectingItem.rejectionReason}&rdquo;
+                    </p>
+                  </div>
+
+                  {inspectingItem.rejectionCategory && (
+                    <div className={styles.rejectionCategoryTag}>
+                      <span>Rejection Category: <strong>{inspectingItem.rejectionCategory}</strong></span>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className={styles.historyItemCard}>
                 <strong>Requirement Summary</strong>
                 <p style={{ margin: 0, fontSize: 12, color: "#475569" }}>
-                  {inspectingItem.tradesSummary} ({inspectingItem.fulfilled} workers deployed)
+                  {inspectingItem.tradesSummary} (
+                  {inspectingItem.status === "Rejected"
+                    ? `0 / ${inspectingItem.quantity} workers fulfilled • Request Rejected`
+                    : `${inspectingItem.fulfilled} workers deployed`}
+                  )
                 </p>
+                {inspectingItem.tradesBreakdown && (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 4 }}>
+                    {inspectingItem.tradesBreakdown.map((tb, idx) => (
+                      <span key={idx} className={styles.tradeSummaryBadge} style={{ fontSize: 11 }}>
+                        {tb.quantity} {tb.trade} @ ₹{tb.dailyRate}/day
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className={styles.historyItemCard}>
-                <strong>Contractor & Fulfillment Details</strong>
+                <strong>Contractor & Target Shift Details</strong>
                 <p style={{ margin: "4px 0 0", fontSize: 12, color: "#475569" }}>
                   Contractor: <strong>{inspectingItem.contractorName}</strong> ({inspectingItem.contractorRating}★)<br />
+                  Target Shift: {inspectingItem.shiftTiming} • Target Rate: ₹{inspectingItem.dailyRate}/day<br />
                   {inspectingItem.splitContractorDetails ? (
                     <span style={{ color: "#0284c7", fontWeight: 600 }}>
                       Split Allocation: {inspectingItem.splitContractorDetails}
+                    </span>
+                  ) : inspectingItem.status === "Rejected" ? (
+                    <span style={{ color: "#dc2626", fontWeight: 600 }}>
+                      Mobilization status: Cancelled / Non-fulfilled
                     </span>
                   ) : (
                     <span>Assigned 100% capacity</span>
