@@ -731,3 +731,26 @@
     transform: translateY(0);
   }
 }
+
+/* ── Client Portal Specific Overrides ────────────────────────────── */
+
+.clientWorkspace .searchBox {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+}
+
+.clientWorkspace .searchBox:focus-within {
+  background: transparent;
+  border-color: #94a3b8;
+}
+
+.clientWorkspace .filterSelect {
+  background-color: transparent;
+  border: 1px solid #e2e8f0;
+}
+
+.clientWorkspace .filterSelect:hover,
+.clientWorkspace .filterSelect:focus {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}

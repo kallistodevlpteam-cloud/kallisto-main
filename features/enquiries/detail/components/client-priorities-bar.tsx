@@ -16,6 +16,7 @@ import styles from "./client-priorities-bar.module.css";
 export interface ClientPrioritiesBarProps {
   priorities: ClientPriority[];
   className?: string;
+  editable?: boolean;
 }
 
 const COLOR_THEMES = ["blue", "green", "purple", "orange", "pink"] as const;
@@ -74,7 +75,11 @@ function getPriorityMeta(label: string, index: number, type: "confirmed" | "infe
   };
 }
 
-export function ClientPrioritiesBar({ priorities, className }: ClientPrioritiesBarProps) {
+export function ClientPrioritiesBar({
+  priorities,
+  className,
+  editable = false,
+}: ClientPrioritiesBarProps) {
   if (!priorities || priorities.length === 0) return null;
 
   return (
@@ -96,51 +101,167 @@ export function ClientPrioritiesBar({ priorities, className }: ClientPrioritiesB
 
       {/* ── Cards Grid ──────────────────────────────────────────────── */}
       <div className={styles.cardsGrid}>
-        {priorities.map((prio, idx) => {
-          const isConfirmed = prio.type === "confirmed";
-          const { theme, Icon, desc, tags } = getPriorityMeta(prio.label, idx, prio.type);
-
-          return (
-            <div
-              key={prio.id}
-              className={`${styles.cardShell} ${styles[`theme_${theme}`]}`}
-            >
-              {/* Main Card Content (Icon + Text Column with Title & Description) */}
-              <div className={styles.cardMain}>
-                <div className={styles.iconBox}>
-                  <Icon size={18} className={styles.headerIcon} />
-                </div>
-                <div className={styles.contentCol}>
-                  <h4 className={styles.cardTitle}>{prio.label}</h4>
-                  <p className={styles.cardSnippet}>{desc}</p>
-                </div>
-              </div>
-
-              {/* Tags Row */}
-              <div className={styles.tagsRow}>
-                <span
-                  className={
-                    isConfirmed ? styles.confirmedBadge : styles.inferredBadge
-                  }
-                >
-                  {isConfirmed ? (
-                    <CheckCircle2 size={11} className={styles.badgeIcon} />
-                  ) : (
-                    <Sparkles size={11} className={styles.badgeIcon} />
-                  )}
-                  <span>{isConfirmed ? "Confirmed" : "Inferred"}</span>
-                </span>
-                {tags.map((t, i) => (
-                  <span key={i} className={styles.softTag}>
-                    <Tag size={10} className={styles.tagIcon} />
-                    <span>{t}</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-          );
-        })}
+        {priorities.map((prio, idx) => (
+          <PriorityCard
+            key={prio.id}
+            prio={prio}
+            idx={idx}
+            editable={editable}
+          />
+        ))}
       </div>
+    </div>
+  );
+}
+
+interface PriorityCardProps {
+  prio: ClientPriority;
+  idx: number;
+  editable?: boolean;
+}
+
+function PriorityCard({ prio, idx, editable }: PriorityCardProps) {
+  const { theme, Icon, desc, tags } = getPriorityMeta(prio.label, idx, prio.type);
+
+  const [editing, setEditing] = React.useState(false);
+  const [draftDesc, setDraftDesc] = React.useState(desc);
+  const [draftType, setDraftType] = React.useState<"confirmed" | "inferred">(prio.type);
+  const [displayDesc, setDisplayDesc] = React.useState(desc);
+  const [displayType, setDisplayType] = React.useState<"confirmed" | "inferred">(prio.type);
+
+  const isConfirmed = displayType === "confirmed";
+
+  function handleEdit(e: React.MouseEvent) {
+    e.stopPropagation();
+    setDraftDesc(displayDesc);
+    setDraftType(displayType);
+    setEditing(true);
+  }
+
+  function handleUpdate() {
+    setDisplayDesc(draftDesc.trim() || displayDesc);
+    setDisplayType(draftType);
+    setEditing(false);
+  }
+
+  function handleCancel() {
+    setEditing(false);
+  }
+
+  return (
+    <div className={`${styles.cardShell} ${styles[`theme_${theme}`]}`}>
+      {/* Edit trigger icon – only on client portal when editable is true */}
+      {editable && !editing && (
+        <button
+          type="button"
+          className={styles.editIconBtn}
+          aria-label={`Edit ${prio.label}`}
+          onClick={handleEdit}
+          title="Edit"
+        >
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+        </button>
+      )}
+
+      {editing ? (
+        /* Edit Mode */
+        <div className={styles.editPanel}>
+          <div className={styles.editField}>
+            <label className={styles.editLabel} htmlFor={`status-${prio.id}`}>
+              Status
+            </label>
+            <select
+              id={`status-${prio.id}`}
+              className={styles.editSelect}
+              value={draftType}
+              onChange={(e) =>
+                setDraftType(e.target.value as "confirmed" | "inferred")
+              }
+            >
+              <option value="confirmed">✓ Confirmed</option>
+              <option value="inferred">✦ Inferred</option>
+            </select>
+          </div>
+
+          <div className={styles.editField}>
+            <label className={styles.editLabel} htmlFor={`desc-${prio.id}`}>
+              Description
+            </label>
+            <textarea
+              id={`desc-${prio.id}`}
+              className={styles.editTextarea}
+              value={draftDesc}
+              onChange={(e) => setDraftDesc(e.target.value)}
+              rows={3}
+              placeholder="Describe this priority…"
+            />
+          </div>
+
+          <div className={styles.editActions}>
+            <button
+              type="button"
+              className={styles.cancelBtn}
+              onClick={handleCancel}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className={styles.updateBtn}
+              onClick={handleUpdate}
+            >
+              Update
+            </button>
+          </div>
+        </div>
+      ) : (
+        /* View Mode */
+        <>
+          <div className={styles.cardMain}>
+            <div className={styles.iconBox}>
+              <Icon size={18} className={styles.headerIcon} />
+            </div>
+            <div className={styles.contentCol}>
+              <h4 className={styles.cardTitle}>{prio.label}</h4>
+              <p className={styles.cardSnippet}>{displayDesc}</p>
+            </div>
+          </div>
+
+          <div className={styles.tagsRow}>
+            <span
+              className={
+                isConfirmed ? styles.confirmedBadge : styles.inferredBadge
+              }
+            >
+              {isConfirmed ? (
+                <CheckCircle2 size={11} className={styles.badgeIcon} />
+              ) : (
+                <Sparkles size={11} className={styles.badgeIcon} />
+              )}
+              <span>{isConfirmed ? "Confirmed" : "Inferred"}</span>
+            </span>
+            {tags.map((t, i) => (
+              <span key={i} className={styles.softTag}>
+                <Tag size={10} className={styles.tagIcon} />
+                <span>{t}</span>
+              </span>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

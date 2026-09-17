@@ -20,12 +20,8 @@ import {
   Briefcase,
   Share2,
   ArrowRight,
-  Users,
-  HardHat,
-  Package,
-  Banknote,
   Clock,
-  TrendingUp,
+  CalendarClock,
 } from "lucide-react";
 import {
   ClockDuotoneIcon,
@@ -163,6 +159,7 @@ interface ProjectOverviewCardProps {
   priorities?: ClientPriority[];
   updatesTriggerRef?: RefObject<HTMLButtonElement | null>;
   onOpenUpdates?: () => void;
+  isClient?: boolean;
 }
 
 export function ProjectOverviewCard({
@@ -188,6 +185,7 @@ export function ProjectOverviewCard({
   inspirationImages,
   projectScopes,
   priorities,
+  isClient,
 }: ProjectOverviewCardProps = {}) {
   const [activeTab, setActiveTab] = useState<EnquiryTabKey>("overview");
   const [activeDomainKey, setActiveDomainKey] = useState<string>("room_programme");
@@ -203,7 +201,10 @@ export function ProjectOverviewCard({
 
   useEffect(() => {
     if (isUpcoming && ["team", "materials", "hands", "basics", "activity"].includes(activeTab)) {
-      setActiveTab("overview");
+      const timer = setTimeout(() => {
+        setActiveTab("overview");
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [isUpcoming, activeTab]);
 
@@ -321,6 +322,7 @@ export function ProjectOverviewCard({
               <ProjectOverviewActivitySections
                 projectId={projectId}
                 onNavigateTab={setActiveTab}
+                isClient={isClient}
               />
             )}
             {futureContent}
@@ -616,6 +618,7 @@ export function ProjectOverviewCard({
             <ProjectTeamWorkspace
               projectId={projectId}
               projectName={projectName || "Nila Residence"}
+              isClient={Boolean(isClient)}
             />
           </div>
         )}
@@ -626,6 +629,7 @@ export function ProjectOverviewCard({
             <ProjectMaterialsWorkspace
               projectId={projectId}
               projectName={projectName || "Nila Residence"}
+              isClient={Boolean(isClient)}
             />
           </div>
         )}
@@ -670,9 +674,11 @@ export function ProjectOverviewCard({
               <div className={styles.householdHeaderRow}>
                 <div className={styles.householdTitleGroup}>
                   <h4 className={styles.householdHeading}>Hands Project Workforce &amp; Labor Tracking</h4>
-                  <span className={styles.householdCountBadge}>₹18,650 Today&apos;s Spend</span>
+                  {!isClient && (
+                    <span className={styles.householdCountBadge}>₹18,650 Today&apos;s Spend</span>
+                  )}
                 </div>
-                <Link href="/hands" className={styles.editBriefBtn} style={{ textDecoration: "none" }}>
+                <Link href={isClient ? `/client/hands` : `/hands`} className={styles.editBriefBtn} style={{ textDecoration: "none" }}>
                   <span>Open Hands Workspace</span>
                   <ArrowRight size={13} />
                 </Link>
@@ -735,166 +741,143 @@ export function ProjectOverviewCard({
                 </div>
               </div>
 
-              {/* 4. Financial Spend & Escrow 5-Card Strip */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-                  gap: "10px",
-                  width: "100%",
-                }}
-              >
-                {/* Total Labor Spent */}
+              {/* 4. Financial Spend & Escrow 5-Card Strip (Provider only) */}
+              {!isClient && (
                 <div
                   style={{
-                    background: "#ffffff",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "10px",
-                    padding: "12px 14px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                    gap: "10px",
+                    width: "100%",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#64748b" }}>
-                    <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                      Total Labor Spent
+                  {/* Total Labor Spent */}
+                  <div
+                    style={{
+                      background: "#ffffff",
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "10px",
+                      padding: "12px 14px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "4px",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#64748b" }}>
+                      <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                        Total Labor Spent
+                      </span>
+                      <Wallet size={15} />
+                    </div>
+                    <span style={{ fontSize: "20px", fontWeight: 800, color: "#16a34a", letterSpacing: "-0.02em" }}>
+                      ₹4.85L
                     </span>
-                    <Wallet size={15} />
+                    <span style={{ fontSize: "11px", color: "#64748b" }}>32% of labor budget</span>
                   </div>
-                  <span style={{ fontSize: "20px", fontWeight: 800, color: "#16a34a", letterSpacing: "-0.02em" }}>
-                    ₹4.85L
-                  </span>
-                  <span style={{ fontSize: "11px", color: "#64748b", display: "flex", alignItems: "center", gap: "4px" }}>
-                    <TrendingUp size={11} color="#16a34a" />
-                    <span>33.5% of ₹14.50L</span>
-                  </span>
-                </div>
 
-                {/* Today's Spend */}
-                <div
-                  style={{
-                    background: "#ffffff",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "10px",
-                    padding: "12px 14px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#64748b" }}>
-                    <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                      Today&apos;s Spend
+                  {/* Spent Today */}
+                  <div
+                    style={{
+                      background: "#ffffff",
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "10px",
+                      padding: "12px 14px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "4px",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#64748b" }}>
+                      <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                        Spent Today
+                      </span>
+                      <CalendarClock size={15} color="#2563eb" />
+                    </div>
+                    <span style={{ fontSize: "20px", fontWeight: 800, color: "#2563eb", letterSpacing: "-0.02em" }}>
+                      ₹18,650
                     </span>
-                    <Banknote size={15} />
+                    <span style={{ fontSize: "11px", color: "#64748b" }}>18 workers clocked in</span>
                   </div>
-                  <span style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>
-                    ₹18,650
-                  </span>
-                  <span style={{ fontSize: "11px", color: "#64748b" }}>22 of 24 on-site today</span>
-                </div>
 
-                {/* Settled via Escrow */}
-                <div
-                  style={{
-                    background: "#ffffff",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "10px",
-                    padding: "12px 14px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#64748b" }}>
-                    <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                      Settled via Escrow
+                  {/* Pending Approval */}
+                  <div
+                    style={{
+                      background: "#ffffff",
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "10px",
+                      padding: "12px 14px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "4px",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#64748b" }}>
+                      <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                        Pending Approval
+                      </span>
+                      <Clock size={15} color="#d97706" />
+                    </div>
+                    <span style={{ fontSize: "20px", fontWeight: 800, color: "#d97706", letterSpacing: "-0.02em" }}>
+                      ₹75,250
                     </span>
-                    <CheckCircle2 size={15} color="#16a34a" />
+                    <span style={{ fontSize: "11px", color: "#64748b" }}>Current cycle in review</span>
                   </div>
-                  <span style={{ fontSize: "20px", fontWeight: 800, color: "#16a34a", letterSpacing: "-0.02em" }}>
-                    ₹4.10L
-                  </span>
-                  <span style={{ fontSize: "11px", color: "#64748b" }}>Verified &amp; Disbursed</span>
-                </div>
 
-                {/* Pending Sign-Off */}
-                <div
-                  style={{
-                    background: "#ffffff",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "10px",
-                    padding: "12px 14px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#64748b" }}>
-                    <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                      Pending Sign-Off
+                  {/* Remaining Budget */}
+                  <div
+                    style={{
+                      background: "#ffffff",
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "10px",
+                      padding: "12px 14px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "4px",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#64748b" }}>
+                      <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                        Remaining Budget
+                      </span>
+                      <ShieldCheck size={15} color="#7c3aed" />
+                    </div>
+                    <span style={{ fontSize: "20px", fontWeight: 800, color: "#7c3aed", letterSpacing: "-0.02em" }}>
+                      ₹9.65L
                     </span>
-                    <Clock size={15} color="#d97706" />
+                    <span style={{ fontSize: "11px", color: "#64748b" }}>Available reserve</span>
                   </div>
-                  <span style={{ fontSize: "20px", fontWeight: 800, color: "#d97706", letterSpacing: "-0.02em" }}>
-                    ₹75,250
-                  </span>
-                  <span style={{ fontSize: "11px", color: "#64748b" }}>Current cycle in review</span>
                 </div>
-
-                {/* Remaining Budget */}
-                <div
-                  style={{
-                    background: "#ffffff",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "10px",
-                    padding: "12px 14px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#64748b" }}>
-                    <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                      Remaining Budget
-                    </span>
-                    <ShieldCheck size={15} color="#7c3aed" />
-                  </div>
-                  <span style={{ fontSize: "20px", fontWeight: 800, color: "#7c3aed", letterSpacing: "-0.02em" }}>
-                    ₹9.65L
-                  </span>
-                  <span style={{ fontSize: "11px", color: "#64748b" }}>Available reserve</span>
-                </div>
-              </div>
+              )}
 
               {/* 5. Attendance Summary Strip */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", width: "100%" }}>
-                <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
-                  <span style={{ fontSize: "18px", fontWeight: 800, color: "#0f172a", display: "block" }}>24</span>
-                  <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase", marginTop: "2px", display: "block" }}>
-                    Total Labor
-                  </span>
+              {!isClient && (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", width: "100%" }}>
+                  <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
+                    <span style={{ fontSize: "18px", fontWeight: 800, color: "#0f172a", display: "block" }}>24</span>
+                    <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase", marginTop: "2px", display: "block" }}>
+                      Total Labor
+                    </span>
+                  </div>
+                  <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
+                    <span style={{ fontSize: "18px", fontWeight: 800, color: "#0f172a", display: "block" }}>18</span>
+                    <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase", marginTop: "2px", display: "block" }}>
+                      Active Today
+                    </span>
+                  </div>
+                  <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
+                    <span style={{ fontSize: "18px", fontWeight: 800, color: "#0f172a", display: "block" }}>04</span>
+                    <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase", marginTop: "2px", display: "block" }}>
+                      On Leave
+                    </span>
+                  </div>
+                  <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
+                    <span style={{ fontSize: "18px", fontWeight: 800, color: "#0f172a", display: "block" }}>02</span>
+                    <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase", marginTop: "2px", display: "block" }}>
+                      Not Assigned
+                    </span>
+                  </div>
                 </div>
-                <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
-                  <span style={{ fontSize: "18px", fontWeight: 800, color: "#0f172a", display: "block" }}>18</span>
-                  <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase", marginTop: "2px", display: "block" }}>
-                    Active Today
-                  </span>
-                </div>
-                <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
-                  <span style={{ fontSize: "18px", fontWeight: 800, color: "#0f172a", display: "block" }}>04</span>
-                  <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase", marginTop: "2px", display: "block" }}>
-                    On Leave
-                  </span>
-                </div>
-                <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
-                  <span style={{ fontSize: "18px", fontWeight: 800, color: "#0f172a", display: "block" }}>02</span>
-                  <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase", marginTop: "2px", display: "block" }}>
-                    Not Assigned
-                  </span>
-                </div>
-              </div>
+              )}
 
               {/* 6. Filtered Trade Crews Breakdown */}
               {displayedCrews.length > 0 ? (
@@ -914,11 +897,11 @@ export function ProjectOverviewCard({
                     >
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <strong style={{ fontSize: "13px", color: "#0f172a" }}>{tr.trade}</strong>
-                        <span style={{ fontSize: "11px", fontWeight: 700, color: "#15803d" }}>{tr.dailyRate}</span>
+                        {!isClient && <span style={{ fontSize: "11px", fontWeight: 700, color: "#15803d" }}>{tr.dailyRate}</span>}
                       </div>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "11.5px", color: "#64748b" }}>
                         <span>{tr.count}</span>
-                        <span>Lead: {tr.supervisor}</span>
+                        {!isClient && <span>Lead: {tr.supervisor}</span>}
                       </div>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "2px" }}>
                         <div

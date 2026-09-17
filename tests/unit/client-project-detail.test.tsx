@@ -79,7 +79,8 @@ describe("ClientProjectDetailWorkspace", () => {
     expect(screen.getAllByText("Arjun Architects").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("Apex Consultants")).toBeInTheDocument();
     expect(screen.getByText("Studio Luxe")).toBeInTheDocument();
-    expect(screen.getAllByText("View").length).toBe(4);
+    const teamSection = screen.getByLabelText("Service Provider & Specialist Team");
+    expect(within(teamSection).getAllByText("View").length).toBe(4);
   });
 
   it("renders client context & priorities drivers", () => {
@@ -100,5 +101,21 @@ describe("ClientProjectDetailWorkspace", () => {
     expect(screen.getAllByText("Arjun Menon").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("Priya Sharma").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("Rahul Nair").length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("omits attendance summary strip on client hands tab", () => {
+    render(<ClientProjectDetailWorkspace projectId="proj-nila-residence" />);
+    fireEvent.click(screen.getByRole("tab", { name: /hands/i }));
+
+    expect(screen.getByRole("heading", { name: /hands project workforce/i })).toBeInTheDocument();
+    expect(screen.queryByText("Total Labor")).not.toBeInTheDocument();
+    expect(screen.queryByText("Active Today")).not.toBeInTheDocument();
+    expect(screen.queryByText("On Leave")).not.toBeInTheDocument();
+    expect(screen.queryByText("Not Assigned")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Lead: Ramesh K/i)).not.toBeInTheDocument();
+
+    // Trade crews are still present
+    expect(screen.getByText("Masons")).toBeInTheDocument();
+    expect(screen.getByText("Carpenters")).toBeInTheDocument();
   });
 });
