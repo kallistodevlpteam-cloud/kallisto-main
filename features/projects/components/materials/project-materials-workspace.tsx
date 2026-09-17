@@ -159,6 +159,7 @@ export const INITIAL_PROJECT_MATERIALS: ProjectMaterialItem[] = [
 export interface ProjectMaterialsWorkspaceProps {
   projectId?: string;
   projectName?: string;
+  isClient?: boolean;
 }
 
 export function formatCurrency(amount: number): string {
@@ -174,6 +175,7 @@ export function formatCurrency(amount: number): string {
 export function ProjectMaterialsWorkspace({
   projectId = "prj-1",
   projectName = "Nila Residence",
+  isClient = false,
 }: ProjectMaterialsWorkspaceProps) {
   const [materials, setMaterials] = useState<ProjectMaterialItem[]>(INITIAL_PROJECT_MATERIALS);
   const [searchQuery, setSearchQuery] = useState("");
@@ -318,7 +320,10 @@ export function ProjectMaterialsWorkspace({
   }
 
   return (
-    <div className={styles.container} aria-label="Project Materials & BOQ Allocation">
+    <div
+      className={`${styles.container}${isClient ? ` ${styles.clientWorkspace}` : ""}`}
+      aria-label="Project Materials & BOQ Allocation"
+    >
       {/* ── 1. Header Row ─────────────────────────────────────────── */}
       <div className={styles.headerRow}>
         <div className={styles.titleGroup}>
@@ -327,31 +332,38 @@ export function ProjectMaterialsWorkspace({
         </div>
 
         <div className={styles.headerActions}>
-          <button
-            type="button"
-            className={styles.actionBtnPrimary}
-            onClick={() => {
-              setPurchaseMatId(materials[0]?.id || "");
-              setIsPurchaseModalOpen(true);
-            }}
-          >
-            <Plus size={14} />
-            <span>Record Purchase</span>
-          </button>
+          {!isClient && (
+            <>
+              <button
+                type="button"
+                className={styles.actionBtnPrimary}
+                onClick={() => {
+                  setPurchaseMatId(materials[0]?.id || "");
+                  setIsPurchaseModalOpen(true);
+                }}
+              >
+                <Plus size={14} />
+                <span>Record Purchase</span>
+              </button>
 
-          <button
-            type="button"
-            className={styles.actionBtnSecondary}
-            onClick={() => {
-              setUsageMatId(materials[0]?.id || "");
-              setIsUsageModalOpen(true);
-            }}
-          >
-            <Minus size={14} />
-            <span>Log Usage</span>
-          </button>
+              <button
+                type="button"
+                className={styles.actionBtnSecondary}
+                onClick={() => {
+                  setUsageMatId(materials[0]?.id || "");
+                  setIsUsageModalOpen(true);
+                }}
+              >
+                <Minus size={14} />
+                <span>Log Usage</span>
+              </button>
+            </>
+          )}
 
-          <Link href={`/projects/${projectId}/boq`} className={styles.boqLinkBtn}>
+          <Link
+            href={isClient ? `/client/projects/${projectId}/boq` : `/projects/${projectId}/boq`}
+            className={styles.boqLinkBtn}
+          >
             <span>View Full BOQ</span>
             <ArrowRight size={13} />
           </Link>
@@ -359,53 +371,55 @@ export function ProjectMaterialsWorkspace({
       </div>
 
       {/* ── 2. KPI Summary Cards ──────────────────────────────────── */}
-      <div className={styles.kpiGrid}>
-        <div className={styles.kpiCard}>
-          <div className={styles.kpiHeader}>
-            <span className={styles.kpiLabel}>Total Spent</span>
-            <DollarSign size={16} />
+      {!isClient && (
+        <div className={styles.kpiGrid}>
+          <div className={styles.kpiCard}>
+            <div className={styles.kpiHeader}>
+              <span className={styles.kpiLabel}>Total Spent</span>
+              <DollarSign size={16} />
+            </div>
+            <span className={styles.kpiValue} style={{ color: "#0f172a" }}>
+              {formatCurrency(totalSpent)}
+            </span>
+            <span className={styles.kpiSubText}>
+              {((totalSpent / (totalBudget || 1)) * 100).toFixed(1)}% of BOQ Budget
+            </span>
           </div>
-          <span className={styles.kpiValue} style={{ color: "#0f172a" }}>
-            {formatCurrency(totalSpent)}
-          </span>
-          <span className={styles.kpiSubText}>
-            {((totalSpent / (totalBudget || 1)) * 100).toFixed(1)}% of BOQ Budget
-          </span>
-        </div>
 
-        <div className={styles.kpiCard}>
-          <div className={styles.kpiHeader}>
-            <span className={styles.kpiLabel}>Available Value</span>
-            <Warehouse size={16} />
+          <div className={styles.kpiCard}>
+            <div className={styles.kpiHeader}>
+              <span className={styles.kpiLabel}>Available Value</span>
+              <Warehouse size={16} />
+            </div>
+            <span className={styles.kpiValue} style={{ color: "#0f172a" }}>
+              {formatCurrency(totalStockValue)}
+            </span>
+            <span className={styles.kpiSubText}>Active stock on site</span>
           </div>
-          <span className={styles.kpiValue} style={{ color: "#0f172a" }}>
-            {formatCurrency(totalStockValue)}
-          </span>
-          <span className={styles.kpiSubText}>Active stock on site</span>
-        </div>
 
-        <div className={styles.kpiCard}>
-          <div className={styles.kpiHeader}>
-            <span className={styles.kpiLabel}>BOQ Required</span>
-            <ShoppingCart size={16} />
+          <div className={styles.kpiCard}>
+            <div className={styles.kpiHeader}>
+              <span className={styles.kpiLabel}>BOQ Required</span>
+              <ShoppingCart size={16} />
+            </div>
+            <span className={styles.kpiValue} style={{ color: "#0f172a" }}>
+              {formatCurrency(totalPendingRequired)}
+            </span>
+            <span className={styles.kpiSubText}>Pending procurement</span>
           </div>
-          <span className={styles.kpiValue} style={{ color: "#0f172a" }}>
-            {formatCurrency(totalPendingRequired)}
-          </span>
-          <span className={styles.kpiSubText}>Pending procurement</span>
-        </div>
 
-        <div className={styles.kpiCard}>
-          <div className={styles.kpiHeader}>
-            <span className={styles.kpiLabel}>Total Budget</span>
-            <Package size={16} />
+          <div className={styles.kpiCard}>
+            <div className={styles.kpiHeader}>
+              <span className={styles.kpiLabel}>Total Budget</span>
+              <Package size={16} />
+            </div>
+            <span className={styles.kpiValue} style={{ color: "#0f172a" }}>
+              {formatCurrency(totalBudget)}
+            </span>
+            <span className={styles.kpiSubText}>{materials.length} line items</span>
           </div>
-          <span className={styles.kpiValue} style={{ color: "#0f172a" }}>
-            {formatCurrency(totalBudget)}
-          </span>
-          <span className={styles.kpiSubText}>{materials.length} line items</span>
         </div>
-      </div>
+      )}
 
       {/* ── 3. Toolbar (Search, Filter, View Mode) ─────────────────── */}
       <div className={styles.toolbar}>
@@ -511,7 +525,9 @@ export function ProjectMaterialsWorkspace({
                     <span className={styles.metricColVal}>
                       {mat.boqAllocatedQty} {mat.unit}
                     </span>
-                    <span className={styles.metricColSub}>{formatCurrency(mat.boqAllocatedAmount)}</span>
+                    {!isClient && (
+                      <span className={styles.metricColSub}>{formatCurrency(mat.boqAllocatedAmount)}</span>
+                    )}
                   </div>
 
                   <div className={styles.metricCol}>
@@ -519,7 +535,9 @@ export function ProjectMaterialsWorkspace({
                     <span className={styles.metricColVal}>
                       {mat.purchasedQty} {mat.unit}
                     </span>
-                    <span className={styles.metricColSub}>{formatCurrency(mat.spentAmount)}</span>
+                    {!isClient && (
+                      <span className={styles.metricColSub}>{formatCurrency(mat.spentAmount)}</span>
+                    )}
                   </div>
 
                   <div className={styles.metricCol}>
@@ -527,7 +545,9 @@ export function ProjectMaterialsWorkspace({
                     <span className={styles.metricColVal} style={{ color: mat.stockOnHandQty <= mat.reorderLevel ? "#b45309" : "#0f172a" }}>
                       {mat.stockOnHandQty} {mat.unit}
                     </span>
-                    <span className={styles.metricColSub}>{formatCurrency(mat.stockOnHandValue)}</span>
+                    {!isClient && (
+                      <span className={styles.metricColSub}>{formatCurrency(mat.stockOnHandValue)}</span>
+                    )}
                   </div>
                 </div>
 
@@ -555,30 +575,32 @@ export function ProjectMaterialsWorkspace({
                     <span>Supplier: <strong>{mat.supplier}</strong></span>
                   </div>
 
-                  <div className={styles.cardActionBtns}>
-                    <button
-                      type="button"
-                      className={styles.cardBtnSmall}
-                      onClick={() => {
-                        setUsageMatId(mat.id);
-                        setIsUsageModalOpen(true);
-                      }}
-                    >
-                      <Minus size={11} />
-                      <span>Use</span>
-                    </button>
-                    <button
-                      type="button"
-                      className={`${styles.cardBtnSmall} ${styles.cardBtnSmallPrimary}`}
-                      onClick={() => {
-                        setPurchaseMatId(mat.id);
-                        setIsPurchaseModalOpen(true);
-                      }}
-                    >
-                      <Plus size={11} />
-                      <span>Inward</span>
-                    </button>
-                  </div>
+                  {!isClient && (
+                    <div className={styles.cardActionBtns}>
+                      <button
+                        type="button"
+                        className={styles.cardBtnSmall}
+                        onClick={() => {
+                          setUsageMatId(mat.id);
+                          setIsUsageModalOpen(true);
+                        }}
+                      >
+                        <Minus size={11} />
+                        <span>Use</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`${styles.cardBtnSmall} ${styles.cardBtnSmallPrimary}`}
+                        onClick={() => {
+                          setPurchaseMatId(mat.id);
+                          setIsPurchaseModalOpen(true);
+                        }}
+                      >
+                        <Plus size={11} />
+                        <span>Inward</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -596,9 +618,9 @@ export function ProjectMaterialsWorkspace({
                 <th>BOQ Qty</th>
                 <th>Purchased</th>
                 <th>Stock on Site</th>
-                <th>Spent</th>
+                {!isClient && <th>Spent</th>}
                 <th>Status</th>
-                <th style={{ textAlign: "right" }}>Actions</th>
+                {!isClient && <th style={{ textAlign: "right" }}>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -614,9 +636,11 @@ export function ProjectMaterialsWorkspace({
                   <td>{mat.category}</td>
                   <td>
                     <strong>{mat.boqAllocatedQty} {mat.unit}</strong>
-                    <span style={{ fontSize: "11px", color: "#64748b", display: "block" }}>
-                      {formatCurrency(mat.boqAllocatedAmount)}
-                    </span>
+                    {!isClient && (
+                      <span style={{ fontSize: "11px", color: "#64748b", display: "block" }}>
+                        {formatCurrency(mat.boqAllocatedAmount)}
+                      </span>
+                    )}
                   </td>
                   <td>
                     <span>{mat.purchasedQty} {mat.unit}</span>
@@ -625,42 +649,48 @@ export function ProjectMaterialsWorkspace({
                     <strong style={{ color: mat.stockOnHandQty <= mat.reorderLevel ? "#b45309" : "#0f172a" }}>
                       {mat.stockOnHandQty} {mat.unit}
                     </strong>
-                    <span style={{ fontSize: "11px", color: "#64748b", display: "block" }}>
-                      {formatCurrency(mat.stockOnHandValue)}
-                    </span>
+                    {!isClient && (
+                      <span style={{ fontSize: "11px", color: "#64748b", display: "block" }}>
+                        {formatCurrency(mat.stockOnHandValue)}
+                      </span>
+                    )}
                   </td>
-                  <td>
-                    <strong>{formatCurrency(mat.spentAmount)}</strong>
-                  </td>
+                  {!isClient && (
+                    <td>
+                      <strong>{formatCurrency(mat.spentAmount)}</strong>
+                    </td>
+                  )}
                   <td>
                     <span className={`${styles.statusTag} ${getStatusTagClass(mat.status)}`}>
                       {mat.status}
                     </span>
                   </td>
-                  <td style={{ textAlign: "right" }}>
-                    <div style={{ display: "inline-flex", gap: "6px" }}>
-                      <button
-                        type="button"
-                        className={styles.cardBtnSmall}
-                        onClick={() => {
-                          setUsageMatId(mat.id);
-                          setIsUsageModalOpen(true);
-                        }}
-                      >
-                        Use
-                      </button>
-                      <button
-                        type="button"
-                        className={`${styles.cardBtnSmall} ${styles.cardBtnSmallPrimary}`}
-                        onClick={() => {
-                          setPurchaseMatId(mat.id);
-                          setIsPurchaseModalOpen(true);
-                        }}
-                      >
-                        + Inward
-                      </button>
-                    </div>
-                  </td>
+                  {!isClient && (
+                    <td style={{ textAlign: "right" }}>
+                      <div style={{ display: "inline-flex", gap: "6px" }}>
+                        <button
+                          type="button"
+                          className={styles.cardBtnSmall}
+                          onClick={() => {
+                            setUsageMatId(mat.id);
+                            setIsUsageModalOpen(true);
+                          }}
+                        >
+                          Use
+                        </button>
+                        <button
+                          type="button"
+                          className={`${styles.cardBtnSmall} ${styles.cardBtnSmallPrimary}`}
+                          onClick={() => {
+                            setPurchaseMatId(mat.id);
+                            setIsPurchaseModalOpen(true);
+                          }}
+                        >
+                          + Inward
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

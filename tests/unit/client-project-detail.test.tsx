@@ -2,6 +2,7 @@ import React from "react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, cleanup, within } from "@testing-library/react";
 import { ClientProjectDetailWorkspace } from "@/features/client/components/client-project-detail-workspace";
+import { ProjectDetailWorkspace } from "@/features/projects/project-detail-workspace";
 
 const mockPush = vi.fn();
 vi.mock("next/navigation", () => ({
@@ -79,7 +80,8 @@ describe("ClientProjectDetailWorkspace", () => {
     expect(screen.getAllByText("Arjun Architects").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("Apex Consultants")).toBeInTheDocument();
     expect(screen.getByText("Studio Luxe")).toBeInTheDocument();
-    expect(screen.getAllByText("View").length).toBe(4);
+    const teamSection = screen.getByLabelText("Service Provider & Specialist Team");
+    expect(within(teamSection).getAllByText("View").length).toBe(4);
   });
 
   it("renders client context & priorities drivers", () => {
@@ -91,6 +93,11 @@ describe("ClientProjectDetailWorkspace", () => {
     expect(screen.getByText("Dedicated home office & study")).toBeInTheDocument();
     expect(screen.getByText("Budget sensitivity & control")).toBeInTheDocument();
     expect(screen.getByText("Energy efficiency & sustainability")).toBeInTheDocument();
+
+    // Edit button is present on client view
+    expect(
+      screen.getByRole("button", { name: /Edit Natural light & cross ventilation/i })
+    ).toBeInTheDocument();
   });
 
   it("renders live project updates feed", () => {
@@ -100,5 +107,30 @@ describe("ClientProjectDetailWorkspace", () => {
     expect(screen.getAllByText("Arjun Menon").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("Priya Sharma").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("Rahul Nair").length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("omits attendance summary strip on client hands tab", () => {
+    render(<ClientProjectDetailWorkspace projectId="proj-nila-residence" />);
+    fireEvent.click(screen.getByRole("tab", { name: /hands/i }));
+
+    expect(screen.getByRole("heading", { name: /hands project workforce/i })).toBeInTheDocument();
+    expect(screen.queryByText("Total Labor")).not.toBeInTheDocument();
+    expect(screen.queryByText("Active Today")).not.toBeInTheDocument();
+    expect(screen.queryByText("On Leave")).not.toBeInTheDocument();
+    expect(screen.queryByText("Not Assigned")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Lead: Ramesh K/i)).not.toBeInTheDocument();
+
+    // Trade crews are still present
+    expect(screen.getByText("Masons")).toBeInTheDocument();
+    expect(screen.getByText("Carpenters")).toBeInTheDocument();
+  });
+
+  it("does not render priority edit button on provider view (ProjectDetailWorkspace)", () => {
+    render(<ProjectDetailWorkspace projectId="prj-2" />);
+    fireEvent.click(screen.getByRole("tab", { name: /client/i }));
+
+    expect(
+      screen.queryByRole("button", { name: /Edit Natural light & cross ventilation/i })
+    ).not.toBeInTheDocument();
   });
 });

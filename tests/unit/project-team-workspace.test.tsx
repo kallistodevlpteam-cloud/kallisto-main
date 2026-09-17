@@ -72,4 +72,17 @@ describe("ProjectTeamWorkspace", () => {
     expect(screen.getByText("Maya Chandran")).toBeInTheDocument();
     expect(screen.getByText(/Added Maya Chandran/i)).toBeInTheDocument();
   });
+
+  it("omits internal provider KPI strip for client view", () => {
+    render(<ProjectTeamWorkspace projectId="prj-1" projectName="Nila Residence" isClient={true} />);
+
+    expect(screen.queryByText("Assigned Team")).not.toBeInTheDocument();
+    expect(screen.queryByText("Disciplines")).not.toBeInTheDocument();
+    expect(screen.queryByText("Avg Allocation")).not.toBeInTheDocument();
+    expect(screen.queryByText("Sign-off Leads")).not.toBeInTheDocument();
+
+    // Team members are still displayed directly
+    expect(screen.getByText("Arjun Menon")).toBeInTheDocument();
+    expect(screen.getByText("Priya Sharma")).toBeInTheDocument();
+  });
 });

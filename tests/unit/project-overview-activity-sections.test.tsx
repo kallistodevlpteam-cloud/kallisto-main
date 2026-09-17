@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import React from "react";
 import { ProjectOverviewActivitySections } from "@/features/documents/components/project-overview-activity-sections";
 
@@ -55,7 +55,7 @@ describe("ProjectOverviewActivitySections", () => {
 
     // Section 4: HANDS / LABOUR + ACTIVE TEAM
     expect(screen.getByText("HANDS")).toBeDefined();
-    expect(screen.getAllByText(/₹16,850/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/₹16,850 Today's Spend/i)).toBeDefined();
     expect(screen.getByText("Total Labour")).toBeDefined();
     expect(screen.getAllByText(/Active Today/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("On Leave")).toBeDefined();
@@ -135,6 +135,7 @@ describe("ProjectOverviewActivitySections", () => {
 
     expect(screen.queryByText("PROJECT PROGRESS")).toBeNull();
     expect(screen.queryByText("Overall Progress")).toBeNull();
+    expect(screen.queryByText(/ACTION REQUIRED/i)).toBeNull();
     expect(screen.queryByText(/TODAY'S ACTIVITY/i)).toBeNull();
     expect(screen.queryByText(/PENDING REVIEW & REQUESTS/i)).toBeNull();
     expect(screen.queryByText("PROJECT TIMELINE")).toBeNull();
@@ -207,4 +208,179 @@ describe("ProjectOverviewActivitySections", () => {
     expect(resolveValidTabKey("basics", "project")).toBe("basics");
     expect(resolveValidTabKey("requirements", "enquiry")).toBe("requirements");
   });
+
+  it("renders clean ACTION NEEDED section with 3D Design deliverable item for client view", () => {
+    render(<ProjectOverviewActivitySections projectId="proj-001" isClient={true} />);
+
+    // Section title & card
+    expect(screen.getByRole("heading", { name: /ACTION NEEDED/i })).toBeDefined();
+    expect(screen.getByText(/4 items require your attention/i)).toBeDefined();
+
+    expect(screen.getByText("3D Design & Interior Concept")).toBeDefined();
+    expect(screen.getByText("v2.1")).toBeDefined();
+    expect(screen.queryByText("3D Design & Views")).toBeNull();
+    expect(screen.getByText(/Submitted by Priya Sharma \(Lead Architect\) · 2 days ago/i)).toBeDefined();
+
+    // View button opens modal overlay
+    const viewBtn = screen.getByRole("button", { name: /View 3D Design & Interior Concept/i });
+    expect(viewBtn).toBeDefined();
+
+    // Modal dialog is initially closed
+    expect(screen.queryByRole("dialog")).toBeNull();
+
+    // Clicking View button opens overlay modal
+    fireEvent.click(viewBtn);
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toBeDefined();
+
+    // Image displays in overlay
+    const previewImg = screen.getByRole("img", { name: /3D Design Preview/i });
+    expect(previewImg).toBeDefined();
+    expect(previewImg.getAttribute("src")).toBe("/assets/nila-thumb2.jpg");
+
+    // Download option is present with download attribute
+    const downloadBtn = screen.getByRole("link", { name: /Download image/i });
+    expect(downloadBtn).toBeDefined();
+    expect(downloadBtn.getAttribute("href")).toBe("/assets/nila-thumb2.jpg");
+    expect(downloadBtn.hasAttribute("download")).toBe(true);
+
+    // Left and Right arrow navigation buttons are present
+    const nextBtn = screen.getByRole("button", { name: /Next image/i });
+    const prevBtn = screen.getByRole("button", { name: /Previous image/i });
+    expect(nextBtn).toBeDefined();
+    expect(prevBtn).toBeDefined();
+    expect(screen.getByText("1 / 3")).toBeDefined();
+
+    // 1st image: Left arrow is disabled, Right arrow is enabled
+    expect(prevBtn.hasAttribute("disabled")).toBe(true);
+    expect(nextBtn.hasAttribute("disabled")).toBe(false);
+
+    // Clicking next switches to image 2: Left arrow becomes enabled
+    fireEvent.click(nextBtn);
+    expect(screen.getByText("2 / 3")).toBeDefined();
+    expect(previewImg.getAttribute("src")).toBe("/assets/nila-thumb1.jpg");
+    expect(prevBtn.hasAttribute("disabled")).toBe(false);
+    expect(nextBtn.hasAttribute("disabled")).toBe(false);
+
+    // Clicking next switches to image 3 (last image): Right arrow becomes disabled
+    fireEvent.click(nextBtn);
+    expect(screen.getByText("3 / 3")).toBeDefined();
+    expect(previewImg.getAttribute("src")).toBe("/assets/nila-thumb3.jpg");
+    expect(prevBtn.hasAttribute("disabled")).toBe(false);
+    expect(nextBtn.hasAttribute("disabled")).toBe(true);
+
+    // Clicking prev button switches back to image 2
+    fireEvent.click(prevBtn);
+    expect(screen.getByText("2 / 3")).toBeDefined();
+    expect(prevBtn.hasAttribute("disabled")).toBe(false);
+    expect(nextBtn.hasAttribute("disabled")).toBe(false);
+
+    // Clicking prev button switches back to image 1: Left arrow becomes disabled again
+    fireEvent.click(prevBtn);
+    expect(screen.getByText("1 / 3")).toBeDefined();
+    expect(prevBtn.hasAttribute("disabled")).toBe(true);
+    expect(previewImg.getAttribute("src")).toBe("/assets/nila-thumb2.jpg");
+
+    // Bottom "Close" text button is removed as requested
+    expect(screen.queryByRole("button", { name: /^Close$/i })).toBeNull();
+
+    // Rejection comment box is not shown initially
+    expect(screen.queryByLabelText(/Rejection feedback comment in preview/i)).toBeNull();
+
+    // Approve & Reject buttons exist in both the 2 cards and the modal
+    const approveBtns = screen.getAllByRole("button", { name: /Approve/i });
+    const rejectBtns = screen.getAllByRole("button", { name: /Reject/i });
+    expect(approveBtns.length).toBe(3);
+    expect(rejectBtns.length).toBe(3);
+
+    // Clicking Reject in the modal displays the rejection comment section
+    const modalRejectBtn = screen.getByRole("button", { name: /Reject deliverable/i });
+    fireEvent.click(modalRejectBtn);
+    expect(screen.getAllByText("Rejected").length).toBeGreaterThanOrEqual(1);
+
+    const commentInput = screen.getByLabelText(/Rejection feedback comment in preview/i);
+    expect(commentInput).toBeDefined();
+
+    // Entering feedback and clicking Submit Feedback adds the rejection comment
+    fireEvent.change(commentInput, { target: { value: "Kitchen counter clearance needs to be at least 4 feet" } });
+    const submitFeedbackBtns = screen.getAllByRole("button", { name: /Submit Feedback/i });
+    fireEvent.click(submitFeedbackBtns[1]);
+
+    expect(screen.getAllByText("Kitchen counter clearance needs to be at least 4 feet").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Client").length).toBeGreaterThanOrEqual(1);
+
+    // Undo button is removed as requested
+    expect(screen.queryByRole("button", { name: /Undo/i })).toBeNull();
+
+    // Close preview button in header dismisses modal
+    const closeBtn = screen.getByRole("button", { name: /Close preview/i });
+    fireEvent.click(closeBtn);
+    expect(screen.queryByRole("dialog")).toBeNull();
+
+    // Category review items removed in client view as requested
+    expect(screen.queryByText("Task Reviews")).toBeNull();
+    expect(screen.queryByText("Client Requests")).toBeNull();
+    expect(screen.queryByText("BOQ / Quote Requests")).toBeNull();
+    expect(screen.queryByText("Approval Requests")).toBeNull();
+
+    // Before clicking "Review all", 2 deliverables are shown
+    expect(screen.getByText("3D Design & Interior Concept")).toBeDefined();
+    expect(screen.getByText("Italian Marble Flooring & Wall Cladding Specification")).toBeDefined();
+    expect(screen.queryByText("MEP Electrical Point Marking & Conduit Layout")).toBeNull();
+    expect(screen.queryByText("Teak Wood Joinery & Door/Window Schedule")).toBeNull();
+
+    // Review all button expands multiple deliverables in a scroll container
+    const reviewAllBtn = screen.getByRole("button", { name: /Review all/i });
+    expect(reviewAllBtn).toBeDefined();
+
+    fireEvent.click(reviewAllBtn);
+
+    // After clicking "Review all", all items are listed
+    expect(screen.getByText("3D Design & Interior Concept")).toBeDefined();
+    expect(screen.getByText("Italian Marble Flooring & Wall Cladding Specification")).toBeDefined();
+    expect(screen.getByText("MEP Electrical Point Marking & Conduit Layout")).toBeDefined();
+    expect(screen.getByText("Teak Wood Joinery & Door/Window Schedule")).toBeDefined();
+    expect(screen.getByText("4 items require your attention")).toBeDefined();
+
+    // Button updates to "Show less"
+    const showLessBtn = screen.getByRole("button", { name: /Show fewer items/i });
+    expect(showLessBtn).toBeDefined();
+
+    // Clicking "Show less" collapses back to 2 items
+    fireEvent.click(showLessBtn);
+    expect(screen.getByText("3D Design & Interior Concept")).toBeDefined();
+    expect(screen.getByText("Italian Marble Flooring & Wall Cladding Specification")).toBeDefined();
+    expect(screen.queryByText("MEP Electrical Point Marking & Conduit Layout")).toBeNull();
+    expect(screen.queryByText("Teak Wood Joinery & Door/Window Schedule")).toBeNull();
+    expect(screen.getByText("4 items require your attention")).toBeDefined();
+
+    // HANDS in client view omits financial pricing
+    expect(screen.getByText("18 Active Today")).toBeDefined();
+    expect(screen.queryByText("₹16,850 Today's Spend")).toBeNull();
+
+    // PROJECT MATERIALS in client view omits financial pricing
+    expect(screen.getByText("Total Materials")).toBeDefined();
+    expect(screen.getByText("Available on Site")).toBeDefined();
+    expect(screen.getByText("Pending Procurement")).toBeDefined();
+    expect(screen.queryByText("Total Spent")).toBeNull();
+    expect(screen.queryByText("₹5.6L")).toBeNull();
+    expect(screen.queryByText("₹2.8L")).toBeNull();
+    expect(screen.queryByText("₹3.6L")).toBeNull();
+    expect(screen.queryByText(/₹2.40L/i)).toBeNull();
+    expect(screen.getByText(/2 of 4 materials delivered on-site/i)).toBeDefined();
+
+    // TODAY'S ACTIVITY in client view displays key construction/finishing activities
+    expect(screen.getByText("Site preparation")).toBeDefined();
+    expect(screen.getByText("Floor tile installation")).toBeDefined();
+    expect(screen.getByText("Internal plastering")).toBeDefined();
+    expect(screen.getByText("Door frame installation")).toBeDefined();
+    expect(screen.getByText("Painting")).toBeDefined();
+
+    expect(screen.queryByText("Ramesh Kumar (Site Supervisor)")).toBeNull();
+    expect(screen.queryByText("08:30 AM")).toBeNull();
+    expect(screen.queryByText("Courtyard & Entrance Staging")).toBeNull();
+
+    expect(screen.getByText("Total Planned")).toBeDefined();
+  });
 });
+

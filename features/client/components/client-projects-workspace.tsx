@@ -444,7 +444,7 @@ export function ClientProjectsWorkspace() {
                   <h3 className={styles.pcName} title={project.name}>
                     {project.name}
                   </h3>
-                  <span className={styles.pcDash}>
+                  <span className={styles.pcPercent}>
                     {project.progress !== undefined ? `${project.progress}%` : "—"}
                   </span>
                 </div>

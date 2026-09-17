@@ -13,14 +13,10 @@ import {
   Calendar,
   Phone,
   Mail,
-  ArrowRight,
   ShieldCheck,
   Briefcase,
-  Layers,
-  Sparkles,
   X,
   FileCheck2,
-  AlertCircle,
   TrendingUp,
 } from "lucide-react";
 import styles from "./project-team-workspace.module.css";
@@ -110,11 +106,13 @@ export const INITIAL_PROJECT_TEAM: ProjectTeamMemberData[] = [
 export interface ProjectTeamWorkspaceProps {
   projectId?: string;
   projectName?: string;
+  isClient?: boolean;
 }
 
 export function ProjectTeamWorkspace({
   projectId = "prj-1",
   projectName = "Nila Residence",
+  isClient = false,
 }: ProjectTeamWorkspaceProps) {
   const [members, setMembers] = useState<ProjectTeamMemberData[]>(INITIAL_PROJECT_TEAM);
   const [searchQuery, setSearchQuery] = useState("");
@@ -236,7 +234,9 @@ export function ProjectTeamWorkspace({
   }
 
   return (
-    <div className={styles.workspaceRoot}>
+    <div
+      className={`${styles.workspaceRoot}${isClient ? ` ${styles.clientWorkspace}` : ""}`}
+    >
       {/* ── Toast Notification ────────────────────────────────────────── */}
       {toastMessage && (
         <div className={styles.successToast}>
@@ -245,53 +245,55 @@ export function ProjectTeamWorkspace({
         </div>
       )}
 
-      {/* ── 1. KPI & Summary Metrics Strip ───────────────────────────── */}
-      <div className={styles.kpiStrip}>
-        <div className={styles.kpiCard}>
-          <div className={styles.kpiHeader}>
-            <span className={styles.kpiLabel}>Assigned Team</span>
-            <Users size={16} />
+      {/* ── 1. KPI & Summary Metrics Strip (Provider only) ───────────── */}
+      {!isClient && (
+        <div className={styles.kpiStrip}>
+          <div className={styles.kpiCard}>
+            <div className={styles.kpiHeader}>
+              <span className={styles.kpiLabel}>Assigned Team</span>
+              <Users size={16} />
+            </div>
+            <span className={styles.kpiValue}>{totalMembers}</span>
+            <span className={styles.kpiSubText}>All active personnel</span>
           </div>
-          <span className={styles.kpiValue}>{totalMembers}</span>
-          <span className={styles.kpiSubText}>All active personnel</span>
-        </div>
 
-        <div className={styles.kpiCard}>
-          <div className={styles.kpiHeader}>
-            <span className={styles.kpiLabel}>Disciplines</span>
-            <Briefcase size={16} />
+          <div className={styles.kpiCard}>
+            <div className={styles.kpiHeader}>
+              <span className={styles.kpiLabel}>Disciplines</span>
+              <Briefcase size={16} />
+            </div>
+            <span className={styles.kpiValue}>{distinctRoles}</span>
+            <span className={styles.kpiSubText}>Cross-functional roles</span>
           </div>
-          <span className={styles.kpiValue}>{distinctRoles}</span>
-          <span className={styles.kpiSubText}>Cross-functional roles</span>
-        </div>
 
-        <div className={styles.kpiCard}>
-          <div className={styles.kpiHeader}>
-            <span className={styles.kpiLabel}>Active Tasks</span>
-            <FileCheck2 size={16} />
+          <div className={styles.kpiCard}>
+            <div className={styles.kpiHeader}>
+              <span className={styles.kpiLabel}>Active Tasks</span>
+              <FileCheck2 size={16} />
+            </div>
+            <span className={styles.kpiValue}>{totalActiveTasks}</span>
+            <span className={styles.kpiSubText}>Assigned in project</span>
           </div>
-          <span className={styles.kpiValue}>{totalActiveTasks}</span>
-          <span className={styles.kpiSubText}>Assigned in project</span>
-        </div>
 
-        <div className={styles.kpiCard}>
-          <div className={styles.kpiHeader}>
-            <span className={styles.kpiLabel}>Avg Allocation</span>
-            <TrendingUp size={16} />
+          <div className={styles.kpiCard}>
+            <div className={styles.kpiHeader}>
+              <span className={styles.kpiLabel}>Avg Allocation</span>
+              <TrendingUp size={16} />
+            </div>
+            <span className={styles.kpiValue}>{avgAllocation}%</span>
+            <span className={styles.kpiSubText}>Dedicated bandwidth</span>
           </div>
-          <span className={styles.kpiValue}>{avgAllocation}%</span>
-          <span className={styles.kpiSubText}>Dedicated bandwidth</span>
-        </div>
 
-        <div className={styles.kpiCard}>
-          <div className={styles.kpiHeader}>
-            <span className={styles.kpiLabel}>Sign-off Leads</span>
-            <ShieldCheck size={16} />
+          <div className={styles.kpiCard}>
+            <div className={styles.kpiHeader}>
+              <span className={styles.kpiLabel}>Sign-off Leads</span>
+              <ShieldCheck size={16} />
+            </div>
+            <span className={styles.kpiValue}>{signOffLeads}</span>
+            <span className={styles.kpiSubText}>Verified approval roles</span>
           </div>
-          <span className={styles.kpiValue}>{signOffLeads}</span>
-          <span className={styles.kpiSubText}>Verified approval roles</span>
         </div>
-      </div>
+      )}
 
       {/* ── 2. Toolbar (Search, Filter, View Mode, Add Action) ───────── */}
       <div className={styles.toolbar}>
@@ -345,14 +347,16 @@ export function ProjectTeamWorkspace({
             </button>
           </div>
 
-          <button
-            type="button"
-            className={styles.addMemberBtn}
-            onClick={() => setIsAddModalOpen(true)}
-          >
-            <Plus size={15} />
-            <span>Add Team Member</span>
-          </button>
+          {!isClient && (
+            <button
+              type="button"
+              className={styles.addMemberBtn}
+              onClick={() => setIsAddModalOpen(true)}
+            >
+              <Plus size={15} />
+              <span>Add Team Member</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -450,20 +454,22 @@ export function ProjectTeamWorkspace({
 
               {/* Card Footer: Contacts & Action Links */}
               <div className={styles.cardFooter}>
-                <div className={styles.contactInfo}>
-                  <a href={`tel:${member.phone}`} className={styles.contactItem} title={member.phone}>
-                    <Phone size={12} />
-                    <span>Call</span>
-                  </a>
-                  <a href={`mailto:${member.email}`} className={styles.contactItem} title={member.email}>
-                    <Mail size={12} />
-                    <span>Email</span>
-                  </a>
-                </div>
+                {!isClient && (
+                  <div className={styles.contactInfo}>
+                    <a href={`tel:${member.phone}`} className={styles.contactItem} title={member.phone}>
+                      <Phone size={12} />
+                      <span>Call</span>
+                    </a>
+                    <a href={`mailto:${member.email}`} className={styles.contactItem} title={member.email}>
+                      <Mail size={12} />
+                      <span>Email</span>
+                    </a>
+                  </div>
+                )}
 
                 <div className={styles.actionLinksGroup}>
                   <Link
-                    href={`/projects/${projectId}/tasks`}
+                    href={isClient ? `/client/projects/${projectId}/tasks` : `/projects/${projectId}/tasks`}
                     className={styles.actionBtn}
                   >
                     <span>View Tasks</span>
@@ -545,7 +551,7 @@ export function ProjectTeamWorkspace({
                   </td>
                   <td>
                     <Link
-                      href={`/projects/${projectId}/tasks`}
+                      href={isClient ? `/client/projects/${projectId}/tasks` : `/projects/${projectId}/tasks`}
                       className={styles.actionBtn}
                     >
                       <span>Tasks</span>

@@ -118,6 +118,7 @@ export function ClientProjectDetailWorkspace({ projectId }: ClientProjectDetailW
     >
       <ProjectOverviewCard
         projectId={projectId}
+        isClient={true}
         dashboardRef={dashboardRef}
         layoutMode={updatesMode}
         updatesOpen={updatesOpen}
