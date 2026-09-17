@@ -383,7 +383,10 @@ export function ProjectOverviewCard({
               ))}
             </div>
 
-            <ClientPrioritiesBar priorities={viewModel.priorities} />
+            <ClientPrioritiesBar
+              priorities={viewModel.priorities}
+              editable={isClient}
+            />
 
             <EnquirySiteImagesCard
               title="Client Inspiration Images"

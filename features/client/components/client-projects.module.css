@@ -307,7 +307,7 @@
 
 .pcTitleRow {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
   gap: 8px;
 }
@@ -323,11 +323,14 @@
   text-overflow: ellipsis;
 }
 
-.pcDash {
-  font-size: 13px;
-  font-weight: 600;
-  color: #64748b;
+.pcDash,
+.pcPercent {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
   flex-shrink: 0;
+  line-height: 1;
+  letter-spacing: -0.02em;
 }
 
 .pcSubtitleRow {
