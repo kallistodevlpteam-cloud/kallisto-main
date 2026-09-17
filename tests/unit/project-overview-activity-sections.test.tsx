@@ -287,11 +287,11 @@ describe("ProjectOverviewActivitySections", () => {
     // Rejection comment box is not shown initially
     expect(screen.queryByLabelText(/Rejection feedback comment in preview/i)).toBeNull();
 
-    // Approve & Reject buttons exist in both the 2 cards and the modal
+    // Approve & Reject buttons exist inside the modal (cards have chevron arrow to open overlay)
     const approveBtns = screen.getAllByRole("button", { name: /Approve/i });
     const rejectBtns = screen.getAllByRole("button", { name: /Reject/i });
-    expect(approveBtns.length).toBe(3);
-    expect(rejectBtns.length).toBe(3);
+    expect(approveBtns.length).toBe(1);
+    expect(rejectBtns.length).toBe(1);
 
     // Clicking Reject in the modal displays the rejection comment section
     const modalRejectBtn = screen.getByRole("button", { name: /Reject deliverable/i });
