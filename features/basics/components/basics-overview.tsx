@@ -12,10 +12,10 @@ import {
   ResolveDuotoneIcon,
   StudioDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
-import { Bookmark, ChevronRight, ShoppingBag, Star, X, Plus } from "lucide-react";
-import Image from "next/image";
+import { Bookmark, ChevronRight, ShoppingBag, Star, X, Plus, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { KallistoLogoMark } from "@/components/layout/kallisto-brand";
 import { ExpertSearchBar } from "./expert-search-bar";
 import styles from "./basics-workspace.module.css";
 
@@ -103,6 +103,14 @@ export function BasicsOverview({ projectId }: { projectId?: string }) {
       {/* Top Right Quick Actions: Saved Wishlist, Orders & Side Panel Toggle */}
       <div className={styles.overviewTopNavActions}>
         <Link
+          href={projectId ? `/basics/requirements/new?projectId=${projectId}` : "/basics/requirements/new"}
+          className={styles.overviewRoundBtn}
+          title="Post a Requirement"
+          aria-label="Post a requirement"
+        >
+          <Plus size={16} aria-hidden="true" />
+        </Link>
+        <Link
           href={projectId ? `/basics/experts?saved=true&projectId=${projectId}` : "/basics/experts?saved=true"}
           className={styles.overviewTopNavBtn}
           title="Saved Specialists & Wishlist"
@@ -148,16 +156,13 @@ export function BasicsOverview({ projectId }: { projectId?: string }) {
 
       {/* Grok-Style Centered Intelligence Hub & Command Palette */}
       <section className={styles.grokHeroContainer} aria-label="Kallisto Basics Command Hub">
-        {/* Brand Header with unified Kallisto Basics logo */}
+        {/* Brand Header with crisp vector Kallisto Basics lockup */}
         <div className={styles.grokBrand}>
-          <Image
-            src="/kallisto-basics-logo.png"
-            alt="Kallisto Basics"
-            width={260}
-            height={42}
-            className={styles.grokBasicsLogoImg}
-            priority
-          />
+          <div className={styles.grokBasicsBrandHeader} aria-label="Kallisto Basics">
+            <KallistoLogoMark size={28} className={styles.grokBasicsLogoMark} />
+            <span className={styles.grokBasicsBrandTitle}>kallisto</span>
+            <span className={styles.grokBasicsBrandTag}>basics</span>
+          </div>
           <p className={styles.grokTagline}>
             Find verified specialists, scope requirements, and build your project with precision.
           </p>
@@ -182,12 +187,23 @@ export function BasicsOverview({ projectId }: { projectId?: string }) {
               } as React.CSSProperties}
             >
               <span className={styles.dockIconSquircle}>
-                <item.icon size={22} className={styles.dockIconSvg} aria-hidden="true" />
+                <item.icon size={19} className={styles.dockIconSvg} aria-hidden="true" />
               </span>
               <span className={styles.dockLabel}>{item.label}</span>
             </Link>
           ))}
         </div>
+
+        {/* Explore all specialists & studios CTA trigger */}
+        <Link
+          href={projectId ? `/basics/experts?projectId=${projectId}` : "/basics/experts"}
+          className={styles.viewDirectoryTrigger}
+          title="Explore all specialists & studios"
+          aria-label="Explore all specialists and studios"
+        >
+          <span>Explore all specialists & studios</span>
+          <ArrowRight size={13} aria-hidden="true" />
+        </Link>
       </section>
 
       {/* Slide-out Right Intelligence Side Panel */}

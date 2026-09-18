@@ -1,9 +1,7 @@
 "use client";
 
 import {
-  AlertCircle,
   ArrowRight,
-  ArrowUp,
   Building,
   Check,
   CheckCircle2,
@@ -12,8 +10,6 @@ import {
   Folder,
   FolderOpen,
   Layers,
-  Mic,
-  Plus,
   Search,
   Sparkles,
   Tag,
@@ -401,8 +397,8 @@ export function ExpertSearchBar({
               setQuery(e.target.value);
               setIsOpen(true);
             }}
-            placeholder="What do you want to explore or build?"
-            aria-label="What do you want to explore or build?"
+            placeholder="Search specialists, engineering disciplines, BIM, MEP or explore scope..."
+            aria-label="Search specialists, engineering disciplines, BIM, MEP or explore scope"
           />
 
           <div className={styles.searchPillControls}>

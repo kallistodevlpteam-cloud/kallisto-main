@@ -69,6 +69,8 @@ export type BasicsReview = {
   review: string;
   completionDate: string;
   verifiedEngagement: boolean;
+  totalSpend?: number;
+  totalReviews?: number;
 };
 
 export type BasicsProvider = {

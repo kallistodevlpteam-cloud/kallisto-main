@@ -89,14 +89,13 @@ describe("ProjectOverviewActivitySections", () => {
     expect(screen.getByText(/Conduit & Electrical Wiring/i)).toBeDefined();
     expect(screen.getByText(/View BOQ Materials/i)).toBeDefined();
 
-    expect(screen.getByText("HIVE STUDIO")).toBeDefined();
+    expect(screen.getByText("BASICS STUDIO")).toBeDefined();
     expect(screen.getByText("04 Workspaces Used")).toBeDefined();
-    expect(screen.getByText(/AI Requirement Brief & Spatial Synthesis/i)).toBeDefined();
-    expect(screen.getByText(/ODIN Brief & 10 Domain Specs Synced/i)).toBeDefined();
-    expect(screen.getByText(/Concept Scheme & Palette Studio/i)).toBeDefined();
-    expect(screen.getByText(/Automated Proposal & Scope Generator/i)).toBeDefined();
-    expect(screen.getByText(/CAD Spec & Feasibility Verifier/i)).toBeDefined();
-    expect(screen.getByText(/Open Hive Studio/i)).toBeDefined();
+    expect(screen.getByText(/RCC Structural Detailing & Engineering/i)).toBeDefined();
+    expect(screen.getByText(/Integrated MEP & Solar Engineering/i)).toBeDefined();
+    expect(screen.getByText(/BIM Coordination & Clash Detection/i)).toBeDefined();
+    expect(screen.getByText(/Building Permit & Statutory Sanctions/i)).toBeDefined();
+    expect(screen.getByText(/Open Basics Studio/i)).toBeDefined();
   });
 
   it("omits project progress and below content when project is upcoming", async () => {
@@ -142,7 +141,7 @@ describe("ProjectOverviewActivitySections", () => {
     expect(screen.queryByText("HANDS")).toBeNull();
     expect(screen.queryByText("ACTIVE PROJECT TEAM")).toBeNull();
     expect(screen.queryByText("PROJECT MATERIALS")).toBeNull();
-    expect(screen.queryByText("HIVE STUDIO")).toBeNull();
+    expect(screen.queryByText("BASICS STUDIO")).toBeNull();
   });
 
   it("renders project progress and below content when project is active", async () => {
