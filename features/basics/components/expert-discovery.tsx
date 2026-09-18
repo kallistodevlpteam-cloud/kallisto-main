@@ -2,21 +2,25 @@
 
 import {
   Bookmark,
-  Check,
+  ChevronRight,
   Columns3,
-  Filter,
+  Plus,
   Search,
   ShoppingBag,
   SlidersHorizontal,
   Sparkles,
+  Star,
   X,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  BASICS_CODE_KNOWLEDGE,
+  DocumentsDuotoneIcon,
+  PortfolioDuotoneIcon,
+} from "@/components/layout/sidebar-icons";
+import {
   BASICS_PROJECT_TYPES,
   BASICS_SERVICE_CATALOGUE,
   BASICS_SOFTWARE_SKILLS,
@@ -29,7 +33,7 @@ import type {
   BasicsServiceCategory,
   ProviderFilters,
 } from "../types/basics.types";
-import { availabilityLabels, formatCurrency, pricingLabels } from "../utils/basics-formatters";
+import { availabilityLabels, pricingLabels } from "../utils/basics-formatters";
 import {
   BasicsEmptyState,
   BasicsLoadingSkeleton,
@@ -100,6 +104,36 @@ export function ExpertDiscovery() {
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [savedFilterOnly, setSavedFilterOnly] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [sidePanelOpen, setSidePanelOpen] = useState(false);
+  const filterQ = filters.q ?? "";
+  const [internalQuery, setInternalQuery] = useState(filterQ);
+  const [prevFilterQ, setPrevFilterQ] = useState(filterQ);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  if (filterQ !== prevFilterQ) {
+    setPrevFilterQ(filterQ);
+    setInternalQuery(filterQ);
+  }
+
+  const handleQueryChange = (val: string) => {
+    setInternalQuery(val);
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    debounceTimerRef.current = setTimeout(() => {
+      updateParam("q", val.trim() || undefined);
+    }, 300);
+  };
+
+  const handleSearchSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    updateParam("q", internalQuery.trim() || undefined);
+  };
+
+  const handleClearQuery = () => {
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    setInternalQuery("");
+    updateParam("q", undefined);
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -165,9 +199,9 @@ export function ExpertDiscovery() {
     return providers;
   }, [providers, savedFilterOnly, savedIds]);
 
-  const comparisonProviders = providers.filter((provider) =>
-    selectedIds.includes(provider.id),
-  );
+  const savedProviders = useMemo(() => {
+    return providers.filter((p) => savedIds.includes(p.id));
+  }, [providers, savedIds]);
 
   function applyComparison() {
     if (selectedIds.length < 2) return;
@@ -211,10 +245,10 @@ export function ExpertDiscovery() {
 
   return (
     <div className={styles.discoveryStack}>
-      {/* 1. Integrated Sticky Top Navbar: Logo | Search Box | Round Wishlist Option */}
+      {/* 1. Integrated Sticky Top Navbar: Logo | Search Box | Top Nav Action Buttons */}
       <div className={styles.discoveryStickyHeader}>
         <div className={styles.discoveryTopNavRow}>
-          {/* Left (Red Box): Kallisto Basics Logo */}
+          {/* Left: Kallisto Basics Logo */}
           <Link href="/basics" className={styles.discoveryLogoLink} title="Back to Basics Overview">
             <Image
               src="/kallisto-basics-logo.png"
@@ -230,23 +264,22 @@ export function ExpertDiscovery() {
           <div className={styles.discoveryTopNavCenter}>
             <form
               className={styles.discoverySearchBox}
-              onSubmit={(e) => {
-                e.preventDefault();
-              }}
+              onSubmit={handleSearchSubmit}
               role="search"
             >
               <input
+                type="text"
                 className={styles.discoverySearchInput}
-                value={filters.q ?? ""}
-                placeholder="What do you want to explore or build?"
-                onChange={(event) => updateParam("q", event.target.value)}
-                aria-label="What do you want to explore or build?"
+                value={internalQuery}
+                placeholder="Search specialists, skills, software, location..."
+                onChange={(event) => handleQueryChange(event.target.value)}
+                aria-label="Search specialists, skills, software, location"
               />
-              {filters.q ? (
+              {internalQuery ? (
                 <button
                   type="button"
                   className={styles.paletteClearBtn}
-                  onClick={() => updateParam("q", undefined)}
+                  onClick={handleClearQuery}
                   aria-label="Clear search input"
                 >
                   <X size={13} aria-hidden="true" />
@@ -256,38 +289,72 @@ export function ExpertDiscovery() {
                 type="submit"
                 className={styles.searchPillSendBtn}
                 aria-label="Search"
+                title="Search"
               >
-                <Search size={16} aria-hidden="true" />
+                <Search size={14} strokeWidth={2.4} aria-hidden="true" />
               </button>
             </form>
           </div>
 
-          {/* Right (Purple Box): Round Wishlist Option & Round Orders Option */}
+          {/* Right: Quick Action Pill Buttons with Text Labels */}
           <div className={styles.discoveryTopNavRight}>
-            {/* Wishlist Button */}
+            {/* Saved Specialists Button */}
             <button
               type="button"
-              className={`${styles.discoveryWishlistBtn} ${savedFilterOnly ? styles.discoveryWishlistBtnActive : ""}`}
+              className={`${styles.overviewTopNavBtn} ${savedFilterOnly ? styles.overviewTopNavBtnActive : ""}`}
               onClick={() => setSavedFilterOnly((prev) => !prev)}
-              title={savedFilterOnly ? "Show all specialists" : `Saved Wishlist (${savedIds.length})`}
-              aria-label="Toggle saved wishlist specialists"
+              title={savedFilterOnly ? "Show all specialists" : `Saved Specialists (${savedIds.length})`}
+              aria-label="Toggle saved specialists"
               aria-pressed={savedFilterOnly}
             >
-              <Bookmark size={15} fill={savedFilterOnly || savedIds.length > 0 ? "currentColor" : "none"} aria-hidden="true" />
-              {savedIds.length > 0 && (
-                <span className={styles.discoveryWishlistBadge}>{savedIds.length}</span>
-              )}
+              <Bookmark
+                size={14}
+                className={styles.overviewTopNavIcon}
+                fill={savedFilterOnly || savedIds.length > 0 ? "currentColor" : "none"}
+                aria-hidden="true"
+              />
+              <span>Saved</span>
+              {savedIds.length > 0 ? (
+                <span className={styles.overviewBadge}>{savedIds.length}</span>
+              ) : null}
             </button>
 
-            {/* Orders Option */}
+            {/* Orders & Engagements Button */}
             <Link
               href={projectId ? `/basics/engagements?projectId=${projectId}` : "/basics/engagements"}
-              className={styles.discoveryWishlistBtn}
+              className={styles.overviewTopNavBtn}
               title="Orders & Engagements"
               aria-label="View orders and engagements"
             >
-              <ShoppingBag size={15} aria-hidden="true" />
+              <ShoppingBag size={14} className={styles.overviewTopNavIcon} aria-hidden="true" />
+              <span>Orders</span>
             </Link>
+
+            {/* Basics Hub Drawer Toggle */}
+            <button
+              type="button"
+              className={`${styles.overviewTopNavBtn} ${sidePanelOpen ? styles.overviewTopNavBtnActive : ""}`}
+              onClick={() => setSidePanelOpen((prev) => !prev)}
+              title={sidePanelOpen ? "Close Basics Hub" : "Open Basics Hub"}
+              aria-label="Toggle Basics Hub side panel"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={styles.overviewTopNavIcon}
+                aria-hidden="true"
+              >
+                <rect x="3" y="4" width="18" height="16" rx="4" />
+                <line x1="16" y1="8" x2="16" y2="16" />
+              </svg>
+              <span>Basics Hub</span>
+            </button>
           </div>
         </div>
 
@@ -528,6 +595,26 @@ export function ExpertDiscovery() {
               </div>
             ) : null}
           </div>
+
+          {/* Sort Dropdown */}
+          <div className={styles.discoveryMetaRight}>
+            <label htmlFor="expert-sort-select" className="sr-only">
+              Sort experts
+            </label>
+            <select
+              id="expert-sort-select"
+              className={styles.discoverySortSelect}
+              value={filters.sort ?? "recommended"}
+              onChange={(e) => updateParam("sort", e.target.value)}
+              aria-label="Sort experts by"
+            >
+              {SORT_OPTIONS.map(([val, label]) => (
+                <option key={val} value={val}>
+                  Sort: {label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
     </div>
@@ -612,6 +699,152 @@ export function ExpertDiscovery() {
           </div>
         ) : null}
       </div>
+
+      {/* Slide-out Basics Hub Drawer */}
+      {sidePanelOpen ? (
+        <>
+          <div
+            className={styles.basicsDrawerBackdrop}
+            onClick={() => setSidePanelOpen(false)}
+            aria-hidden="true"
+          />
+          <aside className={styles.basicsDrawerPanel} aria-label="Basics Quick Hub">
+            <div className={styles.basicsDrawerHeader}>
+              <h2 className={styles.basicsDrawerTitle}>Basics Hub</h2>
+              <button
+                type="button"
+                className={styles.basicsDrawerCloseBtn}
+                onClick={() => setSidePanelOpen(false)}
+                title="Close panel"
+                aria-label="Close panel"
+              >
+                <X size={15} aria-hidden="true" />
+              </button>
+            </div>
+
+            <div className={styles.basicsDrawerContent}>
+              {/* Quick Actions */}
+              <div className={styles.basicsDrawerSection}>
+                <h3 className={styles.basicsDrawerSectionTitle}>Quick Actions</h3>
+                <Link
+                  href={`/basics/requirements/new${projectId ? `?projectId=${projectId}` : ""}`}
+                  className={styles.primaryButton}
+                  style={{ width: "100%", justifyContent: "center", height: "36px", fontSize: "12.5px" }}
+                  onClick={() => setSidePanelOpen(false)}
+                >
+                  <Plus size={14} aria-hidden="true" />
+                  <span>Post a Requirement</span>
+                </Link>
+                <Link
+                  href={`/basics/engagements${projectId ? `?projectId=${projectId}` : ""}`}
+                  className={styles.secondaryButton}
+                  style={{ width: "100%", justifyContent: "center", height: "36px", fontSize: "12.5px" }}
+                  onClick={() => setSidePanelOpen(false)}
+                >
+                  <ShoppingBag size={14} aria-hidden="true" />
+                  <span>View Engagements & Orders</span>
+                </Link>
+              </div>
+
+              {/* Saved Specialists */}
+              <div className={styles.basicsDrawerSection}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <h3 className={styles.basicsDrawerSectionTitle}>
+                    Saved Specialists ({savedIds.length})
+                  </h3>
+                  {savedIds.length > 0 && (
+                    <button
+                      type="button"
+                      style={{ fontSize: "11px", color: "#0284c7", background: "none", border: "none", cursor: "pointer", fontWeight: "600" }}
+                      onClick={() => {
+                        setSavedFilterOnly(true);
+                        setSidePanelOpen(false);
+                      }}
+                    >
+                      Filter saved
+                    </button>
+                  )}
+                </div>
+                {savedProviders.length > 0 ? (
+                  savedProviders.slice(0, 4).map((spec) => (
+                    <Link
+                      key={spec.id}
+                      href={`/basics/experts/${spec.id}${projectId ? `?projectId=${projectId}` : ""}`}
+                      className={styles.basicsDrawerCard}
+                      onClick={() => setSidePanelOpen(false)}
+                    >
+                      <div className={styles.basicsDrawerCardLeft}>
+                        <div className={styles.basicsDrawerCardIcon}>
+                          <PortfolioDuotoneIcon size={16} aria-hidden="true" />
+                        </div>
+                        <div className={styles.basicsDrawerCardInfo}>
+                          <strong className={styles.basicsDrawerCardName}>{spec.name}</strong>
+                          <span className={styles.basicsDrawerCardSubtitle}>
+                            {spec.specializations[0] ?? spec.headline}
+                          </span>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "3px", fontSize: "11.5px", fontWeight: "650", color: "#854d0e" }}>
+                        <Star size={11} fill="#eab308" color="#eab308" />
+                        <span>{spec.rating}</span>
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <p style={{ fontSize: "12px", color: "#64748b", margin: "6px 0 0" }}>
+                    Bookmark specialists with the bookmark icon on any card to save them here.
+                  </p>
+                )}
+              </div>
+
+              {/* Building Codes & Compliance */}
+              <div className={styles.basicsDrawerSection}>
+                <h3 className={styles.basicsDrawerSectionTitle}>Compliance & Standards</h3>
+                <button
+                  type="button"
+                  className={styles.basicsDrawerCard}
+                  onClick={() => {
+                    updateParam("code", "NBC 2016");
+                    setSidePanelOpen(false);
+                  }}
+                  style={{ width: "100%", textAlign: "left", background: "none", border: "none", cursor: "pointer" }}
+                >
+                  <div className={styles.basicsDrawerCardLeft}>
+                    <div className={styles.basicsDrawerCardIcon}>
+                      <DocumentsDuotoneIcon size={16} aria-hidden="true" />
+                    </div>
+                    <div className={styles.basicsDrawerCardInfo}>
+                      <strong className={styles.basicsDrawerCardName}>National Building Code</strong>
+                      <span className={styles.basicsDrawerCardSubtitle}>NBC 2016 verified specialists</span>
+                    </div>
+                  </div>
+                  <ChevronRight size={14} color="#94a3b8" />
+                </button>
+                <button
+                  type="button"
+                  className={styles.basicsDrawerCard}
+                  onClick={() => {
+                    updateParam("code", "ASHRAE 90.1");
+                    setSidePanelOpen(false);
+                  }}
+                  style={{ width: "100%", textAlign: "left", background: "none", border: "none", cursor: "pointer" }}
+                >
+                  <div className={styles.basicsDrawerCardLeft}>
+                    <div className={styles.basicsDrawerCardIcon}>
+                      <DocumentsDuotoneIcon size={16} aria-hidden="true" />
+                    </div>
+                    <div className={styles.basicsDrawerCardInfo}>
+                      <strong className={styles.basicsDrawerCardName}>ASHRAE Standards</strong>
+                      <span className={styles.basicsDrawerCardSubtitle}>HVAC & Energy Efficiency</span>
+                    </div>
+                  </div>
+                  <ChevronRight size={14} color="#94a3b8" />
+                </button>
+              </div>
+            </div>
+          </aside>
+        </>
+      ) : null}
     </div>
   );
 }

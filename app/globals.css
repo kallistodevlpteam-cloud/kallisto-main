@@ -1301,8 +1301,6 @@ textarea:focus-visible {
 }
 
 .app-shell.has-project-dashboard-profile .workspace,
-.workspace.basics-route-workspace,
-.workspace.hands-route-workspace,
 .workspace:has(.basicsShell),
 .workspace:has(.documentsBoundedRoute),
 .workspace:has(.calendarWorkspaceRoot) {
@@ -1311,6 +1309,7 @@ textarea:focus-visible {
   height: 100%;
 }
 
+.workspace.basics-route-workspace,
 .workspace.hands-route-workspace {
   padding: 0;
   overflow-y: auto;

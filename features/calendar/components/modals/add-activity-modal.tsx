@@ -24,6 +24,7 @@ function getNextDate(date: string) {
 export interface AddActivityModalProps {
   initialCreationType?: "schedule_event" | "add_task" | "add_milestone";
   initialDate?: string;
+  initialProjectId?: string;
   projectsList: Array<{ id: string; name: string; code?: string }>;
   onClose: () => void;
   onSubmit: (
@@ -36,6 +37,7 @@ export interface AddActivityModalProps {
 export function AddActivityModal({
   initialCreationType = "add_task",
   initialDate = "2026-07-24",
+  initialProjectId,
   projectsList,
   onClose,
   onSubmit,
@@ -57,7 +59,10 @@ export function AddActivityModal({
   const [startTime, setStartTime] = useState("10:00");
   const [endTime, setEndTime] = useState("11:30");
   const [projectId, setProjectId] = useState(
-    projectsList.find((p) => p.id === "proj-201")?.id || projectsList[0]?.id || "proj-101"
+    (initialProjectId && projectsList.some((p) => p.id === initialProjectId) ? initialProjectId : null) ||
+    projectsList.find((p) => p.id === "proj-201")?.id ||
+    projectsList[0]?.id ||
+    "proj-101"
   );
   const [teamMemberId, setTeamMemberId] = useState("usr-1");
   const [location, setLocation] = useState("");

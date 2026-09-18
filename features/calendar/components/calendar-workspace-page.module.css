@@ -6565,3 +6565,369 @@
   font-weight: 500;
 }
 
+/* ==========================================================================
+   Project Filter & Project Activities View Styles
+   ========================================================================== */
+
+.mockupProjectFilterWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.mockupProjectFilterBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  max-width: 220px;
+  box-sizing: border-box;
+}
+
+.mockupProjectFilterBtn:hover {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.mockupProjectFilterBtnActive {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.mockupProjectFilterBtnActive:hover {
+  background: #dbeafe;
+  border-color: #60a5fa;
+  color: #1e40af;
+}
+
+.mockupProjectFilterIcon {
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.mockupProjectFilterBtnActive .mockupProjectFilterIcon {
+  color: #2563eb;
+}
+
+.mockupProjectFilterText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mockupProjectFilterClearInline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: #bfdbfe;
+  color: #1e40af;
+  border: none;
+  padding: 0;
+  margin-left: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.12s ease;
+}
+
+.mockupProjectFilterClearInline:hover {
+  background: #93c5fd;
+  color: #1e3a8a;
+}
+
+.projectFilterDropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 100;
+  width: 280px;
+  max-height: 380px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.projectFilterSearchWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafafa;
+}
+
+.projectFilterSearchInput {
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
+  color: #0f172a;
+  outline: none;
+  width: 100%;
+}
+
+.projectFilterSearchInput::placeholder {
+  color: #94a3b8;
+}
+
+.projectFilterList {
+  overflow-y: auto;
+  max-height: 300px;
+  padding: 4px;
+}
+
+.projectFilterItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s ease;
+  box-sizing: border-box;
+}
+
+.projectFilterItem:hover {
+  background: #f1f5f9;
+}
+
+.projectFilterItemActive {
+  background: #eff6ff;
+}
+
+.projectFilterItemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.projectFilterItemTitle {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.projectFilterItemActive .projectFilterItemTitle {
+  color: #1d4ed8;
+}
+
+.projectFilterItemMeta {
+  font-size: 11px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.projectFilterItemBadge {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  background: #f1f5f9;
+  color: #475569;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.projectFilterItemActive .projectFilterItemBadge {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+/* Active Project Filter Banner */
+.activeFilterBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 14px;
+  margin-bottom: 16px;
+  background: #f0f7ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+}
+
+.activeFilterBannerLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #1e3a8a;
+}
+
+.activeFilterBannerLeft strong {
+  color: #1e40af;
+}
+
+.activeFilterBannerRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.activeFilterClearBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #1e40af;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.activeFilterClearBtn:hover {
+  color: #1d4ed8;
+}
+
+.activeFilterWorkspaceLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #2563eb;
+  background: #ffffff;
+  border: 1px solid #93c5fd;
+  padding: 4px 9px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.activeFilterWorkspaceLink:hover {
+  background: #eff6ff;
+  border-color: #60a5fa;
+  color: #1d4ed8;
+}
+
+/* Right Panel View Toggle */
+.panelViewToggle {
+  display: flex;
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 3px;
+  margin: 12px 0 14px;
+  gap: 3px;
+}
+
+.panelToggleBtn {
+  flex: 1;
+  padding: 5px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.panelToggleBtn:hover {
+  color: #0f172a;
+}
+
+.panelToggleBtnActive {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* Project Activities Timeline List */
+.projectTimelineList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.timelineDateHeading {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 12px 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timelineDateBadge {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #2563eb;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.openWorkspaceBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 9px;
+  margin-top: 12px;
+  background: #0f172a;
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.openWorkspaceBtn:hover {
+  background: #1e293b;
+}
+
