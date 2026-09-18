@@ -101,8 +101,12 @@ export function HandsRequestsWorkspace() {
     setIsDetailOpen(true);
   };
 
-  const handleAcceptRequest = (req: LabourRequest) => {
-    const updated = { ...req, status: "accepted" as LabourRequestStatus };
+  const handleAcceptRequest = (req: LabourRequest, assignedWorkerIds?: string[]) => {
+    const updated: LabourRequest = {
+      ...req,
+      status: "accepted" as LabourRequestStatus,
+      assignedWorkerIds: assignedWorkerIds || req.assignedWorkerIds,
+    };
     setRequests((prev) =>
       prev.map((r) => (r.id === req.id ? updated : r))
     );

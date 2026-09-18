@@ -1428,12 +1428,16 @@
 
 .confirmDetailsBox {
   background: #f8fafc;
-  border-radius: 10px;
-  padding: 12px 14px;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 14px 18px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  font-size: 12px;
+  gap: 10px;
+  font-size: 12.5px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
 }
 
 .confirmDetailItem {
@@ -1564,6 +1568,524 @@
 }
 
 /* =========================================================
+   PERIOD TASKS & CANDIDATE MATCHING / ASSIGNMENT OVERLAY
+   ========================================================= */
+
+/* Tasks for Request Period */
+.periodTasksContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.periodHighlightBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #f1f5f9;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.periodHighlightLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0f172a;
+  font-weight: 650;
+}
+
+.periodHighlightDates {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  color: #2563eb;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 11.5px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.taskItemRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 6px;
+  background: transparent;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s ease;
+}
+
+.taskItemRow:hover {
+  background: #f8fafc;
+}
+
+.taskItemRow:last-child {
+  border-bottom: none;
+}
+
+.taskItemLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.taskPriorityDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.taskPriorityDotHigh {
+  background-color: #dc2626;
+}
+
+.taskPriorityDotMedium {
+  background-color: #eab308;
+}
+
+.taskPriorityDotLow {
+  background-color: #16a34a;
+}
+
+.taskItemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.taskItemTitle {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+.taskItemSubtitle {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+.taskItemRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.taskItemHours {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.taskPriorityPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.taskPriorityPillHigh {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fee2e2;
+}
+
+.taskPriorityPillMedium {
+  background-color: #fefce8;
+  color: #854d0e;
+  border: 1px solid #fef08a;
+}
+
+.taskPriorityPillLow {
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #dcfce7;
+}
+
+/* Candidate Matching Overlay */
+.matchOverlayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 22px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #ffffff;
+}
+
+.backToDetailsBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  font-size: 12.5px;
+  font-weight: 650;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: all 120ms ease;
+}
+
+.backToDetailsBtn:hover {
+  color: #1d4ed8;
+  transform: translateX(-2px);
+}
+
+.matchHeaderLeft {
+  text-align: left;
+}
+
+.matchHeaderCenter {
+  text-align: center;
+}
+
+.matchHeaderTitle {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.matchHeaderSubtitle {
+  font-size: 11.5px;
+  color: #64748b;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.matchQuotaSummaryCard {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.matchQuotaHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.matchQuotaTitle {
+  font-size: 11px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #475569;
+}
+
+.quickSelectButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quickSelectBtn {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  padding: 3px 10px;
+  font-size: 11.5px;
+  font-weight: 650;
+  color: #2563eb;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.quickSelectBtn:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.quickClearBtn {
+  background: transparent;
+  border: none;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  padding: 3px 6px;
+}
+
+.quickClearBtn:hover {
+  color: #0f172a;
+}
+
+.matchQuotaRowGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.quotaTradeBox {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 9px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.quotaTradeName {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.quotaTradeCountPill {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.candidateSelectList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.candidateSelectCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 11px 14px;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.candidateSelectCard:hover {
+  border-color: #93c5fd;
+  background: #f8fafc;
+}
+
+.candidateSelectCardChecked {
+  background: #eff6ff !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.12);
+}
+
+.candidateSelectLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.customCheckbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.8px solid #cbd5e1;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 120ms ease;
+}
+
+.customCheckboxChecked {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+.candidateCardAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 750;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.candidateMetaDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.candidateNameRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.candidateNameText {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.candidateVerifiedChip {
+  font-size: 10px;
+  font-weight: 700;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 1px 6px;
+  border-radius: 9999px;
+}
+
+.candidateSubtext {
+  font-size: 11.5px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.candidateSelectRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.candidateAvailPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 650;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 3px 8px;
+  border-radius: 9999px;
+}
+
+.checkAvailBtn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 9999px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 650;
+  color: #2563eb;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 120ms ease;
+}
+
+.checkAvailBtn:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+/* Availability Check Modal Popup */
+.availModalCard {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 460px;
+  padding: 22px;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.availModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.availModalProfile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.availTimelineCard {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.availTimelineItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #475569;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 8px;
+}
+
+.availTimelineItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.availTimelineLabel {
+  font-weight: 600;
+  color: #64748b;
+}
+
+.availTimelineVal {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.selectedCrewSummaryPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 16px 0;
+}
+
+.crewSummaryPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+  font-size: 11.5px;
+  font-weight: 650;
+  padding: 3px 9px;
+  border-radius: 9999px;
+}
+
+/* =========================================================
    SEGMENTED WORKFLOW TABS (BALANCED TOP/BOTTOM/SIDE PADDING)
    ========================================================= */
 
@@ -1634,6 +2156,129 @@
 .segmentedTabCountActive {
   background-color: #eff6ff;
   color: #2563eb;
+}
+
+/* Candidate Trade Separation & Bench Selection */
+.candidateTradeGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.candidateTradeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.viewAllTradeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #e2e8f0;
+  background: transparent;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 650;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.viewAllTradeBtn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.candidateWorkerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  transition: all 120ms ease;
+  user-select: none;
+}
+
+.candidateWorkerRowInteractive {
+  cursor: pointer;
+}
+
+.candidateWorkerRowInteractive:hover {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+.candidateWorkerRowSelected {
+  background: #f8fafc;
+  border-color: #f1f5f9;
+}
+
+.candidateWorkerInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.candidateCheckbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+  flex-shrink: 0;
+  transition: all 120ms ease;
+}
+
+.candidateCheckboxChecked {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #334155;
+}
+
+.candidateAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 750;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.candidateBadgeSelected {
+  font-size: 11px;
+  font-weight: 650;
+  color: #059669;
+  padding: 2px 8px;
+  background-color: #ecfdf5;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.candidateBadgeAvailable {
+  font-size: 11px;
+  font-weight: 650;
+  color: #64748b;
+  padding: 2px 8px;
+  background-color: #f1f5f9;
+  border-radius: 9999px;
+  white-space: nowrap;
 }
 
 

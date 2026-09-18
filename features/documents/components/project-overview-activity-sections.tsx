@@ -9,7 +9,6 @@ import {
   AlertCircle,
   CheckCircle2,
   XCircle,
-  Eye,
   Package,
   X,
   ChevronLeft,
@@ -470,6 +469,21 @@ export function ProjectOverviewActivitySections({
                   <div
                     key={item.id}
                     className={styles.clientDeliverableCard}
+                    onClick={() => {
+                      setActiveViewerDeliverableId(item.id);
+                      setCurrentImageIndex(0);
+                      setIsViewerOpen(true);
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setActiveViewerDeliverableId(item.id);
+                        setCurrentImageIndex(0);
+                        setIsViewerOpen(true);
+                      }
+                    }}
                     aria-label={`${item.title} ${item.version}`}
                   >
                     <div className={styles.clientDeliverableMainRow}>
@@ -484,52 +498,32 @@ export function ProjectOverviewActivitySections({
                       </div>
 
                       <div className={styles.clientActionButtonsRow}>
-                        {itemDecision === "approved" ? (
+                        {itemDecision === "approved" && (
                           <span className={styles.approvedStatusBadge} title="Approved">
                             <CheckCircle2 size={14} />
                             <span>Approved</span>
                           </span>
-                        ) : itemDecision === "rejected" ? (
+                        )}
+                        {itemDecision === "rejected" && (
                           <span className={styles.rejectedStatusBadge} title="Rejected">
                             <XCircle size={14} />
                             <span>Rejected</span>
                           </span>
-                        ) : (
-                          <>
-                            <button
-                              type="button"
-                              onClick={() => handleApprove(item.id)}
-                              className={styles.approveBtn}
-                              aria-label={`Approve ${item.title}`}
-                              title="Approve"
-                            >
-                              <CheckCircle2 size={16} />
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => handleReject(item.id)}
-                              className={styles.rejectBtn}
-                              aria-label={`Reject ${item.title}`}
-                              title="Reject"
-                            >
-                              <XCircle size={16} />
-                            </button>
-                          </>
                         )}
 
                         <button
                           type="button"
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setActiveViewerDeliverableId(item.id);
                             setCurrentImageIndex(0);
                             setIsViewerOpen(true);
                           }}
-                          className={styles.clientViewBtn}
+                          className={styles.deliverableArrowBtn}
                           aria-label={`View ${item.title}`}
                           title="View"
                         >
-                          <Eye size={16} />
+                          <ChevronRight size={18} strokeWidth={2.2} />
                         </button>
                       </div>
                     </div>
