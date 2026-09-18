@@ -826,7 +826,7 @@ export function ProjectOverviewActivitySections({
       </div>
 
       {/* ── 5. HUB + HIVE PRODUCTS ──────────────────────────────── */}
-      <div className={styles.twoColGrid}>
+      <div className={isClient ? styles.singleColSection : styles.twoColGrid}>
         {/* Left: PROJECT MATERIALS */}
         <section className={styles.card} aria-label="Project Materials">
           <h3 className={styles.sectionTitle}>
@@ -942,37 +942,35 @@ export function ProjectOverviewActivitySections({
           </Link>
         </section>
 
-        {/* Right: HIVE STUDIO */}
-        <section className={styles.card} aria-label="Hive Studio">
-          <h3 className={styles.sectionTitle}>
-            <span>HIVE STUDIO</span>
-            <span className={styles.sectionBadge}>
-              {isClient ? "03 Workspaces Used" : "04 Workspaces Used"}
-            </span>
-          </h3>
+        {/* Right: HIVE STUDIO — hidden for client view */}
+        {!isClient && (
+          <section className={styles.card} aria-label="Hive Studio">
+            <h3 className={styles.sectionTitle}>
+              <span>HIVE STUDIO</span>
+              <span className={styles.sectionBadge}>04 Workspaces Used</span>
+            </h3>
 
-          <div className={styles.servicesList}>
-            <div className={styles.serviceRow}>
-              <div className={styles.serviceInfoCol}>
-                <span className={styles.serviceName}>AI Requirement Brief &amp; Spatial Synthesis</span>
-                <span className={styles.serviceUpdateNote}>
-                  Output: <strong>ODIN Brief &amp; 10 Domain Specs Synced</strong>
-                </span>
+            <div className={styles.servicesList}>
+              <div className={styles.serviceRow}>
+                <div className={styles.serviceInfoCol}>
+                  <span className={styles.serviceName}>AI Requirement Brief &amp; Spatial Synthesis</span>
+                  <span className={styles.serviceUpdateNote}>
+                    Output: <strong>ODIN Brief &amp; 10 Domain Specs Synced</strong>
+                  </span>
+                </div>
+                <span className={styles.stepperBadgeCompleted}>Completed</span>
               </div>
-              <span className={styles.stepperBadgeCompleted}>Completed</span>
-            </div>
 
-            <div className={styles.serviceRow}>
-              <div className={styles.serviceInfoCol}>
-                <span className={styles.serviceName}>Concept Scheme &amp; Palette Studio</span>
-                <span className={styles.serviceUpdateNote}>
-                  Output: <strong>8 Design Themes &amp; Moodboard Generated</strong>
-                </span>
+              <div className={styles.serviceRow}>
+                <div className={styles.serviceInfoCol}>
+                  <span className={styles.serviceName}>Concept Scheme &amp; Palette Studio</span>
+                  <span className={styles.serviceUpdateNote}>
+                    Output: <strong>8 Design Themes &amp; Moodboard Generated</strong>
+                  </span>
+                </div>
+                <span className={styles.stepperBadgeCompleted}>Delivered</span>
               </div>
-              <span className={styles.stepperBadgeCompleted}>Delivered</span>
-            </div>
 
-            {!isClient && (
               <div className={styles.serviceRow}>
                 <div className={styles.serviceInfoCol}>
                   <span className={styles.serviceName}>Automated Proposal &amp; Scope Generator</span>
@@ -982,32 +980,31 @@ export function ProjectOverviewActivitySections({
                 </div>
                 <span className={styles.stepperBadgeInProgress}>Sent to Client</span>
               </div>
-            )}
 
-            <div className={styles.serviceRow}>
-              <div className={styles.serviceInfoCol}>
-                <span className={styles.serviceName}>CAD Spec &amp; Feasibility Verifier</span>
-                <span className={styles.serviceUpdateNote}>
-                  Output: <strong>4 Architectural Sheets Checked (0 Conflicts)</strong>
-                </span>
+              <div className={styles.serviceRow}>
+                <div className={styles.serviceInfoCol}>
+                  <span className={styles.serviceName}>CAD Spec &amp; Feasibility Verifier</span>
+                  <span className={styles.serviceUpdateNote}>
+                    Output: <strong>4 Architectural Sheets Checked (0 Conflicts)</strong>
+                  </span>
+                </div>
+                <span className={styles.stepperBadgeCompleted}>Verified</span>
               </div>
-              <span className={styles.stepperBadgeCompleted}>Verified</span>
             </div>
-          </div>
 
-          {!isClient && (
             <div className={styles.serviceValueBanner}>
               <span>4 Hive Studio Tasks Active</span>
               <span style={{ fontWeight: 700 }}>Outputs Synced to Project</span>
             </div>
-          )}
 
-          <Link href="/studio" className={styles.footerLink}>
-            <span>Open Hive Studio</span>
-            <ArrowRight size={13} />
-          </Link>
-        </section>
+            <Link href="/studio" className={styles.footerLink}>
+              <span>Open Hive Studio</span>
+              <ArrowRight size={13} />
+            </Link>
+          </section>
+        )}
       </div>
+
 
       {/* ── Deliverable Overlay / Modal ───────────────────────── */}
       {isClient && isViewerOpen && (

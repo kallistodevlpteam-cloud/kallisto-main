@@ -68,6 +68,12 @@
   }
 }
 
+.singleColSection {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 /* ── 1. PROJECT PROGRESS ──────────────────────────────────── */
 .progressTopRow {
   display: flex;
