@@ -2322,37 +2322,41 @@
 }
 
 .basicsSideToggleBtn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 30;
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
-  padding: 0;
-  transition: all 0.15s ease;
+  transition: all 160ms ease;
   outline: none;
+  white-space: nowrap;
 }
 
 .basicsSideToggleBtn:hover {
-  background: rgba(0, 0, 0, 0.04);
-  color: #0f172a;
+  background: #0f172a;
+  border-color: #0f172a;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.16);
 }
 
 .basicsSideToggleBtn:active {
-  transform: scale(0.96);
+  transform: translateY(0);
 }
 
 .basicsSideToggleBtnActive {
-  color: #0f172a !important;
-  background: rgba(0, 0, 0, 0.06) !important;
+  color: #ffffff !important;
+  background: #0f172a !important;
+  border-color: #0f172a !important;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
 }
 
 /* Side Panel Drawer for Basics Hub */
@@ -2558,21 +2562,15 @@
 }
 
 .basicsOverviewShell {
-  height: 100% !important;
   min-height: 100% !important;
-  max-height: 100% !important;
   padding: 0 !important;
-  overflow: hidden !important;
   display: flex !important;
   flex-direction: column !important;
 }
 
 .page {
-  height: 100%;
-  min-height: 100%;
-  max-height: 100%;
   width: 100%;
-  overflow: hidden;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -2582,11 +2580,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
   min-height: 100%;
-  max-height: 100%;
   width: 100%;
-  overflow: hidden;
   position: relative;
   box-sizing: border-box;
 }
@@ -2597,8 +2592,67 @@
   right: 20px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   z-index: 40;
+}
+
+.overviewTopNavBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6.5px;
+  height: 34px;
+  padding: 0 13px 0 11px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  user-select: none;
+  outline: none;
+}
+
+.overviewTopNavBtn:hover {
+  background: #0f172a;
+  border-color: #0f172a;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.16);
+}
+
+.overviewTopNavBtn:active {
+  transform: translateY(0);
+}
+
+.overviewTopNavBtnActive {
+  background: #0f172a !important;
+  border-color: #0f172a !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+}
+
+.overviewTopNavIcon {
+  flex-shrink: 0;
+  color: inherit;
+}
+
+@media (max-width: 640px) {
+  .overviewTopNavActions {
+    top: 12px;
+    right: 12px;
+    gap: 6px;
+  }
+
+  .overviewTopNavBtn {
+    height: 32px;
+    padding: 0 10px;
+    font-size: 11.5px;
+  }
 }
 
 /* Grok-Style Minimal Hero & Intelligence Hub (Centered Kallisto Theme) */
@@ -2860,18 +2914,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   border: none;
   background: #0f172a;
   color: #ffffff;
   cursor: pointer;
+  flex-shrink: 0;
   transition: all 140ms ease;
 }
 
 .searchPillSendBtn:hover {
-  background: #0284c7;
+  background: #1e293b;
   transform: scale(1.04);
 }
 
@@ -4562,7 +4617,7 @@
 
 .discoveryStickyHeader {
   position: sticky;
-  top: -24px;
+  top: 0;
   z-index: 60;
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(16px);
@@ -4603,16 +4658,32 @@
 
 .discoveryTopNavCenter {
   flex: 1;
-  max-width: 720px;
+  max-width: 680px;
   display: flex;
   align-items: center;
+  margin: 0 auto;
 }
 
 .discoveryTopNavRight {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
+}
+
+.overviewBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9999px;
+  background: #0284c7;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 750;
+  margin-left: 2px;
 }
 
 .discoveryWishlistBtn {
@@ -4679,35 +4750,37 @@
   gap: 8px;
   width: 100%;
   height: 44px;
-  padding: 0 5px 0 18px;
+  padding: 0 5px 0 20px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 9999px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   transition: all 180ms ease;
   box-sizing: border-box;
 }
 
 .discoverySearchBox:focus-within {
   border-color: #0f172a;
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
-}
-
-.discoverySearchIcon {
-  color: #64748b;
-  flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.06), 0 2px 8px rgba(15, 23, 42, 0.06);
 }
 
 .discoverySearchInput {
   flex: 1;
+  min-width: 0;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
-  background: transparent;
+  background: transparent !important;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 450;
   color: #0f172a;
-  font-size: 13.5px;
-  font-weight: 500;
-  min-width: 0;
+  letter-spacing: -0.01em;
+  text-align: left;
 }
 
 .discoverySearchInput:focus,
@@ -6156,4 +6229,5 @@
   line-height: 1.4;
   margin: 2px 0 0;
 }
+
 

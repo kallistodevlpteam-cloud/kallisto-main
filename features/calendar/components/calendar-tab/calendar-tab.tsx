@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import {
   ChevronLeft,
   ChevronRight,
@@ -12,6 +13,7 @@ import {
   AlertTriangle,
   Building2,
   Plus,
+  ExternalLink,
 } from "lucide-react";
 import {
   SearchDuotoneIcon,
@@ -19,7 +21,6 @@ import {
   CalendarDuotoneIcon,
   DocumentsDuotoneIcon,
   AnalyticsDuotoneIcon,
-  SpreadsheetDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 import type {
   CalendarQueryState,
@@ -36,7 +37,7 @@ export interface CalendarTabProps {
   queryState?: CalendarQueryState;
   onUpdateQuery?: (updates: Partial<CalendarQueryState>) => void;
   activities?: PresentableActivity[];
-  projectsList?: Array<{ id: string; name: string }>;
+  projectsList?: Array<{ id: string; name: string; code?: string; phase?: string }>;
   onSelectActivity?: (id: string) => void;
   onAddActivity?: (date?: string) => void;
 }
@@ -87,36 +88,6 @@ const CATEGORY_FILTERS: CategoryFilterItem[] = [
   },
 ];
 
-const TEAM_MEMBERS: Record<
-  string,
-  { name: string; role: string; location: string; avatar: string }
-> = {
-  "usr-1": {
-    name: "Brandon Russell",
-    role: "Lead Architect",
-    location: "834 Boyer Shore Suite 076",
-    avatar: "BR",
-  },
-  "usr-2": {
-    name: "Rithvik Menon",
-    role: "Site Coordinator",
-    location: "Kallisto Studio, Kochi",
-    avatar: "RM",
-  },
-  "usr-3": {
-    name: "Ananya Roy",
-    role: "Structural Consultant",
-    location: "Structural Lab, Kochi",
-    avatar: "AR",
-  },
-  "usr-4": {
-    name: "Devika Nair",
-    role: "Project Designer",
-    location: "Design Studio, Calicut",
-    avatar: "DN",
-  },
-};
-
 function formatTimePart(value: string) {
   const [hours, minutes] = value.split(":").map(Number);
   return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
@@ -127,15 +98,6 @@ function formatActivityTimeRange(activity: PresentableActivity) {
   const start = formatTimePart(activity.time.startAt.substring(11, 16));
   const end = formatTimePart(activity.time.endAt.substring(11, 16));
   return `${start} – ${end}`;
-}
-
-function getActivityDurationMinutes(activity: PresentableActivity) {
-  if (activity.time.allDay) return "All day";
-  const start = new Date(activity.time.startAt).getTime();
-  const end = new Date(activity.time.endAt).getTime();
-  if (Number.isNaN(start) || Number.isNaN(end)) return "45 min";
-  const diffMins = Math.max(15, Math.round((end - start) / (1000 * 60)));
-  return `${diffMins} min`;
 }
 
 /**
@@ -239,12 +201,63 @@ export function CalendarTab({
   onAddActivity,
 }: CalendarTabProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [viewMode, setViewMode] = useState<"month" | "week">("month");
   const [selectedCategories, setSelectedCategories] = useState<
     Exclude<TodayCategoryId, "all">[]
   >(["meetings", "site", "tasks", "deliverables", "deadlines"]);
 
   const [expandedActivityId, setExpandedActivityId] = useState<string | null>(null);
+
+  // Project Filter State & Panel View Mode
+  const selectedProjectId = queryState?.project || null;
+  const [isProjectDropdownOpen, setIsProjectDropdownOpen] = useState(false);
+  const [projectSearchInput, setProjectSearchInput] = useState("");
+  const [rightPanelViewMode, setRightPanelViewMode] = useState<"day" | "project_all">("day");
+  const projectDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (projectDropdownRef.current && !projectDropdownRef.current.contains(e.target as Node)) {
+        setIsProjectDropdownOpen(false);
+      }
+    }
+    if (isProjectDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [isProjectDropdownOpen]);
+
+  // Compute activity counts for each project
+  const projectCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    activities.forEach((act) => {
+      if (act.projectId) {
+        counts.set(act.projectId, (counts.get(act.projectId) || 0) + 1);
+      }
+    });
+    return counts;
+  }, [activities]);
+
+  const activeProject = useMemo(() => {
+    if (!selectedProjectId) return null;
+    return projectsList.find((p) => p.id === selectedProjectId) || null;
+  }, [projectsList, selectedProjectId]);
+
+  const filteredProjectsList = useMemo(() => {
+    if (!projectSearchInput.trim()) return projectsList;
+    const q = projectSearchInput.toLowerCase();
+    return projectsList.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        (p.code && p.code.toLowerCase().includes(q)) ||
+        (p.phase && p.phase.toLowerCase().includes(q))
+    );
+  }, [projectsList, projectSearchInput]);
+
+  const handleSelectProject = (projId: string | null) => {
+    onUpdateQuery?.({ project: projId });
+    setIsProjectDropdownOpen(false);
+    setProjectSearchInput("");
+  };
 
   const selectedDateStr = queryState?.date || REFERENCE_TODAY;
   const currentMonthDate = useMemo(() => {
@@ -367,6 +380,11 @@ export function CalendarTab({
       if (!isInScope) return false;
       if (!allowedTypes.has(act.activityType)) return false;
 
+      // Project filter
+      if (selectedProjectId && act.projectId !== selectedProjectId) {
+        return false;
+      }
+
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
         const projectName = act.projectId
@@ -385,9 +403,17 @@ export function CalendarTab({
     activities,
     queryState?.scope,
     selectedCategories,
+    selectedProjectId,
     searchQuery,
     projectsById,
   ]);
+
+  // All activities for the active filtered project across dates
+  const allProjectActivities = useMemo(() => {
+    if (!selectedProjectId) return [];
+    const list = activities.filter((act) => act.projectId === selectedProjectId);
+    return sortDayActivities(list);
+  }, [activities, selectedProjectId]);
 
   // 2. Group filtered activities by date (including multi-day spans) and sort intelligently
   const activitiesByDate = useMemo(() => {
@@ -440,6 +466,134 @@ export function CalendarTab({
           </div>
 
           <div className={styles.mockupHeaderRight}>
+            {/* Project Filter Dropdown */}
+            <div className={styles.mockupProjectFilterWrap} ref={projectDropdownRef}>
+              <button
+                type="button"
+                className={`${styles.mockupProjectFilterBtn} ${
+                  selectedProjectId ? styles.mockupProjectFilterBtnActive : ""
+                }`}
+                onClick={() => setIsProjectDropdownOpen((prev) => !prev)}
+                aria-haspopup="listbox"
+                aria-expanded={isProjectDropdownOpen}
+                aria-label="Filter by project"
+                title={activeProject ? `Filtered by ${activeProject.name}` : "Filter by project"}
+              >
+                <Building2 size={14} className={styles.mockupProjectFilterIcon} />
+                <span className={styles.mockupProjectFilterText}>
+                  {activeProject ? activeProject.name : "All Projects"}
+                </span>
+                {selectedProjectId && (
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    className={styles.mockupProjectFilterClearInline}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelectProject(null);
+                    }}
+                    title="Clear project filter"
+                    aria-label="Clear project filter"
+                  >
+                    <X size={10} strokeWidth={2.5} />
+                  </span>
+                )}
+                <ChevronDown size={12} />
+              </button>
+
+              {isProjectDropdownOpen && (
+                <div className={styles.projectFilterDropdown} role="listbox">
+                  <div className={styles.projectFilterSearchWrap}>
+                    <SearchDuotoneIcon size={13} style={{ color: "#94a3b8" }} />
+                    <input
+                      type="text"
+                      className={styles.projectFilterSearchInput}
+                      placeholder="Search projects..."
+                      value={projectSearchInput}
+                      onChange={(e) => setProjectSearchInput(e.target.value)}
+                      autoFocus
+                    />
+                    {projectSearchInput && (
+                      <button
+                        type="button"
+                        onClick={() => setProjectSearchInput("")}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: 0,
+                          color: "#94a3b8",
+                        }}
+                      >
+                        <X size={11} />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className={styles.projectFilterList}>
+                    {/* All Projects Option */}
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={!selectedProjectId}
+                      className={`${styles.projectFilterItem} ${
+                        !selectedProjectId ? styles.projectFilterItemActive : ""
+                      }`}
+                      onClick={() => handleSelectProject(null)}
+                    >
+                      <div className={styles.projectFilterItemContent}>
+                        <span className={styles.projectFilterItemTitle}>All Projects</span>
+                        <span className={styles.projectFilterItemMeta}>View all workspace activities</span>
+                      </div>
+                      <span className={styles.projectFilterItemBadge}>
+                        {activities.length} total
+                      </span>
+                      {!selectedProjectId && <Check size={13} strokeWidth={2.5} color="#2563eb" />}
+                    </button>
+
+                    <div style={{ height: "1px", background: "#f1f5f9", margin: "4px 0" }} />
+
+                    {/* Individual Projects */}
+                    {filteredProjectsList.length === 0 ? (
+                      <div style={{ padding: "14px", textAlign: "center", fontSize: "12px", color: "#94a3b8" }}>
+                        No projects found
+                      </div>
+                    ) : (
+                      filteredProjectsList.map((proj) => {
+                        const isProjSelected = proj.id === selectedProjectId;
+                        const count = projectCounts.get(proj.id) || 0;
+
+                        return (
+                          <button
+                            key={proj.id}
+                            type="button"
+                            role="option"
+                            aria-selected={isProjSelected}
+                            className={`${styles.projectFilterItem} ${
+                              isProjSelected ? styles.projectFilterItemActive : ""
+                            }`}
+                            onClick={() => handleSelectProject(proj.id)}
+                          >
+                            <div className={styles.projectFilterItemContent}>
+                              <span className={styles.projectFilterItemTitle}>{proj.name}</span>
+                              <span className={styles.projectFilterItemMeta}>
+                                {proj.code ? proj.code : "Project"}
+                                {proj.phase ? ` • ${proj.phase}` : ""}
+                              </span>
+                            </div>
+                            <span className={styles.projectFilterItemBadge}>
+                              {count} {count === 1 ? "act" : "acts"}
+                            </span>
+                            {isProjSelected && <Check size={13} strokeWidth={2.5} color="#2563eb" />}
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className={styles.mockupSearchWrap}>
               <SearchDuotoneIcon size={14} className={styles.mockupSearchIcon} />
               <input
@@ -504,6 +658,39 @@ export function CalendarTab({
             </button>
           </div>
         </div>
+
+        {/* Active Project Filter Banner */}
+        {selectedProjectId && activeProject && (
+          <div className={styles.activeFilterBanner}>
+            <div className={styles.activeFilterBannerLeft}>
+              <Building2 size={15} color="#2563eb" />
+              <span>
+                Filtered by project: <strong>{activeProject.name}</strong>
+                {activeProject.code ? ` (${activeProject.code})` : ""}
+                {" • "}
+                {filteredActivities.length}{" "}
+                {filteredActivities.length === 1 ? "activity" : "activities"} visible
+              </span>
+            </div>
+            <div className={styles.activeFilterBannerRight}>
+              <button
+                type="button"
+                className={styles.activeFilterClearBtn}
+                onClick={() => handleSelectProject(null)}
+              >
+                Clear filter
+              </button>
+              <Link
+                href={`/projects/${selectedProjectId}?tab=activity`}
+                className={styles.activeFilterWorkspaceLink}
+                title="Open project activity workspace"
+              >
+                <span>Open Project Workspace</span>
+                <ExternalLink size={12} />
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Weekday Column Headers */}
         <div className={styles.mockupWeekdayRow}>
@@ -673,6 +860,26 @@ export function CalendarTab({
           <div className={styles.hiveStudioHeader}>
             <div className={styles.actionTitleGroup}>
               <span className={styles.hiveStudioCategoryTitle}>DAY SCHEDULE</span>
+              {selectedProjectId && activeProject && (
+                <span
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    color: "#2563eb",
+                    background: "#eff6ff",
+                    padding: "2px 8px",
+                    borderRadius: "6px",
+                    border: "1px solid #bfdbfe",
+                    maxWidth: "140px",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                  title={activeProject.name}
+                >
+                  {activeProject.name}
+                </span>
+              )}
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <span
@@ -698,201 +905,365 @@ export function CalendarTab({
             </div>
           </div>
 
-          <p className={styles.mockupDayOverviewSubtitle}>
-            {selectedDateFormattedHeader}
-          </p>
+          {/* If a project is selected, allow switching between Day Schedule and All Project Activities */}
+          {selectedProjectId && activeProject && (
+            <div className={styles.panelViewToggle} role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={rightPanelViewMode === "day"}
+                className={`${styles.panelToggleBtn} ${
+                  rightPanelViewMode === "day" ? styles.panelToggleBtnActive : ""
+                }`}
+                onClick={() => setRightPanelViewMode("day")}
+              >
+                Day Schedule ({selectedDateActivities.length})
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={rightPanelViewMode === "project_all"}
+                className={`${styles.panelToggleBtn} ${
+                  rightPanelViewMode === "project_all" ? styles.panelToggleBtnActive : ""
+                }`}
+                onClick={() => setRightPanelViewMode("project_all")}
+              >
+                All Project Activities ({allProjectActivities.length})
+              </button>
+            </div>
+          )}
 
-          <div className={styles.hiveStudioCardList}>
-            {selectedDateActivities.length === 0 ? (
-              <div className={styles.hiveStudioEmptyBox}>
-                <p className={styles.hiveStudioEmptyText}>
-                  No activities scheduled for this date.
-                </p>
-                <button
-                  type="button"
-                  className={styles.hiveEmptyAddTaskBtn}
-                  onClick={() => onAddActivity?.(selectedDateStr)}
-                >
-                  <Plus size={13} />
-                  <span>Create Task for {selectedDateStr}</span>
-                </button>
+          {rightPanelViewMode === "project_all" && selectedProjectId && activeProject ? (
+            <div className={styles.projectTimelineList}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 2 }}>
+                <span style={{ fontSize: "11.5px", color: "#64748b" }}>
+                  All scheduled activities for <strong>{activeProject.name}</strong>
+                </span>
               </div>
-            ) : (
-              selectedDateActivities.map((act) => {
-                const isExpanded = (expandedActivityId ?? selectedDateActivities[0]?.id) === act.id;
-                const isCompleted = act.status === "completed";
-                const isBlocked = act.isOverdue;
-                const actAssignee =
-                  CALENDAR_TEAM_MEMBERS[act.ownerId] ||
-                  (act.assigneeIds?.[0] ? CALENDAR_TEAM_MEMBERS[act.assigneeIds[0]] : undefined) ||
-                  CALENDAR_TEAM_MEMBERS["usr-1"];
-
-                return (
-                  <div
-                    key={act.id}
-                    className={`${styles.hiveExpandableCard} ${
-                      isExpanded ? styles.hiveExpandableCardOpen : ""
-                    }`}
+              {allProjectActivities.length === 0 ? (
+                <div className={styles.hiveStudioEmptyBox}>
+                  <p className={styles.hiveStudioEmptyText}>
+                    No activities found for {activeProject.name}.
+                  </p>
+                  <button
+                    type="button"
+                    className={styles.hiveEmptyAddTaskBtn}
+                    onClick={() => onAddActivity?.(selectedDateStr)}
                   >
-                    {/* Clickable Summary Row */}
-                    <button
-                      type="button"
-                      className={styles.hiveCardHeaderBtn}
-                      onClick={() => {
-                        setExpandedActivityId((prev) => (prev === act.id ? null : act.id));
-                      }}
-                      aria-expanded={isExpanded}
-                      aria-label={`${act.title} activity details`}
+                    <Plus size={13} />
+                    <span>Create Task for {activeProject.name}</span>
+                  </button>
+                </div>
+              ) : (
+                allProjectActivities.map((act) => {
+                  const isActSelected = (expandedActivityId ?? selectedDateActivities[0]?.id) === act.id;
+                  const isCompleted = act.status === "completed";
+                  const isBlocked = act.isOverdue;
+                  const actDate = act.time.allDay
+                    ? act.time.startDate || "2026-07-24"
+                    : act.time.startAt.substring(0, 10);
+                  const formattedDate = new Intl.DateTimeFormat("en-GB", {
+                    day: "numeric",
+                    month: "short",
+                  }).format(new Date(`${actDate}T12:00:00`));
+
+                  return (
+                    <div
+                      key={act.id}
+                      className={`${styles.hiveExpandableCard} ${
+                        isActSelected ? styles.hiveExpandableCardOpen : ""
+                      }`}
                     >
-                      <div className={styles.hiveCardLeftGroup}>
-                        {/* Themed Icon Box */}
-                        <div
-                          className={`${styles.hiveIconBox} ${
-                            isCompleted
-                              ? styles.iconBoxGreen
-                              : isBlocked
-                              ? styles.iconBoxRed
-                              : act.activityType === "client_meeting" ||
-                                act.activityType === "team_meeting"
-                              ? styles.iconBoxBlue
-                              : act.activityType === "site_visit" ||
-                                act.activityType === "inspection"
-                              ? styles.iconBoxAmber
-                              : act.activityType === "drawing_delivery" ||
-                                act.activityType === "milestone"
-                              ? styles.iconBoxGreen
-                              : act.activityType === "approval" ||
-                                act.activityType === "payment_review"
-                              ? styles.iconBoxRed
-                              : styles.iconBoxPurple
-                          }`}
-                        >
-                          {isCompleted ? (
-                            <Check size={15} strokeWidth={2.5} />
-                          ) : isBlocked ? (
-                            <AlertTriangle size={15} strokeWidth={2} />
-                          ) : act.activityType === "client_meeting" ||
-                            act.activityType === "team_meeting" ? (
-                            <TeamDuotoneIcon size={16} />
-                          ) : act.activityType === "site_visit" ||
-                            act.activityType === "inspection" ? (
-                            <MapPin size={15} />
-                          ) : act.activityType === "drawing_delivery" ||
-                            act.activityType === "milestone" ? (
-                            <DocumentsDuotoneIcon size={16} />
-                          ) : act.activityType === "approval" ||
-                            act.activityType === "payment_review" ? (
-                            <AnalyticsDuotoneIcon size={16} />
-                          ) : (
-                            <CalendarDuotoneIcon size={16} />
-                          )}
-                        </div>
-
-                        <div className={styles.hiveCardTextStack}>
-                          <strong className={styles.hiveCardTitle}>
-                            {formatActivityTimeRange(act)}
-                          </strong>
-                          <span className={styles.hiveCardSubtitle}>
-                            {act.title}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className={styles.hiveCardRightGroup}>
-                        <span
-                          className={`${styles.hiveStatusPill} ${
-                            isCompleted
-                              ? styles.pillGreen
-                              : isBlocked
-                              ? styles.pillRed
-                              : styles.pillGrey
-                          }`}
-                        >
-                          {isCompleted
-                            ? "Done"
-                            : isBlocked
-                            ? "Blocked"
-                            : "Scheduled"}
-                        </span>
-                        <ChevronDown
-                          size={13}
-                          className={`${styles.hiveChevronIcon} ${
-                            isExpanded ? styles.hiveChevronRotated : ""
-                          }`}
-                        />
-                      </div>
-                    </button>
-
-                    {/* Expanded Details Body in New Theme */}
-                    {isExpanded && (
-                      <div className={styles.hiveExpandedBody}>
-                        {/* Description Paragraph */}
-                        <p className={styles.hiveExpandedDesc}>
-                          {act.notes ||
-                            "Review the revised spatial plan, material direction, and decisions needed before the drawing package advances."}
-                        </p>
-
-                        {/* Minimal Assignee Row in Our Theme */}
-                        <div className={styles.hiveMinimalUserRow}>
-                          <div className={styles.hiveMinimalUserLeft}>
-                            <span className={styles.hiveMinimalAvatar}>
-                              {actAssignee.avatar}
-                            </span>
-                            <div className={styles.hiveMinimalUserInfo}>
-                              <div className={styles.hiveMinimalUserNameGroup}>
-                                <strong className={styles.hiveMinimalUserName}>
-                                  {actAssignee.name}
-                                </strong>
-                                <span className={styles.hiveMinimalUserRole}>
-                                  • {actAssignee.role}
-                                </span>
-                              </div>
-                              <span className={styles.hiveMinimalLocation}>
-                                <MapPin size={10} />
-                                <span>{act.location || actAssignee.location}</span>
-                              </span>
-                            </div>
+                      <button
+                        type="button"
+                        className={styles.hiveCardHeaderBtn}
+                        onClick={() => {
+                          onUpdateQuery?.({ date: actDate });
+                          setExpandedActivityId((prev) => (prev === act.id ? null : act.id));
+                        }}
+                      >
+                        <div className={styles.hiveCardLeftGroup}>
+                          <div className={styles.timelineDateBadge}>
+                            {formattedDate}
                           </div>
-                          <button
-                            type="button"
-                            className={styles.hiveMinimalPhoneBtn}
-                            aria-label={`Contact ${actAssignee.name}`}
-                          >
-                            <Phone size={12} />
-                          </button>
-                        </div>
-
-                        {/* Minimal Project & Milestone Status Row in Our Theme */}
-                        <div className={styles.hiveMinimalProjectRow}>
-                          <div className={styles.hiveMinimalProjectLeft}>
-                            <Building2 size={13} className={styles.hiveMinimalProjectIcon} />
-                            <strong className={styles.hiveMinimalProjectName}>
-                              {projectsById.get(act.projectId || "") || "Nila Residence"}
+                          <div className={styles.hiveCardTextStack}>
+                            <strong className={styles.hiveCardTitle}>
+                              {formatActivityTimeRange(act)}
                             </strong>
+                            <span className={styles.hiveCardSubtitle}>
+                              {act.title}
+                            </span>
                           </div>
+                        </div>
+
+                        <div className={styles.hiveCardRightGroup}>
                           <span
                             className={`${styles.hiveStatusPill} ${
-                              act.status === "completed"
+                              isCompleted
                                 ? styles.pillGreen
-                                : act.isOverdue
+                                : isBlocked
                                 ? styles.pillRed
                                 : styles.pillGrey
                             }`}
                           >
-                            {act.status === "completed"
+                            {isCompleted
                               ? "Done"
-                              : act.isOverdue
-                              ? "Overdue"
+                              : isBlocked
+                              ? "Blocked"
                               : "Scheduled"}
                           </span>
+                          <ChevronDown
+                            size={13}
+                            className={`${styles.hiveChevronIcon} ${
+                              isActSelected ? styles.hiveChevronRotated : ""
+                            }`}
+                          />
                         </div>
-                      </div>
-                    )}
+                      </button>
+
+                      {isActSelected && (
+                        <div className={styles.hiveExpandedBody}>
+                          <p className={styles.hiveExpandedDesc}>
+                            {act.notes || "Review project requirements, drawings, or inspection schedule."}
+                          </p>
+                          <div className={styles.hiveMinimalProjectRow}>
+                            <div className={styles.hiveMinimalProjectLeft}>
+                              <Building2 size={13} className={styles.hiveMinimalProjectIcon} />
+                              <strong className={styles.hiveMinimalProjectName}>
+                                {activeProject.name}
+                              </strong>
+                            </div>
+                            <Link
+                              href={`/projects/${act.projectId}?tab=activity`}
+                              className={styles.activeFilterWorkspaceLink}
+                              style={{ fontSize: "11px", padding: "2px 7px" }}
+                            >
+                              <span>Workspace</span>
+                              <ExternalLink size={10} />
+                            </Link>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+              <Link
+                href={`/projects/${selectedProjectId}?tab=activity`}
+                className={styles.openWorkspaceBtn}
+              >
+                <span>Open Project Workspace (Activity Tab)</span>
+                <ExternalLink size={13} />
+              </Link>
+            </div>
+          ) : (
+            <>
+              <p className={styles.mockupDayOverviewSubtitle}>
+                {selectedDateFormattedHeader}
+              </p>
+
+              <div className={styles.hiveStudioCardList}>
+                {selectedDateActivities.length === 0 ? (
+                  <div className={styles.hiveStudioEmptyBox}>
+                    <p className={styles.hiveStudioEmptyText}>
+                      {selectedProjectId && activeProject
+                        ? `No activities scheduled for ${activeProject.name} on this date.`
+                        : "No activities scheduled for this date."}
+                    </p>
+                    <button
+                      type="button"
+                      className={styles.hiveEmptyAddTaskBtn}
+                      onClick={() => onAddActivity?.(selectedDateStr)}
+                    >
+                      <Plus size={13} />
+                      <span>
+                        Create Task for {selectedProjectId && activeProject ? activeProject.name : selectedDateStr}
+                      </span>
+                    </button>
                   </div>
-                );
-              })
-            )}
-          </div>
+                ) : (
+                  selectedDateActivities.map((act) => {
+                    const isExpanded = (expandedActivityId ?? selectedDateActivities[0]?.id) === act.id;
+                    const isCompleted = act.status === "completed";
+                    const isBlocked = act.isOverdue;
+                    const actAssignee =
+                      CALENDAR_TEAM_MEMBERS[act.ownerId] ||
+                      (act.assigneeIds?.[0] ? CALENDAR_TEAM_MEMBERS[act.assigneeIds[0]] : undefined) ||
+                      CALENDAR_TEAM_MEMBERS["usr-1"];
+
+                    return (
+                      <div
+                        key={act.id}
+                        className={`${styles.hiveExpandableCard} ${
+                          isExpanded ? styles.hiveExpandableCardOpen : ""
+                        }`}
+                      >
+                        {/* Clickable Summary Row */}
+                        <button
+                          type="button"
+                          className={styles.hiveCardHeaderBtn}
+                          onClick={() => {
+                            setExpandedActivityId((prev) => (prev === act.id ? null : act.id));
+                          }}
+                          aria-expanded={isExpanded}
+                          aria-label={`${act.title} activity details`}
+                        >
+                          <div className={styles.hiveCardLeftGroup}>
+                            {/* Themed Icon Box */}
+                            <div
+                              className={`${styles.hiveIconBox} ${
+                                isCompleted
+                                  ? styles.iconBoxGreen
+                                  : isBlocked
+                                  ? styles.iconBoxRed
+                                  : act.activityType === "client_meeting" ||
+                                    act.activityType === "team_meeting"
+                                  ? styles.iconBoxBlue
+                                  : act.activityType === "site_visit" ||
+                                    act.activityType === "inspection"
+                                  ? styles.iconBoxAmber
+                                  : act.activityType === "drawing_delivery" ||
+                                    act.activityType === "milestone"
+                                  ? styles.iconBoxGreen
+                                  : act.activityType === "approval" ||
+                                    act.activityType === "payment_review"
+                                  ? styles.iconBoxRed
+                                  : styles.iconBoxPurple
+                              }`}
+                            >
+                              {isCompleted ? (
+                                <Check size={15} strokeWidth={2.5} />
+                              ) : isBlocked ? (
+                                <AlertTriangle size={15} strokeWidth={2} />
+                              ) : act.activityType === "client_meeting" ||
+                                act.activityType === "team_meeting" ? (
+                                <TeamDuotoneIcon size={16} />
+                              ) : act.activityType === "site_visit" ||
+                                act.activityType === "inspection" ? (
+                                <MapPin size={15} />
+                              ) : act.activityType === "drawing_delivery" ||
+                                act.activityType === "milestone" ? (
+                                <DocumentsDuotoneIcon size={16} />
+                              ) : act.activityType === "approval" ||
+                                act.activityType === "payment_review" ? (
+                                <AnalyticsDuotoneIcon size={16} />
+                              ) : (
+                                <CalendarDuotoneIcon size={16} />
+                              )}
+                            </div>
+
+                            <div className={styles.hiveCardTextStack}>
+                              <strong className={styles.hiveCardTitle}>
+                                {formatActivityTimeRange(act)}
+                              </strong>
+                              <span className={styles.hiveCardSubtitle}>
+                                {act.title}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className={styles.hiveCardRightGroup}>
+                            <span
+                              className={`${styles.hiveStatusPill} ${
+                                isCompleted
+                                  ? styles.pillGreen
+                                  : isBlocked
+                                  ? styles.pillRed
+                                  : styles.pillGrey
+                              }`}
+                            >
+                              {isCompleted
+                                ? "Done"
+                                : isBlocked
+                                ? "Blocked"
+                                : "Scheduled"}
+                            </span>
+                            <ChevronDown
+                              size={13}
+                              className={`${styles.hiveChevronIcon} ${
+                                isExpanded ? styles.hiveChevronRotated : ""
+                              }`}
+                            />
+                          </div>
+                        </button>
+
+                        {/* Expanded Details Body in New Theme */}
+                        {isExpanded && (
+                          <div className={styles.hiveExpandedBody}>
+                            {/* Description Paragraph */}
+                            <p className={styles.hiveExpandedDesc}>
+                              {act.notes ||
+                                "Review the revised spatial plan, material direction, and decisions needed before the drawing package advances."}
+                            </p>
+
+                            {/* Minimal Assignee Row in Our Theme */}
+                            <div className={styles.hiveMinimalUserRow}>
+                              <div className={styles.hiveMinimalUserLeft}>
+                                <span className={styles.hiveMinimalAvatar}>
+                                  {actAssignee.avatar}
+                                </span>
+                                <div className={styles.hiveMinimalUserInfo}>
+                                  <div className={styles.hiveMinimalUserNameGroup}>
+                                    <strong className={styles.hiveMinimalUserName}>
+                                      {actAssignee.name}
+                                    </strong>
+                                    <span className={styles.hiveMinimalUserRole}>
+                                      • {actAssignee.role}
+                                    </span>
+                                  </div>
+                                  <span className={styles.hiveMinimalLocation}>
+                                    <MapPin size={10} />
+                                    <span>{act.location || actAssignee.location}</span>
+                                  </span>
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                className={styles.hiveMinimalPhoneBtn}
+                                aria-label={`Contact ${actAssignee.name}`}
+                              >
+                                <Phone size={12} />
+                              </button>
+                            </div>
+
+                            {/* Minimal Project & Milestone Status Row in Our Theme */}
+                            <div className={styles.hiveMinimalProjectRow}>
+                              <div className={styles.hiveMinimalProjectLeft}>
+                                <Building2 size={13} className={styles.hiveMinimalProjectIcon} />
+                                <Link
+                                  href={`/projects/${act.projectId || "proj-201"}?tab=activity`}
+                                  className={styles.hiveMinimalProjectName}
+                                  style={{ textDecoration: "none", color: "inherit" }}
+                                  title={`Open ${projectsById.get(act.projectId || "") || "Project"} Activity Workspace`}
+                                >
+                                  {projectsById.get(act.projectId || "") || "Nila Residence"}
+                                </Link>
+                              </div>
+                              <span
+                                className={`${styles.hiveStatusPill} ${
+                                  act.status === "completed"
+                                    ? styles.pillGreen
+                                    : act.isOverdue
+                                    ? styles.pillRed
+                                    : styles.pillGrey
+                                }`}
+                              >
+                                {act.status === "completed"
+                                  ? "Done"
+                                  : act.isOverdue
+                                  ? "Overdue"
+                                  : "Scheduled"}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

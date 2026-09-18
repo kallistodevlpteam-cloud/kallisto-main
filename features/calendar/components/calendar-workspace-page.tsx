@@ -15,7 +15,6 @@ export function CalendarWorkspacePage() {
 
   // Activity filter built from persistent URL search params
   const activityFilter = {
-    projectId: queryState.project || undefined,
     activityType: queryState.activityType || undefined,
     visibility: queryState.visibility || undefined,
     includeCompleted: true,
@@ -110,6 +109,7 @@ export function CalendarWorkspacePage() {
         <AddActivityModal
           initialCreationType={creationType}
           initialDate={queryState.date}
+          initialProjectId={queryState.project || undefined}
           projectsList={MOCK_PROJECTS}
           onClose={() => setAddModalOpen(false)}
           onSubmit={async (actInput, schInput, idemp) => {

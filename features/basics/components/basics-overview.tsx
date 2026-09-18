@@ -104,31 +104,45 @@ export function BasicsOverview({ projectId }: { projectId?: string }) {
       <div className={styles.overviewTopNavActions}>
         <Link
           href={projectId ? `/basics/experts?saved=true&projectId=${projectId}` : "/basics/experts?saved=true"}
-          className={styles.discoveryWishlistBtn}
+          className={styles.overviewTopNavBtn}
           title="Saved Specialists & Wishlist"
           aria-label="View saved specialists"
         >
-          <Bookmark size={15} aria-hidden="true" />
+          <Bookmark size={14} className={styles.overviewTopNavIcon} aria-hidden="true" />
+          <span>Saved</span>
         </Link>
         <Link
           href={projectId ? `/basics/engagements?projectId=${projectId}` : "/basics/engagements"}
-          className={styles.discoveryWishlistBtn}
+          className={styles.overviewTopNavBtn}
           title="Orders & Engagements"
           aria-label="View orders and engagements"
         >
-          <ShoppingBag size={15} aria-hidden="true" />
+          <ShoppingBag size={14} className={styles.overviewTopNavIcon} aria-hidden="true" />
+          <span>Orders</span>
         </Link>
         <button
           type="button"
-          className={`${styles.basicsSideToggleBtn} ${sidePanelOpen ? styles.basicsSideToggleBtnActive : ""}`}
+          className={`${styles.overviewTopNavBtn} ${sidePanelOpen ? styles.overviewTopNavBtnActive : ""}`}
           onClick={() => setSidePanelOpen((prev) => !prev)}
-          title={sidePanelOpen ? "Close side panel" : "Open side panel"}
-          aria-label="Toggle side panel"
+          title={sidePanelOpen ? "Close Basics Hub" : "Open Basics Hub"}
+          aria-label="Toggle Basics Hub side panel"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={styles.overviewTopNavIcon}
+            aria-hidden="true"
+          >
             <rect x="3" y="4" width="18" height="16" rx="4" />
             <line x1="16" y1="8" x2="16" y2="16" />
           </svg>
+          <span>Basics Hub</span>
         </button>
       </div>
 
