@@ -172,7 +172,7 @@ const RAW_SERVICE_PROVIDER_RECORDS: RawServiceProviderRecord[] = [
     websiteUrl: "https://greenwoodinfra.in",
     skills: ["Solid Block Masonry", "RCC Foundations", "Community Infrastructure", "Lintel & Slab Casting"],
     verified: true,
-    avatarUrl: "/assets/projects/greenfield-villa.png",
+    avatarUrl: "/assets/profile_avatar.png",
     coverImageUrl: "/assets/projects/greenfield-villa.png",
     projects: [
       {
@@ -231,7 +231,7 @@ const RAW_SERVICE_PROVIDER_RECORDS: RawServiceProviderRecord[] = [
     websiteUrl: "https://www.sobha.com",
     skills: ["Vitrified Tile Laying", "Precision Finishing", "Structural Engineering", "Turnkey Execution"],
     verified: true,
-    avatarUrl: "/assets/projects/residence-24.png",
+    avatarUrl: "/assets/arjun-avatar.jpg",
     coverImageUrl: "/assets/hero-architecture-banner.webp",
     projects: [
       {
@@ -290,7 +290,7 @@ const RAW_SERVICE_PROVIDER_RECORDS: RawServiceProviderRecord[] = [
     websiteUrl: "https://azureproperties.in",
     skills: ["Waterfront Construction", "MEP Engineering", "Coastal Foundations", "Luxury Interiors"],
     verified: true,
-    avatarUrl: "/assets/projects/oak-house.png",
+    avatarUrl: "/assets/petra-avatar.jpg",
     coverImageUrl: "/assets/nila-hero-modern.jpg",
     projects: [
       {
@@ -423,7 +423,7 @@ const RAW_SERVICE_PROVIDER_RECORDS: RawServiceProviderRecord[] = [
     websiteUrl: "https://hilitebuilders.com",
     skills: ["Heavy Foundations", "Rebar & Steel Fixing", "Commercial Execution", "Large-Scale Concrete"],
     verified: true,
-    avatarUrl: "/assets/projects/anitha-menon-residence.png",
+    avatarUrl: "/assets/allen-avatar.jpg",
     coverImageUrl: "/assets/projects/anitha-menon-residence.png",
     projects: [
       {
@@ -527,7 +527,7 @@ const RAW_SERVICE_PROVIDER_RECORDS: RawServiceProviderRecord[] = [
     websiteUrl: "https://pranavamhospitality.in",
     skills: ["Acoustic Design", "Airless Texture Coating", "Large Span Trusses", "Interior Fit-Outs"],
     verified: true,
-    avatarUrl: "/assets/nila-hero-modern.jpg",
+    avatarUrl: "/assets/priya-avatar.jpg",
     coverImageUrl: "/assets/nila-hero-modern.jpg",
     projects: [
       {
@@ -659,7 +659,7 @@ export function findServiceProvider(params: GetServiceProviderDataParams): Servi
 export function getProviderDisplayDetails(
   clientName: string,
   primaryTrade?: string,
-): { name: string; profession: string; slug: string; providerId: string } {
+): { name: string; profession: string; slug: string; providerId: string; avatarUrl: string } {
   const provider = findServiceProvider({ providerQuery: clientName });
   if (provider) {
     const shortProfession = provider.profession.split("•")[0]?.trim() || provider.profession;
@@ -668,6 +668,7 @@ export function getProviderDisplayDetails(
       profession: shortProfession,
       slug: provider.slug || provider.id.replace(/^provider-/, ""),
       providerId: provider.id,
+      avatarUrl: provider.avatarUrl || "/assets/buildpro_logo.png",
     };
   }
   const fallbackSlug = clientName
@@ -679,6 +680,7 @@ export function getProviderDisplayDetails(
     profession: primaryTrade ? `${primaryTrade} Requisition` : "Verified Service Provider",
     slug: fallbackSlug || "service-provider",
     providerId: `provider-${fallbackSlug}`,
+    avatarUrl: "/assets/buildpro_logo.png",
   };
 }
 

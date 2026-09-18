@@ -272,6 +272,54 @@ describe("Kallisto Hands - Requests Page & Workforce Match Intelligence", () => 
     expect(vipinRow?.getAttribute("aria-checked")).toBe("false");
   });
 
+  it("displays search input only when manual selection is enabled and filters candidates", () => {
+    render(
+      <PartnerAuthProvider>
+        <HandsRequestsWorkspace />
+      </PartnerAuthProvider>
+    );
+
+    const reviewBtn = screen.getAllByRole("button", { name: /Review Request/i })[0];
+    fireEvent.click(reviewBtn);
+
+    const matchBtn = screen.getByRole("button", { name: /Accept & View Matched Candidates/i });
+    fireEvent.click(matchBtn);
+
+    // Search icon trigger should NOT be present initially (only shown when expanded)
+    expect(screen.queryByPlaceholderText(/Search helpers/i)).toBeNull();
+
+    // Enable manual selection for Helpers
+    const viewAllHelpersBtn = screen.getByRole("button", { name: /View All Available Helpers/i });
+    fireEvent.click(viewAllHelpersBtn);
+
+    // After expanding, a search trigger icon button is visible — click it to open the input
+    const searchTrigger = screen.getByRole("button", { name: /Search Helpers/i });
+    fireEvent.click(searchTrigger);
+
+    // Search input SHOULD appear now
+    const searchInput = screen.getByPlaceholderText(/Search helpers.../i);
+    expect(searchInput).toBeDefined();
+
+    // Type "Sunil" into search
+    fireEvent.change(searchInput, { target: { value: "Sunil" } });
+
+    // Only Sunil Thomas should be visible
+    expect(screen.getByText("Sunil Thomas")).toBeDefined();
+    expect(screen.queryByText("Vipin Das")).toBeNull();
+
+    // Clear search by typing empty string
+    fireEvent.change(searchInput, { target: { value: "" } });
+    expect(screen.getByText("Vipin Das")).toBeDefined();
+    expect(screen.getByText("Sunil Thomas")).toBeDefined();
+
+    // Click "Show Matched (4)" to collapse manual selection
+    const showMatchedBtn = screen.getByRole("button", { name: /Show Matched \(4\)/i });
+    fireEvent.click(showMatchedBtn);
+
+    // Search input should be removed again after collapsing
+    expect(screen.queryByPlaceholderText(/Search helpers.../i)).toBeNull();
+  });
+
   it("clicking Decline opens the decline confirmation dialog with reason selection", () => {
     render(
       <PartnerAuthProvider>

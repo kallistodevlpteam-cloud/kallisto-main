@@ -826,7 +826,7 @@ export function ProjectOverviewActivitySections({
       </div>
 
       {/* ── 5. HUB + HIVE PRODUCTS ──────────────────────────────── */}
-      <div className={styles.twoColGrid}>
+      <div className={isClient ? styles.singleColSection : styles.twoColGrid}>
         {/* Left: PROJECT MATERIALS */}
         <section className={styles.card} aria-label="Project Materials">
           <h3 className={styles.sectionTitle}>
@@ -942,37 +942,35 @@ export function ProjectOverviewActivitySections({
           </Link>
         </section>
 
-        {/* Right: BASICS STUDIO */}
-        <section className={styles.card} aria-label="Basics Studio">
-          <h3 className={styles.sectionTitle}>
-            <span>BASICS STUDIO</span>
-            <span className={styles.sectionBadge}>
-              {isClient ? "03 Workspaces Used" : "04 Workspaces Used"}
-            </span>
-          </h3>
+        {/* Right: BASICS STUDIO — hidden for client view */}
+        {!isClient && (
+          <section className={styles.card} aria-label="Basics Studio">
+            <h3 className={styles.sectionTitle}>
+              <span>BASICS STUDIO</span>
+              <span className={styles.sectionBadge}>04 Workspaces Used</span>
+            </h3>
 
-          <div className={styles.servicesList}>
-            <div className={styles.serviceRow}>
-              <div className={styles.serviceInfoCol}>
-                <span className={styles.serviceName}>RCC Structural Detailing &amp; Engineering</span>
-                <span className={styles.serviceUpdateNote}>
-                  Update: <strong>Sheet ST-204 slab reinforcement drawing uploaded</strong>
-                </span>
+            <div className={styles.servicesList}>
+              <div className={styles.serviceRow}>
+                <div className={styles.serviceInfoCol}>
+                  <span className={styles.serviceName}>RCC Structural Detailing &amp; Engineering</span>
+                  <span className={styles.serviceUpdateNote}>
+                    Update: <strong>Sheet ST-204 slab reinforcement drawing uploaded</strong>
+                  </span>
+                </div>
+                <span className={styles.stepperBadgeCompleted}>Approved</span>
               </div>
-              <span className={styles.stepperBadgeCompleted}>Approved</span>
-            </div>
 
-            <div className={styles.serviceRow}>
-              <div className={styles.serviceInfoCol}>
-                <span className={styles.serviceName}>Integrated MEP &amp; Solar Engineering</span>
-                <span className={styles.serviceUpdateNote}>
-                  Notification: <strong>Breaker schedule &amp; solar inverter tie-in circuits revised</strong>
-                </span>
+              <div className={styles.serviceRow}>
+                <div className={styles.serviceInfoCol}>
+                  <span className={styles.serviceName}>Integrated MEP &amp; Solar Engineering</span>
+                  <span className={styles.serviceUpdateNote}>
+                    Notification: <strong>Breaker schedule &amp; solar inverter tie-in circuits revised</strong>
+                  </span>
+                </div>
+                <span className={styles.stepperBadgeInProgress}>In Review</span>
               </div>
-              <span className={styles.stepperBadgeInProgress}>In Review</span>
-            </div>
 
-            {!isClient && (
               <div className={styles.serviceRow}>
                 <div className={styles.serviceInfoCol}>
                   <span className={styles.serviceName}>BIM Coordination &amp; Clash Detection</span>
@@ -982,32 +980,31 @@ export function ProjectOverviewActivitySections({
                 </div>
                 <span className={styles.stepperBadgeCompleted}>Approved</span>
               </div>
-            )}
 
-            <div className={styles.serviceRow}>
-              <div className={styles.serviceInfoCol}>
-                <span className={styles.serviceName}>Building Permit &amp; Statutory Sanctions</span>
-                <span className={styles.serviceUpdateNote}>
-                  Approval: <strong>Municipal Corporation permit order #KMBR-2026 sanctioned</strong>
-                </span>
+              <div className={styles.serviceRow}>
+                <div className={styles.serviceInfoCol}>
+                  <span className={styles.serviceName}>Building Permit &amp; Statutory Sanctions</span>
+                  <span className={styles.serviceUpdateNote}>
+                    Approval: <strong>Municipal Corporation permit order #KMBR-2026 sanctioned</strong>
+                  </span>
+                </div>
+                <span className={styles.stepperBadgeCompleted}>Sanctioned</span>
               </div>
-              <span className={styles.stepperBadgeCompleted}>Sanctioned</span>
             </div>
-          </div>
 
-          {!isClient && (
             <div className={styles.serviceValueBanner}>
               <span>4 Basics Studio Tasks Active</span>
               <span style={{ fontWeight: 700 }}>Outputs Synced to Project</span>
             </div>
-          )}
 
-          <Link href={isClient ? `/client/projects/${projectId}/basics` : `/basics`} className={styles.footerLink}>
-            <span>Open Basics Studio</span>
-            <ArrowRight size={13} />
-          </Link>
-        </section>
+            <Link href="/basics" className={styles.footerLink}>
+              <span>Open Basics Studio</span>
+              <ArrowRight size={13} />
+            </Link>
+          </section>
+        )}
       </div>
+
 
       {/* ── Deliverable Overlay / Modal ───────────────────────── */}
       {isClient && isViewerOpen && (

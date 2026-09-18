@@ -620,17 +620,36 @@ export function HandsRequestDetailDrawer({
   const [selectedWorkerIds, setSelectedWorkerIds] = useState<string[]>(() =>
     request.requirements.flatMap((req) => req.matchingWorkerIds || [])
   );
+  const [tradeSearchQueries, setTradeSearchQueries] = useState<Record<string, string>>({});
+  const [openTradeSearch, setOpenTradeSearch] = useState<Record<string, boolean>>({});
   if (prevRequestId !== request.id) {
     setPrevRequestId(request.id);
     setSelectedWorkerIds(request.requirements.flatMap((req) => req.matchingWorkerIds || []));
+    setTradeSearchQueries({});
+    setOpenTradeSearch({});
   }
   const [expandedTrades, setExpandedTrades] = useState<Record<string, boolean>>({});
 
   const toggleTradeExpand = (trade: string) => {
-    setExpandedTrades((prev) => ({
-      ...prev,
-      [trade]: !prev[trade],
-    }));
+    setExpandedTrades((prev) => {
+      const nextExpanded = !prev[trade];
+      if (!nextExpanded) {
+        setTradeSearchQueries((q) => {
+          const nextQ = { ...q };
+          delete nextQ[trade];
+          return nextQ;
+        });
+        setOpenTradeSearch((o) => {
+          const nextO = { ...o };
+          delete nextO[trade];
+          return nextO;
+        });
+      }
+      return {
+        ...prev,
+        [trade]: nextExpanded,
+      };
+    });
   };
 
   const toggleSelectWorker = (workerId: string) => {
@@ -731,7 +750,17 @@ export function HandsRequestDetailDrawer({
       }
 
       const isExpanded = Boolean(expandedTrades[req.trade]);
-      const displayedWorkers = isExpanded ? allWorkers : matchedWorkers;
+      const searchQuery = (tradeSearchQueries[req.trade] || "").trim().toLowerCase();
+      let displayedWorkers = isExpanded ? allWorkers : matchedWorkers;
+      if (isExpanded && searchQuery) {
+        displayedWorkers = allWorkers.filter(
+          (w) =>
+            w.name.toLowerCase().includes(searchQuery) ||
+            w.id.toLowerCase().includes(searchQuery) ||
+            (w.level ? w.level.toLowerCase().includes(searchQuery) : false) ||
+            (w.skills && w.skills.some((s) => s.toLowerCase().includes(searchQuery)))
+        );
+      }
 
       return {
         trade: req.trade,
@@ -757,8 +786,8 @@ export function HandsRequestDetailDrawer({
       });
     }
 
-    return groups.filter((g) => g.displayedWorkers.length > 0);
-  }, [request.requirements, candidateWorkers, expandedTrades]);
+    return groups.filter((g) => g.allWorkers.length > 0);
+  }, [request.requirements, candidateWorkers, expandedTrades, tradeSearchQueries]);
 
   // Derived tasks for the requisition period, sorted High priority first then Medium
   const periodTasks: RequestTaskItem[] = useMemo(() => {
@@ -833,6 +862,8 @@ export function HandsRequestDetailDrawer({
     setIsAcceptedSuccess(false);
     setOverlayStep("details");
     setShowDeclineConfirm(false);
+    setTradeSearchQueries({});
+    setOpenTradeSearch({});
     onClose();
   };
 
@@ -1251,7 +1282,62 @@ export function HandsRequestDetailDrawer({
                             </h4>
                           </div>
 
-                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <div className={styles.candidateTradeActions}>
+                            {group.isExpanded && (
+                              openTradeSearch[group.trade] ? (
+                                <div className={styles.tradeSearchWrapper}>
+                                  <Search size={12} className={styles.tradeSearchIcon} />
+                                  <input
+                                    autoFocus
+                                    type="text"
+                                    value={tradeSearchQueries[group.trade] || ""}
+                                    onChange={(e) =>
+                                      setTradeSearchQueries((prev) => ({
+                                        ...prev,
+                                        [group.trade]: e.target.value,
+                                      }))
+                                    }
+                                    placeholder={`Search ${group.trade.toLowerCase()}s...`}
+                                    className={styles.tradeSearchInput}
+                                    aria-label={`Search ${group.trade}s`}
+                                    onClick={(e) => e.stopPropagation()}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setTradeSearchQueries((prev) => ({
+                                        ...prev,
+                                        [group.trade]: "",
+                                      }));
+                                      setOpenTradeSearch((prev) => ({
+                                        ...prev,
+                                        [group.trade]: false,
+                                      }));
+                                    }}
+                                    className={styles.tradeSearchClearBtn}
+                                    aria-label="Close search"
+                                  >
+                                    <X size={11} />
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className={styles.tradeSearchTriggerBtn}
+                                  onClick={() =>
+                                    setOpenTradeSearch((prev) => ({
+                                      ...prev,
+                                      [group.trade]: true,
+                                    }))
+                                  }
+                                  title={`Search ${group.trade}s`}
+                                  aria-label={`Search ${group.trade}s`}
+                                >
+                                  <Search size={13} />
+                                </button>
+                              )
+                            )}
+
                             {!group.hasShortage && group.allWorkers.length > group.matchedWorkers.length && (
                               <button
                                 type="button"
@@ -1285,7 +1371,12 @@ export function HandsRequestDetailDrawer({
                         </div>
 
                         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                          {group.displayedWorkers.map((worker) => {
+                          {group.displayedWorkers.length === 0 ? (
+                            <div className={styles.candidateSearchEmpty}>
+                              No {group.trade.toLowerCase()}s found matching &ldquo;{tradeSearchQueries[group.trade]}&rdquo;
+                            </div>
+                          ) : (
+                            group.displayedWorkers.map((worker) => {
                             const isSelected = selectedWorkerIds.includes(worker.id);
 
                             if (isSelectable) {
@@ -1384,7 +1475,8 @@ export function HandsRequestDetailDrawer({
                                 </span>
                               </div>
                             );
-                          })}
+                          })
+                          )}
                         </div>
                       </div>
                     );
