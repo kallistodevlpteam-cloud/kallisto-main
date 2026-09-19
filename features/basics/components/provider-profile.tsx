@@ -218,7 +218,7 @@ export async function ProviderProfile({
               <div className={styles.profileMetricsBar} aria-label="Provider Performance Metrics">
                 <div className={styles.metricCol}>
                   <div className={styles.metricValRow}>
-                    <Clock size={24} className={styles.metricIcon} aria-hidden="true" />
+                    <Clock size={18} className={styles.metricIcon} aria-hidden="true" />
                     <span className={styles.metricVal}>{hoursLogged}h</span>
                   </div>
                   <span className={styles.metricLbl}>Hours Logged</span>
@@ -226,7 +226,7 @@ export async function ProviderProfile({
 
                 <div className={styles.metricCol}>
                   <div className={styles.metricValRow}>
-                    <Briefcase size={24} className={styles.metricIcon} aria-hidden="true" />
+                    <Briefcase size={18} className={styles.metricIcon} aria-hidden="true" />
                     <span className={styles.metricVal}>{provider.completedEngagements}</span>
                   </div>
                   <span className={styles.metricLbl}>Completed Projects</span>
@@ -234,7 +234,7 @@ export async function ProviderProfile({
 
                 <div className={styles.metricCol}>
                   <div className={styles.metricValRow}>
-                    <Calendar size={24} className={styles.metricIcon} aria-hidden="true" />
+                    <Calendar size={18} className={styles.metricIcon} aria-hidden="true" />
                     <span className={styles.metricVal}>{provider.yearsOfExperience} yrs</span>
                   </div>
                   <span className={styles.metricLbl}>Years of Experience</span>
@@ -242,7 +242,7 @@ export async function ProviderProfile({
 
                 <div className={styles.metricCol}>
                   <div className={styles.metricValRow}>
-                    <Star size={24} className={styles.metricStarIcon} fill="#f59e0b" color="#f59e0b" aria-hidden="true" />
+                    <Star size={18} className={styles.metricStarIcon} fill="#f59e0b" color="#f59e0b" aria-hidden="true" />
                     <span className={styles.metricVal}>
                       {provider.rating.toFixed(1)} <span className={styles.metricOutOf}>/ 5.0</span>
                     </span>
