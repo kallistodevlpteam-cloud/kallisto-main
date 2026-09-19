@@ -26,6 +26,7 @@ export interface BasicsProviderRepository {
   listProviders(filters?: ProviderFilters): Promise<BasicsProvider[]>;
   getProvider(providerId: string): Promise<BasicsProvider | null>;
   saveProvider(providerId: string): Promise<void>;
+  getSavedProviderIds(): Promise<string[]>;
 }
 
 export interface BasicsRequirementRepository {
@@ -87,11 +88,7 @@ const proposalsStore = MOCK_BASICS_PROPOSALS.map((proposal) => ({ ...proposal })
 const engagementsStore = MOCK_BASICS_ENGAGEMENTS.map((engagement) => ({
   ...engagement,
 }));
-const savedProviderIds = new Set<string>();
-
-function normalise(value: string): string {
-  return value.trim().toLowerCase();
-}
+const savedProviderIds = new Set<string>(["provider-001", "provider-002", "provider-010"]);
 
 import { matchesFuzzyQuery } from "../lib/basics-search-matcher";
 
@@ -119,10 +116,14 @@ export const basicsProviderRepository: BasicsProviderRepository = {
       if (filters.category && provider.primaryCategory !== filters.category) return false;
       if (
         filters.specialization &&
-        !matchesFuzzyQuery(filters.specialization, provider.specializations, provider.primaryCategory)
+        !matchesFuzzyQuery(
+          filters.specialization,
+          [...provider.specializations, provider.primaryCategory, ...provider.services.map((s) => s.title)],
+          provider.primaryCategory,
+        )
       ) return false;
       if (filters.projectType && !provider.projectTypes.includes(filters.projectType)) return false;
-      if (filters.city && !matchesFuzzyQuery(filters.city, [provider.location.city])) return false;
+      if (filters.city && !matchesFuzzyQuery(filters.city, [provider.location.city, provider.location.state])) return false;
       if (filters.state && !matchesFuzzyQuery(filters.state, [provider.location.state])) return false;
       if (filters.remote && !provider.remoteAvailable) return false;
       if (filters.onsite && !provider.onsiteAvailable) return false;
@@ -162,6 +163,9 @@ export const basicsProviderRepository: BasicsProviderRepository = {
     if (!provider) throw new Error("Provider not found.");
     if (savedProviderIds.has(providerId)) savedProviderIds.delete(providerId);
     else savedProviderIds.add(providerId);
+  },
+  async getSavedProviderIds() {
+    return Array.from(savedProviderIds);
   },
 };
 

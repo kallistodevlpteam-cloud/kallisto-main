@@ -4,6 +4,7 @@ import {
   Bookmark,
   Check,
   Columns3,
+  Send,
   Star,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -18,25 +19,35 @@ import { ProviderLogoTile } from "./provider-logo-tile";
 export function ProviderCard({
   provider,
   projectId,
+  requirementId,
   discovery = false,
   selected = false,
   saved = false,
+  isInvited = false,
   compareDisabled = false,
   onToggleCompare,
   onToggleSave,
+  onInvite,
 }: {
   provider: BasicsProvider;
   projectId?: string;
+  requirementId?: string;
   discovery?: boolean;
   selected?: boolean;
   saved?: boolean;
+  isInvited?: boolean;
   compareDisabled?: boolean;
   onToggleCompare?: (providerId: string) => void;
   onToggleSave?: (providerId: string) => void;
+  onInvite?: (providerId: string) => void;
 }) {
   const router = useRouter();
   const profileHref = `/basics/experts/${provider.id}${
-    projectId ? `?projectId=${encodeURIComponent(projectId)}` : ""
+    requirementId
+      ? `?requirementId=${encodeURIComponent(requirementId)}`
+      : projectId
+        ? `?projectId=${encodeURIComponent(projectId)}`
+        : ""
   }`;
 
   function handleCardClick(e: React.MouseEvent) {
@@ -149,8 +160,23 @@ export function ProviderCard({
             </span>
           </div>
 
-          {discovery && onToggleCompare ? (
-            <div className={styles.refCardActions}>
+          <div className={styles.refCardActions}>
+            {onInvite ? (
+              <button
+                type="button"
+                className={isInvited ? styles.refInvitedBtn : styles.refInviteBtn}
+                disabled={isInvited}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isInvited) onInvite(provider.id);
+                }}
+              >
+                {isInvited ? <Check size={11} aria-hidden="true" /> : <Send size={11} aria-hidden="true" />}
+                <span>{isInvited ? "Invited" : "Invite"}</span>
+              </button>
+            ) : null}
+
+            {discovery && onToggleCompare ? (
               <button
                 type="button"
                 className={`${styles.refCompareBtn} ${selected ? styles.refCompareBtnActive : ""}`}
@@ -164,8 +190,8 @@ export function ProviderCard({
                 {selected ? <Check size={11} aria-hidden="true" /> : <Columns3 size={11} aria-hidden="true" />}
                 <span>{selected ? "Selected" : "Compare"}</span>
               </button>
-            </div>
-          ) : null}
+            ) : null}
+          </div>
         </div>
       </div>
     </article>

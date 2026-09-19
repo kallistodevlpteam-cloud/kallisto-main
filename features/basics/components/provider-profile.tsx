@@ -80,7 +80,7 @@ export async function ProviderProfile({
   const hoursLogged = Math.max(provider.completedEngagements * 58 + 28, 640);
 
   return (
-    <div className={styles.page}>
+    <div className={styles.profilePage}>
       <div className={styles.profileTwoColumnLayout}>
         {/* LEFT SECTION: REVIEW THE PROVIDER */}
         <main className={styles.profileReviewSection}>

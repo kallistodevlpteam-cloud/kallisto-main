@@ -1,5 +1,14 @@
 import type { BackendProject } from "@/types/domain/backend-project";
-import type { EnquiryRecord, ProjectType } from "../types/enquiry.types";
+import type {
+  EnquiryRecord,
+  ProjectType,
+  EnquirySource,
+  EnquiryStatus,
+  EnquiryStage,
+  EnquiryPriority,
+  NextActionType,
+  NextActionState,
+} from "../types/enquiry.types";
 import { formatEnquiryBudgetValue } from "./format-enquiry-budget";
 
 const PROJECT_TYPE_FALLBACK: Record<string, ProjectType> = {
@@ -72,9 +81,9 @@ export function buildEnquiriesFromProjects(projects: BackendProject[]): EnquiryR
       clientName: project.clientName || "—",
       location: project.place || "—",
       thumbnailUrl: project.coverImageUrl ?? DEFAULT_THUMBNAIL,
-      source: "website",
-      status: "active",
-      stage: "new",
+      source: (project.source as EnquirySource) || "website",
+      status: (project.status as EnquiryStatus) || "active",
+      stage: (project.stage as EnquiryStage) || (project.proposal?.status === "accepted" ? "won" : project.proposal?.status === "rejected" ? "lost" : "new"),
       projectType: mapBackendProjectType(project),
       backendProjectType: project.projectType,
       budgetMin: budgetAmount ?? 0,
@@ -125,7 +134,23 @@ export function buildEnquiriesFromProjects(projects: BackendProject[]): EnquiryR
         }
         return entry;
       }),
-      nextAction: { type: "review_enquiry", label: "Review enquiry" },
+      nextAction: project.nextAction ? {
+        type: project.nextAction.type as NextActionType,
+        label: project.nextAction.label,
+        dueAt: project.nextAction.dueAt,
+        state: project.nextAction.state as NextActionState | undefined,
+      } : { type: "review_enquiry", label: "Review enquiry" },
+      enquiryRef: project.enquiryRef ?? undefined,
+      priority: (project.priority as EnquiryPriority) ?? undefined,
+      owner: project.owner ?? undefined,
+      tags: project.tags ?? undefined,
+      isNew: project.isNew ?? undefined,
+      notes: project.overView ?? undefined,
+      clientPriorities: (project.priorities ?? []).map((p) => ({
+        id: p.id,
+        label: p.priority_name,
+        type: p.statuses?.[0] ? ("confirmed" as const) : ("inferred" as const),
+      })),
     };
   });
 }

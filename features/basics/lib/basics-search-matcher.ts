@@ -194,3 +194,133 @@ export function matchesFuzzyQuery(
     return false;
   });
 }
+
+import type { BasicsProvider } from "../types/basics.types";
+
+export type MatchedProvider = {
+  provider: BasicsProvider;
+  matchScore: number;
+  matchReasons: string[];
+};
+
+/**
+ * Evaluates and scores providers matching a requirement's category,
+ * specialization, location, and project type.
+ */
+export function matchProvidersToRequirement(
+  requirement: {
+    category?: string;
+    specialization?: string;
+    location?: string;
+    projectType?: string;
+  },
+  providers: BasicsProvider[],
+): MatchedProvider[] {
+  if (!providers.length) return [];
+
+  const reqCat = requirement.category ? normalizeText(requirement.category) : "";
+  const reqSpec = requirement.specialization ? normalizeText(requirement.specialization) : "";
+  const reqLoc = requirement.location ? normalizeText(requirement.location) : "";
+  const reqLocWords = reqLoc ? reqLoc.split(/\s+/).filter((w) => w.length > 2) : [];
+  const reqProjectType = requirement.projectType ? normalizeText(requirement.projectType) : "";
+
+  const results: MatchedProvider[] = [];
+
+  for (const provider of providers) {
+    let score = 0;
+    const reasons: string[] = [];
+
+    // 1. Primary category match (up to 40 points)
+    const provCat = normalizeText(provider.primaryCategory || "");
+    if (provCat && reqCat) {
+      if (provCat === reqCat) {
+        score += 40;
+        reasons.push(`${provider.primaryCategory.replace(/_/g, " ")}`);
+      }
+    }
+
+    // 2. Specialization & skills match (up to 35 points)
+    if (reqSpec) {
+      const provSpecs = provider.specializations.map((s) => normalizeText(s));
+      const provServiceTitles = provider.services.map((s) => normalizeText(s.title));
+      const allSpecText = [...provSpecs, ...provServiceTitles, normalizeText(provider.headline)].join(" ");
+
+      if (allSpecText.includes(reqSpec)) {
+        score += 35;
+        reasons.push(provider.specializations[0] || "Specialization match");
+      } else {
+        const specWords = reqSpec.split(/\s+/).filter((w) => w.length > 2);
+        const matchCount = specWords.filter((w) => {
+          const wStem = stemToken(w);
+          return (
+            allSpecText.includes(w) ||
+            allSpecText.includes(wStem) ||
+            matchesFuzzyQuery(w, [allSpecText], provider.primaryCategory)
+          );
+        }).length;
+
+        if (matchCount > 0) {
+          const partialScore = Math.round((matchCount / specWords.length) * 30);
+          score += partialScore;
+          reasons.push(provider.specializations[0] || "Discipline match");
+        }
+      }
+    }
+
+    // 3. Location match (up to 15 points)
+    if (reqLocWords.length > 0) {
+      const provCity = normalizeText(provider.location.city);
+      const provState = normalizeText(provider.location.state);
+      const provLocText = `${provCity} ${provState}`;
+
+      const matchedLoc = reqLocWords.some(
+        (lw) =>
+          provLocText.includes(lw) ||
+          levenshtein(lw, provCity) <= 2 ||
+          levenshtein(lw, provState) <= 2,
+      );
+
+      if (matchedLoc) {
+        score += 15;
+        reasons.push(`${provider.location.city}`);
+      } else if (provider.remoteAvailable) {
+        score += 8;
+        reasons.push("Remote available");
+      }
+    } else {
+      score += 10;
+    }
+
+    // 4. Project type match (up to 5 points)
+    if (reqProjectType) {
+      const hasProjectType = provider.projectTypes.some((pt) =>
+        normalizeText(pt).includes(reqProjectType),
+      );
+      if (hasProjectType) {
+        score += 5;
+      }
+    }
+
+    // 5. Verification & Rating bonus (up to 5 points)
+    if (provider.verified) score += 3;
+    if (provider.rating >= 4.5) score += 2;
+
+    const finalScore = Math.min(99, Math.max(0, score));
+
+    // Threshold: include if reasonable match exists (score >= 35)
+    if (finalScore >= 35) {
+      results.push({
+        provider,
+        matchScore: finalScore,
+        matchReasons: reasons.slice(0, 3),
+      });
+    }
+  }
+
+  return results.sort((a, b) => {
+    if (b.matchScore !== a.matchScore) return b.matchScore - a.matchScore;
+    if (b.provider.rating !== a.provider.rating) return b.provider.rating - a.provider.rating;
+    return b.provider.completedEngagements - a.provider.completedEngagements;
+  });
+}
+
