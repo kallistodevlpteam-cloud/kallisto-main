@@ -16,6 +16,7 @@ import { filterEnquiries, sortEnquiries, paginateEnquiries } from "../utils/filt
 import { buildEnquiriesFromProjects } from "../utils/enquiries-from-backend-projects";
 import type { BackendProject } from "@/types/domain/backend-project";
 import { EnquiryRecord } from "../types/enquiry.types";
+import { CLIENT_PORTAL_ENQUIRIES } from "../services/client-enquiries.mock";
 import { EnquiryFilterToolbar } from "./enquiry-filter-toolbar";
 import { EnquiryTableRow } from "./enquiry-table-row";
 import { EnquiryMobileCard } from "./enquiry-mobile-card";
@@ -35,7 +36,8 @@ export function EnquiriesWorkspace({ isLoading = false, basePath }: EnquiriesWor
   const router = useRouter();
   const pathname = usePathname() || "";
   const searchParams = useSearchParams();
-  const effectiveBasePath = basePath || (pathname.startsWith("/client") ? "/client/enquiries" : "/enquiries");
+  const isClient = Boolean(basePath?.startsWith("/client") || pathname.startsWith("/client"));
+  const effectiveBasePath = basePath || (isClient ? "/client/enquiries" : "/enquiries");
 
   // Ref for first filter control (Status filter)
   const statusFilterRef = useRef<HTMLButtonElement | null>(null);
@@ -111,21 +113,42 @@ export function EnquiriesWorkspace({ isLoading = false, basePath }: EnquiriesWor
   // test fixture is present it wins, so automated tests stay deterministic.
   const sourceRecords: EnquiryRecord[] = testEnquiries
     ? testEnquiries
+    : isClient
+    ? CLIENT_PORTAL_ENQUIRIES
     : buildEnquiriesFromProjects(backendProjects);
 
   const showLoading = isLoading || (!testEnquiries && !projectsLoaded);
 
+  const isHistoryRecord = (item: EnquiryRecord) => {
+    if (isClient) {
+      const statusLower = item.clientStatus?.toLowerCase() || "";
+      if (statusLower === "declined" || statusLower === "expired") {
+        return false;
+      }
+      return (
+        statusLower === "rejected" ||
+        item.stage === "rejected" ||
+        item.stage === "lost"
+      );
+    }
+    return item.stage === "won" || item.stage === "lost";
+  };
+
   const newTabCount = sourceRecords.filter(
-    (item: EnquiryRecord) => item.stage !== "won" && item.stage !== "lost"
+    (item: EnquiryRecord) => !isHistoryRecord(item)
+  ).length;
+
+  const historyTabCount = sourceRecords.filter(
+    (item: EnquiryRecord) => isHistoryRecord(item)
   ).length;
 
   const tabFiltered = sourceRecords.filter((item: EnquiryRecord) => {
-    const isHistoryStage = item.stage === "won" || item.stage === "lost";
+    const isHistory = isHistoryRecord(item);
     const requestedTab = searchParams.get("tab") || "new";
     if (requestedTab === "history") {
-      return isHistoryStage;
+      return isHistory;
     }
-    return !isHistoryStage;
+    return !isHistory;
   });
 
   // Apply filters and text search
@@ -141,8 +164,9 @@ export function EnquiriesWorkspace({ isLoading = false, basePath }: EnquiriesWor
   const sorted = sortEnquiries(filtered, queryState.sort);
 
   // Compute total pages and clamp current page safely
+  const effectivePageSize = isClient ? 8 : PAGE_SIZE;
   const total = sorted.length;
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const totalPages = Math.ceil(total / effectivePageSize);
   const safePage = totalPages === 0 ? 1 : Math.min(Math.max(1, queryState.page), totalPages);
 
   // Normalize URL query parameter if current page got clamped (e.g. after filters change)
@@ -154,11 +178,11 @@ export function EnquiriesWorkspace({ isLoading = false, basePath }: EnquiriesWor
   }, [safePage, queryState.page, totalPages, pathname, router, searchParams]);
 
   // Dynamic start and end range calculations
-  const start = total === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1;
-  const end = total === 0 ? 0 : Math.min(safePage * PAGE_SIZE, total);
+  const start = total === 0 ? 0 : (safePage - 1) * effectivePageSize + 1;
+  const end = total === 0 ? 0 : Math.min(safePage * effectivePageSize, total);
 
   // Paginated subset of records
-  const paginated = paginateEnquiries(sorted, safePage, PAGE_SIZE);
+  const paginated = paginateEnquiries(sorted, safePage, effectivePageSize);
 
   // Toggle received date sorting
   const handleToggleSort = () => {
@@ -206,8 +230,6 @@ export function EnquiriesWorkspace({ isLoading = false, basePath }: EnquiriesWor
   };
 
   const activeTab = searchParams.get("tab") === "history" ? "history" : "new";
-
-  const isClient = basePath?.startsWith("/client") || pathname.startsWith("/client");
 
   return (
     <div className={`${styles.workspace} enquiriesWorkspaceRoot`}>
@@ -259,6 +281,9 @@ export function EnquiriesWorkspace({ isLoading = false, basePath }: EnquiriesWor
         >
           <ClockDuotoneIcon size={16} className={styles.tabIcon} />
           <span>History</span>
+          {isClient && historyTabCount > 0 && (
+            <span className={styles.countBadge}>{historyTabCount}</span>
+          )}
         </button>
       </div>
 
@@ -274,7 +299,7 @@ export function EnquiriesWorkspace({ isLoading = false, basePath }: EnquiriesWor
               <div>{isClient ? "Next Step" : "Next Action"}</div>
               <div>{isClient ? "Submitted" : "Received"}</div>
               <div className={styles.budgetHeader}>Budget</div>
-              <div>Project Type</div>
+              <div>{isClient ? "Status" : "Project Type"}</div>
               <div className={styles.actionsHeader}>Actions</div>
             </div>
             <div className={styles.tableBody}>
@@ -307,8 +332,8 @@ export function EnquiriesWorkspace({ isLoading = false, basePath }: EnquiriesWor
         ) : paginated.length > 0 ? (
           <>
             {/* Desktop/Tablet Grid View */}
-            <div className={styles.tableWrapper} role="grid" aria-label="Enquiries List">
-              <div className={styles.tableHeader} role="row">
+            <div className={isClient ? styles.tableWrapperClient : styles.tableWrapper} role="grid" aria-label="Enquiries List">
+              <div className={isClient ? styles.tableHeaderClient : styles.tableHeader} role="row">
                 <div role="columnheader">{isClient ? "Project / Enquiry" : "Enquiry"}</div>
                 <div role="columnheader">{isClient ? "Next Step" : "Next Action"}</div>
                 <div role="columnheader">
@@ -316,7 +341,7 @@ export function EnquiriesWorkspace({ isLoading = false, basePath }: EnquiriesWor
                     type="button"
                     aria-label={`Sort enquiries by ${isClient ? "submission" : "received"} date`}
                     aria-pressed={queryState.sort === "received_asc"}
-                    className={styles.sortBtn}
+                    className={isClient ? styles.sortBtnClient : styles.sortBtn}
                     onClick={handleToggleSort}
                   >
                     <span>{isClient ? "Submitted" : "Received"}</span>
@@ -332,23 +357,26 @@ export function EnquiriesWorkspace({ isLoading = false, basePath }: EnquiriesWor
                 <div className={styles.budgetHeader} role="columnheader">
                   Budget
                 </div>
-                <div role="columnheader">Project Type</div>
+                <div role="columnheader">{isClient ? "Status" : "Project Type"}</div>
                 <div className={styles.actionsHeader} role="columnheader">
                   Actions
                 </div>
               </div>
 
-              <div className={styles.tableBody}>
-                {paginated.map((enquiry: EnquiryRecord) => (
+              <div className={isClient ? styles.tableBodyClient : styles.tableBody}>
+                {paginated.map((enquiry: EnquiryRecord, idx: number) => (
                   <EnquiryTableRow
                     key={enquiry.id}
                     enquiry={enquiry}
                     now={FIXED_NOW}
                     basePath={effectiveBasePath}
+                    isClient={isClient}
+                    isLast={idx === paginated.length - 1}
                   />
                 ))}
               </div>
             </div>
+
 
             {/* Mobile Stacked list view */}
             <div className={styles.mobileList} role="list">

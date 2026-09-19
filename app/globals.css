@@ -1394,6 +1394,11 @@ textarea:focus-visible {
   flex-direction: column;
 }
 
+.workspace.enquiries-route-workspace > .workspace-container.enquiries-page-container {
+  height: 100%;
+  flex: 1 1 auto;
+}
+
 /* Workers page: own split-column scroll layout with sticky Odin panel */
 .workspace-container.hands-page-container:has(.hands-workers-workspace-root) {
   height: 100%;

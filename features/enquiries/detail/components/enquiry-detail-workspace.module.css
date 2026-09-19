@@ -35,6 +35,145 @@
   border: 1px solid #fca5a5;
 }
 
+/* ─── Client Status Banner ───────────────────────────────── */
+.clientBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-radius: 10px;
+  margin: 0 0 16px 0;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.clientBannerRevision {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+}
+
+.clientBannerProposal {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+}
+
+.clientBannerSent {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.clientBannerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.clientBannerIconWrap {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.iconWrapOrange {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.iconWrapBlue {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.iconWrapSlate {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.clientBannerTitle {
+  font-size: 13.5px;
+  font-weight: 750;
+  line-height: 1.25;
+}
+
+.clientBannerDesc {
+  font-size: 12px;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.clientBannerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bannerPrimaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 6px;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btnOrange {
+  background: #c2410c;
+  color: #ffffff;
+}
+
+.btnOrange:hover {
+  background: #9a3412;
+}
+
+.btnBlue {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.btnBlue:hover {
+  background: #0369a1;
+}
+
+.bannerSecondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: #ffffff;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btnSecOrange {
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+}
+
+.btnSecOrange:hover {
+  background: #fff7ed;
+}
+
+.btnSecBlue {
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.btnSecBlue:hover {
+  background: #f0f9ff;
+}
+
+
 /* ─── Enquiry Workspace Container Query Architecture ─────── */
 :global(.project-dashboard-page) {
   height: 100%;
@@ -81,8 +220,8 @@
   min-width: 0;
   min-height: 0;
   height: 100%;
-  display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 
@@ -99,7 +238,7 @@
 .mainScrollArea {
   min-width: 0;
   min-height: 0;
-  height: 100%;
+  flex: 1 1 0%;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -6528,5 +6667,184 @@
   }
 }
 
+/* Client Portal full-width Sent banner (no side stroke, full width) */
+.clientFullWidthSentBanner {
+  width: 100%;
+  margin: 0;
+  padding: 16px 24px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  border-left: none !important;
+  border-right: none !important;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: #475569;
+}
 
+/* Client Portal specific status banner (full width, no side stroke) */
+.clientBanner {
+  width: 100%;
+  margin: 0 0 14px 0;
+  padding: 14px 20px;
+  border-radius: 0;
+  border-left: none !important;
+  border-right: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
 
+.clientBannerRevision {
+  background: #fffbeb;
+  border-top: 1px solid #fef3c7;
+  border-bottom: 1px solid #fef3c7;
+  border-left: none !important;
+  border-right: none !important;
+  color: #92400e;
+}
+
+.clientBannerProposal {
+  background: #eff6ff;
+  border-top: 1px solid #dbeafe;
+  border-bottom: 1px solid #dbeafe;
+  border-left: none !important;
+  border-right: none !important;
+  color: #1e40af;
+}
+
+.clientBannerSent {
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  border-left: none !important;
+  border-right: none !important;
+  color: #475569;
+}
+
+.clientBannerDeclined {
+  background: #fff1f2;
+  border-top: 1px solid #fecdd3;
+  border-bottom: 1px solid #fecdd3;
+  border-left: none !important;
+  border-right: none !important;
+  color: #9f1239;
+}
+
+.clientBannerExpired {
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  border-left: none !important;
+  border-right: none !important;
+  color: #475569;
+}
+
+.clientBannerRejected {
+  background: #fef2f2;
+  border-top: 1px solid #fee2e2;
+  border-bottom: 1px solid #fee2e2;
+  border-left: none !important;
+  border-right: none !important;
+  color: #991b1b;
+}
+
+.declineReasonBox {
+  margin-top: 8px;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: #881337;
+  line-height: 1.45;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.clientBannerContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex: 1;
+  min-width: 260px;
+}
+
+.clientBannerIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.clientBannerTitle {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.clientBannerDesc {
+  font-size: 13px;
+  line-height: 1.4;
+  opacity: 0.9;
+}
+
+.clientBannerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.clientPrimaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.clientPrimaryBtn:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+}
+
+.clientSecondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.clientSecondaryBtn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}

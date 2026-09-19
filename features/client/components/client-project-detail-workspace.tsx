@@ -7,6 +7,7 @@ import { ProjectOverviewCard } from "@/features/documents/components/project-ove
 import { useProjectDashboardLayout } from "@/features/documents/hooks/use-project-dashboard-layout";
 import { useDrawerBehaviour } from "@/features/hands/components/use-drawer-behaviour";
 import { ClientServiceProviderCard } from "./client-service-provider-card";
+import { getCreatedProjects, type CreatedProject } from "../services/accepted-projects-store";
 
 interface ClientProjectDetailWorkspaceProps {
   projectId: string;
@@ -31,6 +32,7 @@ interface ProjectDetailPreset {
   budget: string;
   client: string;
   leadProvider: string;
+  isConstructionNotStarted?: boolean;
 }
 
 const PRESET_PROJECTS: Record<string, ProjectDetailPreset> = {
@@ -93,7 +95,58 @@ const PRESET_PROJECTS: Record<string, ProjectDetailPreset> = {
 
 export function ClientProjectDetailWorkspace({ projectId }: ClientProjectDetailWorkspaceProps) {
   const router = useRouter();
-  const projectPreset = PRESET_PROJECTS[projectId] || PRESET_PROJECTS["proj-nila-residence"];
+
+  const [createdProjects, setCreatedProjects] = useState<CreatedProject[]>([]);
+
+  useEffect(() => {
+    setCreatedProjects(getCreatedProjects());
+  }, []);
+
+  const matchedCreated = createdProjects.find(
+    (cp) => cp.id === projectId || cp.id.toLowerCase() === projectId.toLowerCase()
+  );
+
+  const isCreatedProject =
+    Boolean(matchedCreated) ||
+    projectId.startsWith("enq-") ||
+    projectId.startsWith("cp-") ||
+    (!PRESET_PROJECTS[projectId] && projectId.includes("-"));
+
+  const projectPreset: ProjectDetailPreset = matchedCreated
+    ? {
+        name: matchedCreated.title,
+        description: `${matchedCreated.clientName || "Client"} project accepted on ${new Date(
+          matchedCreated.acceptedAt || Date.now()
+        ).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })}. Proposal accepted; pre-construction planning, site survey, and initial design phase in progress.`,
+        projectType: matchedCreated.projectType || "Residential Design",
+        duration: "Within 6 Months",
+        builtUpArea: "3,500 sq ft",
+        budget: matchedCreated.budget || "₹1,20,00,000",
+        client: matchedCreated.clientName || "Ananya Builders",
+        leadProvider: matchedCreated.providerName || "Kallisto Studio",
+        isConstructionNotStarted: true,
+      }
+    : isCreatedProject
+    ? {
+        name: projectId
+          .split("-")
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(" "),
+        description:
+          "Newly created project from accepted client proposal. Pre-construction requirement review, space planning, and architectural coordination in progress.",
+        projectType: "Residential Design",
+        duration: "Within 6 Months",
+        builtUpArea: "3,500 sq ft",
+        budget: "₹1,20,00,000",
+        client: "Ananya Builders",
+        leadProvider: "Kallisto Studio",
+        isConstructionNotStarted: true,
+      }
+    : PRESET_PROJECTS[projectId] || PRESET_PROJECTS["proj-nila-residence"];
 
   const [updatesOpen, setUpdatesOpen] = useState(false);
   const updatesPanelRef = useRef<HTMLDivElement>(null);
@@ -119,6 +172,7 @@ export function ClientProjectDetailWorkspace({ projectId }: ClientProjectDetailW
       <ProjectOverviewCard
         projectId={projectId}
         isClient={true}
+        isConstructionNotStarted={projectPreset.isConstructionNotStarted}
         dashboardRef={dashboardRef}
         layoutMode={updatesMode}
         updatesOpen={updatesOpen}
@@ -129,6 +183,7 @@ export function ClientProjectDetailWorkspace({ projectId }: ClientProjectDetailW
         onOpenUpdates={() => setUpdatesOpen(true)}
         projectName={projectPreset.name}
         description={projectPreset.description}
+        projectStatus={projectPreset.isConstructionNotStarted ? "Pre-Construction" : undefined}
         statValues={{
           projectType: projectPreset.projectType,
           duration: projectPreset.duration,

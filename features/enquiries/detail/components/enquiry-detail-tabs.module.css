@@ -3,6 +3,7 @@
   border-bottom: 1px solid var(--line, #e2e8f0);
   background: transparent;
   margin-bottom: 20px;
+  flex-shrink: 0;
 }
 
 .tabList {

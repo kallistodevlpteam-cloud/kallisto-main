@@ -8,7 +8,7 @@ import { EnquiryRecord, NextActionType, PROJECT_TYPE_LABELS } from "../types/enq
 import { formatEnquiryBudgetRange } from "../utils/format-enquiry-budget";
 import { formatEnquiryDate, formatNextActionMeta } from "../utils/format-enquiry-date";
 import { getEnquiryDetailPath } from "../utils/enquiry-query-state";
-import { getEnquiryProviderDisplay } from "./enquiry-table-row";
+import { getEnquiryProviderDisplay, getClientEnquiryStatus } from "./enquiry-table-row";
 import styles from "./enquiries-workspace.module.css";
 
 interface MobileCardProps {
@@ -113,8 +113,16 @@ export function EnquiryMobileCard({ enquiry, now, basePath }: MobileCardProps) {
   const router = useRouter();
   const isClient = Boolean(basePath?.startsWith("/client"));
 
+  const clientStatus = getClientEnquiryStatus(enquiry);
+
   const nextActionPresentation = isClient
-    ? (CLIENT_NEXT_ACTION_CONFIG[enquiry.nextAction.type] ?? PROVIDER_NEXT_ACTION_CONFIG[enquiry.nextAction.type])
+    ? clientStatus.label === "Declined"
+      ? { label: "Specialist Declined", icon: XCircle, tone: "red" }
+      : clientStatus.label === "Expired"
+      ? { label: "Response Window Expired", icon: XCircle, tone: "red" }
+      : clientStatus.label === "Rejected"
+      ? { label: "Proposal Rejected", icon: XCircle, tone: "red" }
+      : (CLIENT_NEXT_ACTION_CONFIG[enquiry.nextAction.type] ?? PROVIDER_NEXT_ACTION_CONFIG[enquiry.nextAction.type])
     : PROVIDER_NEXT_ACTION_CONFIG[enquiry.nextAction.type];
   const IconComponent = nextActionPresentation.icon;
 
@@ -212,7 +220,12 @@ export function EnquiryMobileCard({ enquiry, now, basePath }: MobileCardProps) {
         <div className={styles.mobileTitleWrap}>
           <div className={styles.titleRow}>
             <span className={styles.mobileTitle}>{enquiry.title}</span>
-            {enquiry.isNew && <span className={styles.newBadge}>New</span>}
+            {isClient && (
+              <span className={styles.projectTypeInlineTag}>
+                {PROJECT_TYPE_LABELS[enquiry.projectType] || "Residential"}
+              </span>
+            )}
+            {!isClient && enquiry.isNew && <span className={styles.newBadge}>New</span>}
           </div>
           <span className={styles.mobileClientText}>
             {subtitleText}
@@ -222,12 +235,32 @@ export function EnquiryMobileCard({ enquiry, now, basePath }: MobileCardProps) {
 
       {/* Badges & Meta Grid */}
       <div className={styles.mobileBody}>
-        {/* Project Type Badge */}
+        {/* Project Type or Status Badge */}
         <div className={styles.mobileMetaRow}>
-          <span className={styles.mobileMetaLabel}>Project Type</span>
-          <span className={`${styles.badge} ${getProjectTypeBadgeClass(enquiry.projectType)}`}>
-            {PROJECT_TYPE_LABELS[enquiry.projectType]}
-          </span>
+          <span className={styles.mobileMetaLabel}>{isClient ? "Status" : "Project Type"}</span>
+          {isClient ? (
+            <span
+              className={`${styles.clientStatusBadge} ${
+                getClientEnquiryStatus(enquiry).tone === "green"
+                  ? styles.clientStatusGreen
+                  : getClientEnquiryStatus(enquiry).tone === "orange"
+                  ? styles.clientStatusOrange
+                  : getClientEnquiryStatus(enquiry).tone === "purple"
+                  ? styles.clientStatusPurple
+                  : getClientEnquiryStatus(enquiry).tone === "red"
+                  ? styles.clientStatusRed
+                  : getClientEnquiryStatus(enquiry).tone === "slate"
+                  ? styles.clientStatusSlate
+                  : styles.clientStatusBlue
+              }`}
+            >
+              {getClientEnquiryStatus(enquiry).label}
+            </span>
+          ) : (
+            <span className={`${styles.badge} ${getProjectTypeBadgeClass(enquiry.projectType)}`}>
+              {PROJECT_TYPE_LABELS[enquiry.projectType]}
+            </span>
+          )}
         </div>
 
         {/* Next Action */}

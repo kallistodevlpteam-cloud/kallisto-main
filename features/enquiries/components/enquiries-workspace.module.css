@@ -10,6 +10,7 @@
   grid-template-rows: auto auto auto minmax(0, 1fr) auto;
   height: 100%;
   min-height: 0;
+  flex: 1 1 auto;
   overflow: hidden;
   gap: 0;
   width: 100%;
@@ -709,6 +710,264 @@
   border-radius: 10px;
 }
 
+/* ── Client view: reference payments-style flat table (no outer border, divider rows, precise typography) ── */
+.tableWrapperClient {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 0;
+}
+
+@media (max-width: 768px) {
+  .tableWrapperClient {
+    display: none;
+  }
+}
+
+.tableHeaderClient {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #f8fafc;
+  display: grid;
+  grid-template-columns: var(--enquiry-columns);
+  align-items: center;
+  padding: 10px 16px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 650;
+  color: #475569;
+  min-height: 40px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tableHeaderClient > div,
+.tableHeaderClient > th {
+  background-color: #f8fafc;
+  color: #475569;
+  font-weight: 650;
+}
+
+.sortBtnClient {
+  background: none;
+  border: none;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 650;
+  color: #475569;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0;
+  margin: 0;
+  transition: color 0.15s ease;
+}
+
+.sortBtnClient:hover {
+  color: #0f172a;
+}
+
+.tableBodyClient {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+}
+
+.tableRowClient {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: var(--enquiry-columns);
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  border-radius: 0;
+  background-color: #ffffff;
+  transition: background-color 150ms ease;
+  min-height: 62px;
+  cursor: pointer;
+}
+
+.tableRowClient:last-child {
+  border-bottom: none;
+}
+
+.tableRowClient:hover {
+  background-color: #f8fafc;
+}
+
+/* Specific typography & components matching the reference design */
+.tableRowClient .enquiryTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+.tableRowClient .clientText {
+  font-size: 11.5px;
+  color: #64748b;
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+.tableRowClient .actionLabel {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #334155;
+}
+
+.tableRowClient .dateText {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.tableRowClient .budgetVal {
+  font-size: 13.5px;
+  font-weight: 750;
+  color: #0f172a;
+}
+
+.tableRowClient .badge {
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  height: 22px;
+  min-height: 22px;
+  padding: 2px 9px;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tableRowClient .badgeResidential {
+  background-color: #eff6ff;
+  color: #2563eb;
+  border-color: rgba(37, 99, 235, 0.2);
+}
+
+.tableRowClient .badgeCommercial {
+  background-color: #f3e8ff;
+  color: #7e22ce;
+  border-color: rgba(126, 34, 206, 0.2);
+}
+
+.tableRowClient .badgeHospitality {
+  background-color: #fff7ed;
+  color: #c2410c;
+  border-color: rgba(194, 65, 12, 0.2);
+}
+
+.tableRowClient .badgeMultifamily {
+  background-color: #ecfeff;
+  color: #0891b2;
+  border-color: rgba(8, 145, 178, 0.2);
+}
+
+.tableRowClient .badgeLandscape {
+  background-color: #f0fdf4;
+  color: #15803d;
+  border-color: rgba(21, 128, 61, 0.2);
+}
+
+.tableRowClient .badgeRetail {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border-color: rgba(185, 28, 28, 0.2);
+}
+
+.tableRowClient .moreActionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.tableRowClient .moreActionBtn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+/* Inline project type tag next to the project name in Client view */
+.projectTypeInlineTag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Client status badges in the Status column (matching reference status pills) */
+.clientStatusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  min-height: 24px;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.clientStatusBlue {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid rgba(29, 78, 216, 0.2);
+}
+
+.clientStatusOrange {
+  background-color: #fffbeb;
+  color: #b45309;
+  border: 1px solid rgba(180, 83, 9, 0.2);
+}
+
+.clientStatusSlate {
+  background-color: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.clientStatusGreen {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid rgba(4, 120, 87, 0.2);
+}
+
+.clientStatusRed {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid rgba(185, 28, 28, 0.2);
+}
+
+.clientStatusPurple {
+  background-color: #faf5ff;
+  color: #7e22ce;
+  border: 1px solid rgba(126, 34, 206, 0.2);
+}
+
+
 /* Enquiry Column Details */
 .enquiryCol {
   display: flex;
@@ -987,33 +1246,69 @@
   outline-offset: 2px;
 }
 
+.moreActionWrapOpen {
+  z-index: 60;
+}
+
 .actionsMenu {
   position: absolute;
   right: 0;
   top: calc(100% + 4px);
   z-index: 50;
-  min-width: 130px;
+  min-width: 155px;
   padding: 4px;
   background-color: #ffffff;
   border: 1px solid var(--line, #e2e8f0);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.actionsMenuDropup,
+.tableRowClient:last-child .actionsMenu {
+  top: auto;
+  bottom: calc(100% + 4px);
+  box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.1);
+  z-index: 60;
 }
 
 .menuItem {
   display: flex;
   align-items: center;
+  gap: 8px;
   width: 100%;
-  padding: 6px 12px;
-  font-size: 13px;
+  padding: 7px 10px;
+  font-size: 12.5px;
+  font-weight: 500;
   color: var(--ink, #0f172a);
   text-decoration: none;
-  border-radius: 4px;
-  transition: background-color 0.15s ease;
+  border-radius: 5px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 
 .menuItem:hover {
   background-color: var(--surface-subtle, #f8fafc);
+  color: var(--ink, #0f172a);
+}
+
+.menuItemDanger {
+  color: #dc2626;
+}
+
+.menuItemDanger:hover {
+  background-color: #fef2f2;
+  color: #b91c1c;
+}
+
+.menuDivider {
+  height: 1px;
+  background-color: #f1f5f9;
+  margin: 4px 0;
 }
 
 /* Pagination Bar at Bottom */
@@ -1024,6 +1319,7 @@
   padding: 10px 16px;
   min-height: 48px;
   background-color: var(--surface, #ffffff);
+  margin-top: auto;
 }
 
 .paginationText {

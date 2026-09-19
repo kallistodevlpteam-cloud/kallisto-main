@@ -15,7 +15,12 @@ export function MainWorkspace({ children, className }: MainWorkspaceProps) {
   } catch {
     pathname = "";
   }
-  const isEnquiries = typeof pathname === "string" && (pathname === "/enquiries" || pathname.startsWith("/enquiries"));
+  const isEnquiries =
+    typeof pathname === "string" &&
+    (pathname === "/enquiries" ||
+      pathname.startsWith("/enquiries") ||
+      pathname === "/client/enquiries" ||
+      pathname.startsWith("/client/enquiries"));
   const isBasicsRoute = typeof pathname === "string" && (pathname === "/basics" || pathname.startsWith("/basics"));
   const isHandsRoute = typeof pathname === "string" && (pathname === "/hands" || pathname.startsWith("/hands"));
 

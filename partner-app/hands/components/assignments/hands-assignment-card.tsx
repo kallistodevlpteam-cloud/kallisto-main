@@ -145,13 +145,6 @@ export function HandsAssignmentCard({
           icon: HealthCheckDuotoneIcon,
           defaultMsg: "All workers deployed and attendance reported.",
         };
-      case "attention_required":
-        return {
-          label: "ATTENTION REQUIRED",
-          boxClass: styles.healthBoxAttention,
-          icon: HealthWarningDuotoneIcon,
-          defaultMsg: "Workers not marked or attendance pending.",
-        };
       case "at_risk":
         return {
           label: "AT RISK",

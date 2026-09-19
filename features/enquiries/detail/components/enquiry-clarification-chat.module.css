@@ -1,0 +1,406 @@
+/* ─── Enquiry Clarification Chat ─────────────────────────────────────── */
+.chatCard {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03);
+  width: 100%;
+}
+
+.chatHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 20px 14px 20px;
+  background: #ffffff;
+  border-bottom: none;
+}
+
+.chatHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chatHeaderIcon {
+  color: var(--ink, #0f172a);
+}
+
+.chatTitle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink, #0f172a);
+}
+
+.chatStatusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.badgeOrange {
+  background: transparent;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
+}
+
+.badgeGreen {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.badgeBlue {
+  background: #f0f9ff;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+/* ─── Messages List ──────────────────────────────────────────────────── */
+.messagesList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px;
+  max-height: 300px;
+  min-height: 120px;
+  overflow-y: auto;
+  background: #ffffff;
+}
+
+.messagesList::-webkit-scrollbar {
+  width: 4px;
+}
+
+.messagesList::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 12px;
+  text-align: center;
+  color: var(--muted, #64748b);
+  font-size: 12.5px;
+  gap: 4px;
+}
+
+.emptyStateTitle {
+  font-weight: 600;
+  color: var(--ink, #0f172a);
+  font-size: 13px;
+}
+
+/* ─── Individual Message Turns ───────────────────────────────────────── */
+.messageTurn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 90%;
+}
+
+.messageTurnMe {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.messageTurnThem {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.messageMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted, #64748b);
+  padding: 0 2px 4px 2px;
+}
+
+.senderAvatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid #cbd5e1;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.clientAvatarInitials {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.messageSender {
+  font-weight: 600;
+  color: var(--ink, #0f172a);
+  font-size: 12.5px;
+}
+
+.metaDot {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.metaTime {
+  color: #64748b;
+  font-size: 11.5px;
+}
+
+.messageBubble {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.bubbleThem {
+  background: transparent;
+  color: #1e293b;
+  border: none;
+  box-shadow: none;
+  padding: 4px 0;
+}
+
+.bubbleMe {
+  background: #f1f5f9;
+  color: #0f172a;
+  border: none;
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+/* Attachments inside bubble */
+.attachmentsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.attachmentItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid var(--line, #e2e8f0);
+  box-shadow: none;
+}
+
+.attachmentItemMe {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #f8fafc;
+}
+
+/* System Notice */
+.systemNotice {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  font-size: 11.5px;
+  color: #475569;
+  text-align: center;
+  margin: 4px 0;
+}
+
+.proposalNotice {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+  font-weight: 500;
+}
+
+/* ─── Proposal Ready Action Banner ──────────────────────────────────── */
+.proposalActionBanner {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #f0fdf4;
+  border-top: 1px solid #bbf7d0;
+  border-bottom: 1px solid #bbf7d0;
+}
+
+.proposalActionText {
+  font-size: 12px;
+  color: #166534;
+  line-height: 1.4;
+}
+
+.sendProposalBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #15803d;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.sendProposalBtn:hover {
+  background: #166534;
+}
+
+/* ─── Capsule Composer Bar (Matching Reference Design) ──────────────── */
+.capsuleComposerForm {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 20px 20px 20px;
+  background: transparent;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pendingAttachmentRow {
+  padding: 0 8px;
+}
+
+.capsuleComposerBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border-radius: 9999px;
+  padding: 5px 6px 5px 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.capsulePlusBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.capsulePlusBtn:hover {
+  color: #0f172a;
+}
+
+.capsuleInput {
+  flex: 1;
+  border: none !important;
+  outline: none !important;
+  background: transparent;
+  font-size: 13.5px;
+  color: #0f172a;
+  font-family: inherit;
+  padding: 6px 0;
+  box-shadow: none !important;
+  min-width: 0;
+}
+
+.capsuleInput::placeholder {
+  color: #94a3b8;
+}
+
+.capsuleInput:focus,
+.capsuleInput:focus-visible {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.capsuleMicBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0 4px;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.capsuleMicBtn:hover {
+  color: #475569;
+}
+
+.capsuleSendBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #18181b;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.capsuleSendBtn:hover:not(:disabled) {
+  background: #0f172a;
+  transform: scale(1.04);
+}
+
+.capsuleSendBtn:disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.pendingAttachmentBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #e2e8f0;
+  font-size: 11px;
+  color: #334155;
+}

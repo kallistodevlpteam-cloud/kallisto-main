@@ -55,7 +55,7 @@ export function AssignmentActivitiesPanel({
       },
       supervisor: resolvedSupervisorName,
       dailyCost: assignment?.accounts?.dailyBillingRate || 14200,
-      status: (assignment?.health === "attention_required" ? "Needs attention" : "Active") as DeploymentStatus,
+      status: (assignment?.health === "at_risk" ? "Needs attention" : "Active") as DeploymentStatus,
       startDate: assignment?.startDate || "Sep 05",
       endDate: assignment?.endDate || "Oct 05",
       coverImage: assignment?.coverImage,

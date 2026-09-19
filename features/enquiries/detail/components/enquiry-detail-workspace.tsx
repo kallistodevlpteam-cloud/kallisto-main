@@ -43,6 +43,8 @@ import {
   X,
   Banknote,
   TrendingUp,
+  Send,
+  Download,
 } from "lucide-react";
 import {
   MapPinDuotoneIcon,
@@ -76,10 +78,16 @@ import { EnquiryProjectScopeSection } from "./enquiry-project-scope-section";
 import { EnquirySiteImagesCard } from "./enquiry-site-images-card";
 import { EnquiryProjectDocumentsSection } from "./enquiry-project-documents-section";
 import { EnquiryClarificationComposer } from "./enquiry-clarification-composer";
+import { EnquiryClarificationChat } from "./enquiry-clarification-chat";
 import { EnquiryDetailTabs, EnquiryTabKey, resolveValidTabKey } from "./enquiry-detail-tabs";
 import { OdinInsightsPanel } from "./odin-insights-panel";
 import { deriveContextualOdinInsights } from "@/features/enquiries/services/enquiry-intelligence";
 import { authedFetch } from "@/lib/auth/authed-fetch";
+import { CLIENT_PORTAL_ENQUIRIES, updateClientPortalEnquiry } from "@/features/enquiries/services/client-enquiries.mock";
+import { getClientEnquiryStatus, getEnquiryProviderDisplay } from "@/features/enquiries/components/enquiry-table-row";
+import { ClientProposalModal } from "./client-proposal-modal";
+import { ClientEnquiryActionsPanel } from "./client-enquiry-actions-panel";
+import { recordAcceptedProject, notifyCreatedProjectsChanged } from "@/features/client/services/accepted-projects-store";
 
 export function EnquiryDetailSkeleton() {
   return (
@@ -595,15 +603,56 @@ export function GenericDomainScheduleTable({
 
 export function EnquiryDetailWorkspace({
   enquiryId = "enq-2026-0486",
+  isClient: isClientProp,
 }: {
   enquiryId?: string;
+  isClient?: boolean;
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  const [enquiry, setEnquiry] = useState<EnquiryRecord>(DEFAULT_ENQUIRY_RECORD);
-  const [stage, setStage] = useState<EnquiryStage>(DEFAULT_ENQUIRY_RECORD.stage || "new");
+  const isClient = isClientProp ?? (pathname?.startsWith("/client") ?? false);
+  const [userOpenedProposal, setUserOpenedProposal] = useState<boolean | null>(null);
+  const [proposalModalMode, setProposalModalMode] = useState<"proposal" | "revision">("proposal");
+  const showProposalModal =
+    userOpenedProposal !== null
+      ? userOpenedProposal
+      : searchParams.get("tab") === "proposal";
+  const setShowProposalModal = (val: boolean) => setUserOpenedProposal(val);
+  const handleOpenProposal = () => {
+    setProposalModalMode("proposal");
+    setShowProposalModal(true);
+  };
+  const handleOpenRevision = () => {
+    setProposalModalMode("revision");
+    setShowProposalModal(true);
+  };
+
+  const [enquiry, setEnquiry] = useState<EnquiryRecord>(() => {
+    if (isClient) {
+      const found = CLIENT_PORTAL_ENQUIRIES.find(
+        (r) =>
+          r.id === enquiryId ||
+          r.id === `prj-${enquiryId}` ||
+          r.id.replace("prj-", "") === enquiryId
+      );
+      if (found) return found;
+    }
+    return DEFAULT_ENQUIRY_RECORD;
+  });
+  const [stage, setStage] = useState<EnquiryStage>(() => {
+    if (isClient) {
+      const found = CLIENT_PORTAL_ENQUIRIES.find(
+        (r) =>
+          r.id === enquiryId ||
+          r.id === `prj-${enquiryId}` ||
+          r.id.replace("prj-", "") === enquiryId
+      );
+      if (found?.stage) return found.stage;
+    }
+    return DEFAULT_ENQUIRY_RECORD.stage || "new";
+  });
   const [selectedRequirementId, setSelectedRequirementId] = useState<string | null>(null);
   const [activeDomainKey, setActiveDomainKey] = useState<string>("room_programme");
   const [expandedRoomIds, setExpandedRoomIds] = useState<Record<string, boolean>>({});
@@ -671,6 +720,15 @@ export function EnquiryDetailWorkspace({
 
   useEffect(() => {
     let cancelled = false;
+    const clientRecord = isClient
+      ? CLIENT_PORTAL_ENQUIRIES.find(
+          (r) =>
+            r.id === enquiryId ||
+            r.id === `prj-${enquiryId}` ||
+            r.id.replace("prj-", "") === enquiryId
+        )
+      : null;
+
     authedFetch("/api/projects?character=enq", { cache: "no-store" })
       .then(async (response: Response) => {
         const payload = (await response.json()) as {
@@ -690,21 +748,119 @@ export function EnquiryDetailWorkspace({
         return match ?? null;
       })
       .then((match: EnquiryRecord | null) => {
-        if (cancelled || !match) return;
-        setEnquiry(match);
-        if (match.stage) setStage(match.stage);
+        if (cancelled) return;
+        if (match) {
+          if (clientRecord) {
+            setEnquiry({
+              ...match,
+              clientStatus: clientRecord.clientStatus ?? match.clientStatus,
+              stage: clientRecord.stage ?? match.stage,
+              declineReason: clientRecord.declineReason ?? match.declineReason,
+              expiredAt: clientRecord.expiredAt ?? match.expiredAt,
+            });
+            if (clientRecord.stage) setStage(clientRecord.stage);
+          } else {
+            setEnquiry(match);
+            if (match.stage) setStage(match.stage);
+          }
+        } else if (clientRecord) {
+          setEnquiry(clientRecord);
+          if (clientRecord.stage) setStage(clientRecord.stage);
+        }
       })
-      .catch(() => {});
+      .catch(() => {
+        if (clientRecord && !cancelled) {
+          setEnquiry(clientRecord);
+          if (clientRecord.stage) setStage(clientRecord.stage);
+        }
+      });
     return () => {
       cancelled = true;
     };
-  }, [enquiryId]);
+  }, [enquiryId, isClient]);
 
   useEffect(() => {
     if (enquiry.stage) {
       setStage(enquiry.stage);
     }
   }, [enquiry]);
+
+  const clientStatus = getClientEnquiryStatus(enquiry);
+
+  const handleDownloadProposal = () => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      alert("Please allow popups to download the proposal PDF.");
+      return;
+    }
+    const pName = enquiry.title || "Project";
+    const cName = enquiry.clientName || "Client";
+    const loc = enquiry.location || "Kerala";
+    const bgt = enquiry.budget || "₹95L";
+    const tline = enquiry.timeline || "10 months";
+    const ver = clientStatus.label === "Revision Requested" ? "V02" : "V01";
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${pName} - Proposal ${ver}</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 40px; color: #0f172a; line-height: 1.6; }
+            h1 { font-size: 24px; margin-bottom: 4px; }
+            .meta { color: #64748b; font-size: 13px; margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; }
+            .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; background: #f8fafc; padding: 12px; border-radius: 6px; }
+            .label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold; }
+            .val { font-size: 14px; font-weight: 600; }
+            h2 { font-size: 16px; margin-top: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+            th, td { padding: 10px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+            th { background: #f8fafc; }
+            .total { font-weight: bold; background: #f1f5f9; }
+          </style>
+        </head>
+        <body>
+          <h1>${pName} — Official Proposal (${ver})</h1>
+          <div class="meta">Submitted by Kallisto Studio Architects • Date: ${new Date().toLocaleDateString("en-IN")}</div>
+          <div class="grid">
+            <div><div class="label">Project</div><div class="val">${pName}</div></div>
+            <div><div class="label">Client</div><div class="val">${cName}</div></div>
+            <div><div class="label">Location</div><div class="val">${loc}</div></div>
+            <div><div class="label">Budget Target</div><div class="val">${bgt}</div></div>
+          </div>
+          <h2>1. Executive Summary</h2>
+          <p>Kallisto is pleased to submit this comprehensive architectural and execution proposal for <strong>${pName}</strong> on behalf of <strong>${cName}</strong> in ${loc}.</p>
+          <h2>2. Scope & Deliverables</h2>
+          <ul>
+            <li>Architectural & Layout Planning (2D floorplans, spatial zoning, cross-ventilation design)</li>
+            <li>3D Visualisations & Daylight Diffusion Studies</li>
+            <li>Material Specifications (Earth wall compositions, natural stone, certified terracotta roofing)</li>
+            <li>Itemised BOQ Takeoff with unit rates and scheduled phase allocations</li>
+            <li>On-site supervision and quality assurance by certified Kallisto engineers</li>
+          </ul>
+          <h2>3. Commercials & Terms</h2>
+          <table>
+            <thead><tr><th>Item / Description</th><th>Amount (Estimated)</th></tr></thead>
+            <tbody>
+              <tr><td>Design, Architecture & Engineering Documentation</td><td>₹12,00,000</td></tr>
+              <tr><td>Civil, Superstructure & Rammed Earth Construction</td><td>₹52,00,000</td></tr>
+              <tr><td>Interior Fit-out, Joinery & Studio Specialized Fixtures</td><td>₹23,00,000</td></tr>
+              <tr><td>MEP, Solar Conduit & Dedicated Ventilation Equipment</td><td>₹8,00,000</td></tr>
+              <tr class="total"><td>Total Estimated Contract Value</td><td>${bgt}</td></tr>
+            </tbody>
+          </table>
+          <p><strong>Payment Terms:</strong> 10% Advance on Kickoff • 30% Milestone 1 • 40% Milestone 2 • 20% Final Handover.</p>
+          <h2>4. Timeline</h2>
+          <p>Total Estimated Timeline: <strong>${tline}</strong> across 4 controlled execution phases.</p>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 400);
+  };
 
   const viewModel = buildEnquiryDetailViewModel({ enquiry, providerContext: {} });
   const { header } = viewModel;
@@ -714,7 +870,7 @@ export function EnquiryDetailWorkspace({
     setEnquiry((prev) => ({ ...prev, stage: newStage }));
   }
 
-  function handleSendClarification(msg: string) {
+  function handleSendClarification(_msg: string) {
     handleStageChange("clarification");
   }
 
@@ -757,6 +913,7 @@ export function EnquiryDetailWorkspace({
                     className="title-share-btn"
                     aria-label={`Share ${header.title}`}
                     title={`Share ${header.title}`}
+                    suppressHydrationWarning
                   >
                     <Share2 size={16} strokeWidth={1.8} />
                   </button>
@@ -800,6 +957,154 @@ export function EnquiryDetailWorkspace({
               </div>
             </div>
 
+            {/* Client Portal Status & Action Banner (full width, no side stroke) */}
+            {isClient && (
+              <div
+                className={`${styles.clientBanner} ${
+                    clientStatus.label === "Revision Requested"
+                    ? styles.clientBannerRevision
+                    : clientStatus.label === "Proposal Received"
+                    ? styles.clientBannerProposal
+                    : clientStatus.label === "Awaiting Response"
+                    ? styles.clientBannerRevision
+                    : clientStatus.label === "Declined"
+                    ? styles.clientBannerDeclined
+                    : clientStatus.label === "Expired"
+                    ? styles.clientBannerExpired
+                    : clientStatus.label === "Rejected"
+                    ? styles.clientBannerRejected
+                    : styles.clientBannerSent
+                }`}
+              >
+                <div className={styles.clientBannerContent}>
+                  <div className={styles.clientBannerIcon}>
+                    {clientStatus.label === "Revision Requested" ? (
+                      <Clock size={18} color="#d97706" />
+                    ) : clientStatus.label === "Awaiting Response" ? (
+                      <MessageSquare size={18} color="#d97706" />
+                    ) : clientStatus.label === "Proposal Received" ? (
+                      <FileText size={18} color="#2563eb" />
+                    ) : clientStatus.label === "Declined" ? (
+                      <XCircle size={18} color="#e11d48" />
+                    ) : clientStatus.label === "Expired" ? (
+                      <Clock size={18} color="#64748b" />
+                    ) : clientStatus.label === "Rejected" ? (
+                      <XCircle size={18} color="#b91c1c" />
+                    ) : (
+                      <Send size={18} color="#64748b" />
+                    )}
+                  </div>
+                  <div>
+                    <div className={styles.clientBannerTitle}>
+                      {clientStatus.label === "Revision Requested"
+                        ? "Revision Requested — Updated Proposal V02 Received"
+                        : clientStatus.label === "Proposal Received"
+                        ? "Official Proposal Received from Service Provider"
+                        : clientStatus.label === "Awaiting Response"
+                        ? "Awaiting Your Response — Service Provider Requested Clarification"
+                        : clientStatus.label === "Clarification Provided"
+                        ? "Information Provided — Preparing Proposal"
+                        : clientStatus.label === "Declined"
+                        ? "Enquiry Declined by Service Provider"
+                        : clientStatus.label === "Expired"
+                        ? "Enquiry Expired — No Response from Service Provider"
+                        : clientStatus.label === "Rejected"
+                        ? "Proposal Rejected by Client"
+                        : (stage === "clarification" || clientStatus.label === "Clarification Requested")
+                        ? "Information Requested by Service Provider"
+                        : "Enquiry Sent to Service Provider"}
+                    </div>
+                    <div className={styles.clientBannerDesc}>
+                      {clientStatus.label === "Revision Requested"
+                        ? "Service provider has replied to your clarifications and updated the proposal."
+                        : clientStatus.label === "Proposal Received"
+                        ? "Review the submitted scope, schedule, and commercials before proceeding."
+                        : clientStatus.label === "Awaiting Response"
+                        ? "The service provider has asked questions to clarify your requirements. Please reply in the messages section below to proceed with your proposal."
+                        : clientStatus.label === "Clarification Provided"
+                        ? "You have replied to the service provider. The specialist is now reviewing your answers and preparing the proposal."
+                        : clientStatus.label === "Declined"
+                        ? "The service provider was unable to take on this project."
+                        : clientStatus.label === "Expired"
+                        ? "The 14-day response window for this enquiry expired without a provider response."
+                        : clientStatus.label === "Rejected"
+                        ? "You rejected the proposal submitted by the service provider. This enquiry is closed."
+                        : (stage === "clarification" || clientStatus.label === "Clarification Requested")
+                        ? "The service provider has asked questions to clarify your requirements. Reply in the discussion below to proceed."
+                        : "Service provider has not responded yet. Will reply soon."}
+                    </div>
+                    {clientStatus.label === "Declined" && (
+                      <div className={styles.declineReasonBox}>
+                        <strong>Reason provided:</strong>
+                        <span>
+                          {enquiry.declineReason ||
+                            "Current studio team capacity is fully booked for the requested timeline and site supervision scope."}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className={styles.clientBannerActions}>
+                  {(clientStatus.label === "Proposal Received" ||
+                    clientStatus.label === "Revision Requested") && (
+                    <>
+                      <button
+                        type="button"
+                        className={styles.clientPrimaryBtn}
+                        onClick={() => setShowProposalModal(true)}
+                      >
+                        <FileText size={15} />
+                        View Proposal {clientStatus.label === "Revision Requested" ? "(V02)" : "(V01)"}
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.clientSecondaryBtn}
+                        onClick={handleDownloadProposal}
+                        title="Download Proposal PDF"
+                      >
+                        <Download size={14} />
+                        Download
+                      </button>
+                    </>
+                  )}
+
+                  {(clientStatus.label === "Awaiting Response" ||
+                    clientStatus.label === "Clarification Provided") && (
+                    <a
+                      href="#enquiry-clarification-chat"
+                      className={styles.clientPrimaryBtn}
+                    >
+                      <MessageSquare size={14} />
+                      {clientStatus.label === "Clarification Provided"
+                        ? "View Discussion"
+                        : "Reply to Questions"}
+                    </a>
+                  )}
+
+
+
+                  {clientStatus.label === "Expired" && (
+                    <Link
+                      href="/client/enquiries"
+                      className={styles.clientSecondaryBtn}
+                    >
+                      Back to Enquiries
+                    </Link>
+                  )}
+
+                  {clientStatus.label === "Rejected" && (
+                    <Link
+                      href="/client/enquiries?tab=history"
+                      className={styles.clientSecondaryBtn}
+                    >
+                      View History
+                    </Link>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Navigation Tabs */}
             <EnquiryDetailTabs activeTab={activeTab} />
 
@@ -821,7 +1126,10 @@ export function EnquiryDetailWorkspace({
                     areaCoverageStatus: viewModel.snapshot.areaCoverageStatus,
                   }}
                 />
-                <ClientPrioritiesBar priorities={viewModel.priorities} />
+                {/* —— CLIENT CONTEXT & PRIORITIES — hidden from client in Overview; shown in Client Context tab —— */}
+                {!isClient && (
+                  <ClientPrioritiesBar priorities={viewModel.priorities} />
+                )}
                 <EnquiryProjectScopeSection
                   categories={viewModel.scopeGroups.map((g, idx) => ({
                     id: `cat-${idx + 1}`,
@@ -1244,7 +1552,7 @@ export function EnquiryDetailWorkspace({
                   ))}
                 </div>
 
-                {/* —— CLIENT CONTEXT & PRIORITIES —— */}
+                {/* —— CLIENT CONTEXT & PRIORITIES — shown here for all users including client view —— */}
                 <ClientPrioritiesBar priorities={viewModel.priorities} />
 
                 {/* —— CLIENT INSPIRATION IMAGES —— */}
@@ -1286,29 +1594,116 @@ export function EnquiryDetailWorkspace({
               )}
             </div>
 
-            <div className={styles.enquiryDetailsBottom}>
-              {/* Persistent Request Clarification Block */}
-              <div className={styles.clarificationBlock} id="enquiry-clarification-composer">
-                <EnquiryClarificationComposer
-                  initialMessage={clarificationText}
-                  onMessageChange={setClarificationText}
-                  status={stage === "clarification" ? "sent" : undefined}
-                  onSend={handleSendClarification}
-                />
+            {isClient ? (
+              <div className={styles.enquiryDetailsBottom}>
+                <div className={styles.clarificationBlock} id="enquiry-clarification-chat">
+                  <EnquiryClarificationChat
+                    enquiryId={enquiry.id}
+                    isClient={true}
+                    providerName={getEnquiryProviderDisplay(enquiry)}
+                    clientName={enquiry.clientName}
+                    enquiryTitle={enquiry.title}
+                    currentStage={stage}
+                    currentClientStatus={clientStatus.label}
+                    onStageChange={handleStageChange}
+                    onClientStatusChange={(newStatus) => {
+                      setEnquiry((prev) => ({ ...prev, clientStatus: newStatus }));
+                    }}
+                    onSendProposal={() => {
+                      setStage("proposal");
+                      setEnquiry((prev) => ({
+                        ...prev,
+                        stage: "proposal",
+                        clientStatus: "Proposal Received",
+                      }));
+                    }}
+                  />
+                </div>
               </div>
+            ) : (
+              <div className={styles.enquiryDetailsBottom}>
+                {/* Persistent Request Clarification Block */}
+                <div className={styles.clarificationBlock} id="enquiry-clarification-composer">
+                  <EnquiryClarificationComposer
+                    initialMessage={clarificationText}
+                    onMessageChange={setClarificationText}
+                    status={stage === "clarification" ? "sent" : undefined}
+                    onSend={handleSendClarification}
+                  />
+                </div>
 
-              {/* Accept / Reject CTA Group */}
-              <div className={styles.ctaGroup}>
-                <EnquiryActionsCard
-                  stage={stage}
-                  onStageChange={handleStageChange}
-                  enquiry={enquiry}
-                />
+                {/* Accept / Reject CTA Group */}
+                <div className={styles.ctaGroup}>
+                  <EnquiryActionsCard
+                    stage={stage}
+                    onStageChange={handleStageChange}
+                    enquiry={enquiry}
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </aside>
         </div>
       </RoutePageContainer>
+
+      {/* Client Proposal Full Modal */}
+      {isClient && (
+        <ClientProposalModal
+          isOpen={showProposalModal}
+          onClose={() => setShowProposalModal(false)}
+          enquiry={enquiry}
+          version={clientStatus.label === "Revision Requested" ? "V02" : "V01"}
+          isRevision={clientStatus.label === "Revision Requested"}
+          initialMode={proposalModalMode}
+          onAccept={() => {
+            // Persist this enquiry as a created project so it appears on the Projects page
+            recordAcceptedProject({
+              id: enquiry.id,
+              title: enquiry.title,
+              clientName: enquiry.clientName,
+              location: enquiry.location || "",
+              budget: enquiry.budget || "",
+              projectType: enquiry.projectType || enquiry.source || "",
+              acceptedAt: new Date().toISOString(),
+              thumbnailUrl: enquiry.thumbnailUrl,
+              providerName: getEnquiryProviderDisplay(enquiry),
+            });
+            notifyCreatedProjectsChanged();
+            updateClientPortalEnquiry(enquiry.id, {
+              clientStatus: "Proposal Accepted",
+              stage: "won",
+            });
+            setEnquiry((prev) => ({ ...prev, clientStatus: "Proposal Accepted", stage: "won" }));
+            setShowProposalModal(false);
+            router.push("/client/projects");
+          }}
+          onRequestRevision={(notes) => {
+            updateClientPortalEnquiry(enquiry.id, {
+              clientStatus: "Revision Requested",
+              stage: "clarification",
+            });
+            setEnquiry((prev) => ({ ...prev, clientStatus: "Revision Requested", stage: "clarification" }));
+            setShowProposalModal(false);
+          }}
+          onReject={(reason) => {
+            updateClientPortalEnquiry(enquiry.id, {
+              clientStatus: "Rejected",
+              stage: "rejected",
+              status: "archived",
+              declineReason: reason,
+            });
+            setEnquiry((prev) => ({
+              ...prev,
+              clientStatus: "Rejected",
+              stage: "rejected",
+              status: "archived",
+              declineReason: reason,
+            }));
+            setStage("rejected");
+            setShowProposalModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }

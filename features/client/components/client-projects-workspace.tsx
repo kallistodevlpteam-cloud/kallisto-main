@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   Search,
   ChevronDown,
   Building2,
+  CheckCircle2,
+  FolderOpen,
 } from "lucide-react";
 import {
   PreConstructionDuotoneIcon,
@@ -15,9 +17,18 @@ import {
 } from "@/components/layout/sidebar-icons";
 import { ClientProject } from "../types";
 import { ClientProjectDetailDrawer } from "./client-project-detail-drawer";
+import {
+  getCreatedProjects,
+  subscribeToCreatedProjects,
+  type CreatedProject,
+} from "../services/accepted-projects-store";
 import styles from "./client-projects.module.css";
 
-export type ProjectLifecyclePhase = "pre_construction" | "construction" | "post_construction";
+export type ProjectLifecyclePhase =
+  | "created"
+  | "pre_construction"
+  | "construction"
+  | "post_construction";
 
 interface DisplayProject {
   id: string;
@@ -98,27 +109,25 @@ const CLIENT_DISPLAY_PROJECTS: DisplayProject[] = [
   {
     id: "proj-greenfield-resort-phase2",
     name: "Greenfield Eco Resort",
-    code: "KAL-GER2-2026",
+    code: "KAL-GER-2026",
     location: "Alappuzha Backwaters",
-    category: "Hospitality & Eco-Living",
-    phase: "Permits & Feasibility",
-    lifecyclePhase: "pre_construction",
-    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=900&auto=format&fit=crop&q=80",
-    progress: 15,
-    totalBudget: "₹1,80,00,000",
-    paidAmount: "₹35,00,000",
-    pendingAmount: "₹1,45,00,000",
-    leadProvider: "Apex Environmental Designs",
-    targetCompletion: "February 2027",
-    fileCount: 20,
-    activeTaskCount: 2,
+    category: "Hospitality & Eco Living",
+    phase: "In progress",
+    lifecyclePhase: "construction",
+    image: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=900&auto=format&fit=crop&q=80",
+    progress: 55,
+    totalBudget: "₹3,80,00,000",
+    paidAmount: "₹2,09,00,000",
+    pendingAmount: "₹1,71,00,000",
+    leadProvider: "Greenfield Architects",
+    targetCompletion: "March 2027",
+    fileCount: 42,
+    activeTaskCount: 4,
     needsAttention: [],
     upcoming: [],
     recentActivity: [],
-    suggestedPrompts: ["Show me the landscape water-body plans for Greenfield Eco Resort"],
+    suggestedPrompts: ["What is the current progress on Greenfield Eco Resort?"],
   },
-
-  // ── CONSTRUCTION ──────────────────────────────────────────────────
   {
     id: "proj-nila-residence",
     name: "Nila Residence",
@@ -127,115 +136,73 @@ const CLIENT_DISPLAY_PROJECTS: DisplayProject[] = [
     category: "Contemporary Architecture",
     phase: "In progress",
     lifecyclePhase: "construction",
-    image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=900&auto=format&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=900&auto=format&fit=crop&q=80",
     progress: 62,
-    totalBudget: "₹95,00,000",
-    paidAmount: "₹55,00,000",
-    pendingAmount: "₹40,00,000",
-    leadProvider: "Arjun Architects",
-    targetCompletion: "October 2026",
-    fileCount: 18,
-    activeTaskCount: 3,
-    needsAttention: [
-      {
-        id: "att-nr-1",
-        title: "Review Pool Deck Reinforcement Drawing",
-        category: "Approval",
-        urgency: "high",
-        date: "Action by Tomorrow",
-        actionLabel: "Review Drawing",
-      },
-    ],
-    upcoming: [],
-    recentActivity: [],
-    suggestedPrompts: ["Review pool deck structural details with Odin"],
-  },
-  {
-    id: "proj-greenfield-resort",
-    name: "Greenfield Eco Resort",
-    code: "KAL-GER-2026",
-    location: "Alappuzha Backwaters",
-    category: "Hospitality & Eco-Living",
-    phase: "In progress",
-    lifecyclePhase: "construction",
-    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=900&auto=format&fit=crop&q=80",
-    progress: 55,
-    totalBudget: "₹2,50,00,000",
-    paidAmount: "₹1,40,00,000",
-    pendingAmount: "₹1,10,00,000",
-    leadProvider: "Apex Environmental Designs",
-    targetCompletion: "January 2027",
-    fileCount: 24,
-    activeTaskCount: 4,
-    needsAttention: [
-      {
-        id: "att-ger-1",
-        title: "Confirm Thatched Roof Treated Timber Specs",
-        category: "Decision",
-        urgency: "high",
-        date: "Due in 2 days",
-        actionLabel: "Confirm Material",
-      },
-    ],
-    upcoming: [],
-    recentActivity: [],
-    suggestedPrompts: ["Check ecological sustainability report for Alappuzha site"],
-  },
-  {
-    id: "proj-nila-residence-phase2",
-    name: "Nila Residence",
-    code: "KAL-NR2-2026",
-    location: "Kakkanad, Kochi",
-    category: "Residential Architecture",
-    phase: "In progress",
-    lifecyclePhase: "construction",
-    image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=900&auto=format&fit=crop&q=80",
-    progress: 70,
     totalBudget: "₹85,00,000",
-    paidAmount: "₹60,00,000",
-    pendingAmount: "₹25,00,000",
-    leadProvider: "Arjun Architects",
+    paidAmount: "₹52,70,000",
+    pendingAmount: "₹32,30,000",
+    leadProvider: "Studio Nila",
     targetCompletion: "November 2026",
-    fileCount: 14,
-    activeTaskCount: 1,
+    fileCount: 31,
+    activeTaskCount: 3,
     needsAttention: [],
     upcoming: [],
     recentActivity: [],
-    suggestedPrompts: ["Audit Milestone 3 payments for Nila Residence"],
+    suggestedPrompts: ["What's the current status of my Kochi residence project?"],
   },
-
-  // ── POST CONSTRUCTION ─────────────────────────────────────────────
   {
-    id: "proj-palm-heights",
+    id: "proj-nila-residence-kozhikode",
+    name: "Nila Residence",
+    code: "KAL-NRK-2026",
+    location: "Nankanad, Kochi",
+    category: "Residential Architecture",
+    phase: "In progress",
+    lifecyclePhase: "construction",
+    image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&auto=format&fit=crop&q=80",
+    progress: 70,
+    totalBudget: "₹72,00,000",
+    paidAmount: "₹50,40,000",
+    pendingAmount: "₹21,60,000",
+    leadProvider: "Studio Nila",
+    targetCompletion: "October 2026",
+    fileCount: 24,
+    activeTaskCount: 2,
+    needsAttention: [],
+    upcoming: [],
+    recentActivity: [],
+    suggestedPrompts: ["Summarise the latest changes on the Kozhikode residence"],
+  },
+  {
+    id: "proj-palm-heights-completed",
     name: "Palm Heights Penthouse",
-    code: "KAL-PH-2025",
-    location: "Trivandrum City",
-    category: "Luxury Penthouse",
-    phase: "Handover complete",
+    code: "KAL-PHP-2025",
+    location: "Kochi, Kerala",
+    category: "Luxury Penthouse Renovation",
+    phase: "Completed",
     lifecyclePhase: "post_construction",
-    image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=900&auto=format&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=900&auto=format&fit=crop&q=80",
     progress: 100,
-    totalBudget: "₹1,60,00,000",
-    paidAmount: "₹1,60,00,000",
+    totalBudget: "₹1,50,00,000",
+    paidAmount: "₹1,50,00,000",
     pendingAmount: "₹0",
-    leadProvider: "Kallisto Studio",
+    leadProvider: "Studio Horizon",
     targetCompletion: "Completed",
     fileCount: 32,
     activeTaskCount: 0,
     needsAttention: [],
     upcoming: [],
     recentActivity: [],
-    suggestedPrompts: ["Download handover sign-off certificate for Palm Heights"],
+    suggestedPrompts: ["View handover docs for Palm Heights Penthouse"],
   },
   {
-    id: "proj-azure-bay",
+    id: "proj-azure-bay-completed",
     name: "Azure Bay Villa",
-    code: "KAL-AB-2025",
-    location: "Calicut Coastline",
-    category: "Beachfront Villa",
-    phase: "Post-handover warranty",
+    code: "KAL-ABV-2025",
+    location: "Kovalam, Kerala",
+    category: "Luxury Coastal Residential",
+    phase: "Completed",
     lifecyclePhase: "post_construction",
-    image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=900&auto=format&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=900&auto=format&fit=crop&q=80",
     progress: 100,
     totalBudget: "₹2,10,00,000",
     paidAmount: "₹2,10,00,000",
@@ -251,6 +218,34 @@ const CLIENT_DISPLAY_PROJECTS: DisplayProject[] = [
   },
 ];
 
+/** Convert a CreatedProject store entry to a DisplayProject for the grid */
+function createdProjectToDisplay(cp: CreatedProject): DisplayProject {
+  return {
+    id: cp.id,
+    name: cp.title,
+    code: `KAL-${cp.id.toUpperCase().replace(/-/g, "").slice(0, 6)}-NEW`,
+    location: cp.location || "—",
+    category: cp.projectType || "Project",
+    phase: "Proposal Accepted",
+    lifecyclePhase: "created",
+    image:
+      cp.thumbnailUrl ||
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900&auto=format&fit=crop&q=80",
+    progress: 0,
+    totalBudget: cp.budget || "—",
+    paidAmount: "₹0",
+    pendingAmount: cp.budget || "—",
+    leadProvider: cp.providerName || "Kallisto Studio",
+    targetCompletion: "TBD",
+    fileCount: 0,
+    activeTaskCount: 0,
+    needsAttention: [],
+    upcoming: [],
+    recentActivity: [],
+    suggestedPrompts: [`Tell me what happens next for ${cp.title}`],
+  };
+}
+
 export function ClientProjectsWorkspace() {
   const router = useRouter();
 
@@ -258,24 +253,52 @@ export function ClientProjectsWorkspace() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLocation, setSelectedLocation] = useState<string>("all");
   const [selectedProjectForDetail, setSelectedProjectForDetail] = useState<ClientProject | null>(null);
+  const [createdProjects, setCreatedProjects] = useState<CreatedProject[]>([]);
+
+  // Load created projects and subscribe to changes
+  useEffect(() => {
+    const initialList = getCreatedProjects();
+    setCreatedProjects(initialList);
+    if (initialList.length > 0) {
+      setActiveTab("created");
+    }
+    const unsub = subscribeToCreatedProjects((newList) => {
+      setCreatedProjects(newList);
+      if (newList.length > 0) {
+        setActiveTab("created");
+      }
+    });
+    return unsub;
+  }, []);
+
+  const createdDisplayProjects = useMemo(
+    () => createdProjects.map(createdProjectToDisplay),
+    [createdProjects]
+  );
 
   // Tab counts
   const tabCounts = useMemo(() => {
     return {
+      created: createdProjects.length,
       pre_construction: CLIENT_DISPLAY_PROJECTS.filter((p) => p.lifecyclePhase === "pre_construction").length,
       construction: CLIENT_DISPLAY_PROJECTS.filter((p) => p.lifecyclePhase === "construction").length,
       post_construction: CLIENT_DISPLAY_PROJECTS.filter((p) => p.lifecyclePhase === "post_construction").length,
     };
-  }, []);
+  }, [createdProjects.length]);
 
   // Filtered projects
   const filteredProjects = useMemo(() => {
-    return CLIENT_DISPLAY_PROJECTS.filter((p) => {
-      // Tab filter
-      if (p.lifecyclePhase !== activeTab) return false;
+    const pool =
+      activeTab === "created"
+        ? createdDisplayProjects
+        : CLIENT_DISPLAY_PROJECTS.filter((p) => p.lifecyclePhase === activeTab);
 
+    return pool.filter((p) => {
       // Location filter
-      if (selectedLocation !== "all" && !p.location.toLowerCase().includes(selectedLocation.toLowerCase())) {
+      if (
+        selectedLocation !== "all" &&
+        !p.location.toLowerCase().includes(selectedLocation.toLowerCase())
+      ) {
         return false;
       }
 
@@ -293,7 +316,7 @@ export function ClientProjectsWorkspace() {
 
       return true;
     });
-  }, [activeTab, selectedLocation, searchQuery]);
+  }, [activeTab, selectedLocation, searchQuery, createdDisplayProjects]);
 
   const handleCardClick = (project: DisplayProject) => {
     router.push(`/client/projects/${project.id}`);
@@ -301,6 +324,8 @@ export function ClientProjectsWorkspace() {
 
   const getTabLabel = (tab: ProjectLifecyclePhase) => {
     switch (tab) {
+      case "created":
+        return "Created Projects";
       case "pre_construction":
         return "Pre Construction";
       case "construction":
@@ -334,8 +359,25 @@ export function ClientProjectsWorkspace() {
         </div>
       </div>
 
-      {/* ── Status Tabs Row (Pre Construction, Construction, Post Construction) ── */}
+      {/* ── Status Tabs Row ── */}
       <nav className={styles.tabsNav} role="tablist" aria-label="Project Status Tabs">
+        {/* Created Projects tab — first, before Pre Construction */}
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === "created"}
+          className={`${styles.tabBtn} ${activeTab === "created" ? styles.tabBtnActive : ""} ${styles.tabBtnCreated}`}
+          onClick={() => setActiveTab("created")}
+        >
+          <CheckCircle2 size={15} />
+          <span>Created Projects</span>
+          {tabCounts.created > 0 && (
+            <span className={`${styles.tabCount} ${styles.tabCountCreated}`}>
+              {tabCounts.created}
+            </span>
+          )}
+        </button>
+
         <button
           type="button"
           role="tab"
@@ -407,13 +449,13 @@ export function ClientProjectsWorkspace() {
         </button>
       </div>
 
-      {/* ── 4-Column Photo Cards Grid (Matching Reference Screenshot) ── */}
+      {/* ── Projects Grid ── */}
       {filteredProjects.length > 0 ? (
         <div className={styles.pcGrid} role="region" aria-label="Projects Grid">
           {filteredProjects.map((project) => (
             <div
               key={project.id}
-              className={styles.pcCard}
+              className={`${styles.pcCard} ${project.lifecyclePhase === "created" ? styles.pcCardCreated : ""}`}
               onClick={() => handleCardClick(project)}
               role="button"
               tabIndex={0}
@@ -434,7 +476,13 @@ export function ClientProjectsWorkspace() {
                 />
                 <div className={styles.pcMediaGradient} />
                 <div className={styles.pcBottomOverlay}>
-                  <span className={styles.pcPhasePill}>{project.phase}</span>
+                  <span
+                    className={`${styles.pcPhasePill} ${
+                      project.lifecyclePhase === "created" ? styles.pcPhasePillCreated : ""
+                    }`}
+                  >
+                    {project.phase}
+                  </span>
                 </div>
               </div>
 
@@ -445,7 +493,7 @@ export function ClientProjectsWorkspace() {
                     {project.name}
                   </h3>
                   <span className={styles.pcPercent}>
-                    {project.progress !== undefined ? `${project.progress}%` : "—"}
+                    {project.lifecyclePhase === "created" ? "New" : `${project.progress}%`}
                   </span>
                 </div>
 
@@ -458,6 +506,22 @@ export function ClientProjectsWorkspace() {
               </div>
             </div>
           ))}
+        </div>
+      ) : activeTab === "created" ? (
+        /* Empty state for Created Projects — actionable nudge */
+        <div className={styles.emptyState}>
+          <FolderOpen size={36} style={{ color: "#94a3b8" }} />
+          <h3 className={styles.emptyTitle}>No created projects yet</h3>
+          <p className={styles.emptySubtitle}>
+            When you accept a proposal from your Enquiries, the project will appear here ready for the next stage.
+          </p>
+          <button
+            type="button"
+            className={styles.emptyActionBtn}
+            onClick={() => router.push("/client/enquiries")}
+          >
+            View Enquiries
+          </button>
         </div>
       ) : (
         <div className={styles.emptyState}>

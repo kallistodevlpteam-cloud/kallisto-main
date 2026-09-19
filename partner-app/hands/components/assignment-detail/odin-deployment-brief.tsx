@@ -29,8 +29,6 @@ export function getAssignmentOdinBrief(assignment: AssignmentDeployment): string
   const healthRecommendation =
     assignment.health === "at_risk"
       ? "Workforce shortages require immediate supervisor intervention to safeguard milestone delivery and avoid deployment penalties."
-      : assignment.health === "attention_required"
-      ? "Supervisor check-in is recommended to verify unmarked personnel, reconcile attendance records, and ensure site safety compliance."
       : "Site operations are progressing on schedule with stable crew deployment and active field supervision.";
 
   return `${assignment.clientName} has deployed a ${assignment.totalWorkersAssigned}-member workforce (${assignment.tradesBreakdown}) under Site Supervisor ${assignment.supervisor.name} for ${assignment.projectName}, ${assignment.location}. Currently on Day ${assignment.currentDay} of ${assignment.totalDays} with ${attendanceDetails}. ${healthRecommendation}`;

@@ -158,6 +158,7 @@ interface ProjectOverviewCardProps {
   updatesTriggerRef?: RefObject<HTMLButtonElement | null>;
   onOpenUpdates?: () => void;
   isClient?: boolean;
+  isConstructionNotStarted?: boolean;
 }
 
 export function ProjectOverviewCard({
@@ -184,6 +185,7 @@ export function ProjectOverviewCard({
   projectScopes,
   priorities,
   isClient,
+  isConstructionNotStarted = false,
 }: ProjectOverviewCardProps = {}) {
   const [activeTab, setActiveTab] = useState<EnquiryTabKey>("overview");
   const [activeDomainKey, setActiveDomainKey] = useState<string>("room_programme");
@@ -316,11 +318,12 @@ export function ProjectOverviewCard({
           <div className={styles.tabSectionGroup}>
             <OdinProjectBrief brief={viewModel.brief} />
             <ProjectStatCardsBar values={statValues} />
-            {!isUpcoming && (
+            {(!isUpcoming || isConstructionNotStarted) && (
               <ProjectOverviewActivitySections
                 projectId={projectId}
                 onNavigateTab={setActiveTab}
                 isClient={isClient}
+                isConstructionNotStarted={isConstructionNotStarted}
               />
             )}
             {futureContent}

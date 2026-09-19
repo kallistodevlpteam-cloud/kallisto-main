@@ -1,31 +1,117 @@
 "use client";
 
 import React, { useState } from "react";
-import { 
-  MapPin, 
-  PhoneCall, 
-} from "lucide-react";
-import { AssignmentDeployment } from "../../types/assignment-domain";
+import { MapPin, PhoneCall } from "lucide-react";
+import { AssignmentDeployment, AssignedWorkerRecord, AssignmentSiteUpdate, AssignmentComplaint } from "../../types/assignment-domain";
 import { OdinDeploymentBrief } from "./odin-deployment-brief";
 import { AssignmentUpdatesPanel } from "./assignment-updates-panel";
 import { AssignmentComplaintsPanel } from "./assignment-complaints-panel";
 import { AssignmentAccountsPanel } from "./assignment-accounts-panel";
 import { AssignmentActivitiesPanel } from "./assignment-activities-panel";
+import { AssignmentReplacementModal, ReplacementCandidate } from "./assignment-replacement-modal";
 import styles from "./assignment-detail.module.css";
 
 interface AssignmentDetailPageProps {
   assignment: AssignmentDeployment;
 }
 
-export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) {
+export function AssignmentDetailPage({ assignment: initialAssignment }: AssignmentDetailPageProps) {
   const [activeTab, setActiveTab] = useState<"overview" | "complaints" | "accounts" | "activities">("overview");
   const [workerSearch, setWorkerSearch] = useState("");
+  const [currentAssignment, setCurrentAssignment] = useState<AssignmentDeployment>(initialAssignment);
+  const [isReplacementModalOpen, setIsReplacementModalOpen] = useState(false);
+  const [targetAbsentWorker, setTargetAbsentWorker] = useState<AssignedWorkerRecord | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const isCompleted = assignment.status === "completed";
-  const openComplaintsCount = assignment.complaints?.filter((c) => c.status === "open").length || 0;
+  const isCompleted = currentAssignment.status === "completed";
+  const openComplaintsCount = currentAssignment.complaints?.filter((c: AssignmentComplaint) => c.status === "open").length || 0;
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 4000);
+  };
+
+  const handleOpenReplacementModal = (worker: AssignedWorkerRecord | null = null) => {
+    setTargetAbsentWorker(worker);
+    setIsReplacementModalOpen(true);
+  };
+
+  const handleAssignReplacement = (
+    candidate: ReplacementCandidate,
+    timePeriodLabel: string = "Replacement",
+    workerToReplace?: AssignedWorkerRecord | null
+  ) => {
+    const effectiveTargetWorker = workerToReplace || targetAbsentWorker;
+    const newWorkerRecord: AssignedWorkerRecord = {
+      id: candidate.id,
+      name: candidate.name,
+      trade: candidate.trade,
+      level: candidate.level,
+      status: "Present",
+      checkInTime: "Just Now",
+      phone: candidate.phone,
+    };
+
+    setCurrentAssignment((prev: AssignmentDeployment) => {
+      let updatedCrew = [...prev.crew];
+
+      if (effectiveTargetWorker) {
+        // Replace target absent worker in crew or append replacement
+        const index = updatedCrew.findIndex((w) => w.id === effectiveTargetWorker.id);
+        if (index !== -1) {
+          updatedCrew[index] = newWorkerRecord;
+        } else {
+          updatedCrew.push(newWorkerRecord);
+        }
+      } else {
+        // If no specific absent worker selected, replace first absent worker or append
+        const firstAbsentIndex = updatedCrew.findIndex((w) => w.status === "Absent");
+        if (firstAbsentIndex !== -1) {
+          updatedCrew[firstAbsentIndex] = newWorkerRecord;
+        } else {
+          updatedCrew.push(newWorkerRecord);
+        }
+      }
+
+      const newPresent = prev.attendance.present + 1;
+      const newAbsent = Math.max(0, prev.attendance.absent - 1);
+      const newTotal = updatedCrew.length;
+
+      const replacementUpdate: AssignmentSiteUpdate = {
+        id: `upd-rep-${Date.now()}`,
+        authorName: "You (Contractor)",
+        authorRole: "Contractor Lead",
+        timestamp: "Just now",
+        text: `Deployed replacement worker ${candidate.name} (${candidate.trade} ${candidate.level}) replacing ${
+          effectiveTargetWorker ? effectiveTargetWorker.name : "absent worker"
+        } for ${timePeriodLabel}.`,
+        category: "Crew Deployment",
+        acknowledged: true,
+      };
+
+      const existingUpdates = prev.updates || [];
+
+      return {
+        ...prev,
+        totalWorkersAssigned: newTotal,
+        attendance: {
+          ...prev.attendance,
+          present: newPresent,
+          absent: newAbsent,
+          total: newTotal,
+        },
+        crew: updatedCrew,
+        updates: [replacementUpdate, ...existingUpdates],
+      };
+    });
+
+    showToast(
+      `Successfully assigned replacement worker ${candidate.name} (${candidate.trade}) for ${timePeriodLabel}!`
+    );
+  };
 
   // Filtered workers list
-  const filteredCrew = assignment.crew.filter((w) => {
+  const filteredCrew = currentAssignment.crew.filter((w: AssignedWorkerRecord) => {
     if (!workerSearch.trim()) return true;
     const q = workerSearch.toLowerCase();
     return (
@@ -36,20 +122,48 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
     );
   });
 
-  const totalAttendance = assignment.attendance.total > 0
-    ? assignment.attendance.total
-    : (assignment.attendance.present + assignment.attendance.unmarked + assignment.attendance.absent) || 1;
+  const presentCount = currentAssignment.crew.filter(
+    (w: AssignedWorkerRecord) => w.status === "Present"
+  ).length;
 
-  const attendancePercent = assignment.attendance.total > 0
-    ? Math.round((assignment.attendance.present / assignment.attendance.total) * 100)
-    : 0;
+  const absentCount = currentAssignment.crew.filter(
+    (w: AssignedWorkerRecord) => w.status === "Absent"
+  ).length;
 
-  const presentPercent = (assignment.attendance.present / totalAttendance) * 100;
-  const unmarkedPercent = (assignment.attendance.unmarked / totalAttendance) * 100;
-  const absentPercent = (assignment.attendance.absent / totalAttendance) * 100;
+  const totalAttendance = currentAssignment.crew.length || 1;
+
+  const attendancePercent = Math.round((presentCount / totalAttendance) * 100);
+
+  const presentPercent = (presentCount / totalAttendance) * 100;
+  const absentPercent = (absentCount / totalAttendance) * 100;
 
   return (
     <div className={styles.pageWrapper}>
+      {/* Toast Feedback */}
+      {toastMessage && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "24px",
+            right: "24px",
+            backgroundColor: "#0f172a",
+            color: "#ffffff",
+            padding: "12px 20px",
+            borderRadius: "10px",
+            fontSize: "13.5px",
+            fontWeight: 600,
+            boxShadow: "0 10px 25px -5px rgba(0,0,0,0.3)",
+            zIndex: 2000,
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+          }}
+        >
+          <span>✓</span>
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       {/* ── Two-Column Layout (Matching /projects/prj-1 Architecture) ── */}
       <div className={styles.twoColGrid}>
         {/* ── Left Column: Operations Workspace ── */}
@@ -57,16 +171,16 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
           {/* Header Block (Title Row with Actions, Submeta Row with Badges) */}
           <header className={styles.headerBlock} aria-label="Assignment Details Header">
             <div className={styles.titleRow}>
-              <h1 className={styles.assignmentMainTitle}>{assignment.clientName}</h1>
+              <h1 className={styles.assignmentMainTitle}>{currentAssignment.clientName}</h1>
 
               <div className={styles.headerActionsCol}>
                 <a
-                  href={`tel:${assignment.supervisor.phone}`}
+                  href={`tel:${currentAssignment.supervisor.phone}`}
                   className={styles.callBtn}
-                  title={`Call Supervisor ${assignment.supervisor.name}`}
+                  title={`Call Supervisor ${currentAssignment.supervisor.name}`}
                 >
                   <PhoneCall size={13} />
-                  <span>Call Supervisor ({assignment.supervisor.name})</span>
+                  <span>Call Supervisor ({currentAssignment.supervisor.name})</span>
                 </a>
               </div>
             </div>
@@ -75,7 +189,7 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
               <div className={styles.subMetaLeft}>
                 <span className={styles.metaItem}>
                   <MapPin size={14} strokeWidth={2} className={styles.locationPinIcon} aria-hidden="true" />
-                  <span>{assignment.projectName} · {assignment.location}</span>
+                  <span>{currentAssignment.projectName} · {currentAssignment.location}</span>
                 </span>
               </div>
 
@@ -92,24 +206,23 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
 
                 <span className={styles.timelineDayPill}>
                   {isCompleted
-                    ? `${assignment.totalDays} of ${assignment.totalDays} Shifts Delivered`
-                    : `Day ${assignment.currentDay} of ${assignment.totalDays}`}
+                    ? `${currentAssignment.totalDays} of ${currentAssignment.totalDays} Shifts Delivered`
+                    : `Day ${currentAssignment.currentDay} of ${currentAssignment.totalDays}`}
                 </span>
 
                 <span className={styles.siteStatusPill}>
-                  {assignment.siteStatus}
+                  {currentAssignment.siteStatus}
                 </span>
 
-                <span className={`${styles.healthPill} ${styles[`health_${assignment.health}`]}`}>
-                  {assignment.health === "on_track"
+                <span className={`${styles.healthPill} ${styles[`health_${currentAssignment.health}`]}`}>
+                  {currentAssignment.health === "on_track"
                     ? "● On Track"
-                    : assignment.health === "attention_required"
-                    ? "● Attention Required"
                     : "● At Risk"}
                 </span>
               </div>
             </div>
           </header>
+
           {/* Segmented Tabs Bar */}
           <nav className={styles.tabsContainer} aria-label="Assignment Sections">
             <button
@@ -126,9 +239,9 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
               className={`${styles.tabBtn} ${activeTab === "activities" ? styles.tabBtnActive : ""}`}
             >
               <span>Activities</span>
-              {(assignment.activities?.length || 0) > 0 && (
+              {(currentAssignment.activities?.length || 0) > 0 && (
                 <span className={styles.tabPillCount}>
-                  {assignment.activities?.length}
+                  {currentAssignment.activities?.length}
                 </span>
               )}
             </button>
@@ -161,25 +274,25 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
           {activeTab === "overview" && (
             <div className={styles.overviewContent}>
               {/* ODIN Project Brief Card */}
-              <OdinDeploymentBrief assignment={assignment} />
+              <OdinDeploymentBrief assignment={currentAssignment} />
 
               {/* 4-Card Snapshot Grid */}
               <div className={styles.snapshotGrid}>
                 <div className={styles.snapshotCard}>
                   <span className={styles.snapshotLabel}>Crew Deployed</span>
                   <span className={styles.snapshotValue}>
-                    {assignment.totalWorkersAssigned} Workers
+                    {currentAssignment.totalWorkersAssigned} Workers
                   </span>
-                  <span className={styles.snapshotSub}>{assignment.tradesBreakdown}</span>
+                  <span className={styles.snapshotSub}>{currentAssignment.tradesBreakdown}</span>
                 </div>
 
                 <div className={styles.snapshotCard}>
                   <span className={styles.snapshotLabel}>Shift Window</span>
                   <span className={styles.snapshotValue}>
-                    {assignment.startDate} – {assignment.endDate}
+                    {currentAssignment.startDate} – {currentAssignment.endDate}
                   </span>
                   <span className={styles.snapshotSub}>
-                    {assignment.totalDays} Total Shifts
+                    {currentAssignment.totalDays} Total Shifts
                   </span>
                 </div>
 
@@ -187,8 +300,8 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
                   <span className={styles.snapshotLabel}>Supervisor</span>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "2px" }}>
                     <img
-                      src={assignment.supervisor.avatar || "/assets/rahul-avatar.jpg"}
-                      alt={assignment.supervisor.name}
+                      src={currentAssignment.supervisor.avatar || "/assets/rahul-avatar.jpg"}
+                      alt={currentAssignment.supervisor.name}
                       style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
                       onError={(e) => {
                         const target = e.currentTarget as HTMLImageElement;
@@ -198,8 +311,8 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
                       }}
                     />
                     <div style={{ display: "flex", flexDirection: "column" }}>
-                      <span className={styles.snapshotValue} style={{ fontSize: "14.5px", lineHeight: "1.2" }}>{assignment.supervisor.name}</span>
-                      <span className={styles.snapshotSub}>{assignment.supervisor.phone}</span>
+                      <span className={styles.snapshotValue} style={{ fontSize: "14.5px", lineHeight: "1.2" }}>{currentAssignment.supervisor.name}</span>
+                      <span className={styles.snapshotSub}>{currentAssignment.supervisor.phone}</span>
                     </div>
                   </div>
                 </div>
@@ -207,7 +320,7 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
                 <div className={styles.snapshotCard}>
                   <span className={styles.snapshotLabel}>Today Attendance</span>
                   <span className={styles.snapshotValue}>
-                    {assignment.attendance.present} / {assignment.attendance.total}
+                    {presentCount} / {totalAttendance}
                   </span>
                   <span className={styles.snapshotSub}>
                     {attendancePercent}% Reported Present
@@ -225,15 +338,7 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
                         className={styles.attendancePillDot}
                         style={{ backgroundColor: "#00b875" }}
                       />
-                      <span>{assignment.attendance.present} Present</span>
-                    </div>
-
-                    <div className={styles.attendancePillItem}>
-                      <span
-                        className={styles.attendancePillDot}
-                        style={{ backgroundColor: "#fdbf4c" }}
-                      />
-                      <span>{assignment.attendance.unmarked} Unmarked</span>
+                      <span>{presentCount} Present</span>
                     </div>
 
                     <div className={styles.attendancePillItem}>
@@ -241,7 +346,7 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
                         className={styles.attendancePillDot}
                         style={{ backgroundColor: "#fb354c" }}
                       />
-                      <span>{assignment.attendance.absent} Absent</span>
+                      <span>{absentCount} Absent</span>
                     </div>
                   </div>
                 </div>
@@ -262,17 +367,7 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
                           width: `${presentPercent}%`,
                           backgroundColor: "#00b875",
                         }}
-                        title={`${assignment.attendance.present} Present (${Math.round(presentPercent)}%)`}
-                      />
-                    )}
-                    {unmarkedPercent > 0 && (
-                      <div
-                        className={styles.progressBarSegment}
-                        style={{
-                          width: `${unmarkedPercent}%`,
-                          backgroundColor: "#fdbf4c",
-                        }}
-                        title={`${assignment.attendance.unmarked} Unmarked (${Math.round(unmarkedPercent)}%)`}
+                        title={`${presentCount} Present (${Math.round(presentPercent)}%)`}
                       />
                     )}
                     {absentPercent > 0 && (
@@ -282,20 +377,30 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
                           width: `${absentPercent}%`,
                           backgroundColor: "#fb354c",
                         }}
-                        title={`${assignment.attendance.absent} Absent (${Math.round(absentPercent)}%)`}
+                        title={`${absentCount} Absent (${Math.round(absentPercent)}%)`}
                       />
                     )}
                   </div>
                 </div>
               </div>
 
-              {/* Crew Roster Card */}
+              {/* Crew Roster List */}
               <div className={styles.rosterCard}>
                 <div className={styles.rosterHeaderRow}>
                   <h3 className={styles.rosterTitle}>
-                    Assigned Crew Roster ({filteredCrew.length} of {assignment.crew.length})
+                    Assigned Crew Roster ({currentAssignment.crew.length} of {currentAssignment.totalWorkersAssigned})
                   </h3>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+
+                  <div className={styles.rosterControlsGroup}>
+                    {!isCompleted && absentCount > 0 && (
+                      <button
+                        type="button"
+                        className={styles.headerAssignReplacementBtn}
+                        onClick={() => handleOpenReplacementModal(null)}
+                      >
+                        + Assign Replacement
+                      </button>
+                    )}
                     <input
                       type="text"
                       placeholder="Search trade or worker..."
@@ -312,7 +417,7 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
                     No workers matching &ldquo;{workerSearch}&rdquo;
                     </div>
                   ) : (
-                    filteredCrew.map((worker) => (
+                    filteredCrew.map((worker: AssignedWorkerRecord) => (
                       <div key={worker.id} className={styles.rosterItemRow}>
                         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                           {worker.avatar ? (
@@ -339,7 +444,7 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
                             >
                               {worker.name
                                 .split(" ")
-                                .map((n) => n[0])
+                                .map((n: string) => n[0])
                                 .join("")
                                 .substring(0, 2)
                                 .toUpperCase()}
@@ -369,7 +474,7 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
                           </div>
                         </div>
 
-                        <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                           {isCompleted ? (
                             <span className={styles.rosterStatusCompleted}>
                               ✓ Completed
@@ -378,14 +483,19 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
                             <span className={styles.rosterStatusPresent}>
                               ● Present
                             </span>
-                          ) : worker.status === "Unmarked" ? (
-                            <span className={styles.rosterStatusUnmarked}>
-                              ⏳ Unmarked
-                            </span>
                           ) : (
-                            <span className={styles.rosterStatusAbsent}>
-                              ✕ Absent
-                            </span>
+                            <>
+                              <span className={styles.rosterStatusAbsent}>
+                                ✕ Absent
+                              </span>
+                              <button
+                                type="button"
+                                className={styles.assignReplacementBtn}
+                                onClick={() => handleOpenReplacementModal(worker)}
+                              >
+                                + Assign Replacement
+                              </button>
+                            </>
                           )}
                         </div>
                       </div>
@@ -399,44 +509,56 @@ export function AssignmentDetailPage({ assignment }: AssignmentDetailPageProps) 
           {/* Tab 2: Activities */}
           {activeTab === "activities" && (
             <AssignmentActivitiesPanel
-              assignmentId={assignment.id}
-              projectName={assignment.projectName}
-              supervisorName={assignment.supervisor.name}
-              assignment={assignment}
+              assignmentId={currentAssignment.id}
+              projectName={currentAssignment.projectName}
+              supervisorName={currentAssignment.supervisor.name}
+              assignment={currentAssignment}
             />
           )}
 
           {/* Tab 3: Complaints */}
           {activeTab === "complaints" && (
             <AssignmentComplaintsPanel
-              assignmentId={assignment.id}
-              projectName={assignment.projectName}
-              supervisorName={assignment.supervisor.name}
+              assignmentId={currentAssignment.id}
+              projectName={currentAssignment.projectName}
+              supervisorName={currentAssignment.supervisor.name}
               contractorName="Apex Integrated Civil"
-              initialComplaints={assignment.complaints}
+              initialComplaints={currentAssignment.complaints}
             />
           )}
 
           {/* Tab 4: Accounts */}
           {activeTab === "accounts" && (
             <AssignmentAccountsPanel
-              assignmentId={assignment.id}
-              projectName={assignment.projectName}
-              clientName={assignment.clientName}
-              supervisorName={assignment.supervisor.name}
-              accounts={assignment.accounts}
+              assignmentId={currentAssignment.id}
+              projectName={currentAssignment.projectName}
+              clientName={currentAssignment.clientName}
+              supervisorName={currentAssignment.supervisor.name}
+              accounts={currentAssignment.accounts}
             />
           )}
         </main>
 
         {/* ── Right Column: Project Updates Feed (Images 2 & 3 Match) ── */}
         <AssignmentUpdatesPanel
-          assignmentId={assignment.id}
-          supervisorName={assignment.supervisor.name}
+          assignmentId={currentAssignment.id}
+          supervisorName={currentAssignment.supervisor.name}
           contractorName="Apex Integrated Civil"
-          initialUpdates={assignment.updates}
+          initialUpdates={currentAssignment.updates}
         />
       </div>
+
+      {/* Replacement Candidate Overlay Modal */}
+      <AssignmentReplacementModal
+        isOpen={isReplacementModalOpen}
+        onClose={() => setIsReplacementModalOpen(false)}
+        projectName={currentAssignment.projectName}
+        assignmentDates={`${currentAssignment.startDate} – ${currentAssignment.endDate} (${currentAssignment.totalDays} Days)`}
+        absentWorker={targetAbsentWorker}
+        absentWorkersList={currentAssignment.crew}
+        onAssign={handleAssignReplacement}
+      />
     </div>
   );
 }
+

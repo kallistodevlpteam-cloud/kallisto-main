@@ -6,7 +6,6 @@ import {
   Plus,
   Search,
   ChevronDown,
-  AlertTriangle,
   AlertCircle,
   History,
 } from "lucide-react";
@@ -81,7 +80,6 @@ export function HandsAssignmentsWorkspace() {
     return {
       all: active.length,
       on_track: active.filter((a) => a.health === "on_track").length,
-      attention_required: active.filter((a) => a.health === "attention_required").length,
       at_risk: active.filter((a) => a.health === "at_risk").length,
       history: completed.length,
     };
@@ -321,20 +319,6 @@ export function HandsAssignmentsWorkspace() {
           <span>On Track</span>
           <span className={`${styles.tabCount} ${selectedHealthTab === "on_track" ? styles.tabCountActive : ""}`}>
             {tabCounts.on_track}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          className={`${styles.segmentedTabBtn} ${selectedHealthTab === "attention_required" ? styles.segmentedTabBtnActive : ""}`}
-          onClick={() => setSelectedHealthTab("attention_required")}
-          role="tab"
-          aria-selected={selectedHealthTab === "attention_required"}
-        >
-          <AlertTriangle size={14} style={{ color: selectedHealthTab === "attention_required" ? "#d97706" : "#94a3b8" }} />
-          <span>Attention Required</span>
-          <span className={`${styles.tabCount} ${selectedHealthTab === "attention_required" ? styles.tabCountActive : ""}`}>
-            {tabCounts.attention_required}
           </span>
         </button>
 

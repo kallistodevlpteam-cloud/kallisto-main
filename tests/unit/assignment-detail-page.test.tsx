@@ -42,8 +42,7 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     expect(screen.getByText("Shift Window")).toBeDefined();
     expect(screen.getByText("Live Shift Attendance")).toBeDefined();
     expect(screen.getByText("10 Present")).toBeDefined();
-    expect(screen.getByText("1 Unmarked")).toBeDefined();
-    expect(screen.getByText("1 Absent")).toBeDefined();
+    expect(screen.getByText("2 Absent")).toBeDefined();
 
     // Crew roster list
     expect(screen.getByText("Rajesh Kumar")).toBeDefined();
@@ -519,5 +518,92 @@ describe("AssignmentDetailPage - Full Dedicated Page View", () => {
     expect(screen.getByText(/No tasks scheduled for/i)).toBeDefined();
     expect(screen.getByText(/Tasks for this date will appear here once scheduled by the site supervisor or service provider/i)).toBeDefined();
   });
+
+  it("opens Assign Replacement modal, supports multi-labor selection, displays REPLACING WITH summary bar, and allows assignment", () => {
+    render(<AssignmentDetailPage assignment={assignment} />);
+
+    // Click + Assign Replacement button
+    const replaceButtons = screen.getAllByRole("button", { name: /\+ Assign Replacement/i });
+    expect(replaceButtons.length).toBeGreaterThan(0);
+    fireEvent.click(replaceButtons[0]);
+
+    // Assign Replacement Labor modal opens
+    const modal = screen.getByRole("dialog", { name: /Replace Labor Assignment/i });
+    expect(modal).toBeDefined();
+
+    // Select absent worker 1 (Ramesh C)
+    const rameshAbsentCard = within(modal).getByText("Ramesh C").closest('[role="button"]') as HTMLElement;
+    expect(rameshAbsentCard).toBeDefined();
+    fireEvent.click(rameshAbsentCard);
+
+    // Verify top summary bar displays Ramesh C pill
+    expect(within(modal).getAllByText("Ramesh C").length).toBeGreaterThan(0);
+
+    // Select candidate 1 (Ramesh Babu - Mason) & pick date 19
+    const rameshBabuCard = within(modal).getAllByText("Ramesh Babu")[0].closest('[role="button"]') as HTMLElement;
+    expect(rameshBabuCard).toBeDefined();
+    fireEvent.click(rameshBabuCard);
+
+    // Pick date 19 in calendar popover & click Confirm Date button
+    const dayBtn = within(modal).getByRole("button", { name: "19" });
+    fireEvent.click(dayBtn);
+    const applyDateBtn = within(modal).getByRole("button", { name: /Confirm Date/i });
+    fireEvent.click(applyDateBtn);
+
+    // Verify top summary bar displays Ramesh C -> Ramesh Babu with Sep 19 date pill
+    expect(within(modal).getAllByText("Ramesh C").length).toBeGreaterThan(0);
+    expect(within(modal).getAllByText("Ramesh Babu").length).toBeGreaterThan(0);
+    expect(within(modal).getByText("Sep 19")).toBeDefined();
+
+    // Click Confirm Replacement button
+    const submitBtn = within(modal).getByRole("button", { name: /Confirm Replacement/i });
+    fireEvent.click(submitBtn);
+
+    // Modal closes
+    expect(screen.queryByRole("dialog")).toBeNull();
+
+    // Toast appears
+    expect(screen.getByText(/Successfully assigned replacement worker Ramesh Babu/i)).toBeDefined();
+  });
+
+  it("opens single worker replacement modal (Image 3 UI) when clicking row button next to an absent worker", () => {
+    render(<AssignmentDetailPage assignment={assignment} />);
+
+    // Click row + Assign Replacement button next to absent worker Ramesh C (index 2 in replaceButtons)
+    const replaceButtons = screen.getAllByRole("button", { name: /\+ Assign Replacement/i });
+    expect(replaceButtons.length).toBe(3); // 1 header button + 2 absent worker row buttons
+
+    // Click the second button (for Vishnu Das or Ramesh C)
+    fireEvent.click(replaceButtons[2]);
+
+    // Assign Replacement Labor modal opens with single worker UI
+    const modal = screen.getByRole("dialog", { name: /Assign Replacement Labor/i });
+    expect(modal).toBeDefined();
+
+    // Verify absent worker banner is rendered with red badge and worker info
+    expect(within(modal).getByText(/Absent Worker/i)).toBeDefined();
+    expect(within(modal).getByText(/Replacing/i)).toBeDefined();
+    expect(within(modal).getByText("Ramesh C")).toBeDefined();
+    expect(within(modal).getByText("+91 98470 30303")).toBeDefined();
+
+    // Select candidate from single column candidate list
+    const candidateCard = within(modal).getByText("Ramesh Babu").closest('[role="button"]') as HTMLElement;
+    expect(candidateCard).toBeDefined();
+    fireEvent.click(candidateCard);
+
+    // Verify badge toggles to Ready for assignment
+    expect(within(modal).getByText("Ready for assignment")).toBeDefined();
+
+    // Confirm button is active
+    const assignBtn = within(modal).getByRole("button", { name: /Assign Candidate →/i });
+    expect(assignBtn).toBeDefined();
+    fireEvent.click(assignBtn);
+
+    // Modal closes and success toast appears
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(screen.getByText(/Successfully assigned replacement worker Ramesh Babu/i)).toBeDefined();
+  });
+
 });
+
 

@@ -1,13 +1,13 @@
 export type AssignmentStatus = "active" | "scheduled" | "completed" | "paused";
 
-export type AssignmentHealth = "on_track" | "attention_required" | "at_risk";
+export type AssignmentHealth = "on_track" | "at_risk";
 
 export interface AssignedWorkerRecord {
   id: string;
   name: string;
   trade: string;
   level: string;
-  status: "Present" | "Absent" | "Unmarked";
+  status: "Present" | "Absent";
   checkInTime?: string;
   phone: string;
   avatar?: string;
@@ -204,7 +204,6 @@ export interface AssignmentSummaryMetrics {
   sitesCovered: number;
   deployedCrew: number;
   shiftCompletion: string;
-  attentionCount: number;
   atRiskCount: number;
 }
 

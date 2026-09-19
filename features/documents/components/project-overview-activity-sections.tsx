@@ -163,12 +163,14 @@ export interface ProjectOverviewActivitySectionsProps {
   projectId?: string;
   onNavigateTab?: (tab: EnquiryTabKey) => void;
   isClient?: boolean;
+  isConstructionNotStarted?: boolean;
 }
 
 export function ProjectOverviewActivitySections({
   projectId = "proj-001",
   onNavigateTab,
   isClient: explicitIsClient,
+  isConstructionNotStarted = false,
 }: ProjectOverviewActivitySectionsProps) {
   const router = useRouter();
   const currentPathname = usePathname();
@@ -274,18 +276,26 @@ export function ProjectOverviewActivitySections({
       <section className={styles.card} aria-label="Project Progress">
         <h3 className={styles.sectionTitle}>
           <span>PROJECT PROGRESS</span>
-          <span className={styles.sectionBadge}>Interior Design Phase</span>
+          <span className={styles.sectionBadge}>
+            {isConstructionNotStarted ? "Pre-Construction Phase" : "Interior Design Phase"}
+          </span>
         </h3>
 
         <div className={styles.progressTopRow}>
           <span className={styles.progressLabel}>Overall Progress</span>
-          <span className={styles.progressPercent}>42%</span>
+          <span className={styles.progressPercent}>{isConstructionNotStarted ? "0%" : "42%"}</span>
         </div>
 
-        <div className={styles.progressBarTrack} role="progressbar" aria-valuenow={42} aria-valuemin={0} aria-valuemax={100}>
+        <div
+          className={styles.progressBarTrack}
+          role="progressbar"
+          aria-valuenow={isConstructionNotStarted ? 0 : 42}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        >
           <div
             className={`${styles.progressBarFill} ${isClient ? styles.progressBarFillClient : ""}`}
-            style={{ width: "42%" }}
+            style={{ width: isConstructionNotStarted ? "0%" : "42%" }}
           />
         </div>
 
@@ -322,15 +332,15 @@ export function ProjectOverviewActivitySections({
         <div className={styles.progressMetaStrip}>
           <div className={styles.progressMetaItem}>
             <span>Current Phase:</span>
-            <strong>Interior Design</strong>
+            <strong>{isConstructionNotStarted ? "Proposal Accepted" : "Interior Design"}</strong>
           </div>
           <div className={styles.progressMetaItem}>
             <span>Next Milestone:</span>
-            <strong>MEP Coordination</strong>
+            <strong>{isConstructionNotStarted ? "Site Verification & Drawing Sign-off" : "MEP Coordination"}</strong>
           </div>
           <div className={styles.dueChip}>
             <Clock size={12} />
-            <span>Due in 4 days</span>
+            <span>{isConstructionNotStarted ? "Groundwork in 14 days" : "Due in 4 days"}</span>
           </div>
         </div>
       </section>
@@ -347,42 +357,65 @@ export function ProjectOverviewActivitySections({
             <>
               <div className={styles.statsRow}>
                 <div className={styles.statBox}>
-                  <span className={styles.statBoxNum}>05</span>
+                  <span className={styles.statBoxNum}>{isConstructionNotStarted ? "00" : "05"}</span>
                   <span className={styles.statBoxLabel}>Total Planned</span>
                 </div>
                 <div className={styles.statBox}>
-                  <span className={`${styles.statBoxNum} ${styles.statBoxNumCompleted}`}>02</span>
+                  <span className={`${styles.statBoxNum} ${isConstructionNotStarted ? "" : styles.statBoxNumCompleted}`}>
+                    {isConstructionNotStarted ? "00" : "02"}
+                  </span>
                   <span className={styles.statBoxLabel}>In Progress</span>
                 </div>
                 <div className={styles.statBox}>
-                  <span className={styles.statBoxNum}>01</span>
+                  <span className={styles.statBoxNum}>{isConstructionNotStarted ? "00" : "01"}</span>
                   <span className={styles.statBoxLabel}>Completed</span>
                 </div>
                 <div className={styles.statBox}>
-                  <span className={styles.statBoxNum}>02</span>
+                  <span className={styles.statBoxNum}>{isConstructionNotStarted ? "00" : "02"}</span>
                   <span className={styles.statBoxLabel}>Scheduled</span>
                 </div>
               </div>
 
-              <div className={styles.taskList}>
-                {CLIENT_TODAY_ACTIVITIES.map((act) => {
-                  let badgeClass = styles.stepperBadgeUpcoming;
-                  if (act.badgeType === "inProgress") badgeClass = styles.stepperBadgeInProgress;
-                  if (act.badgeType === "pendingReview") badgeClass = styles.dueChip;
-                  if (act.badgeType === "completed") badgeClass = styles.stepperBadgeCompleted;
+              {isConstructionNotStarted ? (
+                <div
+                  style={{
+                    padding: "16px",
+                    background: "#f8fafc",
+                    borderRadius: "8px",
+                    border: "1px dashed #cbd5e1",
+                    textAlign: "center",
+                    margin: "12px 0",
+                  }}
+                >
+                  <Clock size={20} style={{ color: "#64748b", marginBottom: "6px" }} />
+                  <div style={{ fontWeight: 600, fontSize: "13px", color: "#334155" }}>
+                    Construction Has Not Started Yet
+                  </div>
+                  <p style={{ fontSize: "12px", color: "#64748b", marginTop: "4px", marginBottom: 0 }}>
+                    Site execution has not commenced. Daily activity logs, supervisor updates, and labor attendance will appear here once ground execution begins.
+                  </p>
+                </div>
+              ) : (
+                <div className={styles.taskList}>
+                  {CLIENT_TODAY_ACTIVITIES.map((act) => {
+                    let badgeClass = styles.stepperBadgeUpcoming;
+                    if (act.badgeType === "inProgress") badgeClass = styles.stepperBadgeInProgress;
+                    if (act.badgeType === "pendingReview") badgeClass = styles.dueChip;
+                    if (act.badgeType === "completed") badgeClass = styles.stepperBadgeCompleted;
 
-                  return (
-                    <Link
-                      key={act.id}
-                      href={projectId ? `/client/projects/${projectId}/tasks` : "/tasks"}
-                      className={styles.taskItem}
-                    >
-                      <span className={styles.taskItemName}>{act.title}</span>
-                      <span className={badgeClass}>{act.status}</span>
-                    </Link>
-                  );
-                })}
-              </div>
+                    return (
+                      <Link
+                        key={act.id}
+                        href={projectId ? `/client/projects/${projectId}/tasks` : "/tasks"}
+                        className={styles.taskItem}
+                      >
+                        <span className={styles.taskItemName}>{act.title}</span>
+                        <span className={badgeClass}>{act.status}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
 
               <Link
                 href={projectId ? `/client/projects/${projectId}/tasks` : "/tasks"}

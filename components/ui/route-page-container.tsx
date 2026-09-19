@@ -79,6 +79,7 @@ export function RoutePageContainer({
                   className="title-share-btn"
                   aria-label={`Share ${title}`}
                   title={`Share ${title}`}
+                  suppressHydrationWarning
                 >
                   <Share2 size={16} strokeWidth={1.8} />
                 </button>

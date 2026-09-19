@@ -21,13 +21,13 @@ export const INITIAL_ASSIGNMENTS: AssignmentDeployment[] = [
     attendance: {
       present: 10,
       total: 12,
-      unmarked: 1,
-      absent: 1,
+      unmarked: 0,
+      absent: 2,
     },
-    health: "attention_required",
-    healthMessage: "1 Worker Not Marked / 1 Reported Absent",
+    health: "at_risk",
+    healthMessage: "2 Workers Reported Absent",
     odinBrief:
-      "Greenwood Infra Projects Ltd has deployed a 12-member workforce (8 Masons, 4 Helpers) under Site Supervisor Suresh Nair for Level 2 structural masonry at Greenwood Residency, Kazhakkoottam. The assignment is currently on Day 12 of 30 shifts with 10 workers confirmed present on site, 1 unmarked helper, and 1 mason reported absent. Structural masonry progress is tracking on schedule at 85% completion, but supervisor check-in is advised to verify helper attendance and ensure continuous mortar curing on the south elevation boundary.",
+      "Greenwood Infra Projects Ltd has deployed a 12-member workforce (8 Masons, 4 Helpers) under Site Supervisor Suresh Nair for Level 2 structural masonry at Greenwood Residency, Kazhakkoottam. The assignment is currently on Day 12 of 30 shifts with 10 workers confirmed present on site and 2 workers reported absent. Structural masonry progress is tracking on schedule at 85% completion, with continuous mortar curing verified on the south elevation boundary.",
     supervisor: {
       name: "Suresh Nair",
       phone: "+91 98470 12345",
@@ -44,7 +44,7 @@ export const INITIAL_ASSIGNMENTS: AssignmentDeployment[] = [
       { id: "W8", name: "Sreejith V", trade: "Mason", level: "Senior", status: "Present", checkInTime: "08:12 AM", phone: "+91 98470 88888" },
       { id: "W9", name: "Prasanth R", trade: "Mason", level: "Skilled", status: "Present", checkInTime: "08:15 AM", phone: "+91 98470 99999" },
       { id: "W10", name: "Dinesh K", trade: "Mason", level: "Skilled", status: "Present", checkInTime: "08:18 AM", phone: "+91 98470 10101" },
-      { id: "W11", name: "Vishnu Das", trade: "Helper", level: "Helper", status: "Unmarked", phone: "+91 98470 20202" },
+      { id: "W11", name: "Vishnu Das", trade: "Helper", level: "Helper", status: "Absent", phone: "+91 98470 20202" },
       { id: "W12", name: "Ramesh C", trade: "Mason", level: "Senior", status: "Absent", phone: "+91 98470 30303" },
     ],
     coverImage: "/assets/projects/greenfield-villa.png",
@@ -693,11 +693,11 @@ export const INITIAL_ASSIGNMENTS: AssignmentDeployment[] = [
     attendance: {
       present: 19,
       total: 20,
-      unmarked: 1,
-      absent: 0,
+      unmarked: 0,
+      absent: 1,
     },
-    health: "attention_required",
-    healthMessage: "1 Worker Not Marked / Pending Sync",
+    health: "at_risk",
+    healthMessage: "1 Worker Reported Absent",
     supervisor: {
       name: "Kiran Raj",
       phone: "+91 98474 55667",
@@ -715,7 +715,7 @@ export const INITIAL_ASSIGNMENTS: AssignmentDeployment[] = [
       { id: "W55", name: "Saneesh M", trade: "Steel Fixer", level: "Skilled", status: "Present", checkInTime: "08:10 AM", phone: "+91 98470 79797" },
       { id: "W56", name: "Dhanush K", trade: "Steel Fixer", level: "Assistant", status: "Present", checkInTime: "08:14 AM", phone: "+91 98470 80809" },
       { id: "W57", name: "Midhun Mohan", trade: "Steel Fixer", level: "Assistant", status: "Present", checkInTime: "08:18 AM", phone: "+91 98470 81819" },
-      { id: "W58", name: "Arshad B", trade: "Steel Fixer", level: "Assistant", status: "Unmarked", phone: "+91 98470 82829" },
+      { id: "W58", name: "Arshad B", trade: "Steel Fixer", level: "Assistant", status: "Absent", phone: "+91 98470 82829" },
       { id: "W59", name: "Velayudhan K", trade: "Mason", level: "Master", status: "Present", checkInTime: "07:42 AM", phone: "+91 98470 83839" },
       { id: "W60", name: "Sasi Kumar", trade: "Mason", level: "Lead", status: "Present", checkInTime: "07:47 AM", phone: "+91 98470 84849" },
       { id: "W61", name: "Madhu P", trade: "Mason", level: "Senior", status: "Present", checkInTime: "07:51 AM", phone: "+91 98470 85859" },
@@ -986,7 +986,6 @@ export function calculateAssignmentMetrics(
       ? `${((totalPresent / totalPossibleAttendance) * 100).toFixed(1)}%`
       : "98.2%";
 
-  const attentionCount = activeList.filter((d) => d.health === "attention_required").length;
   const atRiskCount = activeList.filter((d) => d.health === "at_risk").length;
 
   return {
@@ -994,7 +993,6 @@ export function calculateAssignmentMetrics(
     sitesCovered: Math.max(8, sitesCovered),
     deployedCrew: Math.max(128, deployedCrew),
     shiftCompletion,
-    attentionCount,
     atRiskCount,
   };
 }
