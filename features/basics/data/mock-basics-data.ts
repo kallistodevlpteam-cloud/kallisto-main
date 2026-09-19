@@ -69,8 +69,13 @@ function createReview(index: number, seed: ProviderSeed): BasicsReview {
     rating: 4 + ((index % 9) + 1) / 10,
     review:
       "Clear technical coordination, dependable documentation and timely responses throughout the engagement.",
-    completionDate: `2026-0${(index % 6) + 1}-${String((index % 20) + 8).padStart(2, "0")}`,
+    completionDate:
+      index % 3 === 2
+        ? "2026-03-16"
+        : `2026-0${(index % 6) + 1}-${String((index % 20) + 8).padStart(2, "0")}`,
     verifiedEngagement: true,
+    totalSpend: index % 3 === 2 ? 38000 : 25000 + (index % 7) * 4500,
+    totalReviews: index % 3 === 2 ? 14 : 8 + (index % 11),
   };
 }
 
@@ -84,6 +89,13 @@ export const MOCK_BASICS_PROVIDERS: BasicsProvider[] = PROVIDER_SEEDS.map(
       providerType: index % 4 === 3 ? "individual" : "company",
       name: seed.name,
       companyName: index % 4 === 3 ? undefined : seed.name,
+      avatarUrl: [
+        "/assets/profile_avatar.png",
+        "/assets/rahul-avatar.jpg",
+        "/assets/arjun-avatar.jpg",
+        "/assets/priya-avatar.jpg",
+        "/assets/allen-avatar.jpg",
+      ][index % 5],
       headline: `${seed.specialization} for residential and commercial projects`,
       primaryCategory: seed.category,
       specializations: [

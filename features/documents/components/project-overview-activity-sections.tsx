@@ -975,63 +975,63 @@ export function ProjectOverviewActivitySections({
           </Link>
         </section>
 
-        {/* Right: HIVE STUDIO — hidden for client view */}
+        {/* Right: BASICS STUDIO — hidden for client view */}
         {!isClient && (
-          <section className={styles.card} aria-label="Hive Studio">
+          <section className={styles.card} aria-label="Basics Studio">
             <h3 className={styles.sectionTitle}>
-              <span>HIVE STUDIO</span>
+              <span>BASICS STUDIO</span>
               <span className={styles.sectionBadge}>04 Workspaces Used</span>
             </h3>
 
             <div className={styles.servicesList}>
               <div className={styles.serviceRow}>
                 <div className={styles.serviceInfoCol}>
-                  <span className={styles.serviceName}>AI Requirement Brief &amp; Spatial Synthesis</span>
+                  <span className={styles.serviceName}>RCC Structural Detailing &amp; Engineering</span>
                   <span className={styles.serviceUpdateNote}>
-                    Output: <strong>ODIN Brief &amp; 10 Domain Specs Synced</strong>
+                    Update: <strong>Sheet ST-204 slab reinforcement drawing uploaded</strong>
                   </span>
                 </div>
-                <span className={styles.stepperBadgeCompleted}>Completed</span>
+                <span className={styles.stepperBadgeCompleted}>Approved</span>
               </div>
 
               <div className={styles.serviceRow}>
                 <div className={styles.serviceInfoCol}>
-                  <span className={styles.serviceName}>Concept Scheme &amp; Palette Studio</span>
+                  <span className={styles.serviceName}>Integrated MEP &amp; Solar Engineering</span>
                   <span className={styles.serviceUpdateNote}>
-                    Output: <strong>8 Design Themes &amp; Moodboard Generated</strong>
+                    Notification: <strong>Breaker schedule &amp; solar inverter tie-in circuits revised</strong>
                   </span>
                 </div>
-                <span className={styles.stepperBadgeCompleted}>Delivered</span>
+                <span className={styles.stepperBadgeInProgress}>In Review</span>
               </div>
 
               <div className={styles.serviceRow}>
                 <div className={styles.serviceInfoCol}>
-                  <span className={styles.serviceName}>Automated Proposal &amp; Scope Generator</span>
+                  <span className={styles.serviceName}>BIM Coordination &amp; Clash Detection</span>
                   <span className={styles.serviceUpdateNote}>
-                    Output: <strong>Commercial Proposal v1.0 Dispatched</strong>
+                    Approval: <strong>Model Rev 2.1 sign-off complete (14 clashes resolved)</strong>
                   </span>
                 </div>
-                <span className={styles.stepperBadgeInProgress}>Sent to Client</span>
+                <span className={styles.stepperBadgeCompleted}>Approved</span>
               </div>
 
               <div className={styles.serviceRow}>
                 <div className={styles.serviceInfoCol}>
-                  <span className={styles.serviceName}>CAD Spec &amp; Feasibility Verifier</span>
+                  <span className={styles.serviceName}>Building Permit &amp; Statutory Sanctions</span>
                   <span className={styles.serviceUpdateNote}>
-                    Output: <strong>4 Architectural Sheets Checked (0 Conflicts)</strong>
+                    Approval: <strong>Municipal Corporation permit order #KMBR-2026 sanctioned</strong>
                   </span>
                 </div>
-                <span className={styles.stepperBadgeCompleted}>Verified</span>
+                <span className={styles.stepperBadgeCompleted}>Sanctioned</span>
               </div>
             </div>
 
             <div className={styles.serviceValueBanner}>
-              <span>4 Hive Studio Tasks Active</span>
+              <span>4 Basics Studio Tasks Active</span>
               <span style={{ fontWeight: 700 }}>Outputs Synced to Project</span>
             </div>
 
-            <Link href="/studio" className={styles.footerLink}>
-              <span>Open Hive Studio</span>
+            <Link href="/basics" className={styles.footerLink}>
+              <span>Open Basics Studio</span>
               <ArrowRight size={13} />
             </Link>
           </section>

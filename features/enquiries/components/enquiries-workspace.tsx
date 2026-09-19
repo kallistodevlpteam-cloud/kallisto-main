@@ -15,6 +15,7 @@ import { parseEnquiryQuery, serializeEnquiryQuery } from "../utils/enquiry-query
 import { filterEnquiries, sortEnquiries, paginateEnquiries } from "../utils/filter-enquiries";
 import { buildEnquiriesFromProjects } from "../utils/enquiries-from-backend-projects";
 import type { BackendProject } from "@/types/domain/backend-project";
+import { DUMMY_BACKEND_PROJECTS } from "@/lib/backend/dummy-projects";
 import { EnquiryRecord } from "../types/enquiry.types";
 import { CLIENT_PORTAL_ENQUIRIES } from "../services/client-enquiries.mock";
 import { EnquiryFilterToolbar } from "./enquiry-filter-toolbar";
@@ -111,11 +112,16 @@ export function EnquiriesWorkspace({ isLoading = false, basePath }: EnquiriesWor
 
   // The list is driven exclusively by the backend 'enq' projects. When a
   // test fixture is present it wins, so automated tests stay deterministic.
+  const fallbackDummyProjects = DUMMY_BACKEND_PROJECTS.filter(
+    (p) => (p.projectCharacter || "").toLowerCase() === "enq"
+  );
+  const effectiveProjects = backendProjects.length > 0 ? backendProjects : fallbackDummyProjects;
+
   const sourceRecords: EnquiryRecord[] = testEnquiries
     ? testEnquiries
     : isClient
     ? CLIENT_PORTAL_ENQUIRIES
-    : buildEnquiriesFromProjects(backendProjects);
+    : buildEnquiriesFromProjects(effectiveProjects);
 
   const showLoading = isLoading || (!testEnquiries && !projectsLoaded);
 

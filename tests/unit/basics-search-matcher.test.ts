@@ -37,4 +37,28 @@ describe("Basics Intelligent Search & Spell-tolerance", () => {
     expect(levenshtein("architechture", "architecture")).toBeLessThanOrEqual(2);
     expect(levenshtein("sturctural", "structural")).toBeLessThanOrEqual(2);
   });
+
+  it("matches providers to a requirement based on category, specialization, and location", async () => {
+    const { matchProvidersToRequirement } = await import("@/features/basics/lib/basics-search-matcher");
+    const providers = await basicsProviderRepository.listProviders();
+    const matches = matchProvidersToRequirement(
+      {
+        category: "engineering",
+        specialization: "Structural Engineering",
+        location: "Trivandrum, Kerala",
+        projectType: "residential",
+      },
+      providers,
+    );
+
+    expect(matches.length).toBeGreaterThan(0);
+    // Gridline Engineering is in Thiruvananthapuram (Trivandrum) with Structural Peer Review
+    // Axis Structures is in Kochi with RCC Structural Design
+    // BeamWorks is in Kottayam with Steel and RCC Structures
+    const topMatches = matches.slice(0, 3).map((m) => m.provider.name);
+    expect(topMatches.some((name) => name.includes("Gridline") || name.includes("Axis") || name.includes("BeamWorks"))).toBe(true);
+    expect(matches[0].matchScore).toBeGreaterThanOrEqual(70);
+    expect(matches[0].matchReasons.length).toBeGreaterThan(0);
+  });
 });
+

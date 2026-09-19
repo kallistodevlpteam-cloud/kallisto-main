@@ -1,22 +1,30 @@
 "use client";
 
 import {
+  ArrowRight,
+  Bookmark,
+  Check,
   CheckSquare,
   FileText,
+  MapPin,
   Pencil,
+  Search,
   Send,
   Share2,
+  Sparkles,
+  Star,
   UsersRound,
   XCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   basicsProposalRepository,
   basicsProviderRepository,
   basicsRequirementRepository,
 } from "../repositories/basics-repositories";
+import { matchProvidersToRequirement } from "../lib/basics-search-matcher";
 import type {
   BasicsProposal,
   BasicsProvider,
@@ -55,12 +63,57 @@ export function RequirementDetail({
   const [proposals, setProposals] = useState<BasicsProposal[]>([]);
   const [providers, setProviders] = useState<BasicsProvider[]>([]);
   const [selectedProposalIds, setSelectedProposalIds] = useState<string[]>([]);
+  const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [matchedTab, setMatchedTab] = useState<"all" | "saved">("all");
   const [loadState, setLoadState] = useState<"loading" | "success" | "error" | "offline" | "forbidden">(
     forcedState === "forbidden" ? "forbidden" : "loading",
   );
-  const [notice, setNotice] = useState(
-    searchParams.get("saved") ? "Requirement saved successfully." : "",
-  );
+  const [notice, setNotice] = useState(() => {
+    if (searchParams.get("findMatches") === "true") {
+      return "Requirement published successfully! Verified specialist profiles matching your request are displayed below.";
+    }
+    return searchParams.get("saved") ? "Requirement saved successfully." : "";
+  });
+
+  const matchedProviders = useMemo(() => {
+    if (!requirement || !providers.length) return [];
+    return matchProvidersToRequirement(
+      {
+        category: requirement.category,
+        specialization: requirement.specialization,
+        location: requirement.location,
+        projectType: requirement.projectType,
+      },
+      providers,
+    );
+  }, [requirement, providers]);
+
+  const savedMatchedProviders = useMemo(() => {
+    return matchedProviders.filter(({ provider }) => savedIds.includes(provider.id));
+  }, [matchedProviders, savedIds]);
+
+  const displayedMatched =
+    matchedTab === "saved" ? savedMatchedProviders : matchedProviders;
+
+  async function inviteProvider(providerId: string) {
+    if (!requirement) return;
+    if (requirement.invitedProviderIds.includes(providerId)) return;
+    const updatedIds = [...requirement.invitedProviderIds, providerId];
+    try {
+      const updated = await basicsRequirementRepository.updateRequirement(requirement.id, {
+        invitedProviderIds: updatedIds,
+      });
+      setRequirement(updated);
+      const invited = providers.find((p) => p.id === providerId);
+      setNotice(
+        invited
+          ? `Invited ${invited.name} to submit a proposal for this requirement.`
+          : "Provider invited successfully.",
+      );
+    } catch {
+      setNotice("Could not send invite. Please try again.");
+    }
+  }
 
   useEffect(() => {
     if (forcedState === "forbidden") return;
@@ -69,8 +122,9 @@ export function RequirementDetail({
       basicsRequirementRepository.getRequirement(requirementId),
       basicsProposalRepository.listProposals({ requirementId }),
       basicsProviderRepository.listProviders(),
+      basicsProviderRepository.getSavedProviderIds(),
     ]).then(
-      ([requirementResult, proposalResult, providerResult]) => {
+      ([requirementResult, proposalResult, providerResult, savedResult]) => {
         if (cancelled) return;
         if (!requirementResult) {
           setLoadState("error");
@@ -79,6 +133,7 @@ export function RequirementDetail({
         setRequirement(requirementResult);
         setProposals(proposalResult);
         setProviders(providerResult);
+        setSavedIds(savedResult);
         setLoadState("success");
       },
       () => {
@@ -179,6 +234,139 @@ export function RequirementDetail({
           </button>
         ) : null}
       </div>
+
+      {matchedProviders.length > 0 ? (
+        <section className={styles.matchedSection} aria-labelledby="matched-specialists-title">
+          <div className={styles.matchedSectionHeader}>
+            <div className={styles.matchedSectionTitleGroup}>
+              <h2 id="matched-specialists-title">
+                <Sparkles size={16} style={{ color: "#2563eb" }} aria-hidden="true" />
+                Matched Specialists in Basics
+                <span className={styles.matchedSectionBadge}>{matchedProviders.length} Matched</span>
+              </h2>
+              <p>
+                Verified professionals matching {requirement.specialization}
+                {requirement.location ? ` in ${requirement.location}` : ""} with verified credentials.
+              </p>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+              {savedMatchedProviders.length > 0 ? (
+                <div className={styles.wizardMatchTabs}>
+                  <button
+                    type="button"
+                    className={`${styles.wizardMatchTabBtn} ${matchedTab === "all" ? styles.wizardMatchTabBtnActive : ""}`}
+                    onClick={() => setMatchedTab("all")}
+                  >
+                    All ({matchedProviders.length})
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.wizardMatchTabBtn} ${matchedTab === "saved" ? styles.wizardMatchTabBtnActive : ""}`}
+                    onClick={() => setMatchedTab("saved")}
+                  >
+                    <Bookmark size={11} fill="currentColor" aria-hidden="true" />
+                    Saved Profiles ({savedMatchedProviders.length})
+                  </button>
+                </div>
+              ) : null}
+              <Link
+                href={`/basics/experts?requirementId=${requirement.id}&category=${requirement.category}`}
+                className={styles.secondaryButton}
+              >
+                <Search size={13} aria-hidden="true" />
+                Explore all in Expert Directory
+                <ArrowRight size={13} aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+
+          <div className={styles.matchedGrid}>
+            {displayedMatched.slice(0, 6).map(({ provider, matchScore, matchReasons }) => {
+              const isInvited = requirement.invitedProviderIds.includes(provider.id);
+              const isSaved = savedIds.includes(provider.id);
+              return (
+                <div className={styles.matchedCard} key={provider.id}>
+                  <div className={styles.matchedCardHeader}>
+                    <div className={styles.matchedProviderTitle}>
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <h3 className={styles.matchedProviderName}>
+                            <Link
+                              href={`/basics/experts/${provider.id}?requirementId=${requirement.id}`}
+                              style={{ textDecoration: "none", color: "inherit" }}
+                            >
+                              {provider.name}
+                            </Link>
+                          </h3>
+                          {isSaved ? (
+                            <span className={styles.wizardSavedTag} title="In your saved profiles">
+                              <Bookmark size={10} fill="currentColor" aria-hidden="true" />
+                              Saved
+                            </span>
+                          ) : null}
+                        </div>
+                        <p className={styles.matchedProviderSub}>
+                          {provider.specializations[0] || provider.headline}
+                        </p>
+                      </div>
+                    </div>
+                    <span className={styles.matchedScoreBadge}>{matchScore}% match</span>
+                  </div>
+
+                  <div className={styles.matchedReasonsList}>
+                    {matchReasons.map((reason) => (
+                      <span key={reason} className={styles.matchedReasonTag}>
+                        {reason}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className={styles.matchedMetaRow}>
+                    <span className={styles.matchedRating}>
+                      <Star size={11} fill="#eab308" style={{ color: "#eab308" }} aria-hidden="true" />
+                      {provider.rating.toFixed(1)}
+                    </span>
+                    <span>·</span>
+                    <span>{provider.yearsOfExperience} yrs exp</span>
+                    <span>·</span>
+                    <span title={provider.location.city}>
+                      <MapPin size={10} aria-hidden="true" /> {provider.location.city}
+                    </span>
+                  </div>
+
+                  <div className={styles.matchedActionsRow}>
+                    <button
+                      type="button"
+                      className={isInvited ? styles.invitedButton : styles.inviteButton}
+                      disabled={isInvited}
+                      onClick={() => void inviteProvider(provider.id)}
+                    >
+                      {isInvited ? (
+                        <>
+                          <Check size={12} aria-hidden="true" />
+                          Invited
+                        </>
+                      ) : (
+                        <>
+                          <Send size={12} aria-hidden="true" />
+                          Invite to Requirement
+                        </>
+                      )}
+                    </button>
+                    <Link
+                      href={`/basics/experts/${provider.id}?requirementId=${requirement.id}`}
+                      className={styles.secondaryButton}
+                      style={{ height: "30px", fontSize: "11.5px", padding: "0 10px" }}
+                    >
+                      Profile
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
 
       <section className={styles.section} aria-labelledby="proposal-pipeline-title">
         <div className={styles.sectionHeader}>

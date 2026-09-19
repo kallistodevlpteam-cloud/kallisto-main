@@ -221,6 +221,20 @@ export interface BackendProject {
   proposal?: BackendProjectProposal | null;
   teamMembers?: BackendProjectTeamMember[];
   messages?: BackendProjectMessage[];
+  stage?: string | null;
+  status?: string | null;
+  source?: string | null;
+  enquiryRef?: string | null;
+  priority?: "high" | "medium" | "low" | null;
+  owner?: string | null;
+  tags?: string[] | null;
+  isNew?: boolean | null;
+  nextAction?: {
+    type: string;
+    label: string;
+    dueAt?: string;
+    state?: "urgent" | "scheduled" | "ready" | "completed";
+  } | null;
 }
 
 export interface BackendProjectsResponse {

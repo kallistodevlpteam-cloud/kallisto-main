@@ -59,8 +59,11 @@ import {
   EnquiryRecord,
   EnquiryStatus,
   EnquiryStage,
+  EnquirySource,
+  EnquiryNextAction,
   EnquiryRequirement,
   EnquiryRequirementDomain,
+  ProjectType,
 } from "@/features/enquiries/types/enquiry.types";
 import {
   buildEnquiryDetailViewModel,
@@ -240,8 +243,9 @@ export function buildEnquiriesFromProjects(projects: Array<Record<string, unknow
     const normalizedType = rawType.includes("comm") ? "commercial" : "residential";
 
     const isPrj = String(proj.projectCharacter || proj.project_character || "enq").toLowerCase() === "pr";
-    const status: EnquiryStatus = isPrj ? "completed" : "active";
-    const stage: EnquiryStage = isPrj ? "accepted" : (proj.viewed || proj.view ? "clarification" : "new");
+    const status: EnquiryStatus = (proj.status as EnquiryStatus) || (isPrj ? "completed" : "active");
+    const stage: EnquiryStage = (proj.stage as EnquiryStage) || (isPrj ? "accepted" : (proj.viewed || proj.view ? "clarification" : "new"));
+    const source: EnquirySource = (proj.source as EnquirySource) || "website";
 
     const rawBudget = (proj.estimatedOverallBudget ?? proj.estimated_overall_budget) as number | string | undefined;
     const formattedBudget = typeof rawBudget === "number"
@@ -282,15 +286,15 @@ export function buildEnquiriesFromProjects(projects: Array<Record<string, unknow
       clientName,
       location,
       thumbnailUrl: String(proj.coverImageUrl || proj.cover_image_url || proj.thumbnailUrl || DEFAULT_ENQUIRY_RECORD.thumbnailUrl),
-      source: "website",
+      source,
       status,
       stage,
-      projectType: normalizedType as any,
+      projectType: (normalizedType as ProjectType) || "residential",
       backendProjectType: String(proj.projectType || proj.project_type || "Residential Design"),
       budgetMin: 4000000,
       budgetMax: 6000000,
       receivedAt: String(proj.createdAt || proj.created_at || proj.receivedAt || DEFAULT_ENQUIRY_RECORD.receivedAt),
-      nextAction: { type: "review_enquiry", label: "Review Requirements" },
+      nextAction: (proj.nextAction as EnquiryNextAction) || { type: "review_enquiry", label: "Review Requirements" },
       enquiryRef: String(proj.enquiryRef || proj.code || `ENQ-2026-${String(idx + 486).padStart(4, "0")}`),
       budget: formattedBudget || String(proj.budget || "₹40L – ₹60L"),
       timeline: String(proj.clientExpectedTimeline || proj.client_expected_timeline || proj.timeline || "Within 6 Months"),
@@ -307,9 +311,9 @@ export function buildEnquiriesFromProjects(projects: Array<Record<string, unknow
           alt: img.alt ?? undefined,
         }));
       })(),
-      projectDocuments: (proj.projectDocuments ?? proj.project_documents) as any,
-      siteImages: (proj.siteImages ?? proj.site_images) as any,
-      projectScopes: (proj.projectScopes ?? proj.project_scopes) as any,
+      projectDocuments: (proj.projectDocuments ?? proj.project_documents) as EnquiryRecord["projectDocuments"],
+      siteImages: (proj.siteImages ?? proj.site_images) as string[] | undefined,
+      projectScopes: (proj.projectScopes ?? proj.project_scopes) as EnquiryRecord["projectScopes"],
       requirementsList: requirementsRows.flatMap((entry) => {
         const requirement = (entry ?? {}) as {
           id?: unknown;
@@ -654,7 +658,7 @@ export function EnquiryDetailWorkspace({
     return DEFAULT_ENQUIRY_RECORD.stage || "new";
   });
   const [selectedRequirementId, setSelectedRequirementId] = useState<string | null>(null);
-  const [activeDomainKey, setActiveDomainKey] = useState<string>("room_programme");
+  const [internalDomainKey, setInternalDomainKey] = useState<string | null>(null);
   const [expandedRoomIds, setExpandedRoomIds] = useState<Record<string, boolean>>({});
   const [clarificationText, setClarificationText] = useState<string>("");
   const [selectedOwnerId, setSelectedOwnerId] = useState<string>("owner-1");
@@ -676,6 +680,20 @@ export function EnquiryDetailWorkspace({
   const backendDomainKeyList = backendRequirementGroups.map((group) => group.id).join("|");
   const backendDomainKeySet = new Set(backendRequirementGroups.map((group) => group.id));
   const backendRequirementRows = buildBackendRequirementRows(enquiry.requirementsList);
+
+  const rawDomain = searchParams.get("domain");
+  const activeDomainKey =
+    internalDomainKey ??
+    (rawDomain &&
+    (REQUIREMENT_DOMAIN_ORDER.some((d) => d.key === rawDomain) ||
+      backendDomainKeyList.split("|").includes(rawDomain))
+      ? rawDomain
+      : "room_programme");
+
+  const setActiveDomainKey = (domainKey: string) => {
+    setInternalDomainKey(domainKey);
+  };
+
   const resolvedActiveDomainKey = isBackendRequirementMode
     ? backendDomainKeySet.has(activeDomainKey)
       ? activeDomainKey
@@ -687,17 +705,6 @@ export function EnquiryDetailWorkspace({
   const activeBackendRows = activeBackendGroup
     ? backendRequirementRows.filter((row) => (row.domain as string) === activeBackendGroup.id)
     : [];
-
-  const rawDomain = searchParams.get("domain");
-  useEffect(() => {
-    if (
-      rawDomain &&
-      (REQUIREMENT_DOMAIN_ORDER.some((d) => d.key === rawDomain) ||
-        backendDomainKeyList.split("|").includes(rawDomain))
-    ) {
-      setActiveDomainKey(rawDomain);
-    }
-  }, [rawDomain, backendDomainKeyList]);
 
   const handleSelectDomain = (domainKey: string) => {
     setActiveDomainKey(domainKey);
@@ -861,7 +868,6 @@ export function EnquiryDetailWorkspace({
       printWindow.print();
     }, 400);
   };
-
   const viewModel = buildEnquiryDetailViewModel({ enquiry, providerContext: {} });
   const { header } = viewModel;
 
@@ -1732,11 +1738,6 @@ export function EnquiryActionsCard({
   const [rejectionReason, setRejectionReason] = useState("");
   const [isRejecting, setIsRejecting] = useState(false);
   const [rejectError, setRejectError] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleConfirmAccept = async () => {
     if (isAccepting) return;
@@ -1877,7 +1878,7 @@ export function EnquiryActionsCard({
           </button>
         </div>
 
-        {showWarningModal && mounted && createPortal(
+        {showWarningModal && typeof document !== "undefined" && createPortal(
           <div className={styles.modalBackdrop} onClick={() => setShowWarningModal(false)}>
             <div className={styles.warningModalCard} onClick={(e) => e.stopPropagation()}>
               <div className={styles.warningModalHeaderRow}>
@@ -1938,7 +1939,7 @@ export function EnquiryActionsCard({
       </div>
 
       {/* Accept Confirmation Modal */}
-      {showAcceptModal && mounted && createPortal(
+      {showAcceptModal && typeof document !== "undefined" && createPortal(
         <div className={styles.modalBackdrop} onClick={() => setShowAcceptModal(false)}>
           <div className={styles.warningModalCard} onClick={(e) => e.stopPropagation()}>
             <div className={styles.warningModalHeaderRow}>
@@ -1981,7 +1982,7 @@ export function EnquiryActionsCard({
       )}
 
       {/* Reject Confirmation Modal */}
-      {showRejectModal && mounted && createPortal(
+      {showRejectModal && typeof document !== "undefined" && createPortal(
         <div className={styles.modalBackdrop} onClick={() => setShowRejectModal(false)}>
           <div className={styles.warningModalCard} onClick={(e) => e.stopPropagation()}>
             <div className={styles.warningModalHeaderRow}>

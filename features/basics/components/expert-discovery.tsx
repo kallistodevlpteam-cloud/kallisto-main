@@ -1,15 +1,15 @@
 "use client";
 
 import {
+  ArrowUpRight,
   Bookmark,
-  ChevronRight,
   Columns3,
-  Plus,
+  Layers,
+  LayoutDashboard,
+  MapPin,
   Search,
-  ShoppingBag,
   SlidersHorizontal,
   Sparkles,
-  Star,
   X,
 } from "lucide-react";
 import Image from "next/image";
@@ -17,23 +17,27 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  DocumentsDuotoneIcon,
-  PortfolioDuotoneIcon,
-} from "@/components/layout/sidebar-icons";
-import {
   BASICS_PROJECT_TYPES,
   BASICS_SERVICE_CATALOGUE,
   BASICS_SOFTWARE_SKILLS,
 } from "../constants/service-catalogue";
-import { basicsProviderRepository } from "../repositories/basics-repositories";
+import {
+  basicsProviderRepository,
+  basicsRequirementRepository,
+} from "../repositories/basics-repositories";
 import type {
   BasicsAvailability,
   BasicsPricingModel,
   BasicsProvider,
+  BasicsRequirement,
   BasicsServiceCategory,
   ProviderFilters,
 } from "../types/basics.types";
-import { availabilityLabels, pricingLabels } from "../utils/basics-formatters";
+import {
+  availabilityLabels,
+  pricingLabels,
+  titleCase,
+} from "../utils/basics-formatters";
 import {
   BasicsEmptyState,
   BasicsLoadingSkeleton,
@@ -96,19 +100,57 @@ export function ExpertDiscovery() {
     [searchParams],
   );
   const projectId = searchParams.get("projectId") ?? undefined;
+  const requirementId = searchParams.get("requirementId") ?? undefined;
+  const [loadedRequirement, setLoadedRequirement] = useState<BasicsRequirement | null>(null);
   const [providers, setProviders] = useState<BasicsProvider[]>([]);
   const [loadState, setLoadState] = useState<"loading" | "success" | "error" | "offline">("loading");
   const [selectedIds, setSelectedIds] = useState<string[]>(() =>
     (searchParams.get("compare") ?? "").split(",").filter(Boolean).slice(0, 3),
   );
   const [savedIds, setSavedIds] = useState<string[]>([]);
-  const [savedFilterOnly, setSavedFilterOnly] = useState(false);
+  const [savedFilterOnly, setSavedFilterOnly] = useState(
+    () => searchParams.get("saved") === "true",
+  );
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [sidePanelOpen, setSidePanelOpen] = useState(false);
   const filterQ = filters.q ?? "";
   const [internalQuery, setInternalQuery] = useState(filterQ);
   const [prevFilterQ, setPrevFilterQ] = useState(filterQ);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    void basicsProviderRepository.getSavedProviderIds().then(setSavedIds);
+  }, []);
+
+  useEffect(() => {
+    if (!requirementId) return;
+    let cancelled = false;
+    void basicsRequirementRepository.getRequirement(requirementId).then((req) => {
+      if (!cancelled) {
+        setLoadedRequirement(req);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [requirementId]);
+
+  const activeRequirement =
+    requirementId && loadedRequirement?.id === requirementId
+      ? loadedRequirement
+      : null;
+
+  const handleInviteToRequirement = useCallback(
+    async (providerId: string) => {
+      if (!activeRequirement) return;
+      if (activeRequirement.invitedProviderIds.includes(providerId)) return;
+      const updatedIds = [...activeRequirement.invitedProviderIds, providerId];
+      const updated = await basicsRequirementRepository.updateRequirement(activeRequirement.id, {
+        invitedProviderIds: updatedIds,
+      });
+      setLoadedRequirement(updated);
+    },
+    [activeRequirement],
+  );
 
   if (filterQ !== prevFilterQ) {
     setPrevFilterQ(filterQ);
@@ -198,10 +240,6 @@ export function ExpertDiscovery() {
     }
     return providers;
   }, [providers, savedFilterOnly, savedIds]);
-
-  const savedProviders = useMemo(() => {
-    return providers.filter((p) => savedIds.includes(p.id));
-  }, [providers, savedIds]);
 
   function applyComparison() {
     if (selectedIds.length < 2) return;
@@ -298,63 +336,16 @@ export function ExpertDiscovery() {
 
           {/* Right: Quick Action Pill Buttons with Text Labels */}
           <div className={styles.discoveryTopNavRight}>
-            {/* Saved Specialists Button */}
-            <button
-              type="button"
-              className={`${styles.overviewTopNavBtn} ${savedFilterOnly ? styles.overviewTopNavBtnActive : ""}`}
-              onClick={() => setSavedFilterOnly((prev) => !prev)}
-              title={savedFilterOnly ? "Show all specialists" : `Saved Specialists (${savedIds.length})`}
-              aria-label="Toggle saved specialists"
-              aria-pressed={savedFilterOnly}
-            >
-              <Bookmark
-                size={14}
-                className={styles.overviewTopNavIcon}
-                fill={savedFilterOnly || savedIds.length > 0 ? "currentColor" : "none"}
-                aria-hidden="true"
-              />
-              <span>Saved</span>
-              {savedIds.length > 0 ? (
-                <span className={styles.overviewBadge}>{savedIds.length}</span>
-              ) : null}
-            </button>
-
-            {/* Orders & Engagements Button */}
+            {/* Basics Dashboard Button */}
             <Link
-              href={projectId ? `/basics/engagements?projectId=${projectId}` : "/basics/engagements"}
+              href={projectId ? `/basics/dashboard?projectId=${projectId}` : "/basics/dashboard"}
               className={styles.overviewTopNavBtn}
-              title="Orders & Engagements"
-              aria-label="View orders and engagements"
+              title="Basics Dashboard"
+              aria-label="View Basics dashboard"
             >
-              <ShoppingBag size={14} className={styles.overviewTopNavIcon} aria-hidden="true" />
-              <span>Orders</span>
+              <LayoutDashboard size={14} className={styles.overviewTopNavIcon} aria-hidden="true" />
+              <span>Dashboard</span>
             </Link>
-
-            {/* Basics Hub Drawer Toggle */}
-            <button
-              type="button"
-              className={`${styles.overviewTopNavBtn} ${sidePanelOpen ? styles.overviewTopNavBtnActive : ""}`}
-              onClick={() => setSidePanelOpen((prev) => !prev)}
-              title={sidePanelOpen ? "Close Basics Hub" : "Open Basics Hub"}
-              aria-label="Toggle Basics Hub side panel"
-            >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={styles.overviewTopNavIcon}
-                aria-hidden="true"
-              >
-                <rect x="3" y="4" width="18" height="16" rx="4" />
-                <line x1="16" y1="8" x2="16" y2="16" />
-              </svg>
-              <span>Basics Hub</span>
-            </button>
           </div>
         </div>
 
@@ -386,6 +377,16 @@ export function ExpertDiscovery() {
             >
               <Sparkles size={13} aria-hidden="true" />
               <span>Verified only</span>
+            </button>
+
+            <button
+              type="button"
+              className={`${styles.discoveryPill} ${savedFilterOnly ? styles.discoveryPillActive : ""}`}
+              onClick={() => setSavedFilterOnly((prev) => !prev)}
+              aria-pressed={savedFilterOnly}
+            >
+              <Bookmark size={13} fill={savedFilterOnly ? "currentColor" : "none"} aria-hidden="true" />
+              <span>Saved profiles ({savedIds.length})</span>
             </button>
           </div>
           {/* Right-Aligned Icon-Only Filter Trigger with Standard Popover */}
@@ -621,6 +622,90 @@ export function ExpertDiscovery() {
 
       {/* 2. Full Width Responsive Provider Grid */}
       <div className={styles.detailStack}>
+        {activeRequirement ? (
+          <div className={styles.expertRequirementBanner} role="region" aria-label="Requirement context">
+            <div className={styles.expertRequirementInfo}>
+              <div className={styles.expertRequirementIconBox}>
+                <Sparkles size={16} strokeWidth={2} aria-hidden="true" />
+              </div>
+              <div className={styles.expertRequirementTitleGroup}>
+                <div className={styles.expertRequirementTitleRow}>
+                  <span className={styles.expertRequirementBadge}>Matching for</span>
+                  <strong className={styles.expertRequirementTitle}>{activeRequirement.title}</strong>
+                </div>
+                <div className={styles.expertRequirementTagsRow}>
+                  <span className={styles.expertRequirementTag}>
+                    <Layers size={11} aria-hidden="true" />
+                    {titleCase(activeRequirement.category)}
+                  </span>
+                  {activeRequirement.specialization ? (
+                    <span className={styles.expertRequirementTag}>
+                      {activeRequirement.specialization}
+                    </span>
+                  ) : null}
+                  {activeRequirement.deliverables && activeRequirement.deliverables.length > 0 ? (
+                    <span className={styles.expertRequirementTag}>
+                      {activeRequirement.deliverables.slice(0, 2).join(", ")}
+                    </span>
+                  ) : null}
+                  {activeRequirement.location ? (
+                    <span className={styles.expertRequirementTag}>
+                      <MapPin size={11} aria-hidden="true" />
+                      {activeRequirement.location}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.expertRequirementActions}>
+              <div className={styles.expertRequirementTabs} role="tablist" aria-label="Filter matching experts">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={!savedFilterOnly}
+                  className={`${styles.expertRequirementTabBtn} ${!savedFilterOnly ? styles.expertRequirementTabBtnActive : ""}`}
+                  onClick={() => setSavedFilterOnly(false)}
+                >
+                  All Matches ({providers.length})
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={savedFilterOnly}
+                  className={`${styles.expertRequirementTabBtn} ${savedFilterOnly ? styles.expertRequirementTabBtnActive : ""}`}
+                  onClick={() => setSavedFilterOnly(true)}
+                >
+                  <Bookmark size={12} fill={savedFilterOnly ? "currentColor" : "none"} aria-hidden="true" />
+                  Saved Profiles ({providers.filter((p) => savedIds.includes(p.id)).length})
+                </button>
+              </div>
+
+              <div className={styles.expertRequirementDivider} aria-hidden="true" />
+
+              <Link
+                href={`/basics/requirements/${activeRequirement.id}`}
+                className={styles.expertRequirementViewBtn}
+                title="View requirement scope and details"
+              >
+                <span>View Requirement</span>
+                <ArrowUpRight size={13} aria-hidden="true" />
+              </Link>
+
+              <button
+                type="button"
+                className={styles.expertRequirementClearBtn}
+                onClick={() => updateParam("requirementId", undefined)}
+                title="Exit requirement matching mode"
+                aria-label="Clear requirement matching context"
+              >
+                <X size={13} aria-hidden="true" />
+                <span>Clear context</span>
+              </button>
+            </div>
+          </div>
+        ) : null}
+
         {loadState === "loading" ? <BasicsLoadingSkeleton label="Loading expert directory" /> : null}
         {loadState === "error" ? (
           <BasicsStateView
@@ -657,12 +742,15 @@ export function ExpertDiscovery() {
                 key={provider.id}
                 provider={provider}
                 projectId={projectId}
+                requirementId={requirementId}
                 discovery
                 selected={selectedIds.includes(provider.id)}
                 saved={savedIds.includes(provider.id)}
+                isInvited={Boolean(activeRequirement?.invitedProviderIds.includes(provider.id))}
                 compareDisabled={selectedIds.length >= 3}
                 onToggleCompare={toggleCompare}
                 onToggleSave={toggleSave}
+                onInvite={activeRequirement ? handleInviteToRequirement : undefined}
               />
             ))}
           </div>
@@ -699,152 +787,6 @@ export function ExpertDiscovery() {
           </div>
         ) : null}
       </div>
-
-      {/* Slide-out Basics Hub Drawer */}
-      {sidePanelOpen ? (
-        <>
-          <div
-            className={styles.basicsDrawerBackdrop}
-            onClick={() => setSidePanelOpen(false)}
-            aria-hidden="true"
-          />
-          <aside className={styles.basicsDrawerPanel} aria-label="Basics Quick Hub">
-            <div className={styles.basicsDrawerHeader}>
-              <h2 className={styles.basicsDrawerTitle}>Basics Hub</h2>
-              <button
-                type="button"
-                className={styles.basicsDrawerCloseBtn}
-                onClick={() => setSidePanelOpen(false)}
-                title="Close panel"
-                aria-label="Close panel"
-              >
-                <X size={15} aria-hidden="true" />
-              </button>
-            </div>
-
-            <div className={styles.basicsDrawerContent}>
-              {/* Quick Actions */}
-              <div className={styles.basicsDrawerSection}>
-                <h3 className={styles.basicsDrawerSectionTitle}>Quick Actions</h3>
-                <Link
-                  href={`/basics/requirements/new${projectId ? `?projectId=${projectId}` : ""}`}
-                  className={styles.primaryButton}
-                  style={{ width: "100%", justifyContent: "center", height: "36px", fontSize: "12.5px" }}
-                  onClick={() => setSidePanelOpen(false)}
-                >
-                  <Plus size={14} aria-hidden="true" />
-                  <span>Post a Requirement</span>
-                </Link>
-                <Link
-                  href={`/basics/engagements${projectId ? `?projectId=${projectId}` : ""}`}
-                  className={styles.secondaryButton}
-                  style={{ width: "100%", justifyContent: "center", height: "36px", fontSize: "12.5px" }}
-                  onClick={() => setSidePanelOpen(false)}
-                >
-                  <ShoppingBag size={14} aria-hidden="true" />
-                  <span>View Engagements & Orders</span>
-                </Link>
-              </div>
-
-              {/* Saved Specialists */}
-              <div className={styles.basicsDrawerSection}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <h3 className={styles.basicsDrawerSectionTitle}>
-                    Saved Specialists ({savedIds.length})
-                  </h3>
-                  {savedIds.length > 0 && (
-                    <button
-                      type="button"
-                      style={{ fontSize: "11px", color: "#0284c7", background: "none", border: "none", cursor: "pointer", fontWeight: "600" }}
-                      onClick={() => {
-                        setSavedFilterOnly(true);
-                        setSidePanelOpen(false);
-                      }}
-                    >
-                      Filter saved
-                    </button>
-                  )}
-                </div>
-                {savedProviders.length > 0 ? (
-                  savedProviders.slice(0, 4).map((spec) => (
-                    <Link
-                      key={spec.id}
-                      href={`/basics/experts/${spec.id}${projectId ? `?projectId=${projectId}` : ""}`}
-                      className={styles.basicsDrawerCard}
-                      onClick={() => setSidePanelOpen(false)}
-                    >
-                      <div className={styles.basicsDrawerCardLeft}>
-                        <div className={styles.basicsDrawerCardIcon}>
-                          <PortfolioDuotoneIcon size={16} aria-hidden="true" />
-                        </div>
-                        <div className={styles.basicsDrawerCardInfo}>
-                          <strong className={styles.basicsDrawerCardName}>{spec.name}</strong>
-                          <span className={styles.basicsDrawerCardSubtitle}>
-                            {spec.specializations[0] ?? spec.headline}
-                          </span>
-                        </div>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "3px", fontSize: "11.5px", fontWeight: "650", color: "#854d0e" }}>
-                        <Star size={11} fill="#eab308" color="#eab308" />
-                        <span>{spec.rating}</span>
-                      </div>
-                    </Link>
-                  ))
-                ) : (
-                  <p style={{ fontSize: "12px", color: "#64748b", margin: "6px 0 0" }}>
-                    Bookmark specialists with the bookmark icon on any card to save them here.
-                  </p>
-                )}
-              </div>
-
-              {/* Building Codes & Compliance */}
-              <div className={styles.basicsDrawerSection}>
-                <h3 className={styles.basicsDrawerSectionTitle}>Compliance & Standards</h3>
-                <button
-                  type="button"
-                  className={styles.basicsDrawerCard}
-                  onClick={() => {
-                    updateParam("code", "NBC 2016");
-                    setSidePanelOpen(false);
-                  }}
-                  style={{ width: "100%", textAlign: "left", background: "none", border: "none", cursor: "pointer" }}
-                >
-                  <div className={styles.basicsDrawerCardLeft}>
-                    <div className={styles.basicsDrawerCardIcon}>
-                      <DocumentsDuotoneIcon size={16} aria-hidden="true" />
-                    </div>
-                    <div className={styles.basicsDrawerCardInfo}>
-                      <strong className={styles.basicsDrawerCardName}>National Building Code</strong>
-                      <span className={styles.basicsDrawerCardSubtitle}>NBC 2016 verified specialists</span>
-                    </div>
-                  </div>
-                  <ChevronRight size={14} color="#94a3b8" />
-                </button>
-                <button
-                  type="button"
-                  className={styles.basicsDrawerCard}
-                  onClick={() => {
-                    updateParam("code", "ASHRAE 90.1");
-                    setSidePanelOpen(false);
-                  }}
-                  style={{ width: "100%", textAlign: "left", background: "none", border: "none", cursor: "pointer" }}
-                >
-                  <div className={styles.basicsDrawerCardLeft}>
-                    <div className={styles.basicsDrawerCardIcon}>
-                      <DocumentsDuotoneIcon size={16} aria-hidden="true" />
-                    </div>
-                    <div className={styles.basicsDrawerCardInfo}>
-                      <strong className={styles.basicsDrawerCardName}>ASHRAE Standards</strong>
-                      <span className={styles.basicsDrawerCardSubtitle}>HVAC & Energy Efficiency</span>
-                    </div>
-                  </div>
-                  <ChevronRight size={14} color="#94a3b8" />
-                </button>
-              </div>
-            </div>
-          </aside>
-        </>
-      ) : null}
     </div>
   );
 }
