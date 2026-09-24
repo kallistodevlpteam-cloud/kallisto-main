@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ChevronDown, ChevronRight, FilePlus, Loader2, Mic, Plus, RefreshCw, Send, Sparkles } from "lucide-react";
+import { ChevronDown, RefreshCw } from "lucide-react";
 import { StudioAgentType, StudioProjectOption, StudioTask, StudioWorkspaceType } from "@/types/domain/studio";
 import { StudioChatMessage, StudioMessageAction, StudioRetryPayload } from "@/types/domain/studio-message";
 import { ConversationEvent } from "@/types/domain/studio-conversation-event";
@@ -14,7 +14,7 @@ import { ConversationSpine } from "./conversation-spine/conversation-spine";
 import { deriveConversationEvents } from "../lib/derive-conversation-events";
 import { AssistantTaskResponse } from "./assistant-task-response/assistant-task-response";
 import { formatRelativeTime } from "@/lib/utils/format-relative-time";
-import { StudioRightPanelMode, StudioRightPanelState } from "@/types/domain/studio-right-panel";
+import { StudioRightPanelState } from "@/types/domain/studio-right-panel";
 import styles from "./studio-chat-canvas.module.css";
 
 import { StudioIdleContent } from "./studio-idle-view";
@@ -59,6 +59,7 @@ export interface StudioActiveTaskCanvasProps {
   onRetryMessage: (retryPayload: StudioRetryPayload) => void;
   onSubmit: () => void;
   onStartNewTask: () => void;
+  onAddProject?: () => void;
 }
 
 export function StudioActiveTaskCanvas({
@@ -70,10 +71,10 @@ export function StudioActiveTaskCanvas({
   recentTasks = [],
   onSelectIntent = () => {},
   onReopenTask = () => {},
-  outputs,
+  outputs: _outputs,
   taskStatus,
-  outputsOpen,
-  isSubmitting,
+  outputsOpen: _outputsOpen,
+  isSubmitting: _isSubmitting,
   prompt,
   onPromptChange,
   attachments,
@@ -82,13 +83,14 @@ export function StudioActiveTaskCanvas({
   selectedIntent,
   selectedAgent,
   onAgentChange,
-  selectedOutputType,
-  onOutputTypeSelect,
+  selectedOutputType: _selectedOutputType,
+  onOutputTypeSelect: _onOutputTypeSelect,
   onActionSelect,
-  onOutputsOpenChange,
+  onOutputsOpenChange: _onOutputsOpenChange,
   onRetryMessage,
   onSubmit,
-  onStartNewTask,
+  onStartNewTask: _onStartNewTask,
+  onAddProject = () => {},
 }: StudioActiveTaskCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const conversationViewportRef = useRef<HTMLDivElement>(null);
@@ -112,30 +114,8 @@ export function StudioActiveTaskCanvas({
   const [outputContextChip, setOutputContextChip] = useState<{ id: string; title: string; version: string } | null>(null);
   const [showJumpToLatest, setShowJumpToLatest] = useState<boolean>(false);
   const [composerHeight, setComposerHeight] = useState<number>(120);
-  const animatedTurnsRef = useRef<Set<string>>(new Set());
-  const [activeGeneratingMsgId, setActiveGeneratingMsgId] = useState<string | null>(() => {
-    if (messages.length > 0) {
-      const latestMsg = messages[messages.length - 1];
-      if (latestMsg && latestMsg.role === "assistant" && latestMsg.kind !== "status") {
-        return latestMsg.id;
-      }
-    }
-    return null;
-  });
-  const prevMessagesCountRef = useRef<number>(messages.length);
+  const [animatedTurnIds, setAnimatedTurnIds] = useState<Set<string>>(() => new Set());
   const isUserScrolledUpRef = useRef<boolean>(false);
-
-  useEffect(() => {
-    if (messages.length > 0) {
-      const latestMsg = messages[messages.length - 1];
-      if (latestMsg && latestMsg.role === "assistant" && latestMsg.kind !== "status") {
-        if (!animatedTurnsRef.current.has(latestMsg.id)) {
-          setActiveGeneratingMsgId(latestMsg.id);
-        }
-      }
-    }
-    prevMessagesCountRef.current = messages.length;
-  }, [messages]);
 
   // ResizeObserver for container-width responsiveness (safely guarded for SSR/test envs)
   useEffect(() => {
@@ -391,9 +371,12 @@ export function StudioActiveTaskCanvas({
                   );
                 }
 
+                const latestMsg = messages[messages.length - 1];
                 const isGeneratingThisMsg =
-                  activeGeneratingMsgId === msg.id ||
-                  (!animatedTurnsRef.current.has(msg.id) && msg === messages[messages.length - 1]);
+                  latestMsg?.role === "assistant" &&
+                  latestMsg.kind !== "status" &&
+                  latestMsg.id === msg.id &&
+                  !animatedTurnIds.has(msg.id);
 
                 return (
                   <div key={msg.id} id={`msg-${msg.id}`} className={styles.messageTurnWrap}>
@@ -413,8 +396,11 @@ export function StudioActiveTaskCanvas({
                         actions={msg.actions || []}
                         isNewTurn={isGeneratingThisMsg}
                         onAnimationComplete={() => {
-                          animatedTurnsRef.current.add(msg.id);
-                          setActiveGeneratingMsgId((curr) => (curr === msg.id ? null : curr));
+                          setAnimatedTurnIds((prev) => {
+                            const next = new Set(prev);
+                            next.add(msg.id);
+                            return next;
+                          });
                         }}
                         onActionSelect={onActionSelect}
                         onPreviewClick={(outputRef) =>
@@ -485,8 +471,9 @@ export function StudioActiveTaskCanvas({
                 selectedAgent={selectedAgent}
                 onAgentChange={onAgentChange}
                 selectedProjectId={project.id}
-                projects={[project]}
-                onSelectProject={() => {}}
+                projects={projects.length > 0 ? projects : [project]}
+                onSelectProject={onSelectProject}
+                onAddProject={onAddProject}
                 onSubmit={onSubmit}
                 isSubmitting={isProcessing}
                 outputContextChip={outputContextChip}

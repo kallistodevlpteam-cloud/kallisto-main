@@ -21,15 +21,37 @@ interface PortfolioProjectOverviewProps {
   relatedProjects?: PortfolioProject[];
   isOwner?: boolean;
   basePath?: string;
+  onEdit?: () => void;
 }
 
 export function PortfolioProjectOverview({
-  project,
+  project: initialProject,
   relatedProjects = [],
   basePath,
+  isOwner = true,
+  onEdit,
 }: PortfolioProjectOverviewProps) {
+  const [project, setProject] = useState<PortfolioProject>(initialProject);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxInitialIndex, setLightboxInitialIndex] = useState(0);
+
+  const handleUpdateCover = (newCoverUrl: string) => {
+    setProject((prev) => ({
+      ...prev,
+      coverImage: newCoverUrl,
+      gallery:
+        prev.gallery && prev.gallery.length > 0
+          ? [newCoverUrl, ...prev.gallery.slice(1)]
+          : [newCoverUrl],
+    }));
+  };
+
+  const handleUpdateProject = (updated: Partial<PortfolioProject>) => {
+    setProject((prev) => ({
+      ...prev,
+      ...updated,
+    }));
+  };
 
   const galleryItems = useMemo(() => {
     if (project.detailedGallery && project.detailedGallery.length > 0) {
@@ -60,6 +82,10 @@ export function PortfolioProjectOverview({
         <PortfolioProjectHero
           project={project}
           onOpenGallery={handleOpenGallery}
+          isOwner={isOwner}
+          onEdit={onEdit}
+          onUpdateCover={handleUpdateCover}
+          onUpdateProject={handleUpdateProject}
         />
 
         {/* 2. Project Snapshot */}

@@ -22,6 +22,9 @@ export interface ProjectDocumentOwner {
   id: string;
   name: string;
   avatarUrl?: string;
+  role?: string;
+  organization?: string;
+  type?: "hands" | "basics" | "team" | "client";
 }
 
 export interface ProjectDocumentVersion {

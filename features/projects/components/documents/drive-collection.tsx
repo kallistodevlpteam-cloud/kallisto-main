@@ -2,16 +2,20 @@
 
 import {
   Archive,
+  Compass,
   Eye,
   File,
   FileArchive,
   FileText,
+  HardHat,
   History,
   ChevronLeft,
   ChevronRight,
   MoreHorizontal,
+  ShieldCheck,
   Star,
   Trash2,
+  Users,
 } from "lucide-react";
 import Image from "next/image";
 import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from "react";
@@ -180,6 +184,8 @@ interface DocumentActionsMenuProps {
   onStar: () => void;
   onArchive?: () => void;
   onDelete?: () => void;
+  onManageAccess?: () => void;
+  onToggleQuickAccess?: (stakeholderId: string) => void;
 }
 
 function DocumentActionsMenu({
@@ -192,6 +198,8 @@ function DocumentActionsMenu({
   onStar,
   onArchive,
   onDelete,
+  onManageAccess,
+  onToggleQuickAccess,
 }: DocumentActionsMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -218,6 +226,13 @@ function DocumentActionsMenu({
     };
   }, [open, onClose]);
 
+  const hasHandsAccess = document.sharedWith.some(
+    (p) => p.id === "hands-ramesh-kumar" || p.type === "hands",
+  );
+  const hasBasicsAccess = document.sharedWith.some(
+    (p) => p.id === "basics-axis-structures" || p.type === "basics",
+  );
+
   const stop = (event: MouseEvent) => event.stopPropagation();
   return (
     <div ref={menuRef} className={styles.actionsMenuWrap} onClick={stop}>
@@ -239,6 +254,71 @@ function DocumentActionsMenu({
           <button type="button" role="menuitem" onClick={onPreview}>
             <History size={15} strokeWidth={1.75} aria-hidden="true" /> View version history
           </button>
+
+          <div className={styles.menuDivider} />
+
+          <div className={styles.menuAccessSectionHeader}>
+            <Users size={12} strokeWidth={2} aria-hidden="true" />
+            <span>Give Access</span>
+          </div>
+
+          {/* Hands (Contractor) */}
+          <div className={styles.menuStakeholderRow}>
+            <div className={styles.menuStakeholderText}>
+              <span className={styles.menuStakeholderCategory}>
+                <HardHat size={12} className={styles.handsCategoryIcon} aria-hidden="true" />
+                Hands (Contractor)
+              </span>
+              <span className={styles.menuStakeholderName} title="Ramesh Kumar · Kochi Civil & Masonry">
+                Ramesh Kumar (Civil)
+              </span>
+            </div>
+            <button
+              type="button"
+              className={hasHandsAccess ? styles.menuAccessGrantedBtn : styles.menuAccessGiveBtn}
+              onClick={() => onToggleQuickAccess?.("hands-ramesh-kumar")}
+              aria-label={hasHandsAccess ? "Revoke access from Ramesh Kumar" : "Give access to Ramesh Kumar"}
+            >
+              {hasHandsAccess ? "✓ Access" : "+ Give Access"}
+            </button>
+          </div>
+
+          {/* Basics (Person who works in the project) */}
+          <div className={styles.menuStakeholderRow}>
+            <div className={styles.menuStakeholderText}>
+              <span className={styles.menuStakeholderCategory}>
+                <Compass size={12} className={styles.basicsCategoryIcon} aria-hidden="true" />
+                Basics (Project Worker)
+              </span>
+              <span className={styles.menuStakeholderName} title="Axis Structures · Structural Specialist">
+                Axis Structures (Engg)
+              </span>
+            </div>
+            <button
+              type="button"
+              className={hasBasicsAccess ? styles.menuAccessGrantedBtn : styles.menuAccessGiveBtn}
+              onClick={() => onToggleQuickAccess?.("basics-axis-structures")}
+              aria-label={hasBasicsAccess ? "Revoke access from Axis Structures" : "Give access to Axis Structures"}
+            >
+              {hasBasicsAccess ? "✓ Access" : "+ Give Access"}
+            </button>
+          </div>
+
+          <button
+            type="button"
+            role="menuitem"
+            className={styles.menuManageAllBtn}
+            onClick={() => {
+              onClose();
+              onManageAccess?.();
+            }}
+          >
+            <ShieldCheck size={14} strokeWidth={1.75} aria-hidden="true" />
+            <span>Manage all access...</span>
+          </button>
+
+          <div className={styles.menuDivider} />
+
           {canStar ? (
             <button type="button" role="menuitem" onClick={onStar}>
               <Star
@@ -354,7 +434,7 @@ function DocumentPreviewDuotone({ extension }: { extension: string }) {
   );
 }
 
-interface DriveCollectionProps {
+export interface DriveCollectionProps {
   documents: ProjectDocument[];
   folders: ProjectDocumentFolder[];
   viewMode: DriveViewMode;
@@ -364,6 +444,8 @@ interface DriveCollectionProps {
   onToggleStar: (document: ProjectDocument) => void;
   onArchiveDocument?: (document: ProjectDocument) => void;
   onDeleteDocument?: (document: ProjectDocument) => void;
+  onManageAccess?: (document: ProjectDocument) => void;
+  onToggleQuickAccess?: (document: ProjectDocument, stakeholderId: string) => void;
 }
 
 export function DriveCollection({
@@ -376,6 +458,8 @@ export function DriveCollection({
   onToggleStar,
   onArchiveDocument,
   onDeleteDocument,
+  onManageAccess,
+  onToggleQuickAccess,
 }: DriveCollectionProps) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const folderNames = new Map(folders.map((folder) => [folder.id, folder.name]));
@@ -420,6 +504,21 @@ export function DriveCollection({
           ? () => {
               setOpenMenuId(null);
               onDeleteDocument(document);
+            }
+          : undefined
+      }
+      onManageAccess={
+        onManageAccess
+          ? () => {
+              setOpenMenuId(null);
+              onManageAccess(document);
+            }
+          : undefined
+      }
+      onToggleQuickAccess={
+        onToggleQuickAccess
+          ? (stakeholderId) => {
+              onToggleQuickAccess(document, stakeholderId);
             }
           : undefined
       }

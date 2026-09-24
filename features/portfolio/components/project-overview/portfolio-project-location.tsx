@@ -12,7 +12,13 @@ export function PortfolioProjectLocation({
   project,
 }: PortfolioProjectLocationProps) {
   const cityState = `${project.location.city}, ${project.location.state}`;
-  const districtCountry = `${project.location.district ? `${project.location.district} District • ` : ""}${project.location.country}`;
+  const districtCountry = `${project.location.district ? `${project.location.district} District • ` : ""}${project.location.country || "India"}`;
+  const bioClimaticZone =
+    project.location.bioClimaticZone ||
+    "Tropical Coastal Zone · Warm-Humid with Southwest & Northeast Monsoon cycles.";
+  const coordinates =
+    project.location.coordinates ||
+    "Latitude 9.9312° N · Longitude 76.2673° E";
 
   return (
     <section className={styles.sectionBlock} aria-labelledby="location-heading">
@@ -37,7 +43,7 @@ export function PortfolioProjectLocation({
           <p className={styles.locationDesc}>
             {districtCountry}
             <br />
-            <strong>Bio-Climatic Zone:</strong> Tropical Coastal Zone · Warm-Humid with Southwest & Northeast Monsoon cycles.
+            <strong>Bio-Climatic Zone:</strong> {bioClimaticZone}
           </p>
 
           <div
@@ -72,10 +78,10 @@ export function PortfolioProjectLocation({
           >
             <Compass size={32} color="#0f172a" />
             <span style={{ fontSize: 13, fontWeight: 700, color: "#0f172a" }}>
-              {project.location.city}, Kerala
+              {project.location.city}, {project.location.state}
             </span>
             <span style={{ fontSize: 11, color: "#64748b" }}>
-              Latitude 9.9312° N · Longitude 76.2673° E
+              {coordinates}
             </span>
           </div>
         </div>

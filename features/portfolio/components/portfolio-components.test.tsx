@@ -1,4 +1,4 @@
-﻿import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { PortfolioPackageSummary } from "./portfolio-package-summary";
 import { PortfolioCoverBanner } from "./portfolio-cover-banner";
@@ -88,6 +88,63 @@ describe("Portfolio Components", () => {
       fireEvent.click(viewPlansBtn);
       expect(handleViewPlans).toHaveBeenCalledTimes(1);
     });
+
+    it("opens 3-dot menu and renders Edit and Hide options", () => {
+      render(<PortfolioPackageSummary onViewPlans={vi.fn()} isOwner={true} />);
+      const optionsBtn = screen.getByRole("button", { name: /package card options/i });
+      expect(optionsBtn).toBeInTheDocument();
+
+      fireEvent.click(optionsBtn);
+      expect(screen.getByRole("menuitem", { name: /edit/i })).toBeInTheDocument();
+      expect(screen.getByRole("menuitem", { name: /hide/i })).toBeInTheDocument();
+    });
+
+    it("triggers onHide callback when clicking Hide option", () => {
+      const handleHide = vi.fn();
+      render(<PortfolioPackageSummary onViewPlans={vi.fn()} isOwner={true} onHide={handleHide} />);
+
+      const optionsBtn = screen.getByRole("button", { name: /package card options/i });
+      fireEvent.click(optionsBtn);
+
+      const hideBtn = screen.getByRole("menuitem", { name: /hide/i });
+      fireEvent.click(hideBtn);
+
+      expect(handleHide).toHaveBeenCalledTimes(1);
+    });
+
+    it("opens Edit modal, updates headline and rates, and saves changes", () => {
+      const handleSave = vi.fn();
+      render(
+        <PortfolioPackageSummary
+          onViewPlans={vi.fn()}
+          isOwner={true}
+          onSave={handleSave}
+        />,
+      );
+
+      const optionsBtn = screen.getByRole("button", { name: /package card options/i });
+      fireEvent.click(optionsBtn);
+
+      const editBtn = screen.getByRole("menuitem", { name: /edit/i });
+      fireEvent.click(editBtn);
+
+      // Modal is open
+      expect(screen.getByRole("heading", { name: /edit package summary/i })).toBeInTheDocument();
+
+      const titleInput = screen.getByLabelText(/headline title/i) as HTMLInputElement;
+      fireEvent.change(titleInput, { target: { value: "Premium Design packages starting from ₹3.5 Lakhs" } });
+
+      const basicRateInput = screen.getByLabelText(/basic tier rate/i) as HTMLInputElement;
+      fireEvent.change(basicRateInput, { target: { value: "₹3.5L+" } });
+
+      const saveBtn = screen.getByRole("button", { name: /save changes/i });
+      fireEvent.click(saveBtn);
+
+      // Verify updated values on card
+      expect(screen.getByText("Premium Design packages starting from ₹3.5 Lakhs")).toBeInTheDocument();
+      expect(screen.getByText("₹3.5L+")).toBeInTheDocument();
+      expect(handleSave).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("PortfolioProfileHeader Component", () => {
@@ -146,8 +203,9 @@ describe("Portfolio Components", () => {
         screen.getByLabelText("Portfolio cover"),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /edit portfolio/i }),
-      ).toBeInTheDocument();
+        screen.queryByRole("button", { name: /edit portfolio/i }),
+      ).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /share/i })).toBeInTheDocument();
     });
   });
 

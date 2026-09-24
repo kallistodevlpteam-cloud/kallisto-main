@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { TrendingUp, Layers, MapPin, Calendar, Compass, ArrowUpRight } from "lucide-react";
+import { Pencil, TrendingUp } from "lucide-react";
 import type {
   PortfolioCaseStudy,
   PortfolioProject,
@@ -19,6 +19,10 @@ interface PortfolioCaseStudiesProps {
     project: PortfolioProject,
     trigger: HTMLButtonElement,
   ) => void;
+  onAddCaseStudy?: () => void;
+  onEditCaseStudy?: (caseStudy: PortfolioCaseStudy) => void;
+  selectedCaseStudyId?: string;
+  onSelectCaseStudy?: (id: string) => void;
 }
 
 export function PortfolioCaseStudies({
@@ -26,10 +30,19 @@ export function PortfolioCaseStudies({
   projects,
   isOwner,
   onOpenProject,
+  onAddCaseStudy,
+  onEditCaseStudy,
+  selectedCaseStudyId: controlledSelectedId,
+  onSelectCaseStudy: onControlledSelect,
 }: PortfolioCaseStudiesProps) {
-  const [selectedCaseStudyId, setSelectedCaseStudyId] = useState<string>(
+  const [internalSelectedId, setInternalSelectedId] = useState<string>(
     caseStudies[0]?.id ?? "",
   );
+  const selectedCaseStudyId = controlledSelectedId ?? internalSelectedId;
+  const setSelectedCaseStudyId = (id: string) => {
+    setInternalSelectedId(id);
+    onControlledSelect?.(id);
+  };
   const [previewImageOverride, setPreviewImageOverride] = useState<string | null>(null);
 
   if (caseStudies.length === 0) {
@@ -42,8 +55,11 @@ export function PortfolioCaseStudies({
             : "Case studies will appear here when they are published."
         }
         actionLabel={isOwner ? "Create case study" : undefined}
+        onAction={isOwner ? onAddCaseStudy : undefined}
         actionHref={
-          isOwner ? "/portfolio?portfolioTab=case-studies&create=case-study" : undefined
+          isOwner && !onAddCaseStudy
+            ? "/portfolio?portfolioTab=case-studies&create=case-study"
+            : undefined
         }
       />
     );
@@ -141,6 +157,17 @@ export function PortfolioCaseStudies({
             <span className={styles.previewCategoryBadge}>
               {formatProjectType(activeCaseStudy.projectType)}
             </span>
+            {isOwner ? (
+              <button
+                type="button"
+                className={styles.previewEditButton}
+                onClick={() => onEditCaseStudy?.(activeCaseStudy)}
+                aria-label={`Edit ${activeCaseStudy.title}`}
+              >
+                <Pencil size={13} aria-hidden="true" />
+                <span>Edit</span>
+              </button>
+            ) : null}
           </div>
 
           {activeProject?.gallery && activeProject.gallery.length > 1 ? (

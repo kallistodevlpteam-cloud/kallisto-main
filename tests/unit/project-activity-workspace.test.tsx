@@ -151,4 +151,25 @@ describe("ProjectActivityWorkspace", () => {
     fireEvent.click(acknowledgeButtons[0]);
     expect(screen.getAllByRole("button", { name: /acknowledged/i }).length).toBeGreaterThan(0);
   });
+
+  it("filters activities by category and allows resetting filters", () => {
+    render(<ProjectActivityWorkspace projectId="proj-001" projectName="Nila Residence" />);
+
+    const categorySelect = screen.getByRole("combobox", { name: /filter by category/i });
+    fireEvent.change(categorySelect, { target: { value: "Structural QA/QC" } });
+
+    // The supervisor log with Structural QA/QC is shown
+    expect(screen.getByText("Daily Site Supervision & Rebar Verification Log")).toBeDefined();
+    // The Material QA/QC supervisor log is hidden
+    expect(screen.queryByText("Inward Material Batch & Quality Inspection")).toBeNull();
+
+    // Reset button should now be visible
+    const resetBtn = screen.getByRole("button", { name: /reset filters/i });
+    expect(resetBtn).toBeDefined();
+
+    // Clicking reset restores all items
+    fireEvent.click(resetBtn);
+    expect(screen.getByText("Inward Material Batch & Quality Inspection")).toBeDefined();
+    expect(screen.queryByRole("button", { name: /reset filters/i })).toBeNull();
+  });
 });

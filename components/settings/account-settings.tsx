@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Upload, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import styles from "../../app/settings/settings.module.css";
 
 interface AccountSettingsProps {
@@ -12,11 +12,13 @@ interface AccountSettingsProps {
 }
 
 export function AccountSettings({ user }: AccountSettingsProps) {
+  void user;
   const [photoUrl, setPhotoUrl] = useState("/assets/profile_avatar.png");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [website, setWebsite] = useState("");
 
   const [timezone, setTimezone] = useState("");
@@ -72,8 +74,9 @@ export function AccountSettings({ user }: AccountSettingsProps) {
             </div>
           </div>
 
-          {/* Form Fields */}
-          <div className={styles.cleanFormGrid}>
+          {/* Form Fields: 3 Input Fields in a Row */}
+          <div className={styles.cleanFormGridThree}>
+            {/* Row 1: 3 Fields */}
             <div className={styles.cleanFieldGroup}>
               <label className={styles.cleanFieldLabel}>First Name</label>
               <input
@@ -96,7 +99,7 @@ export function AccountSettings({ user }: AccountSettingsProps) {
               />
             </div>
 
-            <div className={`${styles.cleanFieldGroup} ${styles.fullWidthField}`}>
+            <div className={styles.cleanFieldGroup}>
               <label className={styles.cleanFieldLabel}>Username</label>
               <input
                 type="text"
@@ -107,7 +110,8 @@ export function AccountSettings({ user }: AccountSettingsProps) {
               />
             </div>
 
-            <div className={`${styles.cleanFieldGroup} ${styles.fullWidthField}`}>
+            {/* Row 2: 3 Fields */}
+            <div className={styles.cleanFieldGroup}>
               <label className={styles.cleanFieldLabel}>Email</label>
               <input
                 type="email"
@@ -118,13 +122,24 @@ export function AccountSettings({ user }: AccountSettingsProps) {
               />
             </div>
 
-            <div className={`${styles.cleanFieldGroup} ${styles.fullWidthField}`}>
+            <div className={styles.cleanFieldGroup}>
+              <label className={styles.cleanFieldLabel}>Phone Number</label>
+              <input
+                type="tel"
+                className={styles.cleanInput}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+91 98450 12345"
+              />
+            </div>
+
+            <div className={styles.cleanFieldGroup}>
               <label className={styles.cleanFieldLabel}>Website</label>
-              <div className={styles.copyInputGroup}>
-                <span style={{ fontSize: "13px", color: "#64748b", fontWeight: 600 }}>https://</span>
+              <div className={styles.cleanInputWithPrefix}>
+                <span className={styles.inputPrefixAddon}>https://</span>
                 <input
                   type="text"
-                  className={styles.copyInputText}
+                  className={styles.inputWithPrefixText}
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
                   placeholder="company.com"
@@ -147,7 +162,7 @@ export function AccountSettings({ user }: AccountSettingsProps) {
         </div>
 
         <div className={styles.cardBody}>
-          <div className={styles.cleanFormGrid}>
+          <div className={styles.cleanFormGridThree}>
             <div className={styles.cleanFieldGroup}>
               <label className={styles.cleanFieldLabel}>Timezone</label>
               <select

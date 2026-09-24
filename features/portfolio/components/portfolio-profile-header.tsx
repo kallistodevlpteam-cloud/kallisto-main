@@ -1,19 +1,16 @@
 "use client";
 
-import { FormEvent, useState } from "react";
 import Image from "next/image";
-import {
-  Camera,
-} from "lucide-react";
+import { Camera } from "lucide-react";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
 import { LocationDuotoneIcon } from "@/components/layout/sidebar-icons";
 import type { PortfolioProfile } from "@/features/portfolio/types/portfolio.types";
 import styles from "./portfolio.module.css";
 
 interface PortfolioProfileHeaderProps {
-  isOwner: boolean;
+  isOwner?: boolean;
   profile: PortfolioProfile;
-  onProfileChange: (profile: PortfolioProfile) => void;
+  onProfileChange?: (profile: PortfolioProfile) => void;
   isEditingExternal?: boolean;
   onCloseEditingExternal?: () => void;
   onCameraClick?: () => void;
@@ -29,36 +26,8 @@ function getInitials(name: string): string {
 
 export function PortfolioProfileHeader({
   profile,
-  onProfileChange,
-  isEditingExternal,
-  onCloseEditingExternal,
   onCameraClick,
 }: PortfolioProfileHeaderProps) {
-  const [internalEditing, setInternalEditing] = useState(false);
-  const [draft, setDraft] = useState(profile);
-  const [skillsInput, setSkillsInput] = useState(profile.skills.join(", "));
-
-  const editing = isEditingExternal ?? internalEditing;
-  const setEditing = (val: boolean) => {
-    setInternalEditing(val);
-    if (!val && onCloseEditingExternal) {
-      onCloseEditingExternal();
-    }
-  };
-
-  const saveProfile = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    onProfileChange({
-      ...draft,
-      skills: skillsInput
-        .split(",")
-        .map((skill) => skill.trim())
-        .filter(Boolean)
-        .slice(0, 6),
-    });
-    setEditing(false);
-  };
-
   const initials = getInitials(profile.name);
   const visibleSkills = profile.skills.slice(0, 3);
   const remainingSkillCount = Math.max(profile.skills.length - visibleSkills.length, 0);
@@ -129,90 +98,6 @@ export function PortfolioProfileHeader({
           </div>
         </div>
       </div>
-
-      {editing ? (
-        <form className={styles.profileEditor} onSubmit={saveProfile}>
-          <div className={styles.editorHeading}>
-            <div>
-              <h2>Edit portfolio profile</h2>
-              <p>Keep the summary concise and focused on your professional work.</p>
-            </div>
-            <button
-              className={styles.textButton}
-              type="button"
-              onClick={() => setEditing(false)}
-            >
-              Cancel
-            </button>
-          </div>
-          <div className={styles.editorGrid}>
-            <label>
-              <span>Name</span>
-              <input
-                value={draft.name}
-                onChange={(event) =>
-                  setDraft({ ...draft, name: event.target.value })
-                }
-                required
-              />
-            </label>
-            <label>
-              <span>Profession / Tagline</span>
-              <input
-                value={draft.profession}
-                onChange={(event) =>
-                  setDraft({ ...draft, profession: event.target.value })
-                }
-                required
-              />
-            </label>
-            <label>
-              <span>Location</span>
-              <input
-                value={draft.location}
-                onChange={(event) =>
-                  setDraft({ ...draft, location: event.target.value })
-                }
-                required
-              />
-            </label>
-            <label>
-              <span>Website</span>
-              <input
-                value={draft.websiteLabel}
-                onChange={(event) =>
-                  setDraft({ ...draft, websiteLabel: event.target.value })
-                }
-                required
-              />
-            </label>
-            <label className={styles.editorWideField}>
-              <span>Professional bio</span>
-              <textarea
-                value={draft.bio}
-                maxLength={180}
-                rows={2}
-                onChange={(event) =>
-                  setDraft({ ...draft, bio: event.target.value })
-                }
-                required
-              />
-            </label>
-            <label className={styles.editorWideField}>
-              <span>Skills, comma separated</span>
-              <input
-                value={skillsInput}
-                onChange={(event) => setSkillsInput(event.target.value)}
-              />
-            </label>
-          </div>
-          <div className={styles.editorActions}>
-            <button className={styles.primaryButton} type="submit">
-              Save profile
-            </button>
-          </div>
-        </form>
-      ) : null}
     </section>
   );
 }

@@ -81,6 +81,7 @@ export type BasicsProvider = {
   companyName?: string;
   avatarUrl?: string;
   logoUrl?: string;
+  coverImageUrl?: string;
   headline: string;
   primaryCategory: BasicsServiceCategory;
   specializations: string[];
@@ -262,6 +263,7 @@ export type BasicsEngagement = {
   clientId: string;
   title: string;
   category: BasicsServiceCategory;
+  services?: string[];
   scope: string[];
   exclusions: string[];
   deliverables: BasicsDeliverable[];
@@ -321,6 +323,7 @@ export type BasicsProjectContext = {
   projectStage: string;
   builtUpArea?: number;
   numberOfFloors?: number;
+  coverImageUrl?: string;
 };
 
 export type ProviderFilters = {

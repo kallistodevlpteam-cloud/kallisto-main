@@ -119,6 +119,51 @@ export function createStudioAssistantResponse(
     };
   }
 
+  // 0. PROJECT ONBOARDING & INITIALIZATION
+  const isProjectOnboarding =
+    lowerPrompt.includes("initialize project workspace") ||
+    lowerPrompt.includes("add a new project") ||
+    lowerPrompt.includes("add project") ||
+    lowerPrompt.includes("onboard a new project") ||
+    lowerPrompt.includes("onboard \"");
+
+  if (isProjectOnboarding) {
+    return {
+      id: msgId,
+      taskId,
+      role: "assistant",
+      kind: "text",
+      content: `Welcome to **${projectName}**! I've initialized the project workspace for your practice.\n\nHere are the recommended foundational steps to get started:`,
+      createdAt: new Date().toISOString(),
+      actions: [
+        {
+          id: "draft-brief",
+          label: "Draft Client Brief & Requirements",
+          intent: "create",
+          suggestedPrompt: `Draft a structured client requirement brief for ${projectName} incorporating architectural style, functional zoning, and milestone criteria.`,
+        },
+        {
+          id: "create-estimate",
+          label: "Generate Preliminary Estimate",
+          intent: "create",
+          suggestedPrompt: `Generate a preliminary cost estimate for ${projectName} based on current civil, structural, and finishing benchmarks.`,
+        },
+        {
+          id: "prepare-boq",
+          label: "Prepare Initial BOQ",
+          intent: "create",
+          suggestedPrompt: `Prepare an initial Bill of Quantities (BOQ) with standard measurement heads for ${projectName}.`,
+        },
+        {
+          id: "schedule-feasibility",
+          label: "Schedule Site Feasibility Survey",
+          intent: "create",
+          suggestedPrompt: `Create a site feasibility checklist and survey report template for ${projectName}.`,
+        },
+      ],
+    };
+  }
+
   // 1. VERIFICATION COMPLETION -> ASK TO SHARE REQUIREMENTS
   const isVerificationResponse =
     lowerPrompt.includes("proceed") ||

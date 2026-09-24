@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowRight, ArrowUp, Check, ChevronDown, ChevronRight, X } from "lucide-react";
+import { ArrowRight, ArrowUp, Check, ChevronDown, ChevronRight, Plus, X } from "lucide-react";
 import {
   DocumentsDuotoneIcon,
   EnquiriesDuotoneIcon,
@@ -57,6 +57,7 @@ export interface StudioComposerProps {
   selectedProjectId: string | null;
   projects: StudioProjectOption[];
   onSelectProject?: (projectId: string) => void;
+  onAddProject?: () => void;
   onSubmit: () => void;
   isSubmitting?: boolean;
   variant?: "idle" | "active";
@@ -91,18 +92,19 @@ export function StudioComposer({
   onAddAttachment,
   onRemoveAttachment,
   selectedIntent,
-  selectedAgent,
-  onAgentChange,
+  selectedAgent: _selectedAgent,
+  onAgentChange: _onAgentChange,
   selectedProjectId,
   projects,
   onSelectProject,
+  onAddProject,
   onSubmit,
   isSubmitting = false,
   variant = "idle",
   outputContextChip,
   onRemoveOutputContext,
   placeholderOverride,
-  focusRef,
+  focusRef: _focusRef,
 }: StudioComposerProps) {
   const [isFocused, setIsFocused] = useState(false);
   const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
@@ -462,6 +464,35 @@ export function StudioComposer({
                         </div>
                         <ChevronRight size={13} style={{ color: "#64748b" }} />
                       </button>
+
+                      <div style={{ borderTop: "1px solid #f1f5f9", margin: "4px 0" }} />
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsProjectMenuOpen(false);
+                          onAddProject?.();
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          width: "100%",
+                          padding: "8px 10px",
+                          border: "none",
+                          borderRadius: "8px",
+                          background: "transparent",
+                          color: "#ea580c",
+                          fontSize: "12.5px",
+                          fontWeight: 650,
+                          cursor: "pointer",
+                          textAlign: "left",
+                          transition: "background-color 0.15s ease",
+                        }}
+                      >
+                        <Plus size={14} style={{ color: "#ea580c" }} />
+                        <span>Add project</span>
+                      </button>
                     </div>
 
                     {/* Hover Flyout Submenu Card */}
@@ -489,44 +520,74 @@ export function StudioComposer({
                           {hoveredCategory === "projects" ? "ACTIVE PROJECTS" : "ENQUIRIES"}
                         </div>
 
-                        {hoveredCategory === "projects" &&
-                          (projects.length > 0 ? projects : SAMPLE_ACTIVE_PROJECTS).map((proj) => {
-                            const isSelected = proj.id === selectedProjectId || (selectedProjectId === null && proj.id === "p1");
-                            return (
-                              <button
-                                key={proj.id}
-                                type="button"
-                                onClick={() => {
-                                  onSelectProject?.(proj.id);
-                                  setIsProjectMenuOpen(false);
-                                }}
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "space-between",
-                                  width: "100%",
-                                  padding: "7px 10px",
-                                  border: "none",
-                                  borderRadius: "8px",
-                                  background: isSelected ? "#f7f7f5" : "transparent",
-                                  color: "#0f172a",
-                                  fontSize: "12.5px",
-                                  fontWeight: isSelected ? 650 : 500,
-                                  cursor: "pointer",
-                                  textAlign: "left",
-                                  gap: "8px",
-                                }}
-                              >
-                                <div style={{ display: "flex", alignItems: "center", gap: "8px", overflow: "hidden" }}>
-                                  <ProjectsDuotoneIcon size={14} style={{ color: "#7c3aed", flexShrink: 0 }} />
-                                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                    {proj.name}
-                                  </span>
-                                </div>
-                                {isSelected && <Check size={13} style={{ color: "#0f172a", flexShrink: 0 }} />}
-                              </button>
-                            );
-                          })}
+                        {hoveredCategory === "projects" && (
+                          <>
+                            {(projects.length > 0 ? projects : SAMPLE_ACTIVE_PROJECTS).map((proj) => {
+                              const isSelected = proj.id === selectedProjectId || (selectedProjectId === null && proj.id === "p1");
+                              return (
+                                <button
+                                  key={proj.id}
+                                  type="button"
+                                  onClick={() => {
+                                    onSelectProject?.(proj.id);
+                                    setIsProjectMenuOpen(false);
+                                  }}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    width: "100%",
+                                    padding: "7px 10px",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    background: isSelected ? "#f7f7f5" : "transparent",
+                                    color: "#0f172a",
+                                    fontSize: "12.5px",
+                                    fontWeight: isSelected ? 650 : 500,
+                                    cursor: "pointer",
+                                    textAlign: "left",
+                                    gap: "8px",
+                                  }}
+                                >
+                                  <div style={{ display: "flex", alignItems: "center", gap: "8px", overflow: "hidden" }}>
+                                    <ProjectsDuotoneIcon size={14} style={{ color: "#7c3aed", flexShrink: 0 }} />
+                                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                      {proj.name}
+                                    </span>
+                                  </div>
+                                  {isSelected && <Check size={13} style={{ color: "#0f172a", flexShrink: 0 }} />}
+                                </button>
+                              );
+                            })}
+                            <div style={{ borderTop: "1px solid #f1f5f9", margin: "4px 0" }} />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsProjectMenuOpen(false);
+                                onAddProject?.();
+                              }}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                width: "100%",
+                                padding: "7px 10px",
+                                border: "none",
+                                borderRadius: "8px",
+                                background: "transparent",
+                                color: "#ea580c",
+                                fontSize: "12px",
+                                fontWeight: 650,
+                                cursor: "pointer",
+                                textAlign: "left",
+                                transition: "background-color 0.15s ease",
+                              }}
+                            >
+                              <Plus size={13} style={{ color: "#ea580c" }} />
+                              <span>Add project</span>
+                            </button>
+                          </>
+                        )}
 
                         {hoveredCategory === "enquiries" &&
                           SAMPLE_ENQUIRIES.map((enq) => {

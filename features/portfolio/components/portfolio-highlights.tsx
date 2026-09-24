@@ -63,13 +63,21 @@ export function PortfolioHighlights({
                   fill
                   className={styles.highlightCardBg}
                   sizes="125px"
+                  unoptimized={
+                    collection.imageUrl.startsWith("blob:") ||
+                    collection.imageUrl.startsWith("data:")
+                  }
                 />
               ) : null}
 
               <div className={styles.highlightCardOverlay}>
                 <p className={styles.highlightCardLabel}>{collection.label}</p>
                 <span className={styles.highlightCardCount}>
-                  {collection.projectIds?.length ?? 0} {collection.projectIds?.length === 1 ? "project" : "projects"}
+                  {collection.projectIds?.length
+                    ? `${collection.projectIds.length} ${collection.projectIds.length === 1 ? "project" : "projects"}`
+                    : collection.images?.length
+                      ? `${collection.images.length} ${collection.images.length === 1 ? "image" : "images"}`
+                      : "0 projects"}
                 </span>
               </div>
             </button>

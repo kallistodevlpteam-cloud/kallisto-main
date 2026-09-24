@@ -10,12 +10,13 @@ export function BasicsWorkspaceShell({
 }) {
   const pathname = usePathname() || "";
   const isOverview = pathname === "/basics";
+  const isEngagementDetail = pathname.startsWith("/basics/engagements/");
 
   return (
     <div
       className={`workspace-container ${styles.workspace}${
         isOverview ? ` ${styles.basicsOverviewShell}` : ""
-      }`}
+      }${isEngagementDetail ? ` ${styles.basicsEngagementShell}` : ""}`}
     >
       {children}
     </div>

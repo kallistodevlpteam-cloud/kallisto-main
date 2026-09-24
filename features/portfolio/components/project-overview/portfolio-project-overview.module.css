@@ -491,6 +491,143 @@
   transform: scale(1.03);
 }
 
+/* ─── Hero Top Right Actions ─────────────────────────────────── */
+.heroTopActionsOverlay {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.heroEditMenuWrapper {
+  position: relative;
+}
+
+.heroEditBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 16px;
+  height: 36px;
+  border-radius: var(--kallisto-badge-radius, 9999px);
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  transition: all 180ms ease;
+  user-select: none;
+}
+
+.heroEditBtn:hover {
+  background: rgba(15, 23, 42, 0.88);
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.heroEditBtn:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+.heroEditDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 220px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--kallisto-line, #e2e8f0);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.08);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  z-index: 50;
+  animation: heroDropdownFadeIn 140ms ease-out;
+}
+
+@keyframes heroDropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.heroEditMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: var(--kallisto-ink, #0f172a);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all 140ms ease;
+}
+
+.heroEditMenuItem:hover {
+  background: var(--kallisto-bg-muted, #f1f5f9);
+  color: var(--kallisto-ink, #0f172a);
+}
+
+.heroEditMenuItemIcon {
+  color: var(--kallisto-muted, #64748b);
+  flex-shrink: 0;
+  transition: color 140ms ease;
+}
+
+.heroEditMenuItem:hover .heroEditMenuItemIcon {
+  color: var(--kallisto-ink, #0f172a);
+}
+
+.heroNotificationPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--kallisto-badge-radius, 9999px);
+  background: rgba(16, 185, 129, 0.9);
+  backdrop-filter: blur(10px);
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  animation: heroDropdownFadeIn 160ms ease-out;
+}
+
+.visuallyHiddenFileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 .heroThumbnailStrip {
   display: flex;
   align-items: center;
@@ -1766,4 +1903,501 @@
     grid-template-columns: 1fr;
     gap: 8px;
   }
+
+  .heroTopActionsOverlay {
+    top: 14px;
+    right: 14px;
+  }
+
+  .editFormRow,
+  .editFormRowThree,
+  .editFormSpecsGroup {
+    grid-template-columns: 1fr;
+  }
 }
+
+/* ─── Edit Project Modal Styles ──────────────────────────────── */
+.editModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  z-index: 99999;
+  padding: 16px;
+  animation: heroDropdownFadeIn 180ms ease-out;
+}
+
+.editModalDialog {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  box-shadow: 0 24px 60px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(15, 23, 42, 0.08);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.editModalHeader {
+  padding: 20px 24px 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--kallisto-line, #e2e8f0);
+  flex-shrink: 0;
+}
+
+.editModalTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.editModalIconBadge {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #0f172a;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.editModalTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.editModalSubtitle {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.editModalCloseBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.editModalCloseBtn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.editModalForm {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.editModalScrollableBody {
+  padding: 20px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.editModalAlert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.editFormField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.editFormLabel {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.editFormLabel svg {
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.requiredAsterisk {
+  color: #ef4444;
+}
+
+.editFormInput,
+.editFormSelect,
+.editFormTextarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: #0f172a;
+  background: #ffffff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.editFormInput:hover,
+.editFormSelect:hover,
+.editFormTextarea:hover {
+  border-color: #cbd5e1;
+}
+
+.editFormInput:focus,
+.editFormSelect:focus,
+.editFormTextarea:focus {
+  outline: none;
+  border-color: #0f172a;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+}
+
+.selectWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.editFormSelect {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 38px;
+  cursor: pointer;
+  background-color: #ffffff;
+}
+
+.selectChevron {
+  position: absolute;
+  right: 14px;
+  pointer-events: none;
+  color: #64748b;
+  transition: color 0.15s ease;
+}
+
+.selectWrapper:hover .selectChevron {
+  color: #0f172a;
+}
+
+.editFormRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.editFormRowThree {
+  display: grid;
+  grid-template-columns: 1fr 1fr 100px;
+  gap: 14px;
+}
+
+.editFormSpecsGroup {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.editFormTextarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.editModalFooter {
+  padding: 14px 24px 18px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  background: #fafafa;
+  flex-shrink: 0;
+}
+
+.editModalCancelBtn {
+  padding: 8px 16px;
+  border-radius: 9999px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.editModalCancelBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.editModalSubmitBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  border: none;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.editModalSubmitBtn:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+}
+
+/* ─── Modal Tab Bar ───────────────────────────────────────────── */
+.modalTabBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 24px;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--kallisto-line, #e2e8f0);
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+
+.modalTabBar::-webkit-scrollbar {
+  display: none;
+}
+
+.modalTabBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.modalTabBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.modalTabBtnActive {
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 600;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+.modalTabBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.modalTabBtnActive .modalTabBadge {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+/* ─── Tab Content & Section Intros ────────────────────────────── */
+.editSectionIntro {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 12.5px;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.editSectionIntroIcon {
+  color: #0f172a;
+  flex-shrink: 0;
+}
+
+/* ─── Highlights List Manager ─────────────────────────────────── */
+.highlightsEditList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.highlightEditItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px 6px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  transition: border-color 0.15s;
+}
+
+.highlightEditItem:focus-within {
+  border-color: #94a3b8;
+  background: #ffffff;
+}
+
+.highlightItemIndex {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  min-width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.highlightItemInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #0f172a;
+  padding: 4px 0;
+  outline: none;
+}
+
+.highlightItemInput::placeholder {
+  color: #94a3b8;
+}
+
+.highlightRemoveBtn {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.highlightRemoveBtn:hover {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.highlightAddRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.highlightAddInput {
+  flex: 1;
+  padding: 9px 14px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 9px;
+  font-size: 13px;
+  color: #0f172a;
+  background: #ffffff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.highlightAddInput:focus {
+  outline: none;
+  border-style: solid;
+  border-color: #0f172a;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+}
+
+.highlightAddBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 9px;
+  border: 1px solid #0f172a;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.highlightAddBtn:hover {
+  background: #1e293b;
+}
+
+.restoreDefaultsBtn {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.restoreDefaultsBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+

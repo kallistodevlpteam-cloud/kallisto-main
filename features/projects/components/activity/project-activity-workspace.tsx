@@ -16,6 +16,7 @@ import {
   CheckSquare,
   X,
   ThumbsUp,
+  ChevronDown,
 } from "lucide-react";
 import { ClockDuotoneIcon } from "@/components/layout/sidebar-icons";
 import styles from "./project-activity-workspace.module.css";
@@ -462,6 +463,21 @@ export function ProjectActivityWorkspace({
 
   const totalEventCount = upcomingList.length + supervisorLogs.length + milestones.length;
 
+  const hasActiveFilters = searchQuery.trim() !== "" || categoryFilter !== "all";
+
+  const currentDisplayCount = useMemo(() => {
+    if (activeSegment === "all") {
+      return filteredUpcoming.length + filteredSupervisorLogs.length;
+    }
+    if (activeSegment === "upcoming") {
+      return filteredUpcoming.length;
+    }
+    if (activeSegment === "supervisor") {
+      return filteredSupervisorLogs.length;
+    }
+    return milestones.length;
+  }, [activeSegment, filteredUpcoming.length, filteredSupervisorLogs.length, milestones.length]);
+
   return (
     <div
       className={styles.workspaceRoot}
@@ -528,10 +544,11 @@ export function ProjectActivityWorkspace({
         </div>
       </div>
 
-      {/* ── 2. TOOLBAR: SEGMENT TABS, SEARCH & LOG SITE VISIT BUTTON ─ */}
+      {/* ── 2. TOOLBAR: SEGMENT TABS, SEARCH, FILTERS & ACTION BUTTON ─ */}
       <div className={styles.toolbarCard}>
-        <div className={styles.toolbarLeft}>
-          <div className={styles.segmentGroup} role="tablist">
+        {/* Row 1: Segment Tabs (Views) + Primary Action */}
+        <div className={styles.toolbarTopRow}>
+          <div className={styles.segmentGroup} role="tablist" aria-label="Activity views">
             <button
               type="button"
               role="tab"
@@ -577,46 +594,83 @@ export function ProjectActivityWorkspace({
             </button>
           </div>
 
-          <div className={styles.searchBox}>
-            <Search size={14} style={{ color: "#94a3b8", flexShrink: 0 }} />
-            <input
-              type="text"
-              className={styles.searchInput}
-              placeholder="Search activities, supervisor notes..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              aria-label="Search activity records"
-            />
-          </div>
-
-          <div className={styles.searchBox} style={{ minWidth: "150px" }}>
-            <Filter size={14} style={{ color: "#94a3b8", flexShrink: 0 }} />
-            <select
-              className={styles.searchInput}
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              aria-label="Filter by category"
+          <div className={styles.toolbarRight}>
+            <button
+              type="button"
+              className={styles.primaryActionBtn}
+              onClick={() => setIsLogModalOpen(true)}
+              aria-label="Request for site inspection"
             >
-              <option value="all">All Categories</option>
-              <option value="Site Inspection">Site Inspection</option>
-              <option value="Structural QA/QC">Structural QA/QC</option>
-              <option value="MEP">MEP Verification</option>
-              <option value="Material">Material QA/QC</option>
-              <option value="Safety">Safety &amp; EHS</option>
-            </select>
+              <Plus size={14} strokeWidth={2.2} />
+              <span>Request for Site Inspection</span>
+            </button>
           </div>
         </div>
 
-        <div className={styles.toolbarRight}>
-          <button
-            type="button"
-            className={styles.primaryActionBtn}
-            onClick={() => setIsLogModalOpen(true)}
-            aria-label="Request for site inspection"
-          >
-            <Plus size={14} strokeWidth={2.2} />
-            <span>Request for Site Inspection</span>
-          </button>
+        {/* Row 2: Search Input, Category Filter & Clear Filters */}
+        <div className={styles.toolbarFilterRow}>
+          <div className={styles.filterControlsLeft}>
+            <div className={styles.searchBox}>
+              <Search size={14} className={styles.searchIcon} />
+              <input
+                type="text"
+                className={styles.searchInput}
+                placeholder="Search activities, supervisor notes, locations..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search activity records"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  className={styles.clearSearchBtn}
+                  onClick={() => setSearchQuery("")}
+                  aria-label="Clear search text"
+                >
+                  <X size={13} />
+                </button>
+              )}
+            </div>
+
+            <div className={`${styles.filterSelectWrapper} ${categoryFilter !== "all" ? styles.filterSelectActive : ""}`}>
+              <Filter size={13} className={styles.filterSelectIcon} />
+              <select
+                className={styles.filterSelect}
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                aria-label="Filter by category"
+              >
+                <option value="all">All Categories</option>
+                <option value="Site Inspection">Site Inspection</option>
+                <option value="Structural QA/QC">Structural QA/QC</option>
+                <option value="MEP">MEP Verification</option>
+                <option value="Material">Material QA/QC</option>
+                <option value="Safety">Safety &amp; EHS</option>
+              </select>
+              <ChevronDown size={13} className={styles.chevronIcon} />
+            </div>
+
+            {hasActiveFilters && (
+              <button
+                type="button"
+                className={styles.clearAllFiltersBtn}
+                onClick={() => {
+                  setSearchQuery("");
+                  setCategoryFilter("all");
+                }}
+              >
+                <X size={12} />
+                <span>Reset filters</span>
+              </button>
+            )}
+          </div>
+
+          <div className={styles.filterControlsRight}>
+            <span className={styles.resultsCountBadge}>
+              {currentDisplayCount} {currentDisplayCount === 1 ? "activity" : "activities"}
+              {hasActiveFilters && " (filtered)"}
+            </span>
+          </div>
         </div>
       </div>
 

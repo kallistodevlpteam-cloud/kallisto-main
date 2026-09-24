@@ -3,22 +3,23 @@
 import {
   ArrowRight,
   Bookmark,
-  Check,
   CheckSquare,
+  Download,
+  Eye,
   FileText,
-  MapPin,
   Pencil,
   Search,
   Send,
   Share2,
+  ShieldCheck,
   Sparkles,
-  Star,
   UsersRound,
   XCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ProposalDocumentViewerModal } from "./proposal-document-viewer-modal";
 import {
   basicsProposalRepository,
   basicsProviderRepository,
@@ -39,6 +40,7 @@ import {
   ProviderVerificationBadge,
 } from "./basics-shared";
 import { ProposalComparisonTable } from "./proposal-comparison-table";
+import { ProviderCard } from "./provider-card";
 import styles from "./basics-workspace.module.css";
 
 const PIPELINE = [
@@ -74,6 +76,52 @@ export function RequirementDetail({
     }
     return searchParams.get("saved") ? "Requirement saved successfully." : "";
   });
+  const [activePreviewFile, setActivePreviewFile] = useState<{
+    fileName: string;
+    contextTitle?: string;
+    submittedBy?: string;
+    submittedAt?: string;
+    fileSize?: string;
+  } | null>(null);
+
+  const handleViewFile = (
+    fileName: string,
+    contextTitle = "Project Document",
+    submittedBy = "Client",
+    submittedAt = requirement ? formatDate(requirement.createdAt) : "Recent",
+    fileSize = "2.4 MB",
+  ) => {
+    setActivePreviewFile({
+      fileName,
+      contextTitle,
+      submittedBy,
+      submittedAt,
+      fileSize,
+    });
+  };
+
+  const handleDownloadFile = (fileName: string) => {
+    const blob = new Blob(
+      [
+        `KALLISTO BASICS — PROJECT REQUIREMENT DOCUMENT\n` +
+        `=============================================\n` +
+        `Document: ${fileName}\n` +
+        `Project: ${requirement?.projectName ?? "General Project"}\n` +
+        `Requirement: ${requirement?.title ?? "Service Scope"}\n` +
+        `Specialization: ${requirement?.specialization ?? "Consulting"}\n` +
+        `Date: ${requirement ? formatDate(requirement.createdAt) : "Recent"}\n`
+      ],
+      { type: "application/pdf" },
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const matchedProviders = useMemo(() => {
     if (!requirement || !providers.length) return [];
@@ -94,6 +142,15 @@ export function RequirementDetail({
 
   const displayedMatched =
     matchedTab === "saved" ? savedMatchedProviders : matchedProviders;
+
+  const toggleSave = useCallback((providerId: string) => {
+    void basicsProviderRepository.saveProvider(providerId);
+    setSavedIds((current) =>
+      current.includes(providerId)
+        ? current.filter((id) => id !== providerId)
+        : [...current, providerId],
+    );
+  }, []);
 
   async function inviteProvider(providerId: string) {
     if (!requirement) return;
@@ -280,88 +337,23 @@ export function RequirementDetail({
             </div>
           </div>
 
-          <div className={styles.matchedGrid}>
-            {displayedMatched.slice(0, 6).map(({ provider, matchScore, matchReasons }) => {
+          <div className={styles.refProviderGrid}>
+            {displayedMatched.slice(0, 10).map(({ provider, matchScore }) => {
               const isInvited = requirement.invitedProviderIds.includes(provider.id);
               const isSaved = savedIds.includes(provider.id);
               return (
-                <div className={styles.matchedCard} key={provider.id}>
-                  <div className={styles.matchedCardHeader}>
-                    <div className={styles.matchedProviderTitle}>
-                      <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                          <h3 className={styles.matchedProviderName}>
-                            <Link
-                              href={`/basics/experts/${provider.id}?requirementId=${requirement.id}`}
-                              style={{ textDecoration: "none", color: "inherit" }}
-                            >
-                              {provider.name}
-                            </Link>
-                          </h3>
-                          {isSaved ? (
-                            <span className={styles.wizardSavedTag} title="In your saved profiles">
-                              <Bookmark size={10} fill="currentColor" aria-hidden="true" />
-                              Saved
-                            </span>
-                          ) : null}
-                        </div>
-                        <p className={styles.matchedProviderSub}>
-                          {provider.specializations[0] || provider.headline}
-                        </p>
-                      </div>
-                    </div>
-                    <span className={styles.matchedScoreBadge}>{matchScore}% match</span>
-                  </div>
-
-                  <div className={styles.matchedReasonsList}>
-                    {matchReasons.map((reason) => (
-                      <span key={reason} className={styles.matchedReasonTag}>
-                        {reason}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className={styles.matchedMetaRow}>
-                    <span className={styles.matchedRating}>
-                      <Star size={11} fill="#eab308" style={{ color: "#eab308" }} aria-hidden="true" />
-                      {provider.rating.toFixed(1)}
-                    </span>
-                    <span>·</span>
-                    <span>{provider.yearsOfExperience} yrs exp</span>
-                    <span>·</span>
-                    <span title={provider.location.city}>
-                      <MapPin size={10} aria-hidden="true" /> {provider.location.city}
-                    </span>
-                  </div>
-
-                  <div className={styles.matchedActionsRow}>
-                    <button
-                      type="button"
-                      className={isInvited ? styles.invitedButton : styles.inviteButton}
-                      disabled={isInvited}
-                      onClick={() => void inviteProvider(provider.id)}
-                    >
-                      {isInvited ? (
-                        <>
-                          <Check size={12} aria-hidden="true" />
-                          Invited
-                        </>
-                      ) : (
-                        <>
-                          <Send size={12} aria-hidden="true" />
-                          Invite to Requirement
-                        </>
-                      )}
-                    </button>
-                    <Link
-                      href={`/basics/experts/${provider.id}?requirementId=${requirement.id}`}
-                      className={styles.secondaryButton}
-                      style={{ height: "30px", fontSize: "11.5px", padding: "0 10px" }}
-                    >
-                      Profile
-                    </Link>
-                  </div>
-                </div>
+                <ProviderCard
+                  key={provider.id}
+                  provider={provider}
+                  requirementId={requirement.id}
+                  projectId={requirement.projectId}
+                  saved={isSaved}
+                  isInvited={isInvited}
+                  matchScore={matchScore}
+                  onToggleSave={toggleSave}
+                  onInvite={inviteProvider}
+                  inviteLabel="Invite to Requirement"
+                />
               );
             })}
           </div>
@@ -401,14 +393,71 @@ export function RequirementDetail({
             </ul>
           </section>
           <section className={styles.detailPanel}>
-            <h2>Attachments</h2>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+              <h2 style={{ margin: 0 }}>Requirement Attachments</h2>
+              <span className={styles.badge}>{requirement.attachments.length} files</span>
+            </div>
+            <p className={styles.deliverablesSubtitle} style={{ marginBottom: "12px" }}>
+              Technical scope briefing, drawing references, and site survey packages.
+            </p>
             {requirement.attachments.length > 0 ? (
-              <div className={styles.detailList}>
+              <div className={styles.proposalAttachmentsList}>
                 {requirement.attachments.map((attachment) => (
-                  <div key={attachment}><dt><FileText size={13} aria-hidden="true" /> Project document</dt><dd>{attachment}</dd></div>
+                  <div key={attachment} className={styles.proposalAttachmentCard}>
+                    <div className={styles.proposalAttachmentLeft}>
+                      <div className={styles.proposalAttachmentIconWrap}>
+                        <FileText size={18} aria-hidden="true" />
+                        <span className={styles.proposalAttachmentExtBadge}>PDF</span>
+                      </div>
+                      <div className={styles.proposalAttachmentInfo}>
+                        <div className={styles.proposalAttachmentTitleRow}>
+                          <span className={styles.proposalAttachmentName} title={attachment}>
+                            {attachment}
+                          </span>
+                          {attachment.includes("Rev") ? (
+                            <span className={styles.proposalAttachmentRevBadge}>
+                              {attachment.match(/Rev\s*\d+/i)?.[0] ?? "REV"}
+                            </span>
+                          ) : null}
+                        </div>
+                        <div className={styles.proposalAttachmentMeta}>
+                          <span className={styles.proposalAttachmentTagClient}>Client Brief</span>
+                          <span className={styles.proposalAttachmentMetaDot}>·</span>
+                          <span>2.4 MB</span>
+                          <span className={styles.proposalAttachmentMetaDot}>·</span>
+                          <span className={styles.proposalAttachmentVerifiedText}>
+                            <ShieldCheck size={11} aria-hidden="true" />
+                            Verified
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={styles.proposalAttachmentActions}>
+                      <button
+                        type="button"
+                        className={styles.proposalAttachmentActionBtnPrimary}
+                        onClick={() => handleViewFile(attachment, `Requirement Attachment for ${requirement.projectName}`, "Client", formatDate(requirement.createdAt), "2.4 MB")}
+                        title={`View ${attachment}`}
+                      >
+                        <Eye size={12} aria-hidden="true" />
+                        <span>View</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.proposalAttachmentActionBtn}
+                        onClick={() => handleDownloadFile(attachment)}
+                        title={`Download ${attachment}`}
+                      >
+                        <Download size={12} aria-hidden="true" />
+                        <span>Download</span>
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
-            ) : <p>No attachments were added to this requirement.</p>}
+            ) : (
+              <p className={styles.cellMuted}>No attachments were added to this requirement.</p>
+            )}
           </section>
         </div>
         <aside className={styles.detailStack}>
@@ -506,6 +555,19 @@ export function RequirementDetail({
           </div>
         ) : null}
       </section>
+
+      {activePreviewFile ? (
+        <ProposalDocumentViewerModal
+          isOpen={Boolean(activePreviewFile)}
+          onClose={() => setActivePreviewFile(null)}
+          fileName={activePreviewFile.fileName}
+          contextTitle={activePreviewFile.contextTitle}
+          projectContext={requirement.projectName ?? "General Project"}
+          submittedBy={activePreviewFile.submittedBy}
+          submittedAt={activePreviewFile.submittedAt}
+          fileSize={activePreviewFile.fileSize}
+        />
+      ) : null}
     </div>
   );
 }

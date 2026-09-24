@@ -716,7 +716,9 @@ export function EnquiryDetailWorkspace({
   }
 
   function handleSendClarification(msg: string) {
+    void msg;
     handleStageChange("clarification");
+    setClarificationText("");
   }
 
   function handleViewAllFiles() {
@@ -1293,7 +1295,6 @@ export function EnquiryDetailWorkspace({
                 <EnquiryClarificationComposer
                   initialMessage={clarificationText}
                   onMessageChange={setClarificationText}
-                  status={stage === "clarification" ? "sent" : undefined}
                   onSend={handleSendClarification}
                 />
               </div>

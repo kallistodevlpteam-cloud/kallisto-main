@@ -25,6 +25,9 @@ import {
 import { DeveloperConsoleHook } from "../../developer-console/hooks/useDeveloperConsole";
 import { WORKSPACE_CONFIG, ROUTE_BREADCRUMBS } from "@/lib/config/workspace-config";
 import { getTradeCrewById } from "@/features/hands/services/trade-crews.mock";
+import { projectService } from "@/services/repositories/project-service";
+import { SAMPLE_PROJECTS } from "@/features/projects/components/projects-cards-grid";
+import { DUMMY_BACKEND_PROJECTS } from "@/lib/backend/dummy-projects";
 
 interface TopBarProps {
   sidebarCollapsed: boolean;
@@ -43,21 +46,73 @@ interface TopBarProps {
 
 const PROJECT_NAME_MAP: Record<string, string> = {
   "proj-001": "Nila Residence",
-  "proj-002": "Azure Villa",
-  "proj-003": "Greenfield Apartment",
-  "proj-004": "Calicut Retail Interior",
-  "proj-005": "Harbour View Office",
-  "proj-006": "Palm Heights Penthouse",
-  "proj-007": "Skyline Heights Phase II",
-  "proj-008": "Marina Bay Suites",
-  "proj-009": "Highland Villa",
-  "proj-010": "Coastal Resort Pavilion",
-  "proj-1": "Residence 24",
-  "proj-2": "Greenfield Villa",
-  "proj-3": "Oak House",
-  "proj-4": "Palm Springs Suite",
-  "proj-5": "Skyline Corporate HQ Suite",
+  "proj-1": "Nila Residence",
+  "prj-001": "Nila Residence",
+  "prj-1": "Nila Residence",
+  "1": "Nila Residence",
   "nila-residence": "Nila Residence",
+  "proj-201": "Nila Residence",
+
+  "proj-002": "Azure Villa",
+  "proj-2": "Azure Villa",
+  "prj-002": "Azure Villa",
+  "prj-2": "Azure Villa",
+  "2": "Azure Villa",
+  "azure-villa": "Azure Villa",
+
+  "proj-003": "Greenfield Apartment",
+  "proj-3": "Greenfield Apartment",
+  "prj-003": "Greenfield Apartment",
+  "prj-3": "Greenfield Apartment",
+  "3": "Greenfield Apartment",
+  "greenfield-apartment": "Greenfield Apartment",
+  "greenfield-villa": "Greenfield Villa",
+
+  "proj-004": "Calicut Retail Interior",
+  "proj-4": "Calicut Retail Interior",
+  "prj-004": "Calicut Retail Interior",
+  "prj-4": "Calicut Retail Interior",
+  "4": "Calicut Retail Interior",
+  "palm-springs-suite": "Palm Springs Suite",
+
+  "proj-005": "Harbour View Office",
+  "proj-5": "Harbour View Office",
+  "prj-005": "Harbour View Office",
+  "prj-5": "Harbour View Office",
+  "5": "Harbour View Office",
+  "skyline-corporate-hq-suite": "Skyline Corporate HQ Suite",
+
+  "proj-006": "Palm Heights Penthouse",
+  "proj-6": "Palm Heights Penthouse",
+  "prj-006": "Palm Heights Penthouse",
+  "prj-6": "Palm Heights Penthouse",
+  "6": "Palm Heights Penthouse",
+
+  "proj-007": "Skyline Heights Phase II",
+  "proj-7": "Skyline Heights Phase II",
+  "prj-007": "Skyline Heights Phase II",
+  "prj-7": "Skyline Heights Phase II",
+  "7": "Skyline Heights Phase II",
+
+  "proj-008": "Marina Bay Suites",
+  "proj-8": "Marina Bay Suites",
+  "prj-008": "Marina Bay Suites",
+  "prj-8": "Marina Bay Suites",
+  "8": "Marina Bay Suites",
+
+  "proj-009": "Highland Villa",
+  "proj-9": "Highland Villa",
+  "prj-009": "Highland Villa",
+  "prj-9": "Highland Villa",
+  "9": "Highland Villa",
+
+  "proj-010": "Coastal Resort Pavilion",
+  "proj-10": "Coastal Resort Pavilion",
+  "prj-010": "Coastal Resort Pavilion",
+  "prj-10": "Coastal Resort Pavilion",
+  "10": "Coastal Resort Pavilion",
+
+  "oak-house": "Oak House",
   "courtyard-house": "Courtyard House",
   "fern-office": "The Fern Office",
   "sera-villa-renovation": "Sera Villa Renovation",
@@ -65,7 +120,112 @@ const PROJECT_NAME_MAP: Record<string, string> = {
   "grove-apartments": "Grove Apartments",
   "lumen-showroom": "Lumen Showroom",
   "hillview-retreat": "Hillview Retreat",
+  "residence-24": "Residence 24",
 };
+
+const TAB_LABEL_MAP: Record<string, string> = {
+  overview: "Overview",
+  client: "Client Context",
+  requirements: "Requirements",
+  evidence: "Site & Evidence",
+  team: "Team members",
+  materials: "Materials",
+  hands: "Hands",
+  basics: "Basics",
+  activity: "Activity",
+};
+
+export function resolveProjectName(projectId: string, searchParams?: URLSearchParams | null): string {
+  if (!projectId) return "Project Detail";
+
+  // 1. Search parameter override
+  const queryParamName = searchParams?.get("projectName") || searchParams?.get("name");
+  if (queryParamName && queryParamName.trim()) {
+    return queryParamName.trim();
+  }
+
+  // 2. Client-side session storage cache
+  if (typeof window !== "undefined") {
+    try {
+      const cached = sessionStorage.getItem(`kallisto_project_name_${projectId}`);
+      if (cached && cached.trim()) {
+        return cached.trim();
+      }
+    } catch {
+      // ignore storage access restrictions
+    }
+  }
+
+  // 3. Direct match in dictionary
+  const lowerId = projectId.toLowerCase().trim();
+  if (PROJECT_NAME_MAP[lowerId]) {
+    return PROJECT_NAME_MAP[lowerId];
+  }
+
+  // 4. Normalized variations
+  const numericMatch = lowerId.match(/\d+/);
+  if (numericMatch) {
+    const num = parseInt(numericMatch[0], 10);
+    const padded = String(num).padStart(3, "0");
+    const candidates = [
+      `proj-${padded}`,
+      `proj-${num}`,
+      `prj-${padded}`,
+      `prj-${num}`,
+      `project-${num}`,
+      String(num),
+    ];
+    for (const cand of candidates) {
+      if (PROJECT_NAME_MAP[cand]) {
+        return PROJECT_NAME_MAP[cand];
+      }
+    }
+  }
+
+  // 5. Query projectService sync repository
+  try {
+    const repoProject = projectService?.getProjectByIdSync?.("ws-default", projectId);
+    if (repoProject?.id) {
+      const pid = repoProject.id.toLowerCase();
+      const normPid = pid.replace(/^proj-/, "prj-").replace(/-(0+)/, "-");
+      const normTid = lowerId.replace(/^proj-/, "prj-").replace(/-(0+)/, "-");
+      if (pid === lowerId || normPid === normTid) {
+        return repoProject.name.trim();
+      }
+    }
+  } catch {
+    // fallback
+  }
+
+  // 6. Check SAMPLE_PROJECTS
+  const sample = SAMPLE_PROJECTS.find(
+    (p) =>
+      p.id.toLowerCase() === lowerId ||
+      (numericMatch && p.id.match(/\d+/) && parseInt(p.id.match(/\d+/)![0], 10) === parseInt(numericMatch[0], 10))
+  );
+  if (sample?.name) {
+    return sample.name;
+  }
+
+  // 7. Check DUMMY_BACKEND_PROJECTS
+  if (numericMatch) {
+    const num = parseInt(numericMatch[0], 10);
+    const backendProj = DUMMY_BACKEND_PROJECTS.find((p) => p.id === num);
+    if (backendProj?.projectName) {
+      return backendProj.projectName.replace(" Luxury Residence", " Residence");
+    }
+  }
+
+  // 8. Title-cased hyphenated slug
+  if (lowerId.includes("-") && !lowerId.startsWith("proj-") && !lowerId.startsWith("prj-")) {
+    return lowerId
+      .split("-")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+  }
+
+  return "Project Detail";
+}
 
 const MODULE_LABEL_MAP: Record<string, string> = {
   tasks: "Tasks",
@@ -95,12 +255,14 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
     const handleUpdate = () => setSessionTick((t) => t + 1);
     if (typeof window !== "undefined") {
       window.addEventListener("kallisto_studio_session_updated", handleUpdate);
+      window.addEventListener("kallisto_project_updated", handleUpdate);
       window.addEventListener("storage", handleUpdate);
       window.addEventListener("popstate", handleUpdate);
     }
     return () => {
       if (typeof window !== "undefined") {
         window.removeEventListener("kallisto_studio_session_updated", handleUpdate);
+        window.removeEventListener("kallisto_project_updated", handleUpdate);
         window.removeEventListener("storage", handleUpdate);
         window.removeEventListener("popstate", handleUpdate);
       }
@@ -133,28 +295,28 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
 
       if (subRoute === "orders" && activeOrderId) {
         items = [
-          { label: "Partner Workspace" },
+          { label: "Partner Workspace", href: "/partner" },
           { label: currentPartnerName, href: `/partner/${partnerKey}` },
           { label: "Orders", href: `/partner/${partnerKey}/orders` },
           { label: activeOrderId },
         ];
       } else if (subRoute === "products" && activeSku) {
         items = [
-          { label: "Partner Workspace" },
+          { label: "Partner Workspace", href: "/partner" },
           { label: currentPartnerName, href: `/partner/${partnerKey}` },
           { label: "Products", href: `/partner/${partnerKey}/products` },
           { label: activeSku },
         ];
       } else {
         items = [
-          { label: "Partner Workspace" },
+          { label: "Partner Workspace", href: "/partner" },
           { label: currentPartnerName, href: `/partner/${partnerKey}` },
           { label: formattedSub },
         ];
       }
     } else {
       items = [
-        { label: "Partner Workspace" },
+        { label: "Partner Workspace", href: "/partner" },
         { label: currentPartnerName },
       ];
     }
@@ -189,7 +351,7 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
     if (subRoute === "overview") {
       const activeProjectName = searchParams.get("projectName") || searchParams.get("projectId") || "Start New Project / Explore";
       items = [
-        { label: "Client Portal" },
+        { label: "Client Portal", href: "/client" },
         { label: "Ask Odin", href: "/client/overview" },
         { label: activeProjectName },
       ];
@@ -197,34 +359,54 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
       const settingsSection = parts[2];
       const sectionLabel = CLIENT_SETTINGS_LABEL_MAP[settingsSection] || (settingsSection.charAt(0).toUpperCase() + settingsSection.slice(1));
       items = [
-        { label: "Client Portal" },
+        { label: "Client Portal", href: "/client" },
         { label: "Settings", href: "/client/settings" },
         { label: sectionLabel },
       ];
+    } else if (subRoute === "projects" && parts.length > 2) {
+      const clientProjectId = parts[2];
+      const clientProjectName = resolveProjectName(clientProjectId, searchParams);
+      const activeTabParam = searchParams.get("tab");
+      if (activeTabParam && activeTabParam !== "overview" && TAB_LABEL_MAP[activeTabParam]) {
+        items = [
+          { label: "Client Portal", href: "/client" },
+          { label: "Projects", href: "/client/projects" },
+          { label: clientProjectName, href: `/client/projects/${clientProjectId}` },
+          { label: TAB_LABEL_MAP[activeTabParam] },
+        ];
+      } else {
+        items = [
+          { label: "Client Portal", href: "/client" },
+          { label: "Projects", href: "/client/projects" },
+          { label: clientProjectName },
+        ];
+      }
     } else if (parts.length > 2) {
       items = [
-        { label: "Client Portal" },
+        { label: "Client Portal", href: "/client" },
         { label: currentLabel, href: `/client/${subRoute}` },
         { label: parts.slice(2).join(" / ") },
       ];
     } else {
       items = [
-        { label: "Client Portal" },
+        { label: "Client Portal", href: "/client" },
         { label: currentLabel },
       ];
     }
   } else if (currentPath.startsWith("/projects/")) {
     const parts = currentPath.split("/").filter(Boolean);
     const projectId = parts[1];
-    const projectName = PROJECT_NAME_MAP[projectId] || "Project Detail";
+    const projectName = resolveProjectName(projectId, searchParams);
     const subModule = parts[2];
     const isGantt = currentPath.includes("/timeline/gantt");
+    const activeTabParam = searchParams.get("tab");
 
     if (isGantt) {
       items = [
-        { label: "Virtual Office" },
+        { label: "Virtual Office", href: "/" },
         { label: "Projects", href: "/projects" },
-        { label: projectName, href: `/projects/${projectId}/overview` },
+        { label: projectName, href: `/projects/${projectId}` },
+        { label: "Timeline", href: `/projects/${projectId}/timeline` },
         { label: "Gantt Chart" },
       ];
     } else if (subModule && subModule !== "overview") {
@@ -232,42 +414,51 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
         MODULE_LABEL_MAP[subModule] ||
         subModule.charAt(0).toUpperCase() + subModule.slice(1);
       items = [
-        { label: "Virtual Office" },
+        { label: "Virtual Office", href: "/" },
         { label: "Projects", href: "/projects" },
-        { label: projectName, href: `/projects/${projectId}/overview` },
+        { label: projectName, href: `/projects/${projectId}` },
         { label: moduleLabel },
       ];
     } else {
-      items = [
-        { label: "Virtual Office" },
-        { label: "Projects", href: "/projects" },
-        { label: projectName },
-      ];
+      if (activeTabParam && activeTabParam !== "overview" && TAB_LABEL_MAP[activeTabParam]) {
+        items = [
+          { label: "Virtual Office", href: "/" },
+          { label: "Projects", href: "/projects" },
+          { label: projectName, href: `/projects/${projectId}` },
+          { label: TAB_LABEL_MAP[activeTabParam] },
+        ];
+      } else {
+        items = [
+          { label: "Virtual Office", href: "/" },
+          { label: "Projects", href: "/projects" },
+          { label: projectName },
+        ];
+      }
     }
   } else if (MODULE_LABEL_MAP[currentPath.slice(1)]) {
     const standaloneModule = currentPath.slice(1);
     const moduleLabel = MODULE_LABEL_MAP[standaloneModule];
     items = [
-      { label: "Virtual Office" },
+      { label: "Virtual Office", href: "/" },
       { label: "Projects", href: "/projects" },
-      { label: "Nila Residence", href: "/projects/proj-001/overview" },
+      { label: "Nila Residence", href: "/projects/proj-001" },
       { label: moduleLabel },
     ];
   } else if (currentPath.startsWith("/enquiries/")) {
     items = [
-      { label: "Virtual Office" },
+      { label: "Virtual Office", href: "/" },
       { label: "Enquiries", href: "/enquiries" },
       { label: "Enquiry Detail" },
     ];
   } else if (currentPath.startsWith("/clients/")) {
     items = [
-      { label: "Virtual Office" },
+      { label: "Virtual Office", href: "/" },
       { label: "Clients", href: "/clients" },
       { label: "Client Detail" },
     ];
   } else if (currentPath.startsWith("/studio") || currentPath === "/") {
     items = [
-      { label: "Virtual Office" },
+      { label: "Virtual Office", href: "/" },
       { label: "Hive Studio", href: "/studio" },
     ];
     const projectParam =
@@ -293,7 +484,7 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
     const crewId = parts[2];
     const crew = crewId ? getTradeCrewById(crewId) : null;
     items = [
-      { label: "Virtual Office" },
+      { label: "Virtual Office", href: "/" },
       { label: "Hands", href: "/hands" },
       { label: crew?.name || "Trade Crew Profile" },
     ];
@@ -301,7 +492,7 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
     const parts = currentPath.split("/").filter(Boolean);
     const expertId = parts[2];
     items = [
-      { label: "Virtual Office" },
+      { label: "Virtual Office", href: "/" },
       { label: "Basics", href: "/basics" },
       { label: expertId ? "Expert Profile" : "Find Experts" },
     ];
@@ -329,7 +520,20 @@ function BreadcrumbNav({ currentPath }: { currentPath: string }) {
       }
     }
 
-    items = [{ label: meta.parent }, { label: meta.current }];
+    items = [
+      {
+        label: meta.parent,
+        href:
+          meta.parent === "Virtual Office"
+            ? "/"
+            : meta.parent === "Client Portal"
+            ? "/client"
+            : meta.parent === "Partner Workspace"
+            ? "/partner"
+            : undefined,
+      },
+      { label: meta.current },
+    ];
   }
 
   return <ResponsiveBreadcrumbs items={items} />;
