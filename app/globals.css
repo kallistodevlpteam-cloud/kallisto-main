@@ -1403,12 +1403,17 @@ textarea:focus-visible {
 .workspace-container.hands-page-container:has(.hands-workers-workspace-root) {
   height: 100%;
   overflow: hidden;
-  padding: 16px 20px;
+  padding: 16px 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .workspace-container.hands-page-container:has(.hands-workers-workspace-root) > .route-content-wrap {
   height: 100%;
+  flex: 1 1 0%;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Enquiry Detail page — scrollable document layout (not a fixed-height operational workspace) */

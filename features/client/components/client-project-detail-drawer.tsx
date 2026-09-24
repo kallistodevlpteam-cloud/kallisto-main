@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   Star,
   Lock,
+  ExternalLink,
 } from "lucide-react";
 import {
   OdinDuotoneIcon,
@@ -170,14 +171,28 @@ export function ClientProjectDetailDrawer({
             </p>
           </div>
 
-          <button
-            type="button"
-            className={styles.drawerCloseBtn}
-            onClick={onClose}
-            aria-label="Close project details"
-          >
-            <X size={16} />
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <button
+              type="button"
+              className={styles.viewFullDashboardBtn}
+              onClick={() => {
+                onClose();
+                window.location.href = `/client/projects/${project.id}`;
+              }}
+            >
+              <ExternalLink size={13} />
+              <span>Full Dashboard</span>
+            </button>
+
+            <button
+              type="button"
+              className={styles.drawerCloseBtn}
+              onClick={onClose}
+              aria-label="Close project details"
+            >
+              <X size={16} />
+            </button>
+          </div>
         </div>
 
         {/* Tab Switcher */}

@@ -80,6 +80,30 @@ const PRESET_PROJECTS: Record<string, ProjectDetailPreset> = {
     client: "EcoResorts Kerala",
     leadProvider: "Apex Environmental Designs",
   },
+  "proj-skyline-heights": {
+    name: "Skyline Heights Villa",
+    description:
+      "Newly created project from accepted client proposal. Pre-construction requirement review, space planning, and architectural coordination with Greenfield Architects in progress.",
+    projectType: "Luxury Residential",
+    duration: "Within 6 Months",
+    builtUpArea: "4,200 sq ft",
+    budget: "₹1,45,00,000",
+    client: "Ananya Builders",
+    leadProvider: "Greenfield Architects",
+    isConstructionNotStarted: true,
+  },
+  "proj-verona-residence": {
+    name: "Verona Luxury Residence",
+    description:
+      "Newly created project from accepted client proposal. Space planning, 3D interior renders, and structural engineering layout with Studio Nila in progress.",
+    projectType: "Contemporary Architecture",
+    duration: "Within 6 Months",
+    builtUpArea: "3,100 sq ft",
+    budget: "₹98,00,000",
+    client: "Ananya Builders",
+    leadProvider: "Studio Nila",
+    isConstructionNotStarted: true,
+  },
   "proj-greenfield-resort-phase2": {
     name: "Greenfield Eco Resort",
     description:

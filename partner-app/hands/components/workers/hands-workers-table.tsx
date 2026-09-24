@@ -34,12 +34,28 @@ export function HandsWorkersTable({
 }: HandsWorkersTableProps) {
   const [openMenuWorkerId, setOpenMenuWorkerId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15;
+  const itemsPerPage = 11;
 
   const totalPages = Math.max(1, Math.ceil(workers.length / itemsPerPage));
   const safePage = Math.min(Math.max(1, currentPage), totalPages);
   const startIndex = (safePage - 1) * itemsPerPage;
   const paginatedWorkers = workers.slice(startIndex, startIndex + itemsPerPage);
+
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      if (safePage <= 4) {
+        pages.push(1, 2, 3, 4, 5, "...", totalPages);
+      } else if (safePage >= totalPages - 3) {
+        pages.push(1, "...", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push(1, "...", safePage - 1, safePage, safePage + 1, "...", totalPages);
+      }
+    }
+    return pages;
+  };
 
   // Close actions menu on outside click
   useEffect(() => {
@@ -309,20 +325,30 @@ export function HandsWorkersTable({
               </button>
 
               <div className={styles.paginationPageNumbers}>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                  <button
-                    key={pageNum}
-                    type="button"
-                    onClick={() => setCurrentPage(pageNum)}
-                    className={`${styles.paginationPageNumberBtn} ${
-                      safePage === pageNum ? styles.paginationPageNumberActive : ""
-                    }`}
-                    aria-label={`Go to page ${pageNum}`}
-                    aria-current={safePage === pageNum ? "page" : undefined}
-                  >
-                    {pageNum}
-                  </button>
-                ))}
+                {getPageNumbers().map((item, idx) => {
+                  if (typeof item === "string") {
+                    return (
+                      <span key={`ellipsis-${idx}`} className={styles.paginationEllipsis}>
+                        ...
+                      </span>
+                    );
+                  }
+                  const pageNum = item as number;
+                  return (
+                    <button
+                      key={pageNum}
+                      type="button"
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`${styles.paginationPageNumberBtn} ${
+                        safePage === pageNum ? styles.paginationPageNumberActive : ""
+                      }`}
+                      aria-label={`Go to page ${pageNum}`}
+                      aria-current={safePage === pageNum ? "page" : undefined}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
               </div>
 
               <button

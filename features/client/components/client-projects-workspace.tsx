@@ -15,8 +15,6 @@ import {
   ConstructionDuotoneIcon,
   PostConstructionDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
-import { ClientProject } from "../types";
-import { ClientProjectDetailDrawer } from "./client-project-detail-drawer";
 import {
   getCreatedProjects,
   subscribeToCreatedProjects,
@@ -74,6 +72,51 @@ interface DisplayProject {
 }
 
 const CLIENT_DISPLAY_PROJECTS: DisplayProject[] = [
+  // ── CREATED PROJECTS ──────────────────────────────────────────────
+  {
+    id: "proj-skyline-heights",
+    name: "Skyline Heights Villa",
+    code: "KAL-SHV-2026",
+    location: "Marine Drive, Kochi",
+    category: "Luxury Residential",
+    phase: "Proposal Accepted",
+    lifecyclePhase: "created",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900&auto=format&fit=crop&q=80",
+    progress: 0,
+    totalBudget: "₹1,45,00,000",
+    paidAmount: "₹0",
+    pendingAmount: "₹1,45,00,000",
+    leadProvider: "Greenfield Architects",
+    targetCompletion: "December 2026",
+    fileCount: 12,
+    activeTaskCount: 1,
+    needsAttention: [],
+    upcoming: [],
+    recentActivity: [],
+    suggestedPrompts: ["Tell me what happens next for Skyline Heights Villa"],
+  },
+  {
+    id: "proj-verona-residence",
+    name: "Verona Luxury Residence",
+    code: "KAL-VLR-2026",
+    location: "Vyttila, Kochi",
+    category: "Contemporary Architecture",
+    phase: "Proposal Accepted",
+    lifecyclePhase: "created",
+    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900&auto=format&fit=crop&q=80",
+    progress: 0,
+    totalBudget: "₹98,00,000",
+    paidAmount: "₹0",
+    pendingAmount: "₹98,00,000",
+    leadProvider: "Studio Nila",
+    targetCompletion: "January 2027",
+    fileCount: 8,
+    activeTaskCount: 0,
+    needsAttention: [],
+    upcoming: [],
+    recentActivity: [],
+    suggestedPrompts: ["Tell me what happens next for Verona Luxury Residence"],
+  },
   // ── PRE CONSTRUCTION ──────────────────────────────────────────────
   {
     id: "proj-greenfield-villa",
@@ -252,7 +295,6 @@ export function ClientProjectsWorkspace() {
   const [activeTab, setActiveTab] = useState<ProjectLifecyclePhase>("construction");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLocation, setSelectedLocation] = useState<string>("all");
-  const [selectedProjectForDetail, setSelectedProjectForDetail] = useState<ClientProject | null>(null);
   const [createdProjects, setCreatedProjects] = useState<CreatedProject[]>([]);
 
   // Load created projects and subscribe to changes
@@ -271,20 +313,25 @@ export function ClientProjectsWorkspace() {
     return unsub;
   }, []);
 
-  const createdDisplayProjects = useMemo(
-    () => createdProjects.map(createdProjectToDisplay),
-    [createdProjects]
-  );
+  const createdDisplayProjects = useMemo(() => {
+    const fromStore = createdProjects.map(createdProjectToDisplay);
+    const staticCreated = CLIENT_DISPLAY_PROJECTS.filter((p) => p.lifecyclePhase === "created");
+
+    const map = new Map<string, DisplayProject>();
+    staticCreated.forEach((p) => map.set(p.id, p));
+    fromStore.forEach((p) => map.set(p.id, p));
+    return Array.from(map.values());
+  }, [createdProjects]);
 
   // Tab counts
   const tabCounts = useMemo(() => {
     return {
-      created: createdProjects.length,
+      created: createdDisplayProjects.length,
       pre_construction: CLIENT_DISPLAY_PROJECTS.filter((p) => p.lifecyclePhase === "pre_construction").length,
       construction: CLIENT_DISPLAY_PROJECTS.filter((p) => p.lifecyclePhase === "construction").length,
       post_construction: CLIENT_DISPLAY_PROJECTS.filter((p) => p.lifecyclePhase === "post_construction").length,
     };
-  }, [createdProjects.length]);
+  }, [createdDisplayProjects.length]);
 
   // Filtered projects
   const filteredProjects = useMemo(() => {
@@ -531,20 +578,6 @@ export function ClientProjectsWorkspace() {
             There are currently no projects in this lifecycle phase matching the selected filters.
           </p>
         </div>
-      )}
-
-      {/* ── Interactive Detail Modal / Drawer ── */}
-      {selectedProjectForDetail && (
-        <ClientProjectDetailDrawer
-          project={selectedProjectForDetail}
-          onClose={() => setSelectedProjectForDetail(null)}
-          onOpenOdinWithPrompt={(promptText) => {
-            router.push(
-              `/client/overview?projectId=${selectedProjectForDetail.id}&prompt=${encodeURIComponent(promptText)}`
-            );
-            setSelectedProjectForDetail(null);
-          }}
-        />
       )}
     </div>
   );

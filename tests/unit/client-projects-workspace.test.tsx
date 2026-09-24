@@ -44,8 +44,19 @@ describe("ClientProjectsWorkspace", () => {
     expect(screen.getByRole("button", { name: /^recently updated/i })).toBeInTheDocument();
   });
 
+  it("renders Created Projects tab with initial created project cards", () => {
+    render(<ClientProjectsWorkspace />);
+
+    expect(screen.getByText("Skyline Heights Villa")).toBeInTheDocument();
+    expect(screen.getByText("Verona Luxury Residence")).toBeInTheDocument();
+  });
+
   it("renders construction project photo cards with overlay phase badge and location", () => {
     render(<ClientProjectsWorkspace />);
+
+    const tabsNav = screen.getByRole("tablist", { name: /project status tabs/i });
+    const constructionTab = within(tabsNav).getByRole("tab", { name: /^construction/i });
+    fireEvent.click(constructionTab);
 
     expect(screen.getAllByText("Nila Residence").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("Greenfield Eco Resort").length).toBeGreaterThanOrEqual(1);
@@ -80,6 +91,10 @@ describe("ClientProjectsWorkspace", () => {
   it("filters project cards by search input", () => {
     render(<ClientProjectsWorkspace />);
 
+    const tabsNav = screen.getByRole("tablist", { name: /project status tabs/i });
+    const constructionTab = within(tabsNav).getByRole("tab", { name: /^construction/i });
+    fireEvent.click(constructionTab);
+
     const searchInput = screen.getByPlaceholderText("Search project, client or code...");
     fireEvent.change(searchInput, { target: { value: "Eco Resort" } });
 
@@ -90,9 +105,9 @@ describe("ClientProjectsWorkspace", () => {
   it("navigates to project detail page when a card is clicked", () => {
     render(<ClientProjectsWorkspace />);
 
-    const firstCard = screen.getAllByRole("button", { name: /project nila residence/i })[0];
-    fireEvent.click(firstCard);
+    const card = screen.getByRole("button", { name: /skyline heights villa/i });
+    fireEvent.click(card);
 
-    expect(mockPush).toHaveBeenCalledWith("/client/projects/proj-nila-residence");
+    expect(mockPush).toHaveBeenCalledWith("/client/projects/proj-skyline-heights");
   });
 });

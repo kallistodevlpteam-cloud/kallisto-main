@@ -241,26 +241,61 @@ export function HandsWorkersToolbar({
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: "5px",
+              gap: "6px",
               height: "32px",
               padding: "0 11px",
               borderRadius: "9999px",
-              border: "none",
-              backgroundColor: selectedTrade !== "All" || tradeOpen ? "#0f172a" : "#f1f5f9",
-              color: selectedTrade !== "All" || tradeOpen ? "#ffffff" : "#475569",
+              border: selectedTrade !== "All" ? "1px solid #cbd5e1" : "1px solid #e2e8f0",
+              backgroundColor: "#f1f5f9",
+              color: selectedTrade !== "All" || tradeOpen ? "#0f172a" : "#475569",
               fontSize: "12px",
-              fontWeight: 600,
+              fontWeight: selectedTrade !== "All" ? 600 : 500,
               cursor: "pointer",
               transition: "all 140ms ease",
               whiteSpace: "nowrap",
             }}
           >
             <span>{selectedTrade === "All" ? "Trade" : selectedTrade}</span>
+            {selectedTrade !== "All" && (
+              <span
+                role="button"
+                aria-label="Clear Trade filter"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTradeChange("All");
+                  setTradeOpen(false);
+                }}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "14px",
+                  height: "14px",
+                  borderRadius: "9999px",
+                  backgroundColor: "#cbd5e1",
+                  color: "#334155",
+                  marginLeft: "1px",
+                  cursor: "pointer",
+                  transition: "all 120ms ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#94a3b8";
+                  e.currentTarget.style.color = "#ffffff";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#cbd5e1";
+                  e.currentTarget.style.color = "#334155";
+                }}
+              >
+                <X size={10} />
+              </span>
+            )}
             <ChevronDown
               size={12}
               style={{
                 transform: tradeOpen ? "rotate(180deg)" : "rotate(0deg)",
                 transition: "transform 140ms ease",
+                color: "#64748b",
               }}
             />
           </button>
@@ -330,15 +365,15 @@ export function HandsWorkersToolbar({
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: "5px",
+              gap: "6px",
               height: "32px",
               padding: "0 11px",
               borderRadius: "9999px",
-              border: "none",
-              backgroundColor: selectedAvailability !== "All" || statusOpen ? "#0f172a" : "#f1f5f9",
-              color: selectedAvailability !== "All" || statusOpen ? "#ffffff" : "#475569",
+              border: selectedAvailability !== "All" ? "1px solid #cbd5e1" : "1px solid #e2e8f0",
+              backgroundColor: "#f1f5f9",
+              color: selectedAvailability !== "All" || statusOpen ? "#0f172a" : "#475569",
               fontSize: "12px",
-              fontWeight: 600,
+              fontWeight: selectedAvailability !== "All" ? 600 : 500,
               cursor: "pointer",
               transition: "all 140ms ease",
               whiteSpace: "nowrap",
@@ -351,11 +386,46 @@ export function HandsWorkersToolbar({
                 ? "Needs Attention"
                 : selectedAvailability}
             </span>
+            {selectedAvailability !== "All" && (
+              <span
+                role="button"
+                aria-label="Clear Status filter"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAvailabilityChange("All");
+                  setStatusOpen(false);
+                }}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "14px",
+                  height: "14px",
+                  borderRadius: "9999px",
+                  backgroundColor: "#cbd5e1",
+                  color: "#334155",
+                  marginLeft: "1px",
+                  cursor: "pointer",
+                  transition: "all 120ms ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#94a3b8";
+                  e.currentTarget.style.color = "#ffffff";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#cbd5e1";
+                  e.currentTarget.style.color = "#334155";
+                }}
+              >
+                <X size={10} />
+              </span>
+            )}
             <ChevronDown
               size={12}
               style={{
                 transform: statusOpen ? "rotate(180deg)" : "rotate(0deg)",
                 transition: "transform 140ms ease",
+                color: "#64748b",
               }}
             />
           </button>
@@ -425,15 +495,15 @@ export function HandsWorkersToolbar({
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: "5px",
+              gap: "6px",
               height: "32px",
               padding: "0 11px",
               borderRadius: "9999px",
-              border: "none",
-              backgroundColor: sortBy !== "default" || sortOpen ? "#0f172a" : "#f1f5f9",
-              color: sortBy !== "default" || sortOpen ? "#ffffff" : "#475569",
+              border: sortBy !== "default" ? "1px solid #cbd5e1" : "1px solid #e2e8f0",
+              backgroundColor: "#f1f5f9",
+              color: sortBy !== "default" || sortOpen ? "#0f172a" : "#475569",
               fontSize: "12px",
-              fontWeight: 600,
+              fontWeight: sortBy !== "default" ? 600 : 500,
               cursor: "pointer",
               transition: "all 140ms ease",
               whiteSpace: "nowrap",
@@ -448,11 +518,46 @@ export function HandsWorkersToolbar({
                 ? "Name (A-Z)"
                 : "Trade"}
             </span>
+            {sortBy !== "default" && (
+              <span
+                role="button"
+                aria-label="Clear Sort filter"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onSortByChange) onSortByChange("default");
+                  setSortOpen(false);
+                }}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "14px",
+                  height: "14px",
+                  borderRadius: "9999px",
+                  backgroundColor: "#cbd5e1",
+                  color: "#334155",
+                  marginLeft: "1px",
+                  cursor: "pointer",
+                  transition: "all 120ms ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#94a3b8";
+                  e.currentTarget.style.color = "#ffffff";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#cbd5e1";
+                  e.currentTarget.style.color = "#334155";
+                }}
+              >
+                <X size={10} />
+              </span>
+            )}
             <ChevronDown
               size={12}
               style={{
                 transform: sortOpen ? "rotate(180deg)" : "rotate(0deg)",
                 transition: "transform 140ms ease",
+                color: "#64748b",
               }}
             />
           </button>

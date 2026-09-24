@@ -19,8 +19,8 @@ interface HandsWorkerProfileDrawerProps {
   worker: WorkerProfile;
   isOpen: boolean;
   onClose: () => void;
-  onAssignToWork: (worker: WorkerProfile) => void;
-  onAskOdinForWorker: (worker: WorkerProfile) => void;
+  onAssignToWork?: (worker: WorkerProfile) => void;
+  onAskOdinForWorker?: (worker: WorkerProfile) => void;
 }
 
 export function HandsWorkerProfileDrawer({
@@ -301,7 +301,7 @@ export function HandsWorkerProfileDrawer({
           <button
             type="button"
             className={styles.odinToggleBtn}
-            onClick={() => onAskOdinForWorker(worker)}
+            onClick={() => onAskOdinForWorker?.(worker)}
             title="Ask Odin about this worker"
           >
             <Sparkles size={14} />
@@ -310,7 +310,7 @@ export function HandsWorkerProfileDrawer({
           <button
             type="button"
             className={styles.primaryActionBtn}
-            onClick={() => onAssignToWork(worker)}
+            onClick={() => onAssignToWork?.(worker)}
           >
             <Briefcase size={15} />
             <span>

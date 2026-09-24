@@ -463,7 +463,27 @@ export function TopBar({
           type="button"
           aria-label="Notifications"
           title="Notifications"
-          onClick={() => setNotificationsOpen((prev) => !prev)}
+          onClick={() => {
+            if (pathname?.startsWith("/partner")) {
+              setNotificationsOpen(false);
+              const targetRoute = pathname.startsWith("/partner/hands")
+                ? "/partner/hands/notifications"
+                : pathname.startsWith("/partner/hub")
+                ? "/partner/hub/notifications"
+                : pathname.startsWith("/partner/basics")
+                ? "/partner/basics/notifications"
+                : "/partner/notifications";
+              router.push(targetRoute);
+            } else if (pathname?.startsWith("/client")) {
+              setNotificationsOpen(false);
+              const targetRoute = pathname.startsWith("/client/enquiries")
+                ? "/client/enquiries/notifications"
+                : "/client/notifications";
+              router.push(targetRoute);
+            } else {
+              setNotificationsOpen((prev) => !prev);
+            }
+          }}
         >
           <BellDuotoneIcon size={16} />
           <span className="notification-indicator" />

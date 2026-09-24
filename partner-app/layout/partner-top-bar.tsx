@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Menu, ChevronLeft, ChevronRight, Bell, Sparkles, Search, Maximize2, Minimize2 } from "lucide-react";
 import { PartnerBreadcrumbs } from "./partner-breadcrumbs";
 import { PartnerTypeBadge } from "../auth/components/partner-type-badge";
 import { PartnerAccountPopover } from "./partner-account-popover";
+import { NotificationPopover } from "@/components/layout/notification-popover";
 import { usePartnerAuth } from "../auth/context/partner-auth-context";
 import { getPartnerConfig } from "../shared/config/partner-config";
 import styles from "./partner-layout.module.css";
@@ -18,12 +19,21 @@ interface PartnerTopBarProps {
 
 export function PartnerTopBar({ onToggleNavigation, onToggleOdin, isOdinOpen }: PartnerTopBarProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { partnerType, user } = usePartnerAuth();
   const config = getPartnerConfig(partnerType);
 
   const [accountOpen, setAccountOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const handleNotificationClick = () => {
+    setNotificationsOpen(false);
+    const targetRoute = pathname?.startsWith("/partner/hands")
+      ? "/partner/hands/notifications"
+      : "/partner/notifications";
+    router.push(targetRoute);
+  };
 
   const handleToggleFullscreen = async () => {
     if (document.fullscreenElement) {
@@ -143,7 +153,7 @@ export function PartnerTopBar({ onToggleNavigation, onToggleOdin, isOdinOpen }: 
         {/* Notifications Button */}
         <button
           type="button"
-          onClick={() => setNotificationsOpen((prev) => !prev)}
+          onClick={handleNotificationClick}
           aria-label="Partner Notifications"
           title="Notifications"
           style={{
@@ -226,6 +236,12 @@ export function PartnerTopBar({ onToggleNavigation, onToggleOdin, isOdinOpen }: 
                 .join("")
             : "KP"}
         </button>
+
+        {/* Notifications Popover Flyout */}
+        <NotificationPopover
+          isOpen={notificationsOpen}
+          onClose={() => setNotificationsOpen(false)}
+        />
 
         {/* Account Popover */}
         <PartnerAccountPopover

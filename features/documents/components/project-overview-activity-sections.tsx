@@ -724,139 +724,141 @@ export function ProjectOverviewActivitySections({
       </section>
 
       {/* ── 4. HANDS / LABOUR + ACTIVE TEAM ─────────────────────── */}
-      <div className={styles.twoColGrid}>
-        {/* Left: HANDS */}
-        <section className={styles.card} aria-label="Hands Project Labour">
-          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "4px" }}>
-            <h3 className={styles.sectionTitle} style={{ margin: 0 }}>
-              <span>HANDS</span>
+      {!isConstructionNotStarted && (
+        <div className={styles.twoColGrid}>
+          {/* Left: HANDS */}
+          <section className={styles.card} aria-label="Hands Project Labour">
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "4px" }}>
+              <h3 className={styles.sectionTitle} style={{ margin: 0 }}>
+                <span>HANDS</span>
+              </h3>
+              <span className={styles.sectionBadge}>
+                {isClient ? "18 Active Today" : "₹16,850 Today's Spend"}
+              </span>
+            </div>
+
+            <div className={styles.statsRow} style={{ marginTop: "10px" }}>
+              <div className={styles.statBox}>
+                <span className={styles.statBoxNum}>24</span>
+                <span className={styles.statBoxLabel}>Total Labour</span>
+              </div>
+              <div className={styles.statBox}>
+                <span className={`${styles.statBoxNum} ${styles.statBoxNumCompleted}`}>18</span>
+                <span className={styles.statBoxLabel}>Active Today</span>
+              </div>
+              <div className={styles.statBox}>
+                <span className={styles.statBoxNum}>04</span>
+                <span className={styles.statBoxLabel}>On Leave</span>
+              </div>
+              <div className={styles.statBox}>
+                <span className={`${styles.statBoxNum} ${styles.statBoxNumOverdue}`}>02</span>
+                <span className={styles.statBoxLabel}>Not Assigned</span>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase", marginBottom: "6px" }}>
+              <span>ACTIVE TODAY (18 WORKERS)</span>
+              {!isClient && (
+                <span style={{ color: "#15803d", fontWeight: 700 }}>₹16,850 / DAY</span>
+              )}
+            </div>
+
+            <div className={styles.labourTradesGrid}>
+              <div className={styles.tradePill}>
+                <span>Mason{!isClient ? " (06)" : ""}</span>
+                <strong>{isClient ? "06" : "₹5,400"}</strong>
+              </div>
+              <div className={styles.tradePill}>
+                <span>Carpenter{!isClient ? " (04)" : ""}</span>
+                <strong>{isClient ? "04" : "₹3,600"}</strong>
+              </div>
+              <div className={styles.tradePill}>
+                <span>Electrician{!isClient ? " (03)" : ""}</span>
+                <strong>{isClient ? "03" : "₹2,700"}</strong>
+              </div>
+              <div className={styles.tradePill}>
+                <span>Plumber{!isClient ? " (02)" : ""}</span>
+                <strong>{isClient ? "02" : "₹1,800"}</strong>
+              </div>
+              <div className={styles.tradePill}>
+                <span>Painter{!isClient ? " (03)" : ""}</span>
+                <strong>{isClient ? "03" : "₹2,400"}</strong>
+              </div>
+              <div className={styles.tradePill}>
+                <span>Other{!isClient ? " (03)" : ""}</span>
+                <strong>{isClient ? "03" : "₹2,100"}</strong>
+              </div>
+            </div>
+
+            <div className={styles.labourStatusBar}>
+              <span>18 / 24 active today (75% on-site)</span>
+              {isClient ? (
+                <span style={{ fontWeight: 600 }}>Verified &amp; deployed</span>
+              ) : (
+                <span style={{ fontWeight: 700, color: "#15803d" }}>Today&apos;s Labour Spend: ₹16,850</span>
+              )}
+            </div>
+
+            <Link
+              href={`${basePath}?tab=hands`}
+              onClick={handleTabClick("hands")}
+              className={styles.footerLink}
+            >
+              <span>View Hands</span>
+              <ArrowRight size={13} />
+            </Link>
+          </section>
+
+          {/* Right: ACTIVE PROJECT TEAM */}
+          <section className={styles.card} aria-label="Active Project Team">
+            <h3 className={styles.sectionTitle}>
+              <span>ACTIVE PROJECT TEAM</span>
+              <span className={styles.sectionBadge}>02 Members</span>
             </h3>
-            <span className={styles.sectionBadge}>
-              {isClient ? "18 Active Today" : "₹16,850 Today's Spend"}
-            </span>
-          </div>
 
-          <div className={styles.statsRow} style={{ marginTop: "10px" }}>
-            <div className={styles.statBox}>
-              <span className={styles.statBoxNum}>24</span>
-              <span className={styles.statBoxLabel}>Total Labour</span>
-            </div>
-            <div className={styles.statBox}>
-              <span className={`${styles.statBoxNum} ${styles.statBoxNumCompleted}`}>18</span>
-              <span className={styles.statBoxLabel}>Active Today</span>
-            </div>
-            <div className={styles.statBox}>
-              <span className={styles.statBoxNum}>04</span>
-              <span className={styles.statBoxLabel}>On Leave</span>
-            </div>
-            <div className={styles.statBox}>
-              <span className={`${styles.statBoxNum} ${styles.statBoxNumOverdue}`}>02</span>
-              <span className={styles.statBoxLabel}>Not Assigned</span>
-            </div>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase", marginBottom: "6px" }}>
-            <span>ACTIVE TODAY (18 WORKERS)</span>
-            {!isClient && (
-              <span style={{ color: "#15803d", fontWeight: 700 }}>₹16,850 / DAY</span>
-            )}
-          </div>
-
-          <div className={styles.labourTradesGrid}>
-            <div className={styles.tradePill}>
-              <span>Mason{!isClient ? " (06)" : ""}</span>
-              <strong>{isClient ? "06" : "₹5,400"}</strong>
-            </div>
-            <div className={styles.tradePill}>
-              <span>Carpenter{!isClient ? " (04)" : ""}</span>
-              <strong>{isClient ? "04" : "₹3,600"}</strong>
-            </div>
-            <div className={styles.tradePill}>
-              <span>Electrician{!isClient ? " (03)" : ""}</span>
-              <strong>{isClient ? "03" : "₹2,700"}</strong>
-            </div>
-            <div className={styles.tradePill}>
-              <span>Plumber{!isClient ? " (02)" : ""}</span>
-              <strong>{isClient ? "02" : "₹1,800"}</strong>
-            </div>
-            <div className={styles.tradePill}>
-              <span>Painter{!isClient ? " (03)" : ""}</span>
-              <strong>{isClient ? "03" : "₹2,400"}</strong>
-            </div>
-            <div className={styles.tradePill}>
-              <span>Other{!isClient ? " (03)" : ""}</span>
-              <strong>{isClient ? "03" : "₹2,100"}</strong>
-            </div>
-          </div>
-
-          <div className={styles.labourStatusBar}>
-            <span>18 / 24 active today (75% on-site)</span>
-            {isClient ? (
-              <span style={{ fontWeight: 600 }}>Verified &amp; deployed</span>
-            ) : (
-              <span style={{ fontWeight: 700, color: "#15803d" }}>Today&apos;s Labour Spend: ₹16,850</span>
-            )}
-          </div>
-
-          <Link
-            href={`${basePath}?tab=hands`}
-            onClick={handleTabClick("hands")}
-            className={styles.footerLink}
-          >
-            <span>View Hands</span>
-            <ArrowRight size={13} />
-          </Link>
-        </section>
-
-        {/* Right: ACTIVE PROJECT TEAM */}
-        <section className={styles.card} aria-label="Active Project Team">
-          <h3 className={styles.sectionTitle}>
-            <span>ACTIVE PROJECT TEAM</span>
-            <span className={styles.sectionBadge}>02 Members</span>
-          </h3>
-
-          <div className={styles.teamList}>
-            <div className={styles.teamMemberRow}>
-              <div className={styles.teamMemberLeft}>
-                <img
-                  src="/assets/arjun-avatar.jpg"
-                  alt="Arjun Menon"
-                  className={styles.teamMemberAvatar}
-                />
-                <div>
-                  <span className={styles.teamMemberName}>Arjun Menon</span>
-                  <span className={styles.teamMemberRole}>Project Manager</span>
+            <div className={styles.teamList}>
+              <div className={styles.teamMemberRow}>
+                <div className={styles.teamMemberLeft}>
+                  <img
+                    src="/assets/arjun-avatar.jpg"
+                    alt="Arjun Menon"
+                    className={styles.teamMemberAvatar}
+                  />
+                  <div>
+                    <span className={styles.teamMemberName}>Arjun Menon</span>
+                    <span className={styles.teamMemberRole}>Project Manager</span>
+                  </div>
                 </div>
+                <span className={styles.activeDotBadge}>Active</span>
               </div>
-              <span className={styles.activeDotBadge}>Active</span>
-            </div>
 
-            <div className={styles.teamMemberRow}>
-              <div className={styles.teamMemberLeft}>
-                <img
-                  src="/assets/priya-avatar.jpg"
-                  alt="Priya Sharma"
-                  className={styles.teamMemberAvatar}
-                />
-                <div>
-                  <span className={styles.teamMemberName}>Priya Sharma</span>
-                  <span className={styles.teamMemberRole}>Lead Architect</span>
+              <div className={styles.teamMemberRow}>
+                <div className={styles.teamMemberLeft}>
+                  <img
+                    src="/assets/priya-avatar.jpg"
+                    alt="Priya Sharma"
+                    className={styles.teamMemberAvatar}
+                  />
+                  <div>
+                    <span className={styles.teamMemberName}>Priya Sharma</span>
+                    <span className={styles.teamMemberRole}>Lead Architect</span>
+                  </div>
                 </div>
+                <span className={styles.activeDotBadge}>Active</span>
               </div>
-              <span className={styles.activeDotBadge}>Active</span>
             </div>
-          </div>
 
-          <Link
-            href={`${basePath}?tab=team`}
-            onClick={handleTabClick("team")}
-            className={styles.footerLink}
-          >
-            <span>View Team</span>
-            <ArrowRight size={13} />
-          </Link>
-        </section>
-      </div>
+            <Link
+              href={`${basePath}?tab=team`}
+              onClick={handleTabClick("team")}
+              className={styles.footerLink}
+            >
+              <span>View Team</span>
+              <ArrowRight size={13} />
+            </Link>
+          </section>
+        </div>
+      )}
 
       {/* ── 5. HUB + HIVE PRODUCTS ──────────────────────────────── */}
       <div className={isClient ? styles.singleColSection : styles.twoColGrid}>

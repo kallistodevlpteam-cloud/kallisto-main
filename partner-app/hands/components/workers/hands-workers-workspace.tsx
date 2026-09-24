@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { UserPlus, Sparkles } from "lucide-react";
+import React, { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Plus, UserPlus, Sparkles, CheckCircle2, X } from "lucide-react";
 import { StudioDuotoneIcon } from "@/components/layout/sidebar-icons";
 import {
   WorkerProfile,
@@ -23,12 +24,23 @@ import { HandsWorkerOdinPanel } from "./hands-worker-odin-panel";
 import styles from "./hands-workers.module.css";
 
 export function HandsWorkersWorkspace() {
+  const router = useRouter();
   const [workers, setWorkers] = useState<WorkerProfile[]>(INITIAL_WORKERS);
   const [selectedWorker, setSelectedWorker] = useState<WorkerProfile | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAddWorkerOpen, setIsAddWorkerOpen] = useState(false);
   const [isRegisteringWorker, setIsRegisteringWorker] = useState(false);
-  const [isOdinOpen, setIsOdinOpen] = useState(true);
+  const [isOdinOpen, setIsOdinOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => {
+        setToastMessage(null);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastMessage]);
 
   // Search, Filter & Sort State
   const [searchQuery, setSearchQuery] = useState("");
@@ -125,13 +137,14 @@ export function HandsWorkersWorkspace() {
   ]);
 
   const handleSelectWorker = (worker: WorkerProfile) => {
-    setSelectedWorker(worker);
-    setIsProfileOpen(true);
+    router.push(`/partner/hands/workers/${worker.id}`);
   };
+
 
   const handleAddWorker = (newWorker: WorkerProfile) => {
     setWorkers((prev) => [newWorker, ...prev]);
     setSelectedWorker(newWorker);
+    setToastMessage(`${newWorker.name} has been added successfully!`);
   };
 
   const handleAssignWorker = (
@@ -163,6 +176,27 @@ export function HandsWorkersWorkspace() {
         gridTemplateColumns: isOdinOpen ? "minmax(0, 1fr) 390px" : "1fr",
       }}
     >
+      {/* Light Green Glass Top Toast Notification Banner */}
+      {toastMessage && (
+        <div className={styles.topToastBannerGlass} role="alert" aria-live="polite">
+          <div className={styles.toastIconWrap}>
+            <CheckCircle2 size={16} />
+          </div>
+          <div className={styles.toastContentWrap}>
+            <span className={styles.toastTitle}>Success</span>
+            <span className={styles.toastSubtitle}>{toastMessage}</span>
+          </div>
+          <button
+            type="button"
+            className={styles.toastCloseBtn}
+            onClick={() => setToastMessage(null)}
+            aria-label="Close notification"
+          >
+            <X size={15} />
+          </button>
+        </div>
+      )}
+
       {/* Main Workforce Content Area */}
       <main className={styles.leftMainSection}>
         {/* Page Header */}
@@ -181,13 +215,22 @@ export function HandsWorkersWorkspace() {
               onClick={() => {
                 setSelectedWorker(null);
                 setIsProfileOpen(false);
-                setIsRegisteringWorker(true);
-                setIsOdinOpen(true);
+                setIsAddWorkerOpen(true);
               }}
               aria-label="Add Worker"
             >
-              <StudioDuotoneIcon size={16} />
+              <Plus size={16} />
               <span>Add Worker</span>
+            </button>
+
+            <button
+              type="button"
+              className={styles.odinToggleBtn}
+              onClick={() => setIsOdinOpen((prev) => !prev)}
+              aria-label="Ask Odin"
+            >
+              <Sparkles size={15} style={{ color: "#7c3aed" }} />
+              <span>{isOdinOpen ? "Collapse Odin" : "Ask Odin"}</span>
             </button>
           </div>
         </header>
@@ -217,8 +260,7 @@ export function HandsWorkersWorkspace() {
           onOpenAddWorker={() => {
             setSelectedWorker(null);
             setIsProfileOpen(false);
-            setIsRegisteringWorker(true);
-            setIsOdinOpen(true);
+            setIsAddWorkerOpen(true);
           }}
           onAskOdinForWorker={(worker) => {
             setSelectedWorker(worker);
@@ -268,7 +310,7 @@ export function HandsWorkersWorkspace() {
         />
       )}
 
-      {/* Add Worker Modal */}
+      {/* Add Worker Modal Overlay */}
       <HandsAddWorkerModal
         isOpen={isAddWorkerOpen}
         onClose={() => setIsAddWorkerOpen(false)}

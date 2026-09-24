@@ -69,7 +69,7 @@ function PartnerAppShellContent({ children }: PartnerAppShellProps) {
         showHeading={false}
         containerClassName="hands-page-container"
       >
-        <div style={{ width: "100%", minHeight: 0, minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <div style={{ width: "100%", height: "100%", minHeight: 0, minWidth: 0, display: "flex", flexDirection: "column", flex: "1 1 0%" }}>
           {children}
         </div>
       </RoutePageContainer>

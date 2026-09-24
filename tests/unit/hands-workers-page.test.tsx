@@ -5,11 +5,13 @@ import { HandsWorkersWorkspace } from "@/partner-app/hands/components/workers/ha
 import { PartnerAuthProvider } from "@/partner-app/auth/context/partner-auth-context";
 import { PartnerAuthService } from "@/partner-app/auth/services/partner-auth-service";
 
+const mockPush = vi.fn();
+
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
   usePathname: () => "/partner/hands/workers",
   useRouter: () => ({
-    push: vi.fn(),
+    push: mockPush,
     replace: vi.fn(),
     back: vi.fn(),
     forward: vi.fn(),
@@ -124,7 +126,7 @@ describe("Kallisto Hands - Workers Page & Directory", () => {
     expect(screen.queryByText("Rajesh Kumar")).toBeNull();
   });
 
-  it("opens worker profile pop-up card modal when clicking a worker row", () => {
+  it("navigates to worker detail page when clicking a worker row", () => {
     render(
       <PartnerAuthProvider>
         <HandsWorkersWorkspace />
@@ -134,19 +136,11 @@ describe("Kallisto Hands - Workers Page & Directory", () => {
     const rajeshRow = screen.getByText("Rajesh Kumar");
     fireEvent.click(rajeshRow);
 
-    // Profile pop-up card contents
-    expect(screen.getByRole("dialog", { name: /Worker Profile: Rajesh Kumar/i })).toBeDefined();
-    expect(screen.getByText("SKILLS")).toBeDefined();
-    expect(screen.getAllByText("Brickwork").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Plastering").length).toBeGreaterThan(0);
-    expect(screen.getByText("VERIFICATION")).toBeDefined();
-    expect(screen.getByText("CURRENT STATUS")).toBeDefined();
-    expect(screen.getByText("RECENT WORK")).toBeDefined();
-    expect(screen.getByRole("button", { name: /Assign to Work/i })).toBeDefined();
+    // Should navigate to full worker detail page
+    expect(mockPush).toHaveBeenCalledWith("/partner/hands/workers/KH-W-1042");
   });
 
-  it("opens conversational one-by-one worker registration in Odin panel and registers worker", async () => {
-    vi.useFakeTimers();
+  it("opens manual labor registration form modal overlay on clicking '+ Add Worker'", () => {
     render(
       <PartnerAuthProvider>
         <HandsWorkersWorkspace />
@@ -156,82 +150,20 @@ describe("Kallisto Hands - Workers Page & Directory", () => {
     const addWorkerBtn = screen.getByRole("button", { name: /Add Worker/i });
     fireEvent.click(addWorkerBtn);
 
-    // Q1: Name
-    expect(screen.getByText(/What is the worker's/i)).toBeDefined();
-    expect(screen.getByText(/Full Name/i)).toBeDefined();
-
-    const input1 = screen.getByPlaceholderText(/Type worker's full name.../i);
-    fireEvent.change(input1, { target: { value: "Deepak N" } });
-    fireEvent.keyDown(input1, { key: "Enter", code: "Enter" });
-
-    act(() => {
-      vi.advanceTimersByTime(350);
-    });
-
-    // Q2: Phone
-    expect(screen.getByText(/mobile number/i)).toBeDefined();
-    const input2 = screen.getByPlaceholderText(/Type mobile number.../i);
-    fireEvent.change(input2, { target: { value: "+91 98950 11223" } });
-    fireEvent.keyDown(input2, { key: "Enter", code: "Enter" });
-
-    act(() => {
-      vi.advanceTimersByTime(350);
-    });
-
-    // Q3: Location
-    expect(screen.getByText(/Primary Location/i)).toBeDefined();
-    const kochiBtn = screen.getByRole("button", { name: "Kochi" });
-    fireEvent.click(kochiBtn);
-
-    act(() => {
-      vi.advanceTimersByTime(350);
-    });
-
-    // Q4: Trade
-    expect(screen.getByText(/primary trade/i)).toBeDefined();
-    const masonBtn = screen.getByRole("button", { name: "Mason" });
-    fireEvent.click(masonBtn);
-
-    act(() => {
-      vi.advanceTimersByTime(350);
-    });
-
-    // Q5: Experience
-    expect(screen.getByText(/years of experience/i)).toBeDefined();
-    const expBtn = screen.getByRole("button", { name: /5 Years/i });
-    fireEvent.click(expBtn);
-
-    act(() => {
-      vi.advanceTimersByTime(350);
-    });
-
-    // Q6: Daily Wage
-    expect(screen.getByText(/Daily Wage/i)).toBeDefined();
-    const wageBtn = screen.getByRole("button", { name: /₹950/i });
-    fireEvent.click(wageBtn);
-
-    act(() => {
-      vi.advanceTimersByTime(350);
-    });
-
-    // Review & Confirmation Card
-    expect(screen.getByText(/registration review for/i)).toBeDefined();
-
-    const registerBtn = screen.getByRole("button", {
-      name: /Confirm & Register Worker/i,
-    });
-    fireEvent.click(registerBtn);
-
-    expect(screen.getAllByText("Deepak N").length).toBeGreaterThan(0);
-    vi.useRealTimers();
+    expect(screen.getByRole("dialog", { name: /Basic info/i })).toBeDefined();
+    expect(screen.getAllByText("Basic info").length).toBeGreaterThan(0);
+    expect(screen.getByPlaceholderText(/Yashna Dev/i)).toBeDefined();
   });
 
-  it("renders Odin Workforce Intelligence panel with quick action queries", () => {
+  it("expands Odin Workforce Intelligence panel when clicking 'Ask Odin'", () => {
     render(
       <PartnerAuthProvider>
         <HandsWorkersWorkspace />
       </PartnerAuthProvider>
     );
+
+    const askOdinBtn = screen.getAllByRole("button", { name: /Ask Odin/i })[0];
+    fireEvent.click(askOdinBtn);
 
     expect(screen.getByText("Odin")).toBeDefined();
     expect(screen.getByText("Workforce AI")).toBeDefined();

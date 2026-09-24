@@ -308,8 +308,8 @@ export function ProjectOverviewCard({
           <EnquiryDetailTabs
             activeTab={activeTab}
             onTabChange={setActiveTab}
-            mode={isUpcoming ? "upcoming" : "project"}
-            tabs={isUpcoming ? UPCOMING_PROJECT_TABS : PROJECT_TABS}
+            mode={isUpcoming || isConstructionNotStarted ? "upcoming" : "project"}
+            tabs={isUpcoming || isConstructionNotStarted ? UPCOMING_PROJECT_TABS : PROJECT_TABS}
           />
         </div>
 

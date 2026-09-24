@@ -496,3 +496,24 @@
   flex-direction: column;
   gap: 20px;
 }
+
+
+.viewFullDashboardBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #0f172a;
+  border: 1px solid #0f172a;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.viewFullDashboardBtn:hover {
+  background: #1e293b;
+  border-color: #1e293b;
+}

@@ -22,13 +22,57 @@ export interface CreatedProject {
   providerName?: string;
 }
 
+export const DEFAULT_CREATED_PROJECTS: CreatedProject[] = [
+  {
+    id: "proj-skyline-heights",
+    title: "Skyline Heights Villa",
+    clientName: "Ananya Builders",
+    location: "Marine Drive, Kochi",
+    budget: "₹1,45,00,000",
+    projectType: "Luxury Residential",
+    acceptedAt: "2026-09-20T10:00:00.000Z",
+    thumbnailUrl:
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900&auto=format&fit=crop&q=80",
+    providerName: "Greenfield Architects",
+  },
+  {
+    id: "proj-verona-residence",
+    title: "Verona Luxury Residence",
+    clientName: "Ananya Builders",
+    location: "Vyttila, Kochi",
+    budget: "₹98,00,000",
+    projectType: "Contemporary Architecture",
+    acceptedAt: "2026-09-22T14:30:00.000Z",
+    thumbnailUrl:
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900&auto=format&fit=crop&q=80",
+    providerName: "Studio Nila",
+  },
+];
+
 function readStore(): CreatedProject[] {
-  if (typeof window === "undefined") return [];
+  if (typeof window === "undefined") return DEFAULT_CREATED_PROJECTS;
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as CreatedProject[]) : [];
+    if (!raw) {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_CREATED_PROJECTS));
+      return DEFAULT_CREATED_PROJECTS;
+    }
+    const parsed = JSON.parse(raw) as CreatedProject[];
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_CREATED_PROJECTS));
+      return DEFAULT_CREATED_PROJECTS;
+    }
+    const missingDefaults = DEFAULT_CREATED_PROJECTS.filter(
+      (def) => !parsed.some((p) => p.id === def.id)
+    );
+    if (missingDefaults.length > 0) {
+      const merged = [...parsed, ...missingDefaults];
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      return merged;
+    }
+    return parsed;
   } catch {
-    return [];
+    return DEFAULT_CREATED_PROJECTS;
   }
 }
 

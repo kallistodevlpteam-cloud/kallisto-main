@@ -14,6 +14,7 @@ import {
   EnquiriesDuotoneIcon,
   MoreToolsDuotoneIcon,
   HelpDuotoneIcon,
+  BellDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 import { PartnerType } from "../types/partner-domain";
 
@@ -42,6 +43,7 @@ export const HANDS_NAVIGATION: PartnerNavItem[] = [
   { id: "requests", label: "Requests", href: "/partner/hands/requests", icon: EnquiriesDuotoneIcon, section: "main", badgeCount: 4, color: "#2563eb" },
   { id: "assignments", label: "Assignments", href: "/partner/hands/assignments", icon: ProjectsDuotoneIcon, section: "main", color: "#6366f1" },
   { id: "attendance", label: "Attendance", href: "/partner/hands/attendance", icon: CalendarDuotoneIcon, section: "main", color: "#ea580c" },
+  { id: "notifications", label: "Notifications", href: "/partner/hands/notifications", icon: BellDuotoneIcon, section: "main", badgeCount: 3, color: "#ef4444" },
   { id: "projects", label: "Projects", href: "/partner/hands/projects", icon: ProjectsDuotoneIcon, section: "main", color: "#6366f1", dividerBefore: true },
   { id: "payments", label: "Payments", href: "/partner/hands/payments", icon: PaymentsDuotoneIcon, section: "main", color: "#10b981" },
   { id: "support", label: "Support", href: "/partner/help", icon: HelpDuotoneIcon, section: "utility", color: "#0284c7", dividerBefore: true },
@@ -55,6 +57,7 @@ export const HUB_NAVIGATION: PartnerNavItem[] = [
   { id: "suppliers", label: "Suppliers", href: "/partner/hub/suppliers", icon: TeamDuotoneIcon, section: "main", color: "#0891b2", isLocked: true },
   { id: "orders", label: "Orders", href: "/partner/hub/orders", icon: EnquiriesDuotoneIcon, section: "main", badgeCount: 6, color: "#2563eb" },
   { id: "calendar", label: "Calendar", href: "/partner/hub/calendar", icon: CalendarDuotoneIcon, section: "main", color: "#ea580c" },
+  { id: "notifications", label: "Notifications", href: "/partner/hub/notifications", icon: BellDuotoneIcon, section: "main", badgeCount: 3, color: "#ef4444" },
   { id: "payments", label: "Payments", href: "/partner/hub/payments", icon: PaymentsDuotoneIcon, section: "main", color: "#10b981" },
   { id: "support", label: "Support", href: "/partner/help", icon: HelpDuotoneIcon, section: "utility", color: "#0284c7" },
 ];
@@ -67,6 +70,7 @@ export const BASICS_NAVIGATION: PartnerNavItem[] = [
   { id: "assignments", label: "Assignments", href: "/partner/basics/assignments", icon: ProjectsDuotoneIcon, section: "main", color: "#6366f1" },
   { id: "projects", label: "Projects", href: "/partner/basics/projects", icon: ProjectsDuotoneIcon, section: "main", color: "#6366f1" },
   { id: "schedule", label: "Schedule", href: "/partner/basics/schedule", icon: CalendarDuotoneIcon, section: "main", color: "#ea580c" },
+  { id: "notifications", label: "Notifications", href: "/partner/basics/notifications", icon: BellDuotoneIcon, section: "main", badgeCount: 3, color: "#ef4444" },
   { id: "payments", label: "Payments", href: "/partner/basics/payments", icon: PaymentsDuotoneIcon, section: "main", color: "#10b981" },
   { id: "documents", label: "Documents", href: "/partner/basics/documents", icon: DocumentsDuotoneIcon, section: "main", color: "#0284c7" },
   { id: "performance", label: "Performance", href: "/partner/basics/performance", icon: AnalyticsDuotoneIcon, section: "main", color: "#ec4899" },
