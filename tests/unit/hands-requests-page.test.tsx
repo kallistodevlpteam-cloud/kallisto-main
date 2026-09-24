@@ -47,7 +47,7 @@ describe("Kallisto Hands - Requests Page & Workforce Match Intelligence", () => 
     expect(screen.getByText(/Edit/i)).toBeDefined();
   });
 
-  it("renders workflow-based status navigation pill tabs (Requests, History; no Accepted or Closed)", () => {
+  it("renders workflow-based status navigation underline tabs (Requests, History; no Accepted or Closed)", () => {
     render(
       <PartnerAuthProvider>
         <HandsRequestsWorkspace />

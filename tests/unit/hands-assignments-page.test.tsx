@@ -44,7 +44,7 @@ describe("Kallisto Hands - Assignments Workspace & Structured Cards", () => {
 
     expect(screen.getByRole("heading", { level: 1, name: /Assignments/i })).toBeDefined();
     expect(screen.getByText(/Active project site allocations/i)).toBeDefined();
-    expect(screen.getByRole("button", { name: /Assign Crew/i })).toBeDefined();
+    expect(screen.queryByRole("button", { name: /Assign Crew/i })).toBeNull();
   });
 
   it("renders top telemetry strip with deployments and shift completion metrics", () => {

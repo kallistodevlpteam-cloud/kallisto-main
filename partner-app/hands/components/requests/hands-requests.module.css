@@ -330,19 +330,20 @@
   font-weight: 500;
 }
 
-/* 4. Segmented Tabs Bar (Matching Reference Image) */
+/* 4. Underline Workflow & Status Filter Tabs (Matching Reference Image media_1790232900124.png) */
 .segmentedTabsContainer {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 3px;
-  background-color: #f1f5f9;
-  padding: 3.5px;
-  border-radius: 9999px;
-  width: fit-content;
-  max-width: 100%;
+  gap: 28px;
+  width: 100%;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0 4px;
+  margin: 4px 0 12px 0;
+  box-sizing: border-box;
   overflow-x: auto;
   scrollbar-width: none;
-  box-sizing: border-box;
+  background-color: transparent;
+  border-radius: 0;
 }
 
 .segmentedTabsContainer::-webkit-scrollbar {
@@ -350,21 +351,23 @@
 }
 
 .segmentedTabBtn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  height: 30px;
-  padding: 0 14px;
-  border-radius: 9999px;
-  border: none;
-  background-color: transparent;
+  padding: 10px 2px 12px 2px;
+  font-size: 13.5px;
+  font-weight: 500;
   color: #64748b;
-  font-size: 12px;
-  font-weight: 600;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
   cursor: pointer;
-  transition: all 150ms ease;
+  transition: color 140ms ease;
   white-space: nowrap;
   flex-shrink: 0;
+  outline: none;
+  line-height: 1.2;
 }
 
 .segmentedTabBtn:hover {
@@ -372,37 +375,56 @@
 }
 
 .segmentedTabBtnActive {
-  background-color: #ffffff !important;
+  background-color: transparent !important;
   color: #0f172a !important;
-  font-weight: 700 !important;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+.segmentedTabBtnActive::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #0f172a;
+  border-radius: 2px 2px 0 0;
+  display: block !important;
 }
 
 .tabIconActive {
-  color: #0f172a;
+  color: #0f172a !important;
+  flex-shrink: 0;
 }
 
 .tabIconInactive {
-  color: #64748b;
+  color: #64748b !important;
+  flex-shrink: 0;
   transition: color 140ms ease;
 }
 
 .segmentedTabBtn:hover .tabIconInactive {
-  color: #0f172a;
+  color: #0f172a !important;
 }
 
 .segmentedTabCount {
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 1px 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 7.5px;
   border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 600;
   background-color: #e2e8f0;
-  color: #475569;
+  color: #0f172a;
+  line-height: 1.2;
   transition: all 140ms ease;
+  margin-left: 2px;
 }
 
 .segmentedTabCountActive {
-  background-color: #f1f5f9 !important;
+  background-color: #e2e8f0 !important;
   color: #0f172a !important;
 }
 
@@ -2249,78 +2271,7 @@
   border-radius: 9999px;
 }
 
-/* =========================================================
-   SEGMENTED WORKFLOW TABS (BALANCED TOP/BOTTOM/SIDE PADDING)
-   ========================================================= */
 
-.segmentedTabsContainer {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background-color: #f1f5f9;
-  border-radius: 9999px;
-  padding: 5px 6px;
-  box-sizing: border-box;
-  width: fit-content;
-  margin: 2px 0 4px 0;
-}
-
-.segmentedTabBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 16px;
-  border-radius: 9999px;
-  border: none;
-  background-color: transparent;
-  color: #64748b;
-  font-size: 12.5px;
-  font-weight: 550;
-  cursor: pointer;
-  transition: all 140ms ease;
-  white-space: nowrap;
-  line-height: 1;
-  box-sizing: border-box;
-}
-
-.segmentedTabBtn:hover {
-  color: #0f172a;
-}
-
-.segmentedTabBtnActive {
-  background-color: #ffffff;
-  color: #0f172a;
-  font-weight: 700;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
-}
-
-.tabIconActive {
-  color: #2563eb;
-  flex-shrink: 0;
-}
-
-.tabIconInactive {
-  color: #94a3b8;
-  flex-shrink: 0;
-}
-
-.segmentedTabCount {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px 7.5px;
-  border-radius: 9999px;
-  font-size: 11px;
-  font-weight: 700;
-  background-color: #e2e8f0;
-  color: #475569;
-  line-height: 1.2;
-}
-
-.segmentedTabCountActive {
-  background-color: #eff6ff;
-  color: #2563eb;
-}
 
 /* Candidate Trade Separation & Bench Selection */
 .candidateTradeGroup {

@@ -6,13 +6,10 @@ import {
   Plus,
   Search,
   ChevronDown,
-  AlertCircle,
   History,
 } from "lucide-react";
 import {
   TeamDuotoneIcon,
-  ProjectsDuotoneIcon,
-  ShieldDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 import {
   AssignmentDeployment,
@@ -132,7 +129,7 @@ export function HandsAssignmentsWorkspace() {
 
   return (
     <div className={styles.workspace}>
-      {/* 1. Header Row (Title, Subtitle & + Assign Crew Button) */}
+      {/* 1. Header Row (Title & Subtitle) */}
       <header className={styles.pageHeader}>
         <div>
           <div className={styles.titleRow}>
@@ -143,18 +140,6 @@ export function HandsAssignmentsWorkspace() {
             Active project site allocations, team lead assignments, shift timelines, and supervisor check-ins.
           </p>
         </div>
-
-        <button
-          type="button"
-          className={styles.primaryActionBtn}
-          onClick={() => {
-            alert("New Crew Assignment flow ready. Select project to allocate crew.");
-          }}
-          aria-label="Assign Crew"
-        >
-          <Plus size={15} />
-          <span>Assign Crew</span>
-        </button>
       </header>
 
       {/* 2. Top Telemetry & Filters Bar */}
@@ -301,7 +286,6 @@ export function HandsAssignmentsWorkspace() {
           role="tab"
           aria-selected={selectedHealthTab === "all"}
         >
-          <ProjectsDuotoneIcon size={14} style={{ color: selectedHealthTab === "all" ? "#2563eb" : "#94a3b8" }} />
           <span>All Deployments</span>
           <span className={`${styles.tabCount} ${selectedHealthTab === "all" ? styles.tabCountActive : ""}`}>
             {tabCounts.all}
@@ -315,7 +299,6 @@ export function HandsAssignmentsWorkspace() {
           role="tab"
           aria-selected={selectedHealthTab === "on_track"}
         >
-          <ShieldDuotoneIcon size={14} style={{ color: selectedHealthTab === "on_track" ? "#059669" : "#94a3b8" }} />
           <span>On Track</span>
           <span className={`${styles.tabCount} ${selectedHealthTab === "on_track" ? styles.tabCountActive : ""}`}>
             {tabCounts.on_track}
@@ -329,7 +312,6 @@ export function HandsAssignmentsWorkspace() {
           role="tab"
           aria-selected={selectedHealthTab === "at_risk"}
         >
-          <AlertCircle size={14} style={{ color: selectedHealthTab === "at_risk" ? "#dc2626" : "#94a3b8" }} />
           <span>At Risk</span>
           <span className={`${styles.tabCount} ${selectedHealthTab === "at_risk" ? styles.tabCountActive : ""}`}>
             {tabCounts.at_risk}
@@ -343,7 +325,6 @@ export function HandsAssignmentsWorkspace() {
           role="tab"
           aria-selected={selectedHealthTab === "history"}
         >
-          <History size={14} style={{ color: selectedHealthTab === "history" ? "#4f46e5" : "#94a3b8" }} />
           <span>History</span>
         </button>
       </div>

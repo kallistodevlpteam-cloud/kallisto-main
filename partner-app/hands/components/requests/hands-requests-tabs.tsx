@@ -5,8 +5,8 @@ import { EnquiriesDuotoneIcon } from "@/components/layout/sidebar-icons";
 import { HandsRequestTabType } from "../../types/request-domain";
 import styles from "./hands-requests.module.css";
 
-function HistoryDuotoneIcon({
-  size = 14,
+function HistoryIcon({
+  size = 16,
   className = "",
 }: {
   size?: number;
@@ -18,26 +18,14 @@ function HistoryDuotoneIcon({
       height={size}
       viewBox="0 0 24 24"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className={className}
     >
-      {/* Tinted circle base */}
-      <circle cx="12" cy="12" r="9.5" fill="currentColor" opacity="0.25" />
-      {/* Clock hands */}
-      <path
-        d="M12 7V12L15.5 14.2"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Rewind counter-clockwise arc */}
-      <path
-        d="M3.5 12A8.5 8.5 0 0 1 12 3.5"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
+      <circle cx="12" cy="12" r="9" />
+      <polyline points="12 7 12 12 15 15" />
     </svg>
   );
 }
@@ -62,8 +50,18 @@ export function HandsRequestsTabs({
     count?: number;
     icon: React.ElementType;
   }[] = [
-    { id: "requests", label: "Requests", count: counts.requests, icon: EnquiriesDuotoneIcon },
-    { id: "history", label: "History", icon: HistoryDuotoneIcon },
+    {
+      id: "requests",
+      label: "Requests",
+      count: counts.requests,
+      icon: EnquiriesDuotoneIcon,
+    },
+    {
+      id: "history",
+      label: "History",
+      count: counts.history,
+      icon: HistoryIcon,
+    },
   ];
 
   return (
@@ -81,7 +79,7 @@ export function HandsRequestsTabs({
             role="tab"
             aria-selected={isSelected}
           >
-            <Icon size={14} className={isSelected ? styles.tabIconActive : styles.tabIconInactive} />
+            <Icon size={16} className={isSelected ? styles.tabIconActive : styles.tabIconInactive} />
             <span>{tab.label}</span>
             {tab.count !== undefined && (
               <span
