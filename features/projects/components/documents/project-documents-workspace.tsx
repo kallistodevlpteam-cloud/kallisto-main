@@ -19,9 +19,11 @@ import {
   DrivePaginationModel,
 } from "./drive-collection";
 import {
+  DocumentAccessDialog,
   DocumentPreviewDrawer,
   StorageDialog,
 } from "./drive-dialogs";
+import { PROJECT_STAKEHOLDERS, ProjectStakeholder } from "./drive-access-stakeholders";
 import { DocumentsTitleRowActions } from "@/features/documents/components/documents-title-row-actions";
 import { useDriveQueryState } from "./drive-query-state";
 import { DriveSidebar } from "./drive-sidebar";
@@ -129,6 +131,7 @@ export function ProjectDocumentsWorkspace({
   const [storageOpen, setStorageOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<ProjectDocument | null>(null);
   const [selectedDocumentIds, setSelectedDocumentIds] = useState<string[]>([]);
+  const [accessModalDocument, setAccessModalDocument] = useState<ProjectDocument | null>(null);
   const [announcement, setAnnouncement] = useState("");
 
   // ── Render-phase sync: keep searchInput aligned with external query changes ──
@@ -391,6 +394,71 @@ export function ProjectDocumentsWorkspace({
     }
   };
 
+  const toggleStakeholderAccess = async (
+    targetDoc: ProjectDocument,
+    stakeholder: ProjectStakeholder,
+  ) => {
+    const isCurrentlyShared = targetDoc.sharedWith.some((p) => p.id === stakeholder.id);
+    const newSharedWith = isCurrentlyShared
+      ? targetDoc.sharedWith.filter((p) => p.id !== stakeholder.id)
+      : [
+          ...targetDoc.sharedWith,
+          {
+            id: stakeholder.id,
+            name: stakeholder.name,
+            role: stakeholder.role,
+            organization: stakeholder.organization,
+            type: stakeholder.category,
+          },
+        ];
+
+    try {
+      if (repository.updateDocumentAccess) {
+        await repository.updateDocumentAccess(projectId, targetDoc.id, newSharedWith);
+      }
+      const updatedDoc: ProjectDocument = {
+        ...targetDoc,
+        sharedWith: newSharedWith,
+        updatedAt: new Date().toISOString(),
+      };
+
+      setWorkspaceData((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          documents: prev.documents.map((doc) =>
+            doc.id === targetDoc.id ? updatedDoc : doc,
+          ),
+        };
+      });
+
+      if (accessModalDocument && accessModalDocument.id === targetDoc.id) {
+        setAccessModalDocument(updatedDoc);
+      }
+      if (selectedDocument && selectedDocument.id === targetDoc.id) {
+        setSelectedDocument(updatedDoc);
+      }
+
+      setAnnouncement(
+        isCurrentlyShared
+          ? `Revoked access from ${stakeholder.name} (${stakeholder.category === "hands" ? "Contractor" : "Specialist"}) for ${targetDoc.name}.`
+          : `Gave access to ${stakeholder.name} (${stakeholder.category === "hands" ? "Contractor" : "Specialist"}) for ${targetDoc.name}.`,
+      );
+    } catch {
+      setAnnouncement(`Could not update access for ${targetDoc.name}.`);
+    }
+  };
+
+  const toggleQuickStakeholderAccess = (
+    targetDoc: ProjectDocument,
+    stakeholderId: string,
+  ) => {
+    const stakeholder = PROJECT_STAKEHOLDERS.find((s) => s.id === stakeholderId);
+    if (stakeholder) {
+      void toggleStakeholderAccess(targetDoc, stakeholder);
+    }
+  };
+
   if (!canViewDocuments) {
     return (
       <section
@@ -529,6 +597,8 @@ export function ProjectDocumentsWorkspace({
                 onToggleStar={(document) => void toggleStar(document)}
                 onArchiveDocument={(document) => void toggleArchive(document)}
                 onDeleteDocument={(document) => void toggleBin(document)}
+                onManageAccess={(document) => setAccessModalDocument(document)}
+                onToggleQuickAccess={(document, sId) => toggleQuickStakeholderAccess(document, sId)}
               />
             ) : (
               <div className={styles.emptyState}>
@@ -554,6 +624,8 @@ export function ProjectDocumentsWorkspace({
             setSelectedDocument(null);
             setSelectedDocumentIds([]);
           }}
+          onManageAccess={(doc) => setAccessModalDocument(doc)}
+          onToggleAccess={(doc, stakeholder) => void toggleStakeholderAccess(doc, stakeholder)}
         />
       ) : null}
 
@@ -564,6 +636,14 @@ export function ProjectDocumentsWorkspace({
             0,
           )}
           onClose={() => setStorageOpen(false)}
+        />
+      ) : null}
+
+      {accessModalDocument ? (
+        <DocumentAccessDialog
+          document={accessModalDocument}
+          onClose={() => setAccessModalDocument(null)}
+          onToggleAccess={(doc, stakeholder) => void toggleStakeholderAccess(doc, stakeholder)}
         />
       ) : null}
 

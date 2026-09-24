@@ -14,6 +14,7 @@ export interface UseStudioProjectContextReturn {
   selectedProject: StudioProjectOption | null;
   projectLoading: boolean;
   selectProject: (projectId: string) => void;
+  addNewProject: (project: StudioProjectOption) => void;
 }
 
 export function useStudioProjectContext(): UseStudioProjectContextReturn {
@@ -29,39 +30,32 @@ export function useStudioProjectContext(): UseStudioProjectContextReturn {
   useEffect(() => {
     let isMounted = true;
 
-    const enquiryId = searchParams.get("enquiryId");
-    if (enquiryId) {
-      const enquiry = MOCK_ENQUIRIES.find((e) => e.id === enquiryId) || MOCK_ENQUIRIES[0];
-      const enquiryProject: StudioProjectOption = {
-        id: enquiry.id,
-        workspaceId: "ws-enquiry",
-        code: enquiry.enquiryRef || "ENQ-2026-01",
-        name: enquiry.title || "Villa Design Consultation",
-        projectType: enquiry.projectType === "residential" ? "Residential Interior" : "Commercial Interior",
-        phase: "Proposal",
-        location: enquiry.location || "Kochi",
-        status: "active",
-      };
-
-      if (isMounted) {
-        setProjects((prev) => {
-          const filtered = prev.filter((p) => p.id !== enquiryProject.id);
-          return [enquiryProject, ...filtered];
-        });
-        setSelectedProjectId(enquiryProject.id);
-        setProjectLoading(false);
-      }
-      return () => {
-        isMounted = false;
-      };
-    }
-
     const mockRepo = new StudioMockRepository();
     const repository = new StudioBackendRepository(mockRepo);
     repository
       .getAvailableProjects()
       .then((data) => {
         if (isMounted) {
+          const enquiryId = searchParams.get("enquiryId");
+          if (enquiryId) {
+            const enquiry = MOCK_ENQUIRIES.find((e) => e.id === enquiryId) || MOCK_ENQUIRIES[0];
+            const enquiryProject: StudioProjectOption = {
+              id: enquiry.id,
+              workspaceId: "ws-enquiry",
+              code: enquiry.enquiryRef || "ENQ-2026-01",
+              name: enquiry.title || "Villa Design Consultation",
+              projectType: enquiry.projectType === "residential" ? "Residential Interior" : "Commercial Interior",
+              phase: "Proposal",
+              location: enquiry.location || "Kochi",
+              status: "active",
+            };
+            const filtered = data.filter((p) => p.id !== enquiryProject.id);
+            setProjects([enquiryProject, ...filtered]);
+            setSelectedProjectId(enquiryProject.id);
+            setProjectLoading(false);
+            return;
+          }
+
           setProjects(data);
           // Check URL param first
           const urlProject = searchParams.get("project");
@@ -83,7 +77,7 @@ export function useStudioProjectContext(): UseStudioProjectContextReturn {
     return () => {
       isMounted = false;
     };
-  }, [searchParams]);
+  }, [searchParams, selectedProjectId]);
 
   const selectProject = useCallback(
     (projectId: string) => {
@@ -103,6 +97,21 @@ export function useStudioProjectContext(): UseStudioProjectContextReturn {
     [pathname, router, searchParams]
   );
 
+  const addNewProject = useCallback(
+    (newProject: StudioProjectOption) => {
+      setProjects((prev) => [newProject, ...prev]);
+      setSelectedProjectId(newProject.id);
+
+      // Sync URL selectively
+      const current = new URLSearchParams(Array.from(searchParams.entries()));
+      current.set("project", newProject.id);
+      const search = current.toString();
+      const query = search ? `?${search}` : "";
+      router.replace(`${pathname}${query}`, { scroll: false });
+    },
+    [pathname, router, searchParams]
+  );
+
   const selectedProject = projects.find((p) => p.id === selectedProjectId) || null;
 
   return {
@@ -111,5 +120,6 @@ export function useStudioProjectContext(): UseStudioProjectContextReturn {
     selectedProject,
     projectLoading,
     selectProject,
+    addNewProject,
   };
 }

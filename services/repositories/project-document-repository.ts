@@ -49,6 +49,19 @@ export interface PublishUpdateAttachmentsResult {
   }>;
 }
 
+export interface PublishApprovedDeliverableInput {
+  projectId: string;
+  deliverableId: string;
+  deliverableName: string;
+  fileName: string;
+  fileSize?: number;
+  version: number;
+  folderId: string;
+  approvedBy: string;
+  owner: ProjectDocumentOwner;
+  sharedWith: ProjectDocumentOwner[];
+}
+
 export interface ProjectDocumentRepository {
   capabilities: ProjectDocumentRepositoryCapabilities;
   listProjectDocuments(projectId: string): Promise<ProjectDocumentWorkspaceData>;
@@ -56,6 +69,9 @@ export interface ProjectDocumentRepository {
   publishUpdateAttachments?(
     input: PublishUpdateAttachmentsInput,
   ): Promise<PublishUpdateAttachmentsResult>;
+  publishApprovedDeliverable?(
+    input: PublishApprovedDeliverableInput,
+  ): Promise<ProjectDocument>;
   createFolder?(
     input: CreateProjectDocumentFolderInput,
   ): Promise<ProjectDocumentFolder>;
@@ -77,6 +93,11 @@ export interface ProjectDocumentRepository {
     projectId: string,
     documentId: string,
     isInBin: boolean,
+  ): Promise<ProjectDocument>;
+  updateDocumentAccess?(
+    projectId: string,
+    documentId: string,
+    sharedWith: ProjectDocumentOwner[],
   ): Promise<ProjectDocument>;
 }
 
@@ -597,5 +618,72 @@ export const projectDocumentRepository: ProjectDocumentRepository = {
     document.isInBin = isInBin;
     document.updatedAt = new Date().toISOString();
     return cloneDocument(document);
+  },
+
+  async updateDocumentAccess(projectId, documentId, sharedWith) {
+    const document = documents.find(
+      (candidate) => candidate.projectId === projectId && candidate.id === documentId,
+    );
+    if (!document) {
+      throw new Error("Document not found.");
+    }
+    document.sharedWith = [...sharedWith];
+    document.updatedAt = new Date().toISOString();
+    return cloneDocument(document);
+  },
+
+  async publishApprovedDeliverable(input) {
+    ensureProjectDocuments(input.projectId);
+    mutationSequence += 1;
+    const now = new Date().toISOString();
+    const extension = input.fileName.includes(".")
+      ? input.fileName.split(".").pop()?.toLowerCase() ?? "pdf"
+      : "pdf";
+
+    const newDoc: ProjectDocument = {
+      id: `doc-approved-${mutationSequence}-${input.deliverableId}`,
+      projectId: input.projectId,
+      name: input.fileName,
+      extension,
+      categoryId: input.folderId,
+      folderId: input.folderId,
+      status: "approved",
+      visibility: "client_visible",
+      source: "team",
+      sourceType: "project_update",
+      publishedAt: now,
+      publicationKey: `pub-approved-${input.deliverableId}-v${input.version}`,
+      storageObjectId: `storage://${input.projectId}/approved/${input.fileName}`,
+      downloadUrl: `/assets/docs/${input.fileName}`,
+      version: input.version,
+      sizeBytes: input.fileSize || 4.2 * 1024 * 1024,
+      owner: { ...input.owner },
+      sharedWith: input.sharedWith.map((user) => ({ ...user })),
+      versions: [
+        {
+          version: input.version,
+          status: "approved",
+          createdAt: now,
+          createdBy: input.approvedBy,
+          sizeBytes: input.fileSize || 4.2 * 1024 * 1024,
+        },
+      ],
+      recentActivity: [
+        {
+          id: `act-approve-${mutationSequence}`,
+          action: `Approved & published to Drive (${input.folderId})`,
+          actorName: input.approvedBy,
+          createdAt: now,
+        },
+      ],
+      isStarred: false,
+      createdAt: now,
+      updatedAt: now,
+      approvedAt: now,
+      approvedBy: input.approvedBy,
+    };
+
+    documents.unshift(newDoc);
+    return cloneDocument(newDoc);
   },
 };

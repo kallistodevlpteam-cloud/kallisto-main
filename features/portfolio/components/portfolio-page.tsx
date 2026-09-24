@@ -3,12 +3,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type {
+  PortfolioCaseStudy,
   PortfolioCollection,
   PortfolioPageData,
   PortfolioProfile,
   PortfolioProject,
   PortfolioTab,
 } from "@/features/portfolio/types/portfolio.types";
+import { AddCaseStudyModal } from "./add-case-study-modal";
+import { AddCollectionModal } from "./add-collection-modal";
+import { CollectionViewerModal } from "./collection-viewer-modal";
 import { PortfolioCaseStudies } from "./portfolio-case-studies";
 import { PortfolioCoverBanner } from "./portfolio-cover-banner";
 import { PortfolioHighlights } from "./portfolio-highlights";
@@ -20,6 +24,7 @@ import { PortfolioReviews } from "./portfolio-reviews";
 import { PortfolioStatistics } from "./portfolio-statistics";
 import { PortfolioTabs } from "./portfolio-tabs";
 import { PortfolioTaggedGrid } from "./portfolio-tagged-grid";
+import { Eye } from "lucide-react";
 import styles from "./portfolio.module.css";
 
 interface PortfolioPageProps {
@@ -47,6 +52,22 @@ export function PortfolioPage({
   const [activeTab, setActiveTab] = useState(
     hidePricing && initialTab === "pricing" ? "projects" : initialTab,
   );
+  const [collections, setCollections] = useState<PortfolioCollection[]>(
+    data.collections,
+  );
+  const [caseStudies, setCaseStudies] = useState<PortfolioCaseStudy[]>(
+    data.caseStudies,
+  );
+  const [isAddCollectionOpen, setIsAddCollectionOpen] = useState(false);
+  const [isAddCaseStudyOpen, setIsAddCaseStudyOpen] = useState(false);
+  const [isPackageSummaryHidden, setIsPackageSummaryHidden] = useState(false);
+  const [editingCaseStudy, setEditingCaseStudy] =
+    useState<PortfolioCaseStudy | null>(null);
+  const [selectedCaseStudyId, setSelectedCaseStudyId] = useState<string | undefined>(
+    undefined,
+  );
+  const [viewingCollection, setViewingCollection] =
+    useState<PortfolioCollection | null>(null);
   const [selectedCollection, setSelectedCollection] =
     useState<PortfolioCollection>(
       data.collections.find(
@@ -141,8 +162,25 @@ export function PortfolioPage({
             onCloseEditingExternal={() => setIsEditingProfile(false)}
             onCameraClick={() => avatarInputRef.current?.click()}
           />
-          {!hidePricing && (
-            <PortfolioPackageSummary onViewPlans={showPricingPlans} />
+          {!hidePricing && !isPackageSummaryHidden && (
+            <PortfolioPackageSummary
+              onViewPlans={showPricingPlans}
+              isOwner={isOwner}
+              onHide={() => setIsPackageSummaryHidden(true)}
+            />
+          )}
+          {!hidePricing && isPackageSummaryHidden && isOwner && (
+            <div className={styles.packageSummaryHiddenNotice}>
+              <span>Package summary is hidden from visitors.</span>
+              <button
+                type="button"
+                className={styles.unhidePackageBtn}
+                onClick={() => setIsPackageSummaryHidden(false)}
+              >
+                <Eye size={13} />
+                <span>Show Package Summary</span>
+              </button>
+            </div>
           )}
         </div>
 
@@ -167,10 +205,14 @@ export function PortfolioPage({
       <div className={styles.profileContent}>
         <PortfolioStatistics statistics={data.statistics} />
         <PortfolioHighlights
-          collections={data.collections}
+          collections={collections}
           isOwner={isOwner}
           selectedCollectionId={selectedCollection.id}
-          onSelect={setSelectedCollection}
+          onSelect={(collection) => {
+            setSelectedCollection(collection);
+            setViewingCollection(collection);
+          }}
+          onAddCollection={() => setIsAddCollectionOpen(true)}
         />
       </div>
 
@@ -187,6 +229,7 @@ export function PortfolioPage({
           onAddProject={() => {
             router.push("/portfolio/projects/new");
           }}
+          onAddCaseStudy={() => setIsAddCaseStudyOpen(true)}
           onTabChange={setActiveTab}
         />
 
@@ -207,10 +250,14 @@ export function PortfolioPage({
           ) : null}
           {activeTab === "case-studies" ? (
             <PortfolioCaseStudies
-              caseStudies={data.caseStudies}
+              caseStudies={caseStudies}
               projects={data.projects}
               isOwner={isOwner}
               onOpenProject={openProject}
+              onAddCaseStudy={() => setIsAddCaseStudyOpen(true)}
+              onEditCaseStudy={(caseStudy) => setEditingCaseStudy(caseStudy)}
+              selectedCaseStudyId={selectedCaseStudyId}
+              onSelectCaseStudy={setSelectedCaseStudyId}
             />
           ) : null}
           {activeTab === "tagged" ? (
@@ -225,6 +272,57 @@ export function PortfolioPage({
           ) : null}
         </section>
       </main>
+
+      {isOwner ? (
+        <AddCollectionModal
+          isOpen={isAddCollectionOpen}
+          onClose={() => setIsAddCollectionOpen(false)}
+          availableProjects={data.projects}
+          onAddCollection={(newCollection) => {
+            setCollections((prev) => [newCollection, ...prev]);
+            setSelectedCollection(newCollection);
+          }}
+        />
+      ) : null}
+
+      {isOwner ? (
+        <AddCaseStudyModal
+          isOpen={isAddCaseStudyOpen || Boolean(editingCaseStudy)}
+          initialCaseStudy={editingCaseStudy}
+          onClose={() => {
+            setIsAddCaseStudyOpen(false);
+            setEditingCaseStudy(null);
+          }}
+          availableProjects={data.projects}
+          onAddCaseStudy={(savedCaseStudy) => {
+            if (editingCaseStudy) {
+              setCaseStudies((prev) =>
+                prev.map((c) =>
+                  c.id === savedCaseStudy.id ? savedCaseStudy : c,
+                ),
+              );
+            } else {
+              setCaseStudies((prev) => [savedCaseStudy, ...prev]);
+            }
+            setSelectedCaseStudyId(savedCaseStudy.id);
+            setEditingCaseStudy(null);
+          }}
+        />
+      ) : null}
+
+      <CollectionViewerModal
+        isOpen={Boolean(viewingCollection)}
+        collection={viewingCollection}
+        isOwner={isOwner}
+        onClose={() => setViewingCollection(null)}
+        onUpdateCollection={(updated) => {
+          setCollections((prev) =>
+            prev.map((c) => (c.id === updated.id ? updated : c)),
+          );
+          setSelectedCollection(updated);
+          setViewingCollection(updated);
+        }}
+      />
     </div>
   );
 }

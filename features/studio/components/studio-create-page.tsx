@@ -2,14 +2,13 @@
 
 import React, { useCallback, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { StudioAgentType, StudioWorkspaceType } from "@/types/domain/studio";
+import { StudioAgentType, StudioProjectOption, StudioWorkspaceType } from "@/types/domain/studio";
 import { useStudioWorkspace } from "../hooks/use-studio-workspace";
 import { StudioIntent } from "../types/studio-source";
-import { StudioIdleView } from "./studio-idle-view";
-import { StudioChatView } from "./studio-chat-view";
 import { StudioActiveTaskCanvas } from "./studio-active-task-canvas";
 import { OutputSelectorModal } from "./output-selector-modal";
 import { ProposalCreationModal } from "./proposal-creation-modal";
+import { AddProjectModal } from "./add-project-modal";
 import { MOCK_ENQUIRIES } from "@/features/enquiries/services/enquiries.mock";
 import styles from "./studio-template-explorer.module.css";
 
@@ -37,6 +36,7 @@ export function StudioCreatePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isOutputSelectorOpen, setIsOutputSelectorOpen] = useState(false);
+  const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
   const { project, composer, taskSession, actions } = useStudioWorkspace();
 
   const intent = searchParams.get("intent");
@@ -55,13 +55,18 @@ export function StudioCreatePage() {
   const existingDraftExists = !!existingTask;
 
   const [showProposalModal, setShowProposalModal] = useState(isProposalIntent);
+  const [prevIntentKey, setPrevIntentKey] = useState(`${intent}-${enquiryId}`);
+
+  const currentIntentKey = `${intent}-${enquiryId}`;
+  if (prevIntentKey !== currentIntentKey) {
+    setPrevIntentKey(currentIntentKey);
+    setShowProposalModal(isProposalIntent);
+  }
 
   const promptParam = searchParams.get("prompt") || searchParams.get("q");
 
   useEffect(() => {
-    if (isProposalIntent) {
-      setShowProposalModal(true);
-    } else if (promptParam && taskSession.messages.length === 0) {
+    if (!isProposalIntent && promptParam && taskSession.messages.length === 0) {
       composer.setPrompt(promptParam);
       taskSession.submitTask({
         prompt: promptParam,
@@ -78,7 +83,7 @@ export function StudioCreatePage() {
         getCurrentComposerState: () => ({ prompt: "", attachments: [], version: composer.version }),
       });
     }
-  }, [isProposalIntent, promptParam]);
+  }, [isProposalIntent, promptParam, composer, project.selectedProjectId, taskSession]);
 
   const handleCancelProposal = useCallback(() => {
     setShowProposalModal(false);
@@ -124,9 +129,6 @@ export function StudioCreatePage() {
     }
   }, [actions, composer, enquiry, existingTask, project.selectedProjectId, taskSession]);
 
-  // Active chat canvas mode is active when taskSession has messages
-  const isChatMode = taskSession.messages.length > 0;
-
   const handleSubmit = useCallback(async () => {
     await actions.submitTask();
   }, [actions]);
@@ -164,6 +166,43 @@ export function StudioCreatePage() {
     composer.setPrompt(defaultPrompts[type] || `Prepare ${type} for this project`);
   };
 
+  const handleAddNewProject = useCallback(
+    async (newProject: StudioProjectOption, initialPrompt?: string) => {
+      project.addNewProject(newProject);
+      setIsAddProjectOpen(false);
+
+      if (initialPrompt) {
+        composer.setPrompt(initialPrompt);
+        composer.setSelectedIntent("create");
+        composer.setSelectedAgent("auto");
+
+        await taskSession.submitTask({
+          prompt: initialPrompt,
+          sources: [],
+          selectedProjectId: newProject.id,
+          projectName: newProject.name,
+          selectedIntent: "create",
+          selectedAgent: "auto",
+          selectedOutputType: null,
+          composerVersion: composer.version,
+          clearComposer: () => composer.setPrompt(""),
+          clearAttachments: () => composer.clearAttachments(),
+          restoreDraft: () => {},
+          getCurrentComposerState: () => ({ prompt: "", attachments: [], version: composer.version }),
+        });
+      }
+    },
+    [composer, project, taskSession]
+  );
+
+  const handleSetupProjectInChat = useCallback(
+    (promptText: string) => {
+      composer.setPrompt(promptText);
+      setIsAddProjectOpen(false);
+    },
+    [composer]
+  );
+
   return (
     <div className={styles.container}>
       <StudioActiveTaskCanvas
@@ -171,6 +210,7 @@ export function StudioCreatePage() {
         project={selectedProject}
         projects={project.projects}
         onSelectProject={project.selectProject}
+        onAddProject={() => setIsAddProjectOpen(true)}
         messages={taskSession.messages}
         recentTasks={taskSession.recentTasks}
         onSelectIntent={actions.selectIntent}
@@ -194,6 +234,14 @@ export function StudioCreatePage() {
         onRetryMessage={taskSession.retryMessage}
         onSubmit={handleSubmit}
         onStartNewTask={handleStartNewTask}
+      />
+
+      {/* Add Project Modal Overlay */}
+      <AddProjectModal
+        isOpen={isAddProjectOpen}
+        onClose={() => setIsAddProjectOpen(false)}
+        onAddProject={handleAddNewProject}
+        onSetupInChat={handleSetupProjectInChat}
       />
 
       {/* Proposal Creation Context Modal Overlay */}

@@ -3,23 +3,32 @@
 import {
   ArrowRight,
   CheckCircle2,
+  Clock,
+  Download,
+  Eye,
   FileText,
+  MessageSquare,
   MessageSquareText,
   Pencil,
   RotateCcw,
   Send,
+  ShieldCheck,
+  User,
+  UsersRound,
   XCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { EngagementChatModal } from "./engagement-chat-modal";
+import { ProposalDocumentViewerModal } from "./proposal-document-viewer-modal";
 import {
   basicsEngagementRepository,
   basicsProposalRepository,
   basicsProviderRepository,
   basicsRequirementRepository,
 } from "../repositories/basics-repositories";
-import { acceptProposalAndCreateEngagement, canEditProposal } from "../services/basics-domain-service";
+import { canEditProposal } from "../services/basics-domain-service";
 import type {
   BasicsProposal,
   BasicsProvider,
@@ -49,6 +58,54 @@ export function ProposalDetail({ proposalId }: { proposalId: string }) {
   const [working, setWorking] = useState(false);
   const [coverNote, setCoverNote] = useState("");
   const [scopeSummary, setScopeSummary] = useState("");
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [activePreviewFile, setActivePreviewFile] = useState<{
+    fileName: string;
+    contextTitle?: string;
+    submittedBy?: string;
+    submittedAt?: string;
+    fileSize?: string;
+  } | null>(null);
+
+  const handleViewFile = (
+    fileName: string,
+    contextTitle = "Proposal Attachment",
+    submittedBy = provider?.name || "Specialist Provider",
+    submittedAt = proposal ? formatDate(proposal.submittedAt) : "14 Jul 2026",
+    fileSize = "3.8 MB",
+  ) => {
+    setActivePreviewFile({
+      fileName,
+      contextTitle,
+      submittedBy,
+      submittedAt,
+      fileSize,
+    });
+  };
+
+  const handleDownloadFile = (fileName: string) => {
+    const blob = new Blob(
+      [
+        `KALLISTO BASICS — VERIFIED SERVICE PROPOSAL DOCUMENT\n` +
+        `===================================================\n` +
+        `Document: ${fileName}\n` +
+        `Project: ${requirement?.projectName ?? "General Project"}\n` +
+        `Requirement: ${requirement?.title ?? "Service Scope"}\n` +
+        `Specialization: ${requirement?.specialization ?? "Consulting"}\n` +
+        `Submitted By: ${provider?.name ?? "Provider"}\n` +
+        `Date: ${proposal ? formatDate(proposal.submittedAt) : "Recent"}\n`
+      ],
+      { type: "application/pdf" },
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   useEffect(() => {
     if (loadState === "forbidden") return;
@@ -88,7 +145,6 @@ export function ProposalDetail({ proposalId }: { proposalId: string }) {
   if (loadState === "offline") return <BasicsStateView state="offline" title="You appear to be offline" description="Reconnect to load the current proposal terms and activity." retryHref={`/basics/proposals/${proposalId}`} />;
   if (loadState === "error" || !proposal || !provider || !requirement) return <BasicsStateView state="error" title="Proposal is unavailable" description="The proposal or its linked provider and requirement could not be loaded." retryHref="/basics/proposals" />;
   const currentProposal = proposal;
-  const currentProvider = provider;
 
   async function changeStatus(status: BasicsProposal["status"], confirmText?: string) {
     if (confirmText && !window.confirm(confirmText)) return;
@@ -122,18 +178,6 @@ export function ProposalDetail({ proposalId }: { proposalId: string }) {
     }
   }
 
-  async function accept() {
-    if (!window.confirm(`Accept ${currentProvider.name}'s proposal for ${formatCurrency(currentProposal.fee, currentProposal.currency)} and create an engagement?`)) return;
-    setWorking(true);
-    try {
-      const engagement = await acceptProposalAndCreateEngagement(currentProposal.id);
-      router.push(`/basics/engagements/${engagement.id}?created=true`);
-    } catch (error) {
-      setNotice(error instanceof Error ? error.message : "The proposal could not be accepted.");
-      setWorking(false);
-    }
-  }
-
   const isBuyer = proposal.ownerPerspective === "buyer";
 
   return (
@@ -144,11 +188,32 @@ export function ProposalDetail({ proposalId }: { proposalId: string }) {
         actions={
           isBuyer ? (
             <>
-              <button type="button" className={styles.secondaryButton} disabled={working || ["accepted", "rejected", "withdrawn"].includes(proposal.status)} onClick={() => void changeStatus("shortlisted")}>Shortlist</button>
-              <button type="button" className={styles.secondaryButton} disabled={working || ["accepted", "rejected", "withdrawn"].includes(proposal.status)} onClick={() => void changeStatus("clarification_requested")}>Request clarification</button>
-              <button type="button" className={styles.secondaryButton} disabled={working || ["accepted", "rejected", "withdrawn"].includes(proposal.status)} onClick={() => void changeStatus("negotiating")}>Start negotiation</button>
-              <button type="button" className={styles.dangerButton} disabled={working || ["accepted", "rejected", "withdrawn"].includes(proposal.status)} onClick={() => void changeStatus("rejected", `Reject ${provider.name}'s proposal?`)}>Reject</button>
-              <button type="button" className={styles.primaryButton} disabled={working || ["rejected", "withdrawn"].includes(proposal.status)} onClick={() => void accept()}>Accept proposal</button>
+              <button
+                type="button"
+                className={styles.dangerButton}
+                disabled={working || ["withdrawn", "rejected"].includes(proposal.status)}
+                onClick={() =>
+                  void changeStatus(
+                    "withdrawn",
+                    "Cancel this service request? This will withdraw the proposal from active consideration.",
+                  )
+                }
+              >
+                <XCircle size={13} aria-hidden="true" /> Cancel request
+              </button>
+              <Link
+                className={styles.secondaryButton}
+                href={`/basics/experts/${provider.id}`}
+              >
+                <User size={13} aria-hidden="true" /> View profile
+              </Link>
+              <button
+                type="button"
+                className={styles.primaryButton}
+                onClick={() => setIsChatOpen(true)}
+              >
+                <MessageSquare size={13} aria-hidden="true" /> Message
+              </button>
             </>
           ) : (
             <>
@@ -203,10 +268,139 @@ export function ProposalDetail({ proposalId }: { proposalId: string }) {
 
       <div className={styles.detailGrid}>
         <div className={styles.detailStack}>
+          {/* Linked Service Request Overview */}
+          <section className={styles.requirementOverviewSection}>
+            <div className={styles.requirementOverviewHeader}>
+              <div className={styles.requirementOverviewBadgeRow}>
+                <span className={styles.requirementBadgeTag}>
+                  Service Request
+                </span>
+                <span className={styles.requirementProjectTag}>
+                  {requirement.projectName ?? "General Project"}
+                </span>
+                <span className={styles.requirementSpecializationTag}>
+                  {requirement.specialization}
+                </span>
+              </div>
+              <Link
+                href={`/basics/requirements/${requirement.id}`}
+                className={styles.requirementViewLink}
+                title="View full requirement details"
+              >
+                <span>View full requirement</span>
+                <ArrowRight size={12} aria-hidden="true" />
+              </Link>
+            </div>
+
+            <h3 className={styles.requirementOverviewTitle}>
+              {requirement.title}
+            </h3>
+            <p className={styles.requirementOverviewDesc}>
+              {requirement.description}
+            </p>
+
+            <div className={styles.requirementDeliverablesGrid}>
+              <div className={styles.requirementDeliverablesCol}>
+                <div className={styles.requirementColHeader}>
+                  <div className={styles.requirementColHeaderLeft}>
+                    <CheckCircle2 size={13} className={styles.requirementColHeaderScopeIcon} aria-hidden="true" />
+                    <span className={styles.requirementDeliverablesLabel}>
+                      Requested Scope & Deliverables
+                    </span>
+                  </div>
+                  <span className={styles.requirementColCountBadge}>
+                    {requirement.deliverables.length} items
+                  </span>
+                </div>
+                <ul className={styles.requirementBulletList}>
+                  {requirement.deliverables.map((item) => (
+                    <li key={item}>
+                      <span className={styles.requirementBulletIconWrap}>
+                        <CheckCircle2 size={11} aria-hidden="true" />
+                      </span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {requirement.attachments && requirement.attachments.length > 0 ? (
+                <div className={styles.requirementAttachmentsCol}>
+                  <div className={styles.requirementColHeader}>
+                    <div className={styles.requirementColHeaderLeft}>
+                      <FileText size={13} className={styles.requirementColHeaderFileIcon} aria-hidden="true" />
+                      <span className={styles.requirementDeliverablesLabel}>
+                        Client Brief Files
+                      </span>
+                    </div>
+                    <span className={styles.requirementColCountBadge}>
+                      {requirement.attachments.length} files
+                    </span>
+                  </div>
+                  <div className={styles.proposalAttachmentsList}>
+                    {requirement.attachments.map((file) => (
+                      <div key={file} className={styles.proposalAttachmentCard}>
+                        <div className={styles.proposalAttachmentLeft}>
+                          <div className={styles.proposalAttachmentIconWrap}>
+                            <FileText size={18} aria-hidden="true" />
+                            <span className={styles.proposalAttachmentExtBadge}>PDF</span>
+                          </div>
+                          <div className={styles.proposalAttachmentInfo}>
+                            <div className={styles.proposalAttachmentTitleRow}>
+                              <span className={styles.proposalAttachmentName} title={file}>
+                                {file}
+                              </span>
+                              {file.includes("Rev") ? (
+                                <span className={styles.proposalAttachmentRevBadge}>
+                                  {file.match(/Rev\s*\d+/i)?.[0] ?? "REV"}
+                                </span>
+                              ) : null}
+                            </div>
+                            <div className={styles.proposalAttachmentMeta}>
+                              <span className={styles.proposalAttachmentTagClient}>Client Brief</span>
+                              <span className={styles.proposalAttachmentMetaDot}>·</span>
+                              <span>2.4 MB</span>
+                              <span className={styles.proposalAttachmentMetaDot}>·</span>
+                              <span className={styles.proposalAttachmentVerifiedText}>
+                                <ShieldCheck size={11} aria-hidden="true" />
+                                Verified
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className={styles.proposalAttachmentActions}>
+                          <button
+                            type="button"
+                            className={styles.proposalAttachmentActionBtnPrimary}
+                            onClick={() => handleViewFile(file, `Client Scope Brief for ${requirement.projectName}`, "Client", formatDate(requirement.createdAt), "2.4 MB")}
+                            title={`View ${file}`}
+                          >
+                            <Eye size={12} aria-hidden="true" />
+                            <span>View</span>
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.proposalAttachmentActionBtn}
+                            onClick={() => handleDownloadFile(file)}
+                            title={`Download ${file}`}
+                          >
+                            <Download size={12} aria-hidden="true" />
+                            <span>Download</span>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </section>
+
           <section className={styles.detailPanel}>
             <h2>Cover note</h2>
             <p>{proposal.coverNote}</p>
           </section>
+
           <section className={styles.detailPanel}>
             <h2>Scope summary</h2>
             <p>{proposal.scopeSummary}</p>
@@ -215,6 +409,7 @@ export function ProposalDetail({ proposalId }: { proposalId: string }) {
               <div><h3>Excluded deliverables</h3><ul className={styles.bulletList}>{proposal.excludedDeliverables.map((item) => <li key={item}>{item}</li>)}</ul></div>
             </div>
           </section>
+
           <section className={styles.detailPanel}>
             <h2>Milestones</h2>
             {proposal.milestones.map((milestone) => (
@@ -227,6 +422,7 @@ export function ProposalDetail({ proposalId }: { proposalId: string }) {
             ))}
           </section>
         </div>
+
         <aside className={styles.detailStack}>
           <section className={styles.detailPanel}>
             <h2>Commercial terms</h2>
@@ -237,6 +433,7 @@ export function ProposalDetail({ proposalId }: { proposalId: string }) {
               <div><dt>Site visits</dt><dd>{proposal.siteVisitCount}</dd></div>
             </dl>
           </section>
+
           <section className={styles.detailPanel}>
             <h2>Timeline</h2>
             <dl className={styles.detailList}>
@@ -245,25 +442,196 @@ export function ProposalDetail({ proposalId }: { proposalId: string }) {
               <div><dt>Duration</dt><dd>{proposal.estimatedDurationDays ?? "Not set"} days</dd></div>
             </dl>
           </section>
+
           <section className={styles.detailPanel}>
-            <h2>Attachments</h2>
-            <div className={styles.detailList}>
-              {proposal.attachments.map((attachment) => <div key={attachment}><dt><FileText size={13} aria-hidden="true" /> Proposal file</dt><dd>{attachment}</dd></div>)}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+              <h2 style={{ margin: 0 }}>Proposal Attachments</h2>
+              <span className={styles.badge}>{proposal.attachments.length} files</span>
+            </div>
+            <p className={styles.deliverablesSubtitle} style={{ marginBottom: "12px" }}>
+              Verified technical files and milestone schedules submitted by {provider.name}.
+            </p>
+            <div className={styles.proposalAttachmentsList}>
+              {proposal.attachments.map((attachment) => (
+                <div key={attachment} className={styles.proposalAttachmentCard}>
+                  <div className={styles.proposalAttachmentLeft}>
+                    <div className={styles.proposalAttachmentIconWrap}>
+                      <FileText size={18} aria-hidden="true" />
+                      <span className={styles.proposalAttachmentExtBadge}>PDF</span>
+                    </div>
+                    <div className={styles.proposalAttachmentInfo}>
+                      <div className={styles.proposalAttachmentTitleRow}>
+                        <span className={styles.proposalAttachmentName} title={attachment}>
+                          {attachment}
+                        </span>
+                      </div>
+                      <div className={styles.proposalAttachmentMeta}>
+                        <span className={styles.proposalAttachmentTagClient}>{provider.name}</span>
+                        <span className={styles.proposalAttachmentMetaDot}>·</span>
+                        <span>3.8 MB</span>
+                        <span className={styles.proposalAttachmentMetaDot}>·</span>
+                        <span className={styles.proposalAttachmentVerifiedText}>
+                          <ShieldCheck size={11} aria-hidden="true" />
+                          Verified
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.proposalAttachmentActions}>
+                    <button
+                      type="button"
+                      className={styles.proposalAttachmentActionBtnPrimary}
+                      onClick={() => handleViewFile(attachment, `Submitted by ${provider.name} for ${requirement.projectName}`, provider.name, formatDate(proposal.submittedAt), "3.8 MB")}
+                      title={`View ${attachment}`}
+                    >
+                      <Eye size={12} aria-hidden="true" />
+                      <span>View</span>
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.proposalAttachmentActionBtn}
+                      onClick={() => handleDownloadFile(attachment)}
+                      title={`Download ${attachment}`}
+                    >
+                      <Download size={12} aria-hidden="true" />
+                      <span>Download</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </section>
-          <section className={styles.detailPanel}>
-            <h2>Provider</h2>
-            <p>{provider.headline}</p>
-            <div className={styles.cardFooter}><span className={styles.cellMuted}>{provider.location.city}, {provider.location.state}</span><Link className={styles.secondaryButton} href={`/basics/experts/${provider.id}`}>View profile</Link></div>
+
+          <section className={`${styles.detailPanel} ${styles.providerDetailPanel}`}>
+            <div className={styles.providerDetailHeaderRow}>
+              <h2>Provider</h2>
+              <span className={styles.providerBadgeVerified}>
+                <ShieldCheck size={11} aria-hidden="true" />
+                Verified Specialist
+              </span>
+            </div>
+            <div className={styles.providerProfileInfoBlock}>
+              <strong className={styles.providerProfileName}>{provider.name}</strong>
+              {provider.companyName && provider.companyName !== provider.name ? (
+                <span className={styles.providerProfileCompany}>{provider.companyName}</span>
+              ) : null}
+              <p className={styles.providerProfileHeadline}>{provider.headline}</p>
+            </div>
+            <div className={styles.cardFooter}>
+              <span className={styles.cellMuted}>{provider.location.city}, {provider.location.state}</span>
+              <Link className={styles.secondaryButton} href={`/basics/experts/${provider.id}`}>View profile</Link>
+            </div>
           </section>
         </aside>
       </div>
 
+      {/* Service Request Updates & Timeline */}
       <section className={styles.detailPanel}>
-        <h2>Activity and communication</h2>
-        <div className={styles.activityRow}><span className={styles.activityIcon}><Send size={13} aria-hidden="true" /></span><span className={styles.activityCopy}><strong>Proposal submitted</strong><span>{provider.name} submitted scope and commercial terms.</span></span><time className={styles.activityTime}>{formatDate(proposal.submittedAt)}</time></div>
-        <div className={styles.activityRow}><span className={styles.activityIcon}><MessageSquareText size={13} aria-hidden="true" /></span><span className={styles.activityCopy}><strong>Current status: {proposal.status.replaceAll("_", " ")}</strong><span>Use proposal actions to continue the documented workflow.</span></span><time className={styles.activityTime}>{formatDate(proposal.updatedAt)}</time></div>
+        <h2>Service Request Updates & Proposal History</h2>
+        <p className={styles.deliverablesSubtitle} style={{ marginBottom: "16px" }}>
+          Track the lifecycle and status updates of this service request between client and specialist.
+        </p>
+
+        <div className={styles.requestUpdatesTimeline}>
+          {/* Timeline Step 1: Request Created */}
+          <div className={styles.requestTimelineItem}>
+            <div className={`${styles.requestTimelineIcon} ${styles.requestTimelineIconDone}`}>
+              <CheckCircle2 size={13} aria-hidden="true" />
+            </div>
+            <div className={styles.requestTimelineContent}>
+              <div className={styles.requestTimelineHeadingRow}>
+                <span className={styles.requestTimelineTitle}>Service Request Published</span>
+                <time className={styles.requestTimelineTime}>{formatDate(requirement.createdAt)}</time>
+              </div>
+              <p className={styles.requestTimelineDesc}>
+                Requirement <strong>&ldquo;{requirement.title}&rdquo;</strong> was published for {requirement.projectName} in {requirement.specialization}.
+              </p>
+            </div>
+          </div>
+
+          {/* Timeline Step 2: Provider Matched & Invited */}
+          <div className={styles.requestTimelineItem}>
+            <div className={`${styles.requestTimelineIcon} ${styles.requestTimelineIconDone}`}>
+              <UsersRound size={13} aria-hidden="true" />
+            </div>
+            <div className={styles.requestTimelineContent}>
+              <div className={styles.requestTimelineHeadingRow}>
+                <span className={styles.requestTimelineTitle}>Specialist Provider Invited</span>
+                <time className={styles.requestTimelineTime}>{formatDate(proposal.submittedAt)}</time>
+              </div>
+              <p className={styles.requestTimelineDesc}>
+                <strong>{provider.name}</strong> received the service request scope and technical guidelines.
+              </p>
+            </div>
+          </div>
+
+          {/* Timeline Step 3: Proposal Submitted */}
+          <div className={styles.requestTimelineItem}>
+            <div className={`${styles.requestTimelineIcon} ${styles.requestTimelineIconDone}`}>
+              <Send size={13} aria-hidden="true" />
+            </div>
+            <div className={styles.requestTimelineContent}>
+              <div className={styles.requestTimelineHeadingRow}>
+                <span className={styles.requestTimelineTitle}>Commercial Proposal & Files Submitted</span>
+                <time className={styles.requestTimelineTime}>{formatDate(proposal.submittedAt)}</time>
+              </div>
+              <p className={styles.requestTimelineDesc}>
+                {provider.name} submitted terms with fee of {formatCurrency(proposal.fee, proposal.currency)}, {proposal.milestones.length} milestones, and {proposal.attachments.length} attached document(s).
+              </p>
+            </div>
+          </div>
+
+          {/* Timeline Step 4: Current Status */}
+          <div className={styles.requestTimelineItem}>
+            <div className={`${styles.requestTimelineIcon} ${styles.requestTimelineIconActive}`}>
+              <Clock size={13} aria-hidden="true" />
+            </div>
+            <div className={styles.requestTimelineContent}>
+              <div className={styles.requestTimelineHeadingRow}>
+                <span className={styles.requestTimelineTitle}>
+                  Current Status: {proposal.status.replaceAll("_", " ").toUpperCase()}
+                </span>
+                <time className={styles.requestTimelineTime}>{formatDate(proposal.updatedAt)}</time>
+              </div>
+              <p className={styles.requestTimelineDesc}>
+                {proposal.status === "submitted"
+                  ? "Proposal is under review by the project team. You may Shortlist, Request Clarification, or Accept."
+                  : proposal.status === "shortlisted"
+                  ? "Proposal is shortlisted for final contractor and specialist selection."
+                  : proposal.status === "clarification_requested"
+                  ? "Clarification requested from provider. Awaiting updated response."
+                  : proposal.status === "negotiating"
+                  ? "Commercial terms and delivery scope are currently under active negotiation."
+                  : proposal.status === "accepted"
+                  ? "Proposal accepted! Engagement active with milestone escrow governance."
+                  : "Proposal has concluded."}
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
+
+      {activePreviewFile ? (
+        <ProposalDocumentViewerModal
+          isOpen={Boolean(activePreviewFile)}
+          onClose={() => setActivePreviewFile(null)}
+          fileName={activePreviewFile.fileName}
+          contextTitle={activePreviewFile.contextTitle}
+          projectContext={requirement.projectName ?? "Nila Residence"}
+          submittedBy={activePreviewFile.submittedBy}
+          submittedAt={activePreviewFile.submittedAt}
+          fileSize={activePreviewFile.fileSize}
+        />
+      ) : null}
+
+      {isChatOpen ? (
+        <EngagementChatModal
+          isOpen={isChatOpen}
+          onClose={() => setIsChatOpen(false)}
+          engagement={{ projectName: requirement.projectName ?? "Project" }}
+          provider={provider}
+        />
+      ) : null}
     </div>
   );
 }

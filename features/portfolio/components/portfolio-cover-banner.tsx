@@ -11,7 +11,7 @@ interface PortfolioCoverBannerProps {
   profile: PortfolioProfile;
   coverImageUrl?: string;
   onCoverSelected: (file: File) => void;
-  onEdit: () => void;
+  onEdit?: () => void;
   shareOnly?: boolean;
 }
 

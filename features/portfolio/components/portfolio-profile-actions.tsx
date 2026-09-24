@@ -7,7 +7,6 @@ import {
   Copy,
   Ellipsis,
   Eye,
-  Pencil,
   Share2,
 } from "lucide-react";
 import type { PortfolioProfile } from "@/features/portfolio/types/portfolio.types";
@@ -16,7 +15,7 @@ import styles from "./portfolio.module.css";
 interface PortfolioProfileActionsProps {
   isOwner: boolean;
   profile: PortfolioProfile;
-  onEdit: () => void;
+  onEdit?: () => void;
   onUploadCover?: () => void;
   shareOnly?: boolean;
 }
@@ -24,7 +23,6 @@ interface PortfolioProfileActionsProps {
 export function PortfolioProfileActions({
   isOwner,
   profile,
-  onEdit,
   onUploadCover,
   shareOnly = false,
 }: PortfolioProfileActionsProps) {
@@ -44,7 +42,9 @@ export function PortfolioProfileActions({
     };
 
     document.addEventListener("mousedown", closeMenu);
-    return () => document.removeEventListener("mousedown", closeMenu);
+    return () => {
+      document.removeEventListener("mousedown", closeMenu);
+    };
   }, [menuOpen]);
 
   const sharePortfolio = async () => {
@@ -69,17 +69,6 @@ export function PortfolioProfileActions({
 
   return (
     <div className={styles.bannerActionsPillGroup} aria-label="Portfolio actions">
-      {isOwner && !shareOnly ? (
-        <button
-          className={styles.bannerActionButton}
-          type="button"
-          onClick={onEdit}
-        >
-          <Pencil size={14} aria-hidden="true" />
-          <span>Edit Portfolio</span>
-        </button>
-      ) : null}
-
       <button
         className={styles.bannerIconButton}
         type="button"

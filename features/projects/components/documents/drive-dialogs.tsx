@@ -3,11 +3,18 @@
 import {
   AlertCircle,
   CheckCircle2,
+  Compass,
   Database,
+  Download,
   FileText,
   Folder,
+  HardHat,
   History,
+  Share2,
+  ShieldCheck,
   Upload,
+  UserPlus,
+  Users,
   X,
 } from "lucide-react";
 import { DragEvent, FormEvent, ReactNode, useEffect, useRef, useState } from "react";
@@ -24,6 +31,7 @@ import {
   formatDocumentDate,
   formatFileSize,
 } from "./drive-collection";
+import { PROJECT_STAKEHOLDERS, ProjectStakeholder } from "./drive-access-stakeholders";
 import styles from "./project-documents-workspace.module.css";
 
 function useEscape(onClose: () => void, enabled = true) {
@@ -272,10 +280,33 @@ interface DocumentPreviewDrawerProps {
   document: ProjectDocument;
   folder?: ProjectDocumentFolder;
   onClose: () => void;
+  onManageAccess?: (document: ProjectDocument) => void;
+  onToggleAccess?: (document: ProjectDocument, stakeholder: ProjectStakeholder) => void;
 }
 
-export function DocumentPreviewDrawer({ document, folder, onClose }: DocumentPreviewDrawerProps) {
+export function DocumentPreviewDrawer({
+  document,
+  folder,
+  onClose,
+  onManageAccess,
+  onToggleAccess,
+}: DocumentPreviewDrawerProps) {
   useEscape(onClose);
+
+  function handleDownload() {
+    const blob = new Blob([`Mock file content for ${document.name}`], {
+      type: "application/octet-stream",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = window.document.createElement("a");
+    a.href = url;
+    a.download = document.name;
+    window.document.body.appendChild(a);
+    a.click();
+    window.document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className={styles.drawerLayer} role="presentation" onMouseDown={onClose}>
       <aside
@@ -308,6 +339,29 @@ export function DocumentPreviewDrawer({ document, folder, onClose }: DocumentPre
               Approved documents are locked. Create a new revision to make changes.
             </p>
           ) : null}
+
+          {/* Action Bar: Give access & Download */}
+          <div className={styles.drawerActionsBar}>
+            {onManageAccess ? (
+              <button
+                type="button"
+                className={styles.drawerPrimaryAction}
+                onClick={() => onManageAccess(document)}
+              >
+                <Share2 size={13} aria-hidden="true" />
+                Give Access
+              </button>
+            ) : null}
+            <button
+              type="button"
+              className={styles.drawerSecondaryAction}
+              onClick={handleDownload}
+            >
+              <Download size={13} aria-hidden="true" />
+              Download file
+            </button>
+          </div>
+
           <section className={styles.drawerSection}>
             <h3>Metadata</h3>
             <dl className={styles.metadataList}>
@@ -321,6 +375,86 @@ export function DocumentPreviewDrawer({ document, folder, onClose }: DocumentPre
               <div><dt>Created</dt><dd>{formatDocumentDate(document.createdAt)}</dd></div>
               <div><dt>Updated</dt><dd>{formatDocumentDate(document.updatedAt)}</dd></div>
             </dl>
+          </section>
+
+          {/* Who can view and download section */}
+          <section className={styles.drawerSection}>
+            <div className={styles.drawerSectionHeaderRow}>
+              <h3>
+                <Users size={15} strokeWidth={1.75} aria-hidden="true" />
+                Who can view and download
+              </h3>
+              {onManageAccess ? (
+                <button
+                  type="button"
+                  className={styles.drawerTextActionBtn}
+                  onClick={() => onManageAccess(document)}
+                >
+                  <UserPlus size={12} aria-hidden="true" /> Manage
+                </button>
+              ) : null}
+            </div>
+
+            <div className={styles.drawerStakeholderList}>
+              {/* Document Owner */}
+              <div className={styles.drawerStakeholderRow}>
+                <div className={styles.drawerStakeholderMeta}>
+                  <div className={styles.drawerStakeholderAvatar}>
+                    <ShieldCheck size={14} strokeWidth={2} aria-hidden="true" />
+                  </div>
+                  <div>
+                    <strong>{document.owner.name}</strong>
+                    <span>Document Owner · Full access</span>
+                  </div>
+                </div>
+                <span className={styles.drawerAccessGrantedBadge}>Owner</span>
+              </div>
+
+              {/* Stakeholders (Hands & Basics) */}
+              {PROJECT_STAKEHOLDERS.map((stakeholder) => {
+                const hasAccess = document.sharedWith.some((p) => p.id === stakeholder.id);
+                return (
+                  <div key={stakeholder.id} className={styles.drawerStakeholderRow}>
+                    <div className={styles.drawerStakeholderMeta}>
+                      <div
+                        className={
+                          stakeholder.category === "hands"
+                            ? styles.drawerHandsAvatar
+                            : styles.drawerBasicsAvatar
+                        }
+                      >
+                        {stakeholder.category === "hands" ? (
+                          <HardHat size={13} strokeWidth={2} aria-hidden="true" />
+                        ) : (
+                          <Compass size={13} strokeWidth={2} aria-hidden="true" />
+                        )}
+                      </div>
+                      <div>
+                        <strong>{stakeholder.name}</strong>
+                        <span>
+                          {stakeholder.category === "hands" ? "Hands (Contractor)" : "Basics (Specialist)"} · {stakeholder.trade}
+                        </span>
+                      </div>
+                    </div>
+                    <div className={styles.drawerStakeholderRight}>
+                      <span className={hasAccess ? styles.drawerAccessGrantedBadge : styles.drawerAccessNoneBadge}>
+                        {hasAccess ? "✓ Can view & download" : "No access"}
+                      </span>
+                      {onToggleAccess ? (
+                        <button
+                          type="button"
+                          className={hasAccess ? styles.drawerRevokeBtn : styles.drawerGrantBtn}
+                          onClick={() => onToggleAccess(document, stakeholder)}
+                          aria-label={hasAccess ? `Revoke access for ${stakeholder.name}` : `Give access to ${stakeholder.name}`}
+                        >
+                          {hasAccess ? "Revoke" : "Give access"}
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </section>
           <section className={styles.drawerSection}>
             <h3><History size={16} strokeWidth={1.75} aria-hidden="true" /> Version history</h3>
@@ -372,6 +506,164 @@ export function StorageDialog({ usedBytes, onClose }: { usedBytes: number; onClo
         </div>
         <footer className={styles.dialogFooter}>
           <button type="button" className={styles.primaryButton} onClick={onClose}>Done</button>
+        </footer>
+      </div>
+    </DialogFrame>
+  );
+}
+
+export interface DocumentAccessDialogProps {
+  document: ProjectDocument;
+  onClose: () => void;
+  onToggleAccess: (document: ProjectDocument, stakeholder: ProjectStakeholder) => void;
+}
+
+export function DocumentAccessDialog({
+  document,
+  onClose,
+  onToggleAccess,
+}: DocumentAccessDialogProps) {
+  const handsStakeholders = PROJECT_STAKEHOLDERS.filter((s) => s.category === "hands");
+  const basicsStakeholders = PROJECT_STAKEHOLDERS.filter((s) => s.category === "basics");
+
+  const totalShared = document.sharedWith.filter((p) =>
+    PROJECT_STAKEHOLDERS.some((s) => s.id === p.id),
+  ).length;
+
+  return (
+    <DialogFrame
+      title="Manage Document Access"
+      description="Control access permissions for site contractors (Hands) and project specialists (Basics)."
+      onClose={onClose}
+    >
+      <div className={styles.accessModalBody}>
+        {/* Document summary banner */}
+        <div className={styles.accessDocStrip}>
+          <div className={styles.accessDocIcon}>
+            <FileText size={20} strokeWidth={1.75} aria-hidden="true" />
+          </div>
+          <div className={styles.accessDocInfo}>
+            <div className={styles.accessDocTitleRow}>
+              <span className={styles.accessDocName}>{document.name}</span>
+              <DocumentStatusBadge status={document.status} size="compact" />
+            </div>
+            <span className={styles.accessDocMeta}>
+              {formatFileSize(document.sizeBytes)} · Revision R{String(document.version).padStart(2, "0")} · Last updated {formatDocumentDate(document.updatedAt)}
+            </span>
+          </div>
+        </div>
+
+        {/* Section 1: Hands (Contractor) */}
+        <div className={styles.accessSection}>
+          <div className={styles.accessSectionHeader}>
+            <div className={styles.accessSectionTitleWrap}>
+              <HardHat size={16} className={styles.handsSectionIcon} aria-hidden="true" />
+              <div>
+                <h3>Hands (Contractor)</h3>
+                <p>On-site trade contractors and execution leads executing physical works</p>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.accessStakeholderList}>
+            {handsStakeholders.map((stakeholder) => {
+              const hasAccess = document.sharedWith.some((p) => p.id === stakeholder.id);
+              return (
+                <div key={stakeholder.id} className={styles.accessStakeholderCard}>
+                  <div className={styles.accessStakeholderLeft}>
+                    <div className={styles.accessStakeholderAvatar}>
+                      <HardHat size={15} strokeWidth={2} aria-hidden="true" />
+                    </div>
+                    <div className={styles.accessStakeholderDetails}>
+                      <div className={styles.accessStakeholderNameRow}>
+                        <span className={styles.accessStakeholderName}>{stakeholder.name}</span>
+                        <span className={styles.accessTradeBadge}>{stakeholder.trade}</span>
+                      </div>
+                      <span className={styles.accessStakeholderRole}>
+                        {stakeholder.organization} · {stakeholder.role}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className={styles.accessStakeholderAction}>
+                    <span className={hasAccess ? styles.accessGrantedPill : styles.accessNonePill}>
+                      {hasAccess ? "✓ Can View & Download" : "No Access"}
+                    </span>
+                    <button
+                      type="button"
+                      className={hasAccess ? styles.accessRevokeBtn : styles.accessGrantBtn}
+                      onClick={() => onToggleAccess(document, stakeholder)}
+                      aria-label={hasAccess ? `Revoke access for ${stakeholder.name}` : `Give access to ${stakeholder.name}`}
+                    >
+                      {hasAccess ? "Revoke Access" : "Give Access"}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Section 2: Basics (Project Specialists & Consultants) */}
+        <div className={styles.accessSection}>
+          <div className={styles.accessSectionHeader}>
+            <div className={styles.accessSectionTitleWrap}>
+              <Compass size={16} className={styles.basicsSectionIcon} aria-hidden="true" />
+              <div>
+                <h3>Basics (Person who work in the project)</h3>
+                <p>Consultants, designers, and engineering specialists working on project requirements</p>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.accessStakeholderList}>
+            {basicsStakeholders.map((stakeholder) => {
+              const hasAccess = document.sharedWith.some((p) => p.id === stakeholder.id);
+              return (
+                <div key={stakeholder.id} className={styles.accessStakeholderCard}>
+                  <div className={styles.accessStakeholderLeft}>
+                    <div className={styles.accessStakeholderAvatar}>
+                      <Compass size={15} strokeWidth={2} aria-hidden="true" />
+                    </div>
+                    <div className={styles.accessStakeholderDetails}>
+                      <div className={styles.accessStakeholderNameRow}>
+                        <span className={styles.accessStakeholderName}>{stakeholder.name}</span>
+                        <span className={styles.accessTradeBadge}>{stakeholder.trade}</span>
+                      </div>
+                      <span className={styles.accessStakeholderRole}>
+                        {stakeholder.organization} · {stakeholder.role}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className={styles.accessStakeholderAction}>
+                    <span className={hasAccess ? styles.accessGrantedPill : styles.accessNonePill}>
+                      {hasAccess ? "✓ Can View & Download" : "No Access"}
+                    </span>
+                    <button
+                      type="button"
+                      className={hasAccess ? styles.accessRevokeBtn : styles.accessGrantBtn}
+                      onClick={() => onToggleAccess(document, stakeholder)}
+                      aria-label={hasAccess ? `Revoke access for ${stakeholder.name}` : `Give access to ${stakeholder.name}`}
+                    >
+                      {hasAccess ? "Revoke Access" : "Give Access"}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <footer className={styles.dialogFooter}>
+          <span className={styles.accessFooterNote}>
+            {totalShared > 0
+              ? `Shared with ${totalShared} project stakeholder(s). Permissions take effect immediately.`
+              : "No project stakeholders currently have access to this document."}
+          </span>
+          <button type="button" className={styles.primaryButton} onClick={onClose}>
+            Done
+          </button>
         </footer>
       </div>
     </DialogFrame>

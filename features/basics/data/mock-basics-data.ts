@@ -52,6 +52,16 @@ const PORTFOLIO_IMAGES = [
   "/assets/project-banner.jpg",
 ];
 
+const PROVIDER_COVER_IMAGES = [
+  "/assets/projects/residence-24.png",
+  "/assets/projects/anitha-menon-residence.png",
+  "/assets/hero-architecture-banner.webp",
+  "/assets/projects/greenfield-villa.png",
+  "/assets/projects/oak-house.png",
+  "/assets/project-banner.jpg",
+  "/assets/nila-hero-modern.jpg",
+];
+
 function createReview(index: number, seed: ProviderSeed): BasicsReview {
   const projectNames = [
     "Nila Residence",
@@ -90,12 +100,13 @@ export const MOCK_BASICS_PROVIDERS: BasicsProvider[] = PROVIDER_SEEDS.map(
       name: seed.name,
       companyName: index % 4 === 3 ? undefined : seed.name,
       avatarUrl: [
-        "/assets/profile_avatar.png",
         "/assets/rahul-avatar.jpg",
-        "/assets/arjun-avatar.jpg",
         "/assets/priya-avatar.jpg",
+        "/assets/arjun-avatar.jpg",
         "/assets/allen-avatar.jpg",
+        "/assets/petra-avatar.jpg",
       ][index % 5],
+      coverImageUrl: PROVIDER_COVER_IMAGES[index % PROVIDER_COVER_IMAGES.length],
       headline: `${seed.specialization} for residential and commercial projects`,
       primaryCategory: seed.category,
       specializations: [
@@ -378,6 +389,13 @@ export const MOCK_BASICS_ENGAGEMENTS: BasicsEngagement[] = Array.from(
     const proposal = MOCK_BASICS_PROPOSALS[index % MOCK_BASICS_PROPOSALS.length];
     const completed = index >= 6;
     const fee = 78000 + index * 8500;
+    const services =
+      index === 0
+        ? [
+            `${requirement.specialization} engagement`,
+            "Peer Review & Foundation Design",
+          ]
+        : undefined;
     return {
       id: completed
         ? `eng-completed-${String(index - 5).padStart(2, "0")}`
@@ -390,6 +408,7 @@ export const MOCK_BASICS_ENGAGEMENTS: BasicsEngagement[] = Array.from(
       clientId: "user-current",
       title: `${requirement.specialization} engagement`,
       category: requirement.category,
+      services,
       scope: requirement.deliverables,
       exclusions: proposal.excludedDeliverables,
       deliverables: createDeliverables(index + 1, provider.name),
@@ -430,6 +449,40 @@ export const MOCK_BASICS_ENGAGEMENTS: BasicsEngagement[] = Array.from(
   },
 );
 
+const PROJECT_COVER_IMAGES: Record<string, string> = {
+  "proj-001": "/assets/nila-thumb1.jpg",
+  "nila residence": "/assets/nila-thumb1.jpg",
+  "proj-002": "/assets/projects/greenfield-villa.png",
+  "azure villa": "/assets/projects/greenfield-villa.png",
+  "proj-003": "/assets/projects/greenfield-villa.png",
+  "greenfield apartment": "/assets/projects/greenfield-villa.png",
+  "proj-004": "/assets/projects/anitha-menon-residence.png",
+  "calicut retail interior": "/assets/projects/anitha-menon-residence.png",
+  "proj-005": "/assets/projects/residence-24.png",
+  "cochin warehouse refit": "/assets/projects/residence-24.png",
+  "proj-006": "/assets/projects/oak-house.png",
+  "kovalam cliff villa": "/assets/projects/oak-house.png",
+};
+
+export function getBasicsProjectCoverImage(projectId?: string, projectName?: string): string {
+  if (projectId && PROJECT_COVER_IMAGES[projectId]) {
+    return PROJECT_COVER_IMAGES[projectId];
+  }
+  if (projectName) {
+    const key = projectName.trim().toLowerCase();
+    if (PROJECT_COVER_IMAGES[key]) {
+      return PROJECT_COVER_IMAGES[key];
+    }
+    if (key.includes("nila")) return "/assets/nila-thumb1.jpg";
+    if (key.includes("azure")) return "/assets/projects/greenfield-villa.png";
+    if (key.includes("greenfield")) return "/assets/projects/greenfield-villa.png";
+    if (key.includes("retail") || key.includes("anitha")) return "/assets/projects/anitha-menon-residence.png";
+    if (key.includes("warehouse") || key.includes("residence 24") || key.includes("residence-24")) return "/assets/projects/residence-24.png";
+    if (key.includes("oak") || key.includes("kovalam") || key.includes("cliff")) return "/assets/projects/oak-house.png";
+  }
+  return "/assets/nila-thumb1.jpg";
+}
+
 export const MOCK_BASICS_PROJECT_CONTEXTS: BasicsProjectContext[] =
   DEV_PROJECTS.slice(0, 8).map((project, index) => ({
     id: project.id,
@@ -439,6 +492,7 @@ export const MOCK_BASICS_PROJECT_CONTEXTS: BasicsProjectContext[] =
     projectStage: project.phase,
     builtUpArea: 4800 + index * 1300,
     numberOfFloors: 2 + (index % 5),
+    coverImageUrl: getBasicsProjectCoverImage(project.id, project.name),
   }));
 
 export const MOCK_BASICS_NOTIFICATIONS: BasicsNotification[] = [

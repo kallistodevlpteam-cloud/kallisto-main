@@ -876,8 +876,10 @@ export function EnquiryDetailWorkspace({
     setEnquiry((prev) => ({ ...prev, stage: newStage }));
   }
 
-  function handleSendClarification(_msg: string) {
+  function handleSendClarification(msg: string) {
+    void msg;
     handleStageChange("clarification");
+    setClarificationText("");
   }
 
   function handleViewAllFiles() {

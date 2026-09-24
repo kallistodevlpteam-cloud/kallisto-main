@@ -2,13 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import {
-  Plus,
-  SendHorizontal,
-  X,
-  File,
-  Loader2,
-} from "lucide-react";
+import { Plus, SendHorizontal, X, File, Loader2, Check } from "lucide-react";
 import styles from "./enquiry-clarification-composer.module.css";
 
 export interface ClarificationAttachment {
@@ -60,12 +54,11 @@ const DEFAULT_MOCK_ATTACHMENTS: ClarificationAttachment[] = [
     name: "Reference Image.jpg",
     type: "image",
     previewUrl:
-      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=120&q=80",
+      "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=120&q=80",
   },
 ];
 
-const DEFAULT_INITIAL_MESSAGE =
-  "Please confirm whether the quoted budget includes furniture, lighting, MEP scope and execution timelines.";
+const DEFAULT_INITIAL_MESSAGE = "";
 
 const ODIN_SUGGESTED_DRAFT =
   "Please confirm whether the quoted budget includes furniture, lighting, MEP scope and execution timelines. Also confirm whether the existing floor plan reflects the final site condition.";
@@ -84,13 +77,29 @@ export function EnquiryClarificationComposer({
   onCancel,
 }: EnquiryClarificationComposerProps) {
   const [message, setMessage] = useState(initialMessage);
+  const [prevInitialMessage, setPrevInitialMessage] = useState(initialMessage);
+  if (initialMessage !== prevInitialMessage) {
+    setPrevInitialMessage(initialMessage);
+    setMessage(initialMessage);
+  }
+
   const [localAttachments, setLocalAttachments] = useState<
     ClarificationAttachment[]
   >(externalAttachments ?? DEFAULT_MOCK_ATTACHMENTS);
+  const [prevExternalAttachments, setPrevExternalAttachments] = useState(externalAttachments);
+  if (externalAttachments !== prevExternalAttachments) {
+    setPrevExternalAttachments(externalAttachments);
+    if (externalAttachments) {
+      setLocalAttachments(externalAttachments);
+    }
+  }
+
   const [internalStatus, setInternalStatus] =
     useState<ClarificationComposerStatus>("ready");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  void onUseTemplate;
 
   const activeStatus = externalStatus ?? (isSending ? "sending" : internalStatus);
 
@@ -107,19 +116,6 @@ export function EnquiryClarificationComposer({
     }
   }, [message]);
 
-  // Keep internal state updated if initialMessage or externalAttachments change
-  useEffect(() => {
-    if (externalAttachments) {
-      setLocalAttachments(externalAttachments);
-    }
-  }, [externalAttachments]);
-
-  useEffect(() => {
-    if (isSending) {
-      setInternalStatus("sending");
-    }
-  }, [isSending]);
-
   function handleTextChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     const val = e.target.value;
     if (val.length <= 500) {
@@ -132,7 +128,7 @@ export function EnquiryClarificationComposer({
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Escape") {
       onCancel?.();
-    } else if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+    } else if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
@@ -166,22 +162,34 @@ export function EnquiryClarificationComposer({
     e.target.value = "";
   }
 
-  function handleClarifyClick() {
-    if (onDraftWithOdin) {
-      onDraftWithOdin();
-    } else {
-      setMessage(ODIN_SUGGESTED_DRAFT);
-      setInternalStatus("ready");
-    }
-  }
-
-  function handleSend() {
-    if (!message.trim() || isSending) return;
-    setInternalStatus("sending");
-    onSend?.(message.trim());
-  }
+  void onDraftWithOdin;
+  void ODIN_SUGGESTED_DRAFT;
 
   const isMessageEmpty = !message.trim();
+  const hasAttachments = activeAttachments.length > 0;
+  const canSend = (!isMessageEmpty || hasAttachments) && !isSending;
+
+  function handleSend() {
+    if (!canSend) {
+      textareaRef.current?.focus();
+      return;
+    }
+    setInternalStatus("sending");
+    const payload =
+      message.trim() ||
+      (hasAttachments
+        ? `Shared ${activeAttachments.length} attachment(s)`
+        : "");
+    onSend?.(payload);
+    setMessage("");
+    setLocalAttachments([]);
+    onMessageChange?.("");
+    setInternalStatus("sent");
+    setTimeout(() => {
+      setInternalStatus("ready");
+    }, 3500);
+  }
+
   const visibleAttachments = activeAttachments.slice(0, 3);
   const overflowCount = activeAttachments.length - 3;
 
@@ -190,7 +198,6 @@ export function EnquiryClarificationComposer({
       className={styles.container}
       aria-label="Clarification request composer"
     >
-
       {/* Floating attachment previews (always rendered to preserve fixed section height) */}
       <div
         className={styles.attachmentsRow}
@@ -294,14 +301,18 @@ export function EnquiryClarificationComposer({
           <div className={styles.rightGroup}>
             <button
               type="button"
-              className={styles.sendBtn}
+              className={`${styles.sendBtn} ${
+                activeStatus === "sent" ? styles.sendBtnSuccess : ""
+              }`}
               onClick={handleSend}
-              disabled={isMessageEmpty || isSending}
+              disabled={!canSend && activeStatus !== "sent"}
               aria-label="Send clarification"
               title="Send clarification"
             >
-              {isSending ? (
+              {isSending || activeStatus === "sending" ? (
                 <Loader2 size={16} className={styles.spinner} />
+              ) : activeStatus === "sent" ? (
+                <Check size={16} />
               ) : (
                 <SendHorizontal size={15} style={{ marginLeft: "1px" }} />
               )}
@@ -309,6 +320,16 @@ export function EnquiryClarificationComposer({
           </div>
         </div>
       </div>
+
+      {/* Status confirmation feedback */}
+      {activeStatus === "sent" && (
+        <div className={styles.statusWrap}>
+          <div className={`${styles.statusPill} ${styles.status_sent}`}>
+            <span className={styles.statusDot} />
+            <span>Clarification request sent to client</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,12 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Check, ChevronDown, Sparkles, X } from "lucide-react";
+import { Check, ChevronDown, Pencil, X } from "lucide-react";
 import { RupeeIcon } from "@/components/layout/sidebar-icons";
 import type { PortfolioProfile } from "@/features/portfolio/types/portfolio.types";
-import { useOdin } from "@/hooks/use-odin";
+import { EditPackageModal } from "./edit-package-modal";
 import styles from "./portfolio.module.css";
 
 function KallistoSparkleIcon({ size = 15 }: { size?: number }) {
@@ -118,137 +118,147 @@ interface PortfolioPricingProps {
   isOwner?: boolean;
 }
 
+const INITIAL_DESIGN_PACKAGES: PricingCardItem[] = [
+  {
+    id: "design-basic",
+    category: "design",
+    tierKey: "emerald",
+    title: "Basic Design Package",
+    price: "2,50,000",
+    subLabel: "Starting from ₹2.5L+",
+    description:
+      "Essential architectural and engineering design package tailored for standard residential and commercial spaces.",
+    deliverables: [
+      "Conceptual layout & spatial planning",
+      "Statutory municipal approval drawings (KMBR / KPBR)",
+      "3D exterior perspective visuals",
+    ],
+    duration: "4 to 5 weeks",
+    revisionText: "2 revision cycles included",
+  },
+  {
+    id: "design-advanced",
+    category: "design",
+    tierKey: "purple",
+    title: "Advanced Design Package",
+    price: "5,00,000",
+    subLabel: "Comprehensive scope from ₹5L+",
+    description:
+      "Full coordinated architectural & structural drawing set with photorealistic 3D renders and detailed BOQs.",
+    deliverables: [
+      "Detailed working & execution drawings",
+      "Coordinated structural, plumbing & electrical layouts",
+      "High-definition 3D walkthrough visuals",
+      "Itemized Bill of Quantities (BOQ)",
+    ],
+    duration: "6 to 8 weeks",
+    revisionText: "3 revision cycles included",
+  },
+  {
+    id: "design-luxury",
+    category: "design",
+    tierKey: "autumn",
+    title: "Luxury Bespoke Package",
+    price: "15,00,000",
+    subLabel: "Signature turnkey from ₹15L+",
+    description:
+      "End-to-end bespoke luxury design with custom joinery, premium material schedules, and dedicated site supervision.",
+    deliverables: [
+      "Bespoke architectural & luxury interior package",
+      "Custom material specifications & physical palette",
+      "Full BIM 3D clash-detection coordination model",
+      "Dedicated site supervision & milestone sign-offs",
+      "Priority principal architect direct coordination",
+    ],
+    duration: "10 to 12 weeks",
+    revisionText: "Unlimited revision cycles",
+  },
+];
+
+const INITIAL_EXECUTION_PACKAGES: PricingCardItem[] = [
+  {
+    id: "exec-standard",
+    category: "execution",
+    tierKey: "emerald",
+    title: "Standard Turnkey Execution",
+    price: "2,150",
+    priceUnit: "/ sq.ft",
+    subLabel: "Per built-up sq.ft area",
+    description:
+      "End-to-end structural civil construction, solid masonry, standard electrical, sanitary fittings, and vitrified finishes.",
+    deliverables: [
+      "RCC framed structure with Fe550 certified steel",
+      "Solid concrete block masonry & external weatherproofing",
+      "Standard branded electrical & sanitary fixtures",
+      "Vitrified tile flooring (up to ₹70/sq.ft allowance)",
+    ],
+    duration: "8 to 10 months completion",
+    revisionText: "5-year structural warranty",
+  },
+  {
+    id: "exec-premium",
+    category: "execution",
+    tierKey: "purple",
+    title: "Premium Architectural Build",
+    price: "2,850",
+    priceUnit: "/ sq.ft",
+    subLabel: "Per built-up sq.ft area",
+    description:
+      "High-spec execution featuring exposed concrete finishes, teakwood joinery, designer bathrooms, and branded fixtures.",
+    deliverables: [
+      "Precision RCC structure with waterproof casting",
+      "Premium teak wood frames & designer flush doors",
+      "Italian marble / premium large-format vitrified slabs",
+      "Concealed Grohe / Kohler premium bathroom fittings",
+    ],
+    duration: "10 to 12 months completion",
+    revisionText: "10-year structural warranty",
+  },
+  {
+    id: "exec-luxury",
+    category: "execution",
+    tierKey: "autumn",
+    title: "Luxury Signature Construction",
+    price: "3,650",
+    priceUnit: "/ sq.ft",
+    subLabel: "Per built-up sq.ft area",
+    description:
+      "Top-tier luxury execution with custom facade glazing, home automation, VRV centralized air conditioning, and bespoke finishes.",
+    deliverables: [
+      "Bespoke structural execution & architectural facade",
+      "Full smart home automation & lighting control integration",
+      "VRV centralized air conditioning infrastructure",
+      "Imported marble, custom joinery & acoustic ceiling treatments",
+      "Dedicated full-time site engineer & quality audit reports",
+    ],
+    duration: "12 to 14 months completion",
+    revisionText: "Lifetime structural support & maintenance",
+  },
+];
+
 export function PortfolioPricing({ profile, isOwner = false }: PortfolioPricingProps) {
   const [selectedPlanId, setSelectedPlanId] = useState<string>("design-basic");
   const [confirmingPackage, setConfirmingPackage] = useState<PricingCardItem | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-  const { openOdin } = useOdin();
+  const [designPackages, setDesignPackages] = useState<PricingCardItem[]>(INITIAL_DESIGN_PACKAGES);
+  const [executionPackages, setExecutionPackages] = useState<PricingCardItem[]>(INITIAL_EXECUTION_PACKAGES);
+  const [editingPackage, setEditingPackage] = useState<PricingCardItem | null>(null);
 
-  // 1. Design Packages (3 Cards)
-  const designPackages: PricingCardItem[] = useMemo(
-    () => [
-      {
-        id: "design-basic",
-        category: "design",
-        tierKey: "emerald",
-        title: "Basic Design Package",
-        price: "2,50,000",
-        subLabel: "Starting from ₹2.5L+",
-        description:
-          "Essential architectural and engineering design package tailored for standard residential and commercial spaces.",
-        deliverables: [
-          "Conceptual layout & spatial planning",
-          "Statutory municipal approval drawings (KMBR / KPBR)",
-          "3D exterior perspective visuals",
-        ],
-        duration: "4 to 5 weeks",
-        revisionText: "2 revision cycles included",
-      },
-      {
-        id: "design-advanced",
-        category: "design",
-        tierKey: "purple",
-        title: "Advanced Design Package",
-        price: "5,00,000",
-        subLabel: "Comprehensive scope from ₹5L+",
-        description:
-          "Full coordinated architectural & structural drawing set with photorealistic 3D renders and detailed BOQs.",
-        deliverables: [
-          "Detailed working & execution drawings",
-          "Coordinated structural, plumbing & electrical layouts",
-          "High-definition 3D walkthrough visuals",
-          "Itemized Bill of Quantities (BOQ)",
-        ],
-        duration: "6 to 8 weeks",
-        revisionText: "3 revision cycles included",
-      },
-      {
-        id: "design-luxury",
-        category: "design",
-        tierKey: "autumn",
-        title: "Luxury Bespoke Package",
-        price: "15,00,000",
-        subLabel: "Signature turnkey from ₹15L+",
-        description:
-          "End-to-end bespoke luxury design with custom joinery, premium material schedules, and dedicated site supervision.",
-        deliverables: [
-          "Bespoke architectural & luxury interior package",
-          "Custom material specifications & physical palette",
-          "Full BIM 3D clash-detection coordination model",
-          "Dedicated site supervision & milestone sign-offs",
-          "Priority principal architect direct coordination",
-        ],
-        duration: "10 to 12 weeks",
-        revisionText: "Unlimited revision cycles",
-      },
-    ],
-    [],
-  );
-
-  // 2. Full Execution Packages with Sq.Ft Charges (3 Cards)
-  const executionPackages: PricingCardItem[] = useMemo(
-    () => [
-      {
-        id: "exec-standard",
-        category: "execution",
-        tierKey: "emerald",
-        title: "Standard Turnkey Execution",
-        price: "2,150",
-        priceUnit: "/ sq.ft",
-        subLabel: "Per built-up sq.ft area",
-        description:
-          "End-to-end structural civil construction, solid masonry, standard electrical, sanitary fittings, and vitrified finishes.",
-        deliverables: [
-          "RCC framed structure with Fe550 certified steel",
-          "Solid concrete block masonry & external weatherproofing",
-          "Standard branded electrical & sanitary fixtures",
-          "Vitrified tile flooring (up to ₹70/sq.ft allowance)",
-        ],
-        duration: "8 to 10 months completion",
-        revisionText: "5-year structural warranty",
-      },
-      {
-        id: "exec-premium",
-        category: "execution",
-        tierKey: "purple",
-        title: "Premium Architectural Build",
-        price: "2,850",
-        priceUnit: "/ sq.ft",
-        subLabel: "Per built-up sq.ft area",
-        description:
-          "High-spec execution featuring exposed concrete finishes, teakwood joinery, designer bathrooms, and branded fixtures.",
-        deliverables: [
-          "Precision RCC structure with waterproof casting",
-          "Premium teak wood frames & designer flush doors",
-          "Italian marble / premium large-format vitrified slabs",
-          "Concealed Grohe / Kohler premium bathroom fittings",
-        ],
-        duration: "10 to 12 months completion",
-        revisionText: "10-year structural warranty",
-      },
-      {
-        id: "exec-luxury",
-        category: "execution",
-        tierKey: "autumn",
-        title: "Luxury Signature Construction",
-        price: "3,650",
-        priceUnit: "/ sq.ft",
-        subLabel: "Per built-up sq.ft area",
-        description:
-          "Top-tier luxury execution with custom facade glazing, home automation, VRV centralized air conditioning, and bespoke finishes.",
-        deliverables: [
-          "Bespoke structural execution & architectural facade",
-          "Full smart home automation & lighting control integration",
-          "VRV centralized air conditioning infrastructure",
-          "Imported marble, custom joinery & acoustic ceiling treatments",
-          "Dedicated full-time site engineer & quality audit reports",
-        ],
-        duration: "12 to 14 months completion",
-        revisionText: "Lifetime structural support & maintenance",
-      },
-    ],
-    [],
-  );
+  const handleSavePackage = (updatedPkg: PricingCardItem) => {
+    if (updatedPkg.category === "design") {
+      setDesignPackages((prev) =>
+        prev.map((p) => (p.id === updatedPkg.id ? updatedPkg : p)),
+      );
+    } else {
+      setExecutionPackages((prev) =>
+        prev.map((p) => (p.id === updatedPkg.id ? updatedPkg : p)),
+      );
+    }
+    if (confirmingPackage?.id === updatedPkg.id) {
+      setConfirmingPackage(updatedPkg);
+    }
+    setEditingPackage(null);
+  };
 
   const handleCardClick = (pkg: PricingCardItem) => {
     setSelectedPlanId(pkg.id);
@@ -301,15 +311,32 @@ export function PortfolioPricing({ profile, isOwner = false }: PortfolioPricingP
             <span className={styles.serviceInsertSubLabel}>{pkg.subLabel}</span>
           </div>
 
-          {/* Decorative Tree Illustration matching tier */}
-          <div className={styles.serviceTreeIllustration}>
-            {pkg.tierKey === "emerald" ? (
-              <EmeraldBonsaiTree />
-            ) : pkg.tierKey === "purple" ? (
-              <PurpleBonsaiTree />
-            ) : (
-              <AutumnBonsaiTree />
-            )}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+            {isOwner ? (
+              <button
+                type="button"
+                className={styles.packageHeaderEditBtn}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingPackage(pkg);
+                }}
+                aria-label={`Edit ${pkg.title}`}
+              >
+                <Pencil size={11} aria-hidden="true" />
+                <span>Edit</span>
+              </button>
+            ) : null}
+
+            {/* Decorative Tree Illustration matching tier */}
+            <div className={styles.serviceTreeIllustration}>
+              {pkg.tierKey === "emerald" ? (
+                <EmeraldBonsaiTree />
+              ) : pkg.tierKey === "purple" ? (
+                <PurpleBonsaiTree />
+              ) : (
+                <AutumnBonsaiTree />
+              )}
+            </div>
           </div>
         </div>
 
@@ -334,18 +361,30 @@ export function PortfolioPricing({ profile, isOwner = false }: PortfolioPricingP
           </li>
         </ul>
 
-        {/* Full Width Send Enquiry / Selection Action Button */}
-        <button
-          type="button"
-          className={
-            isSelected
-              ? styles.modernServiceButtonSelected
-              : styles.modernServiceButton
-          }
-          onClick={() => handleCardClick(pkg)}
-        >
-          {isSelected ? "Selected ✓" : "Send enquiry"}
-        </button>
+        {/* Action Button: Edit for Owner, Send enquiry for Client */}
+        {isOwner ? (
+          <button
+            type="button"
+            className={styles.ownerEditPackageCardBtn}
+            onClick={() => setEditingPackage(pkg)}
+            aria-label={`Edit ${pkg.title} package`}
+          >
+            <Pencil size={14} aria-hidden="true" />
+            <span>Edit Package</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            className={
+              isSelected
+                ? styles.modernServiceButtonSelected
+                : styles.modernServiceButton
+            }
+            onClick={() => handleCardClick(pkg)}
+          >
+            {isSelected ? "Selected ✓" : "Send enquiry"}
+          </button>
+        )}
       </article>
     );
   };
@@ -522,6 +561,15 @@ export function PortfolioPricing({ profile, isOwner = false }: PortfolioPricingP
             </div>
           </div>
         </div>
+      ) : null}
+
+      {isOwner ? (
+        <EditPackageModal
+          isOpen={Boolean(editingPackage)}
+          packageItem={editingPackage}
+          onClose={() => setEditingPackage(null)}
+          onSave={handleSavePackage}
+        />
       ) : null}
     </div>
   );

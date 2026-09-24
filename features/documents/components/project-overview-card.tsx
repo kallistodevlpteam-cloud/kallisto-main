@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, type CSSProperties, type ReactNode, type RefObject } from "react";
+import React, { useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   Sparkles,
   ChevronDown,
@@ -187,7 +188,12 @@ export function ProjectOverviewCard({
   isClient,
   isConstructionNotStarted = false,
 }: ProjectOverviewCardProps = {}) {
-  const [activeTab, setActiveTab] = useState<EnquiryTabKey>("overview");
+  const searchParams = useSearchParams();
+  const rawTab = searchParams?.get("tab");
+  const urlTab = (rawTab && ["overview", "client", "requirements", "evidence", "team", "materials", "hands", "basics", "activity"].includes(rawTab))
+    ? (rawTab as EnquiryTabKey)
+    : undefined;
+  const [internalTab, setInternalTab] = useState<EnquiryTabKey>("overview");
   const [activeDomainKey, setActiveDomainKey] = useState<string>("room_programme");
   const [selectedRequirementId, setSelectedRequirementId] = useState<string | null>(null);
   const [expandedRoomIds, setExpandedRoomIds] = useState<Record<string, boolean>>({});
@@ -199,14 +205,14 @@ export function ProjectOverviewCard({
   const resolvedStatus = (projectStatus || status || lookedUpProject?.status || "").toLowerCase();
   const isUpcoming = isUpcomingProp !== undefined ? isUpcomingProp : (resolvedStatus === "upcoming" || resolvedStatus === "new");
 
-  useEffect(() => {
-    if (isUpcoming && ["team", "materials", "hands", "basics", "activity"].includes(activeTab)) {
-      const timer = setTimeout(() => {
-        setActiveTab("overview");
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [isUpcoming, activeTab]);
+  const computedTab = urlTab || internalTab;
+  const activeTab: EnquiryTabKey = (isUpcoming && ["team", "materials", "hands", "basics", "activity"].includes(computedTab))
+    ? "overview"
+    : computedTab;
+
+  const setActiveTab = (tab: EnquiryTabKey) => {
+    setInternalTab(tab);
+  };
 
   const baseEnquiry: EnquiryRecord = {
     id: projectId || "enq-2026-0486",

@@ -10,8 +10,8 @@ import {
   ResolveDuotoneIcon,
 } from "@/components/layout/sidebar-icons";
 import { LayoutDashboard, Plus, ArrowRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { KallistoLogoMark } from "@/components/layout/kallisto-brand";
 import { ExpertSearchBar } from "./expert-search-bar";
 import styles from "./basics-workspace.module.css";
 
@@ -86,20 +86,24 @@ export function BasicsOverview({ projectId }: { projectId?: string }) {
           title="Basics Dashboard"
           aria-label="View Basics dashboard"
         >
-          <LayoutDashboard size={14} className={styles.overviewTopNavIcon} aria-hidden="true" />
-          <span>Dashboard</span>
+          <LayoutDashboard size={15} className={styles.overviewTopNavIcon} aria-hidden="true" />
+          <span>Basics Dashboard</span>
         </Link>
       </div>
 
       {/* Grok-Style Centered Intelligence Hub & Command Palette */}
       <section className={styles.grokHeroContainer} aria-label="Kallisto Basics Command Hub">
-        {/* Brand Header with crisp vector Kallisto Basics lockup */}
+        {/* Brand Header with crisp official Kallisto Basics logo */}
         <div className={styles.grokBrand}>
-          <div className={styles.grokBasicsBrandHeader} aria-label="Kallisto Basics">
-            <KallistoLogoMark size={28} className={styles.grokBasicsLogoMark} />
-            <span className={styles.grokBasicsBrandTitle}>kallisto</span>
-            <span className={styles.grokBasicsBrandTag}>basics</span>
-          </div>
+          <Image
+            src="/kallisto-basics-logo.png"
+            alt="Kallisto Basics"
+            width={260}
+            height={44}
+            className={styles.grokBasicsLogoImg}
+            priority
+            unoptimized
+          />
           <p className={styles.grokTagline}>
             Find verified specialists, scope requirements, and build your project with precision.
           </p>

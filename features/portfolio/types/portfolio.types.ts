@@ -47,6 +47,8 @@ export type ConstructionProject = {
     district?: string;
     state: string;
     country: string;
+    bioClimaticZone?: string;
+    coordinates?: string;
   };
   builtUpArea?: {
     value: number;
@@ -210,6 +212,8 @@ export interface PortfolioCollection {
   projectIds: string[];
   imageUrl?: string;
   hasGradientRing?: boolean;
+  images?: string[];
+  description?: string;
 }
 
 export type PortfolioDrawingCategory =

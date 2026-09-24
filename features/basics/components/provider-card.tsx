@@ -25,6 +25,8 @@ export function ProviderCard({
   saved = false,
   isInvited = false,
   compareDisabled = false,
+  matchScore,
+  inviteLabel,
   onToggleCompare,
   onToggleSave,
   onInvite,
@@ -37,6 +39,8 @@ export function ProviderCard({
   saved?: boolean;
   isInvited?: boolean;
   compareDisabled?: boolean;
+  matchScore?: number;
+  inviteLabel?: string;
   onToggleCompare?: (providerId: string) => void;
   onToggleSave?: (providerId: string) => void;
   onInvite?: (providerId: string) => void;
@@ -75,6 +79,15 @@ export function ProviderCard({
       {/* Top Rounded Brand Logo Tile Container */}
       <div className={styles.refPortraitWrap}>
         <ProviderLogoTile name={provider.name} />
+
+        {/* Top-Left Badge: Match Score (if provided) */}
+        {matchScore ? (
+          <div className={styles.refPortraitTopLeftBadge}>
+            <span className={styles.refMatchScoreBadge}>
+              {matchScore}% match
+            </span>
+          </div>
+        ) : null}
 
         {/* Top-Right Badge: Star Rating */}
         <div className={styles.refPortraitBadgeWrap}>
@@ -166,13 +179,14 @@ export function ProviderCard({
                 type="button"
                 className={isInvited ? styles.refInvitedBtn : styles.refInviteBtn}
                 disabled={isInvited}
+                aria-label={isInvited ? "Invited" : (inviteLabel ?? "Invite")}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (!isInvited) onInvite(provider.id);
                 }}
               >
                 {isInvited ? <Check size={11} aria-hidden="true" /> : <Send size={11} aria-hidden="true" />}
-                <span>{isInvited ? "Invited" : "Invite"}</span>
+                <span>{isInvited ? "Invited" : (inviteLabel ?? "Invite")}</span>
               </button>
             ) : null}
 

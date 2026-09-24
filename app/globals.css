@@ -949,6 +949,19 @@ textarea:focus-visible {
   max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+a.breadcrumb-parent {
+  cursor: pointer;
+}
+
+a.breadcrumb-parent:hover,
+a.breadcrumb-parent:focus-visible {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .breadcrumb-separator {
@@ -4515,6 +4528,11 @@ textarea:focus-visible {
   max-width: 400px;
   min-height: 0;
   overflow: hidden;
+  box-sizing: border-box;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
 }
 
 .poc-wrapper[data-updates-mode="drawer"] > .poc-right-column {

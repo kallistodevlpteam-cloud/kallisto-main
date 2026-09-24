@@ -7,6 +7,7 @@ interface PortfolioEmptyStateProps {
   description: string;
   actionLabel?: string;
   actionHref?: string;
+  onAction?: () => void;
 }
 
 export function PortfolioEmptyState({
@@ -14,6 +15,7 @@ export function PortfolioEmptyState({
   description,
   actionLabel,
   actionHref,
+  onAction,
 }: PortfolioEmptyStateProps) {
   return (
     <div className={styles.emptyState}>
@@ -22,7 +24,15 @@ export function PortfolioEmptyState({
         <h2>{title}</h2>
         <p>{description}</p>
       </div>
-      {actionLabel && actionHref ? (
+      {actionLabel && onAction ? (
+        <button
+          type="button"
+          className={styles.secondaryButton}
+          onClick={onAction}
+        >
+          {actionLabel}
+        </button>
+      ) : actionLabel && actionHref ? (
         <Link className={styles.secondaryButton} href={actionHref}>
           {actionLabel}
         </Link>

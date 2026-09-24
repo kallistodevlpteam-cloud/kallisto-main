@@ -83,6 +83,21 @@ export function ProjectDetailWorkspace({ projectId }: ProjectDetailWorkspaceProp
     };
   }, [projectId]);
 
+  useEffect(() => {
+    if (project?.name && typeof window !== "undefined") {
+      try {
+        sessionStorage.setItem(`kallisto_project_name_${projectId}`, project.name);
+        window.dispatchEvent(
+          new CustomEvent("kallisto_project_updated", {
+            detail: { projectId, projectName: project.name },
+          })
+        );
+      } catch {
+        // ignore storage access issues
+      }
+    }
+  }, [project?.name, projectId]);
+
   if (loading) {
     return (
       <div className="workspace-container">

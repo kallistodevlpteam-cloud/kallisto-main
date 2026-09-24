@@ -57,8 +57,8 @@ describe("portfolio interface", () => {
     expect(screen.getByText("Followers")).toBeInTheDocument();
     expect(screen.getByLabelText("Upload photo")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Edit Portfolio" }),
-    ).toBeInTheDocument();
+      screen.queryByRole("button", { name: "Edit Portfolio" }),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Portfolio Highlights" }),
     ).toBeInTheDocument();
@@ -304,5 +304,301 @@ describe("portfolio interface", () => {
     expect(
       screen.queryByRole("button", { name: "Add project" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("opens the modal on clicking Add new collection and validates inputs", () => {
+    const data = getPortfolioPageData(true);
+    render(<PortfolioProfileCard data={data} initialTab="projects" />);
+
+    // Click "+ New Collection"
+    const addCollectionBtn = screen.getByRole("button", {
+      name: "Add new collection",
+    });
+    fireEvent.click(addCollectionBtn);
+
+    // Modal opens
+    expect(
+      screen.getByRole("dialog", { name: "New Collection" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Add title and multiple images for your highlights")).toBeInTheDocument();
+
+    const titleInput = screen.getByPlaceholderText(
+      "e.g., Luxury Residential, Concept Sketches, 3D Renders",
+    );
+    expect(titleInput).toBeInTheDocument();
+
+    // Try submitting without title
+    const submitBtn = screen.getByRole("button", { name: "Create Collection" });
+    fireEvent.click(submitBtn);
+    expect(
+      screen.getByText("Please enter a collection title."),
+    ).toBeInTheDocument();
+
+    // Type title, submit without images
+    fireEvent.change(titleInput, { target: { value: "Eco-Lodge Concepts" } });
+    fireEvent.click(submitBtn);
+    expect(
+      screen.getByText("Please add at least one image to the collection."),
+    ).toBeInTheDocument();
+
+    // Close modal via Cancel button
+    const cancelBtn = screen.getByRole("button", { name: "Cancel" });
+    fireEvent.click(cancelBtn);
+    expect(
+      screen.queryByRole("dialog", { name: "New Collection" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("creates a new collection with title and multiple images", () => {
+    const data = getPortfolioPageData(true);
+    render(<PortfolioProfileCard data={data} initialTab="projects" />);
+
+    // Click "+ New Collection"
+    fireEvent.click(
+      screen.getByRole("button", { name: "Add new collection" }),
+    );
+
+    const titleInput = screen.getByPlaceholderText(
+      "e.g., Luxury Residential, Concept Sketches, 3D Renders",
+    );
+    fireEvent.change(titleInput, { target: { value: "Modern Villas 2026" } });
+
+    // Upload multiple images
+    const fileInput = screen.getByLabelText("Upload multiple images").querySelector("input[type='file']")!;
+    const file1 = new File(["img1"], "villa-front.jpg", { type: "image/jpeg" });
+    const file2 = new File(["img2"], "villa-pool.jpg", { type: "image/jpeg" });
+
+    fireEvent.change(fileInput, {
+      target: { files: [file1, file2] },
+    });
+
+    // Should show 2 images selected and thumbnails
+    expect(screen.getByText("2 images selected")).toBeInTheDocument();
+    expect(screen.getByText("Cover")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add more images" })).toBeInTheDocument();
+
+    // Submit form
+    const submitBtn = screen.getByRole("button", { name: "Create Collection" });
+    fireEvent.click(submitBtn);
+
+    // Modal should close
+    expect(
+      screen.queryByRole("dialog", { name: "New Collection" }),
+    ).not.toBeInTheDocument();
+
+    // New collection should now appear in the highlights bar and be selected
+    const newCollectionBtn = screen.getByRole("button", {
+      name: "Modern Villas 2026",
+    });
+    expect(newCollectionBtn).toBeInTheDocument();
+    expect(newCollectionBtn).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByText("2 images")).toBeInTheDocument();
+  });
+
+  it("opens the image viewer modal with edit option when clicking a collection card", () => {
+    const data = getPortfolioPageData(true);
+    render(<PortfolioProfileCard data={data} initialTab="projects" />);
+
+    // Click "Featured" collection card
+    const featuredCard = screen.getByRole("button", { name: "Featured" });
+    fireEvent.click(featuredCard);
+
+    // Modal dialog opens for viewing the collection image
+    expect(
+      screen.getByRole("dialog", { name: "Featured" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByAltText("Featured preview"),
+    ).toBeInTheDocument();
+
+    // Edit button is available for owner
+    const editBtn = screen.getByRole("button", { name: "Edit collection" });
+    expect(editBtn).toBeInTheDocument();
+
+    // Click Edit to toggle edit mode
+    fireEvent.click(editBtn);
+
+    // Edit form inputs should be visible
+    const editInput = screen.getByDisplayValue("Featured");
+    expect(editInput).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Save Changes" })).toBeInTheDocument();
+
+    // Change title and save
+    fireEvent.change(editInput, { target: { value: "Featured Masterpieces" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save Changes" }));
+
+    // Title should be updated in highlights bar
+    expect(
+      screen.getByRole("button", { name: "Featured Masterpieces" }),
+    ).toBeInTheDocument();
+
+    // Close viewer modal
+    const closeBtn = screen.getByRole("button", { name: "Close viewer" });
+    fireEvent.click(closeBtn);
+    expect(
+      screen.queryByRole("dialog", { name: "Featured Masterpieces" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("displays 'Add case study' button on the Case Studies tab and 'Add project' on the Projects tab", () => {
+    const data = getPortfolioPageData(true);
+    render(<PortfolioProfileCard data={data} initialTab="projects" />);
+
+    // On Projects tab: button says "Add project"
+    expect(screen.getByRole("button", { name: "Add project" })).toBeInTheDocument();
+
+    // Switch to Case Studies tab
+    const caseStudiesTab = screen.getByRole("tab", { name: "Case Studies" });
+    fireEvent.click(caseStudiesTab);
+
+    // On Case Studies tab: button should say "Add case study" instead of "Add project"
+    expect(screen.getByRole("button", { name: "Add case study" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add project" })).not.toBeInTheDocument();
+  });
+
+  it("opens Add Case Study modal when clicking 'Add case study' and creates a new case study", () => {
+    const data = getPortfolioPageData(true);
+    render(<PortfolioProfileCard data={data} initialTab="case-studies" />);
+
+    // Click "Add case study" button
+    const addCaseStudyBtn = screen.getByRole("button", { name: "Add case study" });
+    fireEvent.click(addCaseStudyBtn);
+
+    // Add Case Study modal should be open
+    expect(screen.getByRole("dialog", { name: "Add Case Study" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Architectural Narrative" })).toBeInTheDocument();
+
+    // Select linked project from dropdown to test auto-population
+    const projectSelect = screen.getByLabelText("Associated Project");
+    fireEvent.change(projectSelect, { target: { value: data.projects[0].id } });
+
+    // Title input should be updated
+    const titleInput = screen.getByLabelText(/Case Study Title/i);
+    expect(titleInput).toBeInTheDocument();
+    fireEvent.change(titleInput, { target: { value: "Eco Villa Architectural Narrative" } });
+
+    // Fill Client Brief & Design Response
+    const briefInput = screen.getByLabelText("Client Brief");
+    fireEvent.change(briefInput, { target: { value: "Client requested a carbon-neutral home." } });
+
+    const responseInput = screen.getByLabelText("Design Response");
+    fireEvent.change(responseInput, { target: { value: "We implemented rammed earth and passive solar design." } });
+
+    // Upload an image via modal's file input
+    const modal = screen.getByRole("dialog", { name: "Add Case Study" });
+    const file = new File(["dummy-content"], "cover.jpg", { type: "image/jpeg" });
+    const fileInput = modal.querySelector('input[type="file"]') as HTMLInputElement;
+    expect(fileInput).not.toBeNull();
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    // Submit form
+    const submitBtn = screen.getByRole("button", { name: "Create Case Study" });
+    fireEvent.click(submitBtn);
+
+    // Modal should close
+    expect(screen.queryByRole("dialog", { name: "Add Case Study" })).not.toBeInTheDocument();
+
+    // The new case study should appear in both the case study list and preview panel
+    expect(screen.getAllByText("Eco Villa Architectural Narrative").length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("renders the Edit option in the top right of the case study cover image and updates the case study", () => {
+    const data = getPortfolioPageData(true);
+    render(<PortfolioProfileCard data={data} initialTab="case-studies" />);
+
+    const activeCaseStudy = data.caseStudies[0];
+
+    // Find the Edit button inside the case study preview cover area
+    const editBtn = screen.getByRole("button", {
+      name: `Edit ${activeCaseStudy.title}`,
+    });
+    expect(editBtn).toBeInTheDocument();
+
+    // Click Edit button
+    fireEvent.click(editBtn);
+
+    // Edit Case Study modal should be open with pre-populated values
+    expect(
+      screen.getByRole("dialog", { name: "Edit Case Study" }),
+    ).toBeInTheDocument();
+
+    const titleInput = screen.getByLabelText(/Case Study Title/i);
+    expect(titleInput).toHaveValue(activeCaseStudy.title);
+
+    // Change title
+    fireEvent.change(titleInput, {
+      target: { value: "Updated Architectural Masterpiece 2026" },
+    });
+
+    // Submit using Save Changes button
+    const saveBtn = screen.getByRole("button", { name: "Save Changes" });
+    fireEvent.click(saveBtn);
+
+    // Modal should close
+    expect(
+      screen.queryByRole("dialog", { name: "Edit Case Study" }),
+    ).not.toBeInTheDocument();
+
+    // The updated title should be displayed in the case study views
+    expect(
+      screen.getAllByText("Updated Architectural Masterpiece 2026").length,
+    ).toBeGreaterThanOrEqual(1);
+  });
+
+  it("does not display 'Add project' or 'Add case study' button on the Pricing tab", () => {
+    const data = getPortfolioPageData(true);
+    render(<PortfolioProfileCard data={data} initialTab="pricing" />);
+
+    // On Pricing tab: no dedicated action button should appear in the tabs header
+    expect(screen.queryByRole("button", { name: "Add project" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add case study" })).not.toBeInTheDocument();
+  });
+
+  it("allows owner to edit package details and saves updates in real-time", () => {
+    const data = getPortfolioPageData(true);
+    render(<PortfolioProfileCard data={data} initialTab="pricing" />);
+
+    // Package cards should have Edit Package button for owner
+    const editBasicBtn = screen.getByRole("button", {
+      name: "Edit Basic Design Package package",
+    });
+    expect(editBasicBtn).toBeInTheDocument();
+
+    // Click Edit Package
+    fireEvent.click(editBasicBtn);
+
+    // Edit Package modal should open
+    expect(
+      screen.getByRole("dialog", { name: "Edit Package Details" }),
+    ).toBeInTheDocument();
+
+    // Title input should have existing value
+    const titleInput = screen.getByLabelText(/Package Title/i);
+    expect(titleInput).toHaveValue("Basic Design Package");
+
+    // Price input should have existing value
+    const priceInput = screen.getByLabelText(/Rate \/ Price/i);
+    expect(priceInput).toHaveValue("2,50,000");
+
+    // Change title and price
+    fireEvent.change(titleInput, {
+      target: { value: "Starter Design Suite" },
+    });
+    fireEvent.change(priceInput, {
+      target: { value: "3,00,000" },
+    });
+
+    // Save changes
+    const saveBtn = screen.getByRole("button", { name: "Save Changes" });
+    fireEvent.click(saveBtn);
+
+    // Modal should close
+    expect(
+      screen.queryByRole("dialog", { name: "Edit Package Details" }),
+    ).not.toBeInTheDocument();
+
+    // Updated package title and price should now be visible on the card
+    expect(screen.getByText("Starter Design Suite")).toBeInTheDocument();
+    expect(screen.getByText("3,00,000")).toBeInTheDocument();
   });
 });

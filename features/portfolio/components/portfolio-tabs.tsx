@@ -34,6 +34,7 @@ interface PortfolioTabsProps {
   hidePricing?: boolean;
   hideAddProject?: boolean;
   onAddProject: () => void;
+  onAddCaseStudy?: () => void;
   onTabChange: (tab: PortfolioTab) => void;
 }
 
@@ -43,6 +44,7 @@ export function PortfolioTabs({
   hidePricing,
   hideAddProject = false,
   onAddProject,
+  onAddCaseStudy,
   onTabChange,
 }: PortfolioTabsProps) {
   const pathname = usePathname();
@@ -120,15 +122,15 @@ export function PortfolioTabs({
           );
         })}
       </div>
-      {isOwner && !hideAddProject ? (
+      {isOwner && !hideAddProject && (activeTab === "projects" || activeTab === "case-studies") ? (
         <button
           className={styles.addProjectDedicatedBtn}
           type="button"
-          aria-label="Add project"
-          onClick={onAddProject}
+          aria-label={activeTab === "case-studies" ? "Add case study" : "Add project"}
+          onClick={activeTab === "case-studies" ? (onAddCaseStudy ?? onAddProject) : onAddProject}
         >
           <Plus size={15} strokeWidth={2.2} aria-hidden="true" />
-          <span>Add project</span>
+          <span>{activeTab === "case-studies" ? "Add case study" : "Add project"}</span>
         </button>
       ) : null}
     </div>
