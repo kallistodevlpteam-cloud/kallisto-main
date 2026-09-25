@@ -757,7 +757,13 @@ export const ACTIVE_LABOUR_REQUESTS: LabourRequestMatch[] = [
 ];
 
 export function getWorkerById(workerId: string): WorkerProfile | null {
-  const found = INITIAL_WORKERS.find((w) => w.id === workerId);
+  let found = INITIAL_WORKERS.find((w) => w.id === workerId);
+  if (!found) {
+    if (workerId === "W1" || workerId === "101") found = INITIAL_WORKERS.find((w) => w.id === "KH-W-1042");
+    else if (workerId === "W2" || workerId === "102") found = INITIAL_WORKERS.find((w) => w.id === "KH-W-1043");
+    else if (workerId === "W3" || workerId === "103") found = INITIAL_WORKERS.find((w) => w.id === "KH-W-1044");
+    else if (workerId === "W4" || workerId === "104") found = INITIAL_WORKERS.find((w) => w.id === "KH-W-1045");
+  }
   if (!found) return null;
 
   return {

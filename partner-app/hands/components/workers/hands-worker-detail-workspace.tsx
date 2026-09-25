@@ -835,11 +835,11 @@ export function HandsWorkerDetailWorkspace({
          --------------------------------------------------------- */}
       {activeTab === "payment-bank" && (
         <section id="payment-bank" className={styles.sectionCard}>
-          {/* Sub-section A: Verified Bank Account & UPI Details */}
+          {/* Sub-section A: Verified Bank Account Details */}
           <div className={styles.subSectionBlock}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}>
               <h3 className={styles.subSectionTitle}>
-                Verified Bank Account & UPI Details
+                Verified Bank Account Details
               </h3>
               <span className={styles.verifiedPill}>
                 <ShieldCheck size={13} /> Penny Drop Verified
@@ -870,11 +870,6 @@ export function HandsWorkerDetailWorkspace({
               <div className={styles.kvItem}>
                 <span className={styles.kvLabel}>Branch Location</span>
                 <span className={styles.kvValue}>{ext?.bankDetails.branchName}</span>
-              </div>
-
-              <div className={styles.kvItem}>
-                <span className={styles.kvLabel}>UPI Address</span>
-                <span className={styles.kvValue}>{ext?.bankDetails.upiId}</span>
               </div>
             </div>
           </div>

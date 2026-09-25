@@ -1,0 +1,799 @@
+/* =========================================================
+   KALLISTO HANDS - PROJECTS DIRECTORY WORKSPACE & CARDS
+   (INCLUDES FLOATING FILTER POPOVER DROPDOWNS MATCHING REF)
+   ========================================================= */
+
+.workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  padding-bottom: 32px;
+}
+
+/* 1. Page Header (Title, Subtitle & Primary CTA) */
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 4px;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 750;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.pageDescription {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+.headerSearchWrap {
+  position: relative;
+  width: 300px;
+  height: 38px;
+}
+
+.headerSearchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.headerSearchInput {
+  width: 100%;
+  height: 38px;
+  line-height: 38px;
+  padding: 0 14px 0 34px;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+  font-size: 12.5px;
+  color: #0f172a;
+  outline: none;
+  background-color: #ffffff;
+  box-sizing: border-box;
+  transition: all 0.14s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.headerSearchInput:focus {
+  border-color: #0f172a;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.06);
+}
+
+.primaryActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: none;
+  background-color: #0f172a;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 650;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+  transition: all 0.14s ease;
+  white-space: nowrap;
+}
+
+.primaryActionBtn:hover {
+  background-color: #1e293b;
+  transform: translateY(-1px);
+}
+
+/* 2. Top Telemetry & Filters Bar */
+.telemetryBarContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+.telemetryStrip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 32px;
+  padding: 0 14px;
+  background-color: #f1f5f9;
+  border-radius: 9999px;
+  font-size: 12px;
+  color: #64748b;
+  box-sizing: border-box;
+  flex: 1 1 0%;
+  min-width: 280px;
+}
+
+.telemetryLeft {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.telemetryDot {
+  color: #cbd5e1;
+}
+
+.liveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #059669;
+  flex-shrink: 0;
+}
+
+.liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+  flex-shrink: 0;
+}
+
+.filterControlsGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.topSearchWrap {
+  position: relative;
+  width: 220px;
+  height: 32px;
+}
+
+.topSearchInput {
+  width: 100%;
+  height: 32px;
+  line-height: 32px;
+  padding: 0 12px 0 30px;
+  border-radius: 9999px;
+  border: none;
+  font-size: 12px;
+  color: #0f172a;
+  outline: none;
+  background-color: #f1f5f9;
+  box-sizing: border-box;
+}
+
+.topFilterPillBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 9999px;
+  border: none;
+  background-color: #f1f5f9;
+  color: #475569;
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.14s ease;
+  outline: none;
+}
+
+.topFilterPillBtn:hover {
+  background-color: #e2e8f0;
+}
+
+/* 3. Operational 4-Card Summary Grid */
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .summaryGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.summaryCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.summaryIconBox {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.summaryTexts {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.summaryValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.summaryLabel {
+  font-size: 11.5px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+/* ── Status Section Tabs Row (Matching Image 1 Reference) ── */
+.tabsNav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  min-height: 44px;
+  border-bottom: 1px solid #e2e8f0;
+  background: transparent;
+  padding: 0 4px;
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  box-sizing: border-box;
+}
+
+.tabsNav::-webkit-scrollbar {
+  display: none;
+}
+
+.tabBtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 100%;
+  min-height: 44px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  padding: 0 2px 2px;
+  white-space: nowrap;
+  outline: none;
+}
+
+.tabBtn:hover {
+  color: #0f172a;
+}
+
+.tabBtnActive {
+  color: #0f172a;
+  font-weight: 650;
+}
+
+.tabBtnActive::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2.5px;
+  background: #0f172a;
+  border-radius: 2px 2px 0 0;
+}
+
+.tabCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1;
+  color: #0f172a;
+  background: #f1f5f9;
+}
+
+.tabBtnActive .tabCount {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* 4. Secondary Filter Bar with Popover Anchors */
+.topFilterBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 4px 0 4px 0;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+.filterPillGroup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Individual Filter Pill with Dropdown Anchor */
+.popoverAnchor {
+  position: relative;
+  display: inline-block;
+}
+
+.filterPillBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: none;
+  background-color: transparent;
+  color: #0f172a;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.14s ease;
+  outline: none;
+}
+
+.filterPillBtn:hover {
+  color: #0f172a;
+  background-color: #f8fafc;
+}
+
+.filterPillBtnActive {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+
+/* Floating Card Popovers (Exact match to Reference Screenshots) */
+.popoverDropdownCard {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 200;
+  min-width: 230px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.14), 0 4px 12px rgba(15, 23, 42, 0.05);
+  animation: popoverFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+@keyframes popoverFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Menu list style (Phase, Attention, Sort) */
+.popoverMenuList {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
+  width: 100%;
+}
+
+.popoverMenuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.12s ease;
+  box-sizing: border-box;
+}
+
+.popoverMenuItem:hover {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.popoverMenuItemActive {
+  font-weight: 650;
+  color: #0f172a;
+  background-color: #f1f5f9;
+}
+
+/* Location Checkbox Popover Card (Matching Screenshot 2) */
+.locationPopoverCard {
+  width: 270px;
+  padding: 12px;
+}
+
+.popoverSearchBox {
+  position: relative;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.popoverSearchIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.popoverInput {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px 0 32px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  font-size: 12.5px;
+  color: #0f172a;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.popoverInput:focus {
+  border-color: #94a3b8;
+}
+
+.popoverCheckboxList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+}
+
+.popoverCheckboxRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 2px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1e293b;
+  cursor: pointer;
+  user-select: none;
+}
+
+.popoverCheckboxRow:hover {
+  color: #0f172a;
+}
+
+.checkboxInput {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid #cbd5e1;
+  cursor: pointer;
+  accent-color: #0f172a;
+}
+
+.popoverDivider {
+  height: 1px;
+  background-color: #f1f5f9;
+  margin: 10px 0 8px 0;
+}
+
+.popoverFooterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.clearTextBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #0f172a;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.clearTextBtn:hover {
+  color: #475569;
+}
+
+.applyBtn {
+  height: 30px;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #0f172a;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background-color 0.14s ease;
+}
+
+.applyBtn:hover {
+  background-color: #1e293b;
+}
+
+.searchWrap {
+  position: relative;
+  width: 200px;
+  height: 32px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  height: 32px;
+  line-height: 32px;
+  padding: 0 10px 0 28px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  font-size: 12px;
+  color: #0f172a;
+  outline: none;
+  background-color: #ffffff;
+  box-sizing: border-box;
+}
+
+.searchInput:focus {
+  border-color: #94a3b8;
+}
+
+/* 5. Projects Cards Grid (4 Columns Layout) */
+.projectsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
+  .projectsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 840px) {
+  .projectsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .projectsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Single Project Card */
+.projectCard {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  outline: none;
+}
+
+.projectCard:hover {
+  transform: translateY(-2px);
+}
+
+/* Header Image Container */
+.cardHeaderImage {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: #f1f5f9;
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.projectCard:hover .cardImage {
+  transform: scale(1.03);
+}
+
+.statusBadgeOverlay {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  background-color: rgba(15, 23, 42, 0.75);
+  color: #ffffff;
+  backdrop-filter: blur(6px);
+  letter-spacing: 0.01em;
+}
+
+/* Text Body Below Image */
+.cardBody {
+  padding: 12px 2px 4px 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* Row 1: Name & Progress */
+.cardRowOne {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.projectName {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.progressPercent {
+  font-size: 15px;
+  font-weight: 750;
+  color: #0f172a;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+
+/* Row 2: Location & Client */
+.cardRowTwo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.locationWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #64748b;
+  font-weight: 500;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.locationIcon {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.clientName {
+  color: #64748b;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  background-color: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+  text-align: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.emptyTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.emptySub {
+  font-size: 13px;
+  color: #64748b;
+  max-width: 380px;
+}

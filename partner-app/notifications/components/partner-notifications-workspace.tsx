@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Bell,
   Settings,
@@ -32,6 +33,7 @@ export interface NotificationItem {
   iconColor: string;
   iconType: "userPlus" | "users" | "calendar" | "check" | "fileText" | "folder" | "settings" | "info";
   unread: boolean;
+  targetUrl: string;
 }
 
 const INITIAL_NOTIFICATIONS: NotificationItem[] = [
@@ -49,6 +51,7 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     iconColor: "#db2777",
     iconType: "userPlus",
     unread: true,
+    targetUrl: "/partner/hands/requests",
   },
   {
     id: "notif-act-2",
@@ -63,6 +66,7 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     iconColor: "#475569",
     iconType: "users",
     unread: true,
+    targetUrl: "/partner/hands/assignments",
   },
   {
     id: "notif-act-3",
@@ -77,6 +81,7 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     iconColor: "#ea580c",
     iconType: "calendar",
     unread: true,
+    targetUrl: "/partner/hands/attendance",
   },
 
   // SECTION 2: Recent Updates (3 items)
@@ -92,6 +97,7 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     iconColor: "#16a34a",
     iconType: "check",
     unread: false,
+    targetUrl: "/partner/hands/assignments",
   },
   {
     id: "notif-rec-2",
@@ -105,6 +111,7 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     iconColor: "#9333ea",
     iconType: "fileText",
     unread: false,
+    targetUrl: "/partner/hands/requests",
   },
   {
     id: "notif-rec-3",
@@ -118,6 +125,7 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     iconColor: "#0d9488",
     iconType: "calendar",
     unread: false,
+    targetUrl: "/partner/hands/attendance",
   },
 
   // SECTION 3: Projects & System (3 items)
@@ -133,6 +141,7 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     iconColor: "#9333ea",
     iconType: "folder",
     unread: false,
+    targetUrl: "/partner/hands/projects",
   },
   {
     id: "notif-sys-2",
@@ -146,6 +155,7 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     iconColor: "#475569",
     iconType: "settings",
     unread: false,
+    targetUrl: "/partner/hands/documents",
   },
   {
     id: "notif-sys-3",
@@ -159,10 +169,12 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     iconColor: "#475569",
     iconType: "info",
     unread: false,
+    targetUrl: "/partner/hands/payments",
   },
 ];
 
 export function PartnerNotificationsWorkspace() {
+  const router = useRouter();
   const [notifications, setNotifications] = useState<NotificationItem[]>(
     INITIAL_NOTIFICATIONS
   );
@@ -183,10 +195,13 @@ export function PartnerNotificationsWorkspace() {
     setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
   };
 
-  const handleToggleRead = (id: string) => {
+  const handleItemClick = (item: NotificationItem) => {
     setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, unread: false } : n))
+      prev.map((n) => (n.id === item.id ? { ...n, unread: false } : n))
     );
+    if (item.targetUrl) {
+      router.push(item.targetUrl);
+    }
   };
 
   // Filter list by category & unread toggle
@@ -343,7 +358,7 @@ export function PartnerNotificationsWorkspace() {
                   className={`${styles.itemRow} ${
                     item.unread ? styles.itemRowUnread : ""
                   }`}
-                  onClick={() => handleToggleRead(item.id)}
+                  onClick={() => handleItemClick(item)}
                 >
                   <div
                     className={styles.itemIconBox}
@@ -400,7 +415,7 @@ export function PartnerNotificationsWorkspace() {
                   className={`${styles.itemRow} ${
                     item.unread ? styles.itemRowUnread : ""
                   }`}
-                  onClick={() => handleToggleRead(item.id)}
+                  onClick={() => handleItemClick(item)}
                 >
                   <div
                     className={styles.itemIconBox}
@@ -454,7 +469,7 @@ export function PartnerNotificationsWorkspace() {
                   className={`${styles.itemRow} ${
                     item.unread ? styles.itemRowUnread : ""
                   }`}
-                  onClick={() => handleToggleRead(item.id)}
+                  onClick={() => handleItemClick(item)}
                 >
                   <div
                     className={styles.itemIconBox}

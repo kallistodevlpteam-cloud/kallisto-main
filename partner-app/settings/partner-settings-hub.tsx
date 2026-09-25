@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Bell, MessageSquare } from "lucide-react";
 import {
   UserDuotoneIcon,
   ShieldDuotoneIcon,
@@ -18,6 +19,7 @@ import { PartnerBusinessSettings } from "./components/partner-business-settings"
 import { PartnerFulfilmentSettings } from "./components/partner-fulfilment-settings";
 import { PartnerCatalogueSettings } from "./components/partner-catalogue-settings";
 import { PartnerNotificationsSettings } from "./components/partner-notifications-settings";
+import { PartnerCommunicationSettings } from "./components/partner-communication-settings";
 import { PartnerPreferencesSettings } from "./components/partner-preferences-settings";
 import styles from "./styles/partner-settings.module.css";
 
@@ -27,7 +29,9 @@ export type PartnerSettingsSectionId =
   | "business"
   | "fulfilment"
   | "catalogue"
+  | "dispatch_notifications"
   | "notifications"
+  | "communication_preferences"
   | "preferences";
 
 export interface SettingsNavCategory {
@@ -89,10 +93,28 @@ export const PARTNER_SETTINGS_CATEGORIES: SettingsNavCategory[] = [
         description: "Default markup, stock telemetry alerts and instant quotes",
       },
       {
-        id: "notifications",
+        id: "dispatch_notifications",
         label: "Dispatch Notifications",
         icon: BellDuotoneIcon,
         description: "Order alerts, WhatsApp driver telemetry and escrow receipts",
+      },
+    ],
+  },
+  {
+    id: "communication",
+    label: "COMMUNICATION",
+    items: [
+      {
+        id: "notifications",
+        label: "Notifications",
+        icon: Bell,
+        description: "Project alerts, delivery channels, and milestone notifications",
+      },
+      {
+        id: "communication_preferences",
+        label: "Communication Preferences",
+        icon: MessageSquare,
+        description: "Preferred contact method, client contact boundaries, and updates",
       },
     ],
   },
@@ -161,7 +183,9 @@ export function PartnerSettingsHub() {
             {activeSection === "business" && <PartnerBusinessSettings />}
             {activeSection === "fulfilment" && <PartnerFulfilmentSettings />}
             {activeSection === "catalogue" && <PartnerCatalogueSettings />}
+            {activeSection === "dispatch_notifications" && <PartnerNotificationsSettings />}
             {activeSection === "notifications" && <PartnerNotificationsSettings />}
+            {activeSection === "communication_preferences" && <PartnerCommunicationSettings />}
             {activeSection === "preferences" && <PartnerPreferencesSettings />}
           </div>
         </main>

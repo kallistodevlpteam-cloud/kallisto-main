@@ -91,7 +91,7 @@ describe("Worker Detail Page - Grouped Tab Navigation & Full Width View", () => 
 
     // Grouped Payment & Bank Details content
     expect(screen.getByText("Wage Disbursement Transaction Ledger")).toBeDefined();
-    expect(screen.getByText("Verified Bank Account & UPI Details")).toBeDefined();
+    expect(screen.getByText("Verified Bank Account Details")).toBeDefined();
     expect(screen.getByText("State Bank of India")).toBeDefined();
   });
 

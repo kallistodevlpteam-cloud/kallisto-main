@@ -30,6 +30,7 @@ describe("Kallisto Hub Partner Settings System", () => {
     expect(screen.getByText("Account")).toBeDefined();
     expect(screen.getByText("Business & Logistics")).toBeDefined();
     expect(screen.getByText("Catalogue & Orders")).toBeDefined();
+    expect(screen.getByText("COMMUNICATION")).toBeDefined();
     expect(screen.getByText("Preferences")).toBeDefined();
 
     expect(screen.getByRole("button", { name: "Profile" })).toBeDefined();
@@ -38,6 +39,8 @@ describe("Kallisto Hub Partner Settings System", () => {
     expect(screen.getByRole("button", { name: "Fulfilment & Delivery Zones" })).toBeDefined();
     expect(screen.getByRole("button", { name: "Catalogue Preferences" })).toBeDefined();
     expect(screen.getByRole("button", { name: "Dispatch Notifications" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Notifications" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Communication Preferences" })).toBeDefined();
     expect(screen.getByRole("button", { name: "Appearance & Region" })).toBeDefined();
   });
 
@@ -58,11 +61,18 @@ describe("Kallisto Hub Partner Settings System", () => {
       screen.getByRole("heading", { level: 2, name: /Business Registration & Legal Entity/i })
     ).toBeDefined();
 
-    // Click Fulfilment & Delivery Zones
-    const fulBtn = screen.getByRole("button", { name: /Fulfilment & Delivery Zones/i });
-    fireEvent.click(fulBtn);
+    // Click Communication Preferences
+    const commBtn = screen.getByRole("button", { name: "Communication Preferences" });
+    fireEvent.click(commBtn);
     expect(
-      screen.getByRole("heading", { level: 2, name: /Fulfilment & Delivery Zones/i })
+      screen.getByRole("heading", { level: 2, name: "Communication Preferences" })
+    ).toBeDefined();
+
+    // Click Notifications under COMMUNICATION
+    const notifBtn = screen.getByRole("button", { name: "Notifications" });
+    fireEvent.click(notifBtn);
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Delivery Channels" })
     ).toBeDefined();
 
     // Click Security & Login

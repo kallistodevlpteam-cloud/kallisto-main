@@ -289,13 +289,58 @@ function createdProjectToDisplay(cp: CreatedProject): DisplayProject {
   };
 }
 
+const ALL_PHASES = [
+  "Briefing",
+  "Site verification",
+  "Concept",
+  "Design development",
+  "Approvals",
+  "BOQ and procurement",
+  "Construction",
+  "Handover",
+  "Post-handover",
+];
+
+const ALL_LOCATIONS = [
+  "Bangalore, Karnataka",
+  "Calicut, Kerala",
+  "Kochi, Kerala",
+  "Kottayam, Kerala",
+  "Munnar, Kerala",
+];
+
+const ATTENTION_OPTIONS = ["All Status", "Needs Attention"];
+const SORT_OPTIONS = ["Recently updated", "Progress High-Low", "Name A-Z"];
+
 export function ClientProjectsWorkspace() {
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState<ProjectLifecyclePhase>("construction");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState<string>("all");
   const [createdProjects, setCreatedProjects] = useState<CreatedProject[]>([]);
+
+  // Popover filter values
+  const [activePopover, setActivePopover] = useState<"phase" | "attention" | "location" | "sort" | null>(null);
+  const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
+  const [selectedAttention, setSelectedAttention] = useState<string>("All Status");
+  const [selectedSort, setSelectedSort] = useState<string>("Recently updated");
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [appliedLocations, setAppliedLocations] = useState<string[]>([]);
+  const [locationSearch, setLocationSearch] = useState("");
+
+  // Outside click listener to close popovers when clicking outside dropdown anchor
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as HTMLElement | null;
+      if (target && !target.closest(`.${styles.popoverAnchor}`)) {
+        setActivePopover(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Load created projects and subscribe to changes
   useEffect(() => {
@@ -333,6 +378,30 @@ export function ClientProjectsWorkspace() {
     };
   }, [createdDisplayProjects.length]);
 
+  const filteredLocationOptions = useMemo(() => {
+    if (!locationSearch.trim()) return ALL_LOCATIONS;
+    return ALL_LOCATIONS.filter((loc) =>
+      loc.toLowerCase().includes(locationSearch.toLowerCase().trim())
+    );
+  }, [locationSearch]);
+
+  const toggleLocationSelection = (loc: string) => {
+    setSelectedLocations((prev) =>
+      prev.includes(loc) ? prev.filter((item) => item !== loc) : [...prev, loc]
+    );
+  };
+
+  const handleApplyLocations = () => {
+    setAppliedLocations(selectedLocations);
+    setActivePopover(null);
+  };
+
+  const handleClearLocations = () => {
+    setSelectedLocations([]);
+    setAppliedLocations([]);
+    setActivePopover(null);
+  };
+
   // Filtered projects
   const filteredProjects = useMemo(() => {
     const pool =
@@ -340,16 +409,29 @@ export function ClientProjectsWorkspace() {
         ? createdDisplayProjects
         : CLIENT_DISPLAY_PROJECTS.filter((p) => p.lifecyclePhase === activeTab);
 
-    return pool.filter((p) => {
-      // Location filter
-      if (
-        selectedLocation !== "all" &&
-        !p.location.toLowerCase().includes(selectedLocation.toLowerCase())
-      ) {
-        return false;
+    let list = pool.filter((p) => {
+      // 1. Phase Filter
+      if (selectedPhase) {
+        if (p.phase.toLowerCase() !== selectedPhase.toLowerCase()) return false;
       }
 
-      // Search match
+      // 2. Location Checkbox Filter
+      if (appliedLocations.length > 0) {
+        const matchesLoc = appliedLocations.some((loc) => {
+          const cityOnly = loc.split(",")[0].trim().toLowerCase();
+          return p.location.toLowerCase().includes(cityOnly);
+        });
+        if (!matchesLoc) return false;
+      }
+
+      // 3. Attention Filter
+      if (selectedAttention === "Needs Attention") {
+        if (p.needsAttention.length === 0 && p.activeTaskCount === 0) {
+          return false;
+        }
+      }
+
+      // 4. Search Query Match
       const q = searchQuery.toLowerCase().trim();
       if (
         q &&
@@ -363,7 +445,16 @@ export function ClientProjectsWorkspace() {
 
       return true;
     });
-  }, [activeTab, selectedLocation, searchQuery, createdDisplayProjects]);
+
+    // Sorting
+    if (selectedSort === "Progress High-Low") {
+      list = [...list].sort((a, b) => b.progress - a.progress);
+    } else if (selectedSort === "Name A-Z") {
+      list = [...list].sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    return list;
+  }, [activeTab, selectedPhase, appliedLocations, selectedAttention, selectedSort, searchQuery, createdDisplayProjects]);
 
   const handleCardClick = (project: DisplayProject) => {
     router.push(`/client/projects/${project.id}`);
@@ -462,38 +553,167 @@ export function ClientProjectsWorkspace() {
         </button>
       </nav>
 
-      {/* ── Filter Dropdowns Row ── */}
+      {/* ── Filter Dropdowns Row (Matching Screenshot 2 & 3 — NO Ownership filter) ── */}
       <div className={styles.filterRow}>
         <div className={styles.filterGroupLeft}>
-          <button type="button" className={styles.dropdownPill}>
-            <span>Ownership</span>
-            <ChevronDown size={13} />
-          </button>
+          {/* 1. Project Phase Dropdown */}
+          <div className={styles.popoverAnchor}>
+            <button
+              type="button"
+              className={`${styles.dropdownPill} ${activePopover === "phase" || selectedPhase ? styles.dropdownPillActive : ""}`}
+              onClick={() => setActivePopover(activePopover === "phase" ? null : "phase")}
+            >
+              <span>{selectedPhase || "Project Phase"}</span>
+              <ChevronDown size={13} />
+            </button>
 
-          <button type="button" className={styles.dropdownPill}>
-            <span>Project Phase</span>
-            <ChevronDown size={13} />
-          </button>
+            {activePopover === "phase" && (
+              <div className={styles.popoverDropdownCard}>
+                <div className={styles.popoverMenuList}>
+                  {ALL_PHASES.map((phase) => (
+                    <button
+                      key={phase}
+                      type="button"
+                      className={`${styles.popoverMenuItem} ${selectedPhase === phase ? styles.popoverMenuItemActive : ""}`}
+                      onClick={() => {
+                        setSelectedPhase(selectedPhase === phase ? null : phase);
+                        setActivePopover(null);
+                      }}
+                    >
+                      <span>{phase}</span>
+                      {selectedPhase === phase && <CheckCircle2 size={13} color="#0f172a" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
-          <button type="button" className={styles.dropdownPill}>
-            <span>Needs Attention</span>
-            <ChevronDown size={13} />
-          </button>
+          {/* 2. Needs Attention Dropdown */}
+          <div className={styles.popoverAnchor}>
+            <button
+              type="button"
+              className={`${styles.dropdownPill} ${activePopover === "attention" || selectedAttention !== "All Status" ? styles.dropdownPillActive : ""}`}
+              onClick={() => setActivePopover(activePopover === "attention" ? null : "attention")}
+            >
+              <span>{selectedAttention}</span>
+              <ChevronDown size={13} />
+            </button>
 
-          <button
-            type="button"
-            className={`${styles.dropdownPill} ${selectedLocation !== "all" ? styles.dropdownPillActive : ""}`}
-            onClick={() => setSelectedLocation((prev) => (prev === "all" ? "Kochi" : "all"))}
-          >
-            <span>Location</span>
-            <ChevronDown size={13} />
-          </button>
+            {activePopover === "attention" && (
+              <div className={styles.popoverDropdownCard}>
+                <div className={styles.popoverMenuList}>
+                  {ATTENTION_OPTIONS.map((opt) => (
+                    <button
+                      key={opt}
+                      type="button"
+                      className={`${styles.popoverMenuItem} ${selectedAttention === opt ? styles.popoverMenuItemActive : ""}`}
+                      onClick={() => {
+                        setSelectedAttention(opt);
+                        setActivePopover(null);
+                      }}
+                    >
+                      <span>{opt}</span>
+                      {selectedAttention === opt && <CheckCircle2 size={13} color="#0f172a" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 3. Location Checkbox Dropdown */}
+          <div className={styles.popoverAnchor}>
+            <button
+              type="button"
+              className={`${styles.dropdownPill} ${activePopover === "location" || appliedLocations.length > 0 ? styles.dropdownPillActive : ""}`}
+              onClick={() => setActivePopover(activePopover === "location" ? null : "location")}
+            >
+              <span>
+                {appliedLocations.length === 1
+                  ? appliedLocations[0].split(",")[0]
+                  : appliedLocations.length > 1
+                  ? `Location (${appliedLocations.length})`
+                  : "Location"}
+              </span>
+              <ChevronDown size={13} />
+            </button>
+
+            {activePopover === "location" && (
+              <div className={`${styles.popoverDropdownCard} ${styles.locationPopoverCard}`}>
+                <div className={styles.popoverSearchBox}>
+                  <Search size={14} className={styles.popoverSearchIcon} />
+                  <input
+                    type="text"
+                    value={locationSearch}
+                    onChange={(e) => setLocationSearch(e.target.value)}
+                    placeholder="Search city or district"
+                    className={styles.popoverInput}
+                    autoFocus
+                  />
+                </div>
+
+                <div className={styles.popoverCheckboxList}>
+                  {filteredLocationOptions.map((loc) => (
+                    <label key={loc} className={styles.popoverCheckboxRow}>
+                      <input
+                        type="checkbox"
+                        checked={selectedLocations.includes(loc)}
+                        onChange={() => toggleLocationSelection(loc)}
+                        className={styles.checkboxInput}
+                      />
+                      <span>{loc}</span>
+                    </label>
+                  ))}
+                </div>
+
+                <div className={styles.popoverDivider} />
+
+                <div className={styles.popoverFooterRow}>
+                  <button type="button" className={styles.clearTextBtn} onClick={handleClearLocations}>
+                    Clear
+                  </button>
+                  <button type="button" className={styles.applyBtn} onClick={handleApplyLocations}>
+                    Apply
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        <button type="button" className={styles.dropdownPill}>
-          <span>Recently updated</span>
-          <ChevronDown size={13} />
-        </button>
+        {/* 4. Recently Updated Dropdown */}
+        <div className={styles.popoverAnchor}>
+          <button
+            type="button"
+            className={`${styles.dropdownPill} ${activePopover === "sort" ? styles.dropdownPillActive : ""}`}
+            onClick={() => setActivePopover(activePopover === "sort" ? null : "sort")}
+          >
+            <span>{selectedSort}</span>
+            <ChevronDown size={13} />
+          </button>
+
+          {activePopover === "sort" && (
+            <div className={`${styles.popoverDropdownCard} ${styles.popoverDropdownRight}`}>
+              <div className={styles.popoverMenuList}>
+                {SORT_OPTIONS.map((sortOpt) => (
+                  <button
+                    key={sortOpt}
+                    type="button"
+                    className={`${styles.popoverMenuItem} ${selectedSort === sortOpt ? styles.popoverMenuItemActive : ""}`}
+                    onClick={() => {
+                      setSelectedSort(sortOpt);
+                      setActivePopover(null);
+                    }}
+                  >
+                    <span>{sortOpt}</span>
+                    {selectedSort === sortOpt && <CheckCircle2 size={13} color="#0f172a" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── Projects Grid ── */}

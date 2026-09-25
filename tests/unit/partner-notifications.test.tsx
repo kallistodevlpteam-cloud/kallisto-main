@@ -3,14 +3,16 @@ import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { PartnerNotificationsWorkspace } from "@/partner-app/notifications/components/partner-notifications-workspace";
 
+const mockPush = vi.fn();
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), back: vi.fn() }),
+  useRouter: () => ({ push: mockPush, replace: vi.fn(), back: vi.fn() }),
   usePathname: () => "/partner/notifications",
 }));
 
 describe("PartnerNotificationsWorkspace Component", () => {
   beforeEach(() => {
     cleanup();
+    mockPush.mockClear();
   });
 
   it("renders page title and subtitle", () => {
@@ -50,10 +52,11 @@ describe("PartnerNotificationsWorkspace Component", () => {
     expect(screen.queryByText("Assignment confirmed")).not.toBeInTheDocument();
   });
 
-  it("marks all notifications as read when clicking Mark all as read button", () => {
+  it("marks notification as read and navigates to targetUrl when an entry is clicked", () => {
     render(<PartnerNotificationsWorkspace />);
-    const markAllBtn = screen.getByRole("button", { name: /Mark all as read/i });
-    fireEvent.click(markAllBtn);
-    expect(screen.getByRole("heading", { name: "Notifications" })).toBeInTheDocument();
+    const firstNotification = screen.getAllByText("New labor request")[0];
+    fireEvent.click(firstNotification.closest("div[class*='itemRow']") || firstNotification);
+
+    expect(mockPush).toHaveBeenCalledWith("/partner/hands/requests");
   });
 });

@@ -37,9 +37,9 @@ describe("ClientProjectsWorkspace", () => {
     expect(within(tabsNav).getByRole("tab", { name: /^construction/i })).toBeInTheDocument();
     expect(within(tabsNav).getByRole("tab", { name: /^post construction/i })).toBeInTheDocument();
 
-    expect(screen.getByRole("button", { name: /^ownership/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^ownership/i })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^project phase/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /^needs attention/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^all status/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^location/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^recently updated/i })).toBeInTheDocument();
   });
